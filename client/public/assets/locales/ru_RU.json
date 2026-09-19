@@ -1571,6 +1571,7 @@
       "connect": "Подключиться",
       "quickConnect": "Быстрое подключение",
       "openSFTP": "Открыть SFTP",
+      "openBrowser": "Open Browser",
       "forwardPort": "Передовой порт",
       "runScript": "Запустить скрипт",
       "openNotes": "Открытые заметки",
@@ -1607,8 +1608,16 @@
         "duplicate": "Дублировать",
         "openNotes": "Открытые заметки",
         "hibernateSession": "Гибернация",
-        "closeSession": "Отключиться"
-      }
+        "closeSession": "Отключиться",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "Волшебный пакет, отправленный на {{name}}",
@@ -1961,6 +1970,14 @@
         "error": "Произошла ошибка"
       }
     },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
+    },
     "remoteDesktop": {
       "dropOverlay": "Перетащи файлы, чтобы загрузить их на удаленный сервер",
       "toast": {
@@ -2025,7 +2042,7 @@
       "holdModifier": "Подожди {{key}}",
       "zoomIn": "Увеличить",
       "zoomOut": "Уменьшить масштаб",
-      "zoomReset": "Сбросить масштаб до полного экрана (перетаскивай, удерживая среднюю кнопку мыши, чтобы перемещаться по изображению)"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "Монитор {{number}}",

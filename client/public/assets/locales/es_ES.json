@@ -1571,6 +1571,7 @@
       "connect": "Conecta",
       "quickConnect": "Conexión rápida",
       "openSFTP": "Abrir SFTP",
+      "openBrowser": "Open Browser",
       "forwardPort": "Puerto de reenvío",
       "runScript": "Ejecutar script",
       "openNotes": "Notas abiertas",
@@ -1607,8 +1608,16 @@
         "duplicate": "Duplicar",
         "openNotes": "Notas abiertas",
         "hibernateSession": "Hibernar",
-        "closeSession": "Desconecta"
-      }
+        "closeSession": "Desconecta",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "Paquete mágico enviado a {{name}}",
@@ -1961,6 +1970,14 @@
         "error": "Se ha producido un error"
       }
     },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
+    },
     "remoteDesktop": {
       "dropOverlay": "Arrastra los archivos para subirlos al servidor remoto",
       "toast": {
@@ -2025,7 +2042,7 @@
       "holdModifier": "Espera {{key}}",
       "zoomIn": "Acercar la imagen",
       "zoomOut": "Alejar la imagen",
-      "zoomReset": "Restablecer el zoom para ajustar la imagen (arrastra con el botón central del ratón para desplazar la imagen)"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "Monitor {{number}}",

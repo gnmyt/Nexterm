@@ -1571,6 +1571,7 @@
       "connect": "連接",
       "quickConnect": "快速連接",
       "openSFTP": "開啟 SFTP",
+      "openBrowser": "Open Browser",
       "forwardPort": "前進埠",
       "runScript": "執行腳本",
       "openNotes": "開啟筆記",
@@ -1607,8 +1608,16 @@
         "duplicate": "重複",
         "openNotes": "開啟筆記",
         "hibernateSession": "冬眠",
-        "closeSession": "斷開"
-      }
+        "closeSession": "斷開",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "魔術封包已傳送到 {{name}}",
@@ -1961,6 +1970,14 @@
         "error": "發生錯誤"
       }
     },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
+    },
     "remoteDesktop": {
       "dropOverlay": "將檔案拖放至此處以上傳至遠端",
       "toast": {
@@ -2025,7 +2042,7 @@
       "holdModifier": "暫停 {{key}}",
       "zoomIn": "放大",
       "zoomOut": "縮小",
-      "zoomReset": "將縮放比例重設為「自動適應」（按住滑鼠中鍵拖曳以平移畫面）"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "監視器 {{number}}",

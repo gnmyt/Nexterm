@@ -1571,6 +1571,7 @@
       "connect": "连接",
       "quickConnect": "快速连接",
       "openSFTP": "打开 SFTP",
+      "openBrowser": "Open Browser",
       "forwardPort": "转发端口",
       "runScript": "运行脚本",
       "openNotes": "公开说明",
@@ -1607,8 +1608,16 @@
         "duplicate": "复制",
         "openNotes": "公开说明",
         "hibernateSession": "休眠",
-        "closeSession": "断开连接"
-      }
+        "closeSession": "断开连接",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "魔法数据包发送至 {{name}}",
@@ -1961,6 +1970,14 @@
         "error": "发生错误"
       }
     },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
+    },
     "remoteDesktop": {
       "dropOverlay": "将文件拖放到此处以上传至远程服务器",
       "toast": {
@@ -2025,7 +2042,7 @@
       "holdModifier": "保持 {{key}}",
       "zoomIn": "放大",
       "zoomOut": "缩小",
-      "zoomReset": "将缩放比例重置为“适应视图”（按住鼠标中键拖动可平移）"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "显示器 {{number}}",

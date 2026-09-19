@@ -119,7 +119,7 @@
       "title": "Server",
       "addServer": "Server hinzufügen",
       "removeServer": "Server entfernen",
-      "removeConfirmText": "Dadurch wird die Verbindung zu {{server}}entfernt. Bist du sicher?"
+      "removeConfirmText": "Dadurch wird die Verbindung zu {{server}} entfernt. Bist du sicher?"
     },
     "selectBox": {
       "defaultOption": "Wähle eine Option aus...",
@@ -395,8 +395,8 @@
       },
       "actions": {
         "cancel": "Abbrechen",
-        "create": "erstellen",
-        "update": "Update",
+        "create": "Erstellen",
+        "update": "Updaten",
         "creating": "Erstellen...",
         "updating": "Aktualisieren..."
       },
@@ -585,10 +585,10 @@
       "authentication": "Authentifizierung",
       "sources": "Quellen",
       "ai": "AI",
-      "monitoring": "Überwachung",
+      "monitoring": "Monitoring",
       "backup": "Speicher",
-      "engines": "Motoren",
-      "permissions": "Benutzergruppen und Berechtigungen"
+      "engines": "Engines",
+      "permissions": "Benutzergruppen & Berechtigungen"
     },
     "account": {
       "title": "Account",
@@ -1120,7 +1120,7 @@
       "loading": "AI-Einstellungen laden...",
       "enable": {
         "title": "KI-Assistent aktivieren",
-        "description": "Benutzern ermöglichen, den KI-Assistenten innerhalb von Server-Sitzungen zu öffnen"
+        "description": "Erlaube Benutzern den KI-Assistenten in Server Sitzungen zu öffnen"
       },
       "provider": {
         "title": "KI-Anbieter",
@@ -1128,36 +1128,36 @@
       },
       "model": {
         "title": "Modell",
-        "description": "Wähle das KI-Modell aus, das der Assistent verwenden soll"
+        "description": "Wähle ein KI-Model, das der Assistent verwenden soll"
       },
       "requireConfirmation": {
-        "title": "Vor jeder Aktion bestätigen",
-        "description": "Benutzer müssen jeden Befehl und jede Dateiänderung, die der Assistent vornehmen möchte, bestätigen"
+        "title": "Bestätigung vor jeder Aktion",
+        "description": "Erfordert Benutzer, um jeden Befehl und jede Datei-Änderung, die der Assistent ausführen will, zu bestätigen"
       },
       "apiKey": {
         "title": "API-Schlüssel",
         "setPlaceholder": "API-Schlüssel ist gesetzt (leer lassen, um aktuell zu bleiben)",
-        "genericDescription": "API-Schlüssel zur Authentifizierung beim ausgewählten Anbieter",
+        "genericDescription": "API Key wird zur Authentifizierung des ausgewählten KI-Anbieters genutzt",
         "genericPlaceholder": "Gib deinen API-Schlüssel für „ {{provider}} “ ein"
       },
       "authMethod": {
         "title": "Authentifizierung",
-        "description": "Melde dich mit einem API-Schlüssel oder deinem Anbieter-Abonnement an",
-        "apiKey": "API-Schlüssel",
+        "description": "Authentifizierung mit API Key oder deinem Anbieter-Abonnement",
+        "apiKey": "API Key",
         "subscription": "Abonnement"
       },
       "subscription": {
         "title": "{{provider}} Abonnement",
-        "description": "Melde dich mit deinem „ {{provider}} “-Abonnement an, um die Modelle ohne API-Schlüssel zu nutzen",
-        "connectedDescription": "Dein Abonnement bei „ {{provider}} “ ist aktiviert",
+        "description": "Melden dich mit deinem {{provider}} Abonnement an, um Modelle ohne API Key zu nutzen",
+        "connectedDescription": "Dein {{provider}} Abonnement ist aktiv",
         "connect": "Verbinden",
-        "connecting": "Wird verbunden...",
-        "complete": "Fertig",
+        "connecting": "Verbinde …",
+        "complete": "Abgeschlossen",
         "disconnect": "Trennen",
-        "codePlaceholder": "Füge den Autorisierungscode hier ein",
-        "codePlaceholderUrl": "Füge hier die vollständige Callback-URL (oder den Code) ein",
-        "connectSuccess": "{{provider}} Abonnement aktiviert",
-        "startError": "Die Autorisierung konnte nicht gestartet werden",
+        "codePlaceholder": "Füge deinen Autorisierungscode hier ein",
+        "codePlaceholderUrl": "Füge die vollständige Callback-URL (oder den Code) hier ein",
+        "connectSuccess": "{{provider}} Abonnement aktiv",
+        "startError": "Autorisierung konnte nicht gestartet werden",
         "exchangeError": "Das Abonnement konnte nicht verbunden werden",
         "disconnectError": "Das Abmelden vom Abonnement ist fehlgeschlagen"
       },
@@ -1193,11 +1193,11 @@
         "description": "Lege fest, wie Nexterm den Online-/Offline-Status deiner Server überprüft.",
         "enable": {
           "title": "Status Checker einschalten",
-          "description": "Überprüfe automatisch, ob die Server online oder offline sind. Wenn diese Funktion deaktiviert ist, werden alle Server als online markiert."
+          "description": "Überprüft automatisch, ob die Server online oder offline sind. Wenn diese Option deaktiviert ist, werden alle Server als online markiert."
         },
         "interval": {
           "title": "Intervall prüfen",
-          "description": "Wie oft der Serverstatus überprüft werden soll (10-300 Sekunden)"
+          "description": "Wie oft soll der Serverstatus überprüft werden (10-300 Sekunden)"
         }
       },
       "dataCollection": {
@@ -1372,7 +1372,7 @@
       "smbPasswordPlaceholder": "Passwort",
       "smbDomain": "Domäne (optional)",
       "smbDomainPlaceholder": "ARBEITSGRUPPE",
-      "webdavUrl": "Server URL",
+      "webdavUrl": "WebDAV Server URL",
       "webdavUrlPlaceholder": "https://cloud.example.com/remote.php/dav/files/user",
       "webdavFolder": "Ordner (optional)",
       "webdavFolderPlaceholder": "Backups",
@@ -1428,10 +1428,10 @@
       "noFiles": "Keine Dateien gefunden"
     },
     "engines": {
-      "title": "Motoren",
+      "title": "Engines",
       "description": "Verwalte Engine-Instanzen, die Fernverbindungen verarbeiten.",
-      "addEngine": "Motor hinzufügen",
-      "noEngines": "Keine Motoren",
+      "addEngine": "Engine hinzufügen",
+      "noEngines": "Keine Engine vorhanden",
       "noEnginesDescription": "Füge eine Engine hinzu, um eine Verbindung zu entfernten Servern herzustellen.",
       "status": {
         "connected": "Verbunden",
@@ -1440,7 +1440,7 @@
       "lastSeen": "Zuletzt gesehen {{date}}",
       "neverConnected": "Nie verbunden",
       "regenerateToken": "Token neu generieren",
-      "deleteEngine": "Motor löschen",
+      "deleteEngine": "Engine entfernen",
       "dismiss": "Ablehnen",
       "copyToken": "Token kopieren",
       "transport": {
@@ -1450,19 +1450,19 @@
       "tokenLabel": "Registrierungs-Token für <strong>{{name}}</strong>",
       "tokenHint": "Setze dies in <code1>config.yaml</code1> oder als <code2>REGISTRATION_TOKEN</code2> env-Variable.",
       "dialog": {
-        "title": "Motor hinzufügen",
-        "engineName": "Motor Name",
+        "title": "Engine hinzufügen",
+        "engineName": "Name der Engine",
         "namePlaceholder": "z.B. Büronetzwerk",
-        "create": "Motor erstellen"
+        "create": "Engine erstellen"
       },
       "deleteConfirm": "Bist du sicher, dass du \"{{name}} \" löschen willst?",
       "messages": {
-        "deleted": "Motor erfolgreich gelöscht"
+        "deleted": "Engine erfolgreich entfernt"
       },
       "errors": {
-        "loadFailed": "Motoren konnten nicht geladen werden",
-        "createFailed": "Motor kann nicht erstellt werden",
-        "deleteFailed": "Motor kann nicht gelöscht werden",
+        "loadFailed": "Engines konnten nicht geladen werden",
+        "createFailed": "Engine kann nicht erstellt werden",
+        "deleteFailed": "Engine kann nicht entfernt werden",
         "regenerateFailed": "Token konnte nicht regeneriert werden"
       }
     },
@@ -1571,10 +1571,11 @@
       "connect": "Verbinden",
       "quickConnect": "Schnellverbindung",
       "openSFTP": "SFTP öffnen",
+      "openBrowser": "Browser öffnen",
       "forwardPort": "Port weiterleiten",
       "runScript": "Skript ausführen",
-      "openNotes": "Offene Noten",
-      "addNotes": "Anmerkungen hinzufügen",
+      "openNotes": "Notizen anzeigen",
+      "addNotes": "Notizen anzeigen",
       "editServer": "Server bearbeiten",
       "editIntegration": "Integration bearbeiten",
       "duplicateServer": "Server duplizieren",
@@ -1598,17 +1599,25 @@
     "tabs": {
       "contextMenu": {
         "popOut": "In eigenem Fenster öffnen",
-        "startSharing": "Teilen beginnen",
+        "startSharing": "Sitzung teilen",
         "readOnly": "Read-only",
         "readWrite": "Read & Write",
         "copyShareLink": "Link zum Teilen kopieren",
         "changePermissions": "Berechtigungen ändern",
         "stopSharing": "Teilen beenden",
-        "duplicate": "Duplizieren",
-        "openNotes": "Offene Noten",
+        "duplicate": "Sitzung duplizieren",
+        "openNotes": "Notizen anzeigen",
         "hibernateSession": "Ruhezustand aktivieren",
-        "closeSession": "Trennen"
-      }
+        "closeSession": "Verbindung trennen",
+        "splitRight": "Nach rechts aufteilen",
+        "splitDown": "Nach unten aufteilen",
+        "sendShortcut": "Tastenkürzel senden…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Zoom zurücksetzen"
+      },
+      "enableSplitView": "Geteilte Ansicht aktivieren",
+      "disableSplitView": "Geteilte Ansicht deaktivieren",
+      "sessionMenu": "Sitzungsmenü"
     },
     "wol": {
       "successDescription": "Magic-Paket an {{name}} gesendet",
@@ -1647,7 +1656,7 @@
         "host": "Host",
         "macAddress": "MAC-Adresse",
         "wolBroadcastAddress": "Broadcast-Adresse",
-        "engine": "Motor"
+        "engine": "Engine"
       },
       "placeholders": {
         "serverName": "Server Name",
@@ -1961,6 +1970,14 @@
         "error": "Ein Fehler ist aufgetreten"
       }
     },
+    "browser": {
+      "back": "Zurück",
+      "forward": "Vorwärts",
+      "reload": "Aktuelle Seite neu laden",
+      "stop": "Laden dieser Seite stoppen",
+      "address": "Adresse",
+      "addressPlaceholder": "Adresse eingeben..."
+    },
     "remoteDesktop": {
       "dropOverlay": "Zieh die Dateien per Drag & Drop auf den Server, um sie hochzuladen",
       "toast": {
@@ -2025,7 +2042,7 @@
       "holdModifier": "Warten {{key}}",
       "zoomIn": "Vergrößern",
       "zoomOut": "Verkleinern",
-      "zoomReset": "Zoom auf „Anpassen“ zurücksetzen (zum Verschieben mit der mittleren Maustaste ziehen)"
+      "zoomReset": "Zoom zurücksetzen (mit der mittleren Maustaste ziehen zum Verschieben)"
     },
     "monitors": {
       "title": "Monitor {{number}}",
@@ -2044,14 +2061,14 @@
       "badgeOn": "ON"
     },
     "notesPanel": {
-      "title": "Anmerkungen",
+      "title": "Notizen",
       "placeholder": "Schreibe Notizen für diesen Server…",
-      "showInList": "In Liste anzeigen",
-      "showInListTooltip": "Zeige die erste Zeile dieser Notizen unter dem Servernamen in der Seitenleiste an.",
+      "showInList": "In Server Liste anzeigen",
+      "showInListTooltip": "Zeigt die erste Zeile dieser Notizen unter dem Servernamen in der Server Liste an.",
       "status": {
-        "saving": "Sparen",
-        "saved": "Gerettet",
-        "unsaved": "Nicht gerettet",
+        "saving": "Speichern…",
+        "saved": "Gespeichert",
+        "unsaved": "Ungespeichert",
         "error": "Speichern fehlgeschlagen"
       }
     },
@@ -2083,7 +2100,7 @@
     "subtitle": "Willkommen bei Nexterm. Der Open-Source-Server-Manager für SSH, VNC und RDP.",
     "downloadApps": "Apps herunterladen",
     "connectDevice": "Gerät verbinden",
-    "recentConnections": "Neueste Verbindungen",
+    "recentConnections": "Letzte Verbindungen",
     "getStarted": "Erste Schritte",
     "getStartedHint": "Füge einen Server in der Seitenleiste hinzu, um mit der Verwaltung deiner Infrastruktur zu beginnen."
   },
