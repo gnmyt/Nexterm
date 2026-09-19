@@ -10,6 +10,7 @@ const DEFAULT_KEYMAPS = [
     { action: "keyboard-shortcuts", key: "ctrl+shift+k" },
     { action: "broadcast", key: "ctrl+b" },
     { action: "copy", key: "ctrl+shift+c" },
+    { action: "paste", key: "ctrl+shift+v" },
     { action: "fullscreen", key: "f11" },
     { action: "paste-identity-password", key: "ctrl+shift+p" },
 ];
