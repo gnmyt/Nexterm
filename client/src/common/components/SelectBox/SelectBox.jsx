@@ -261,6 +261,7 @@ export const SelectBox = ({ options, selected, setSelected, id, disabled = false
                                 onMouseEnter={() => setHighlightedIndex(index)}
                                 role="menuitem"
                                 tabIndex={-1}
+                                title={option.tooltip}
                             >
                                 {multiple && (
                                     <div className={`select-box__checkbox ${isOptionSelected(option.value) ? 'checked' : ''}`}>
