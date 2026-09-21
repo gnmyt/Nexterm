@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "concurrently": "^10.0.5",
-    "dotenv": "^17.4.2",
+    "dotenv": "^18.0.0",
     "esbuild": "^0.28.2",
     "nodemon": "^3.1.11",
     "vitepress": "^1.6.4",
