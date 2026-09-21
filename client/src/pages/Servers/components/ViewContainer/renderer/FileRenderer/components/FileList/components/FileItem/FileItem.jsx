@@ -20,6 +20,7 @@ export const FileItem = memo(({
                                   isBeingDragged,
                                   isDropTarget,
                                   isCut,
+                                  isDimmed,
                                   showThumbnails,
                                   highlight,
                                   renameValue,
@@ -71,6 +72,7 @@ export const FileItem = memo(({
         isBeingDragged && "dragging",
         isDropTarget && "drop-target",
         isCut && "cut",
+        isDimmed && "dimmed",
     ].filter(Boolean).join(" ");
 
     return (

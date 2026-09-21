@@ -995,6 +995,10 @@
       "hiddenFiles": {
         "title": "Hidden Files",
         "description": "Control visibility of hidden files and folders (names starting with a dot).",
+        "dim": {
+          "title": "Dim Hidden Files",
+          "description": "Display hidden files and folders with reduced opacity."
+        },
         "show": "Show Hidden Files",
         "showDescription": "Display all files including .dotfiles and system directories",
         "hide": "Hide Hidden Files",
