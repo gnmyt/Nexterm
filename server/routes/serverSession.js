@@ -1,7 +1,7 @@
 const { Router } = require("express");
-const { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword } = require("../controllers/serverSession");
+const { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword, createGroup, updateGroup, deleteGroup, moveSessionToGroup } = require("../controllers/serverSession");
 const { execCommand } = require("../controllers/execCommand");
-const { createSessionValidation, sessionIdValidation, resumeSessionValidation, duplicateSessionValidation } = require("../validations/serverSession");
+const { createSessionValidation, sessionIdValidation, resumeSessionValidation, duplicateSessionValidation, groupIdValidation, createGroupValidation, updateGroupValidation, moveToGroupValidation } = require("../validations/serverSession");
 const { validateSchema } = require("../utils/schema");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 
@@ -277,6 +277,79 @@ app.post("/:entryId/exec", async (req, res) => {
         console.error('Error executing command:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
+});
+
+/**
+ * POST /connections/groups
+ * @summary Create Session Group
+ * @description Creates a named group of terminal sessions shown as a single tab.
+ * @tags Connection
+ * @produces application/json
+ * @security BearerAuth
+ * @return {object} 201 - Group created
+ */
+app.post("/groups", (req, res) => {
+    if (validateSchema(res, createGroupValidation, req.body)) return;
+    const result = createGroup(req.user.id, req.body);
+    if (result?.code) return res.status(result.code).json({ error: result.message });
+    stateBroadcaster.broadcast("CONNECTIONS", { accountId: req.user.id });
+    res.status(201).json(result);
+});
+
+/**
+ * PATCH /connections/groups/{id}
+ * @summary Update Session Group
+ * @description Updates a session group's name, order or split layout.
+ * @tags Connection
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} id.path.required - Group ID
+ * @return {object} 200 - Success message
+ */
+app.patch("/groups/:id", (req, res) => {
+    if (validateSchema(res, groupIdValidation, req.params)) return;
+    if (validateSchema(res, updateGroupValidation, req.body)) return;
+    const result = updateGroup(req.user.id, req.params.id, req.body);
+    if (result?.code) return res.status(result.code).json({ error: result.message });
+    stateBroadcaster.broadcast("CONNECTIONS", { accountId: req.user.id });
+    res.json(result);
+});
+
+/**
+ * DELETE /connections/groups/{id}
+ * @summary Delete Session Group
+ * @description Dissolves a session group. Member sessions stay open.
+ * @tags Connection
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} id.path.required - Group ID
+ * @return {object} 200 - Success message
+ */
+app.delete("/groups/:id", (req, res) => {
+    if (validateSchema(res, groupIdValidation, req.params)) return;
+    const result = deleteGroup(req.user.id, req.params.id);
+    if (result?.code) return res.status(result.code).json({ error: result.message });
+    stateBroadcaster.broadcast("CONNECTIONS", { accountId: req.user.id });
+    res.json(result);
+});
+
+/**
+ * PATCH /connections/{id}/group
+ * @summary Move Session To Group
+ * @description Moves a session into a group, or out of any group when groupId is null.
+ * @tags Connection
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} id.path.required - Session ID
+ * @return {object} 200 - Success message
+ */
+app.patch("/:id/group", (req, res) => {
+    if (validateSchema(res, sessionIdValidation, req.params)) return;
+    if (validateSchema(res, moveToGroupValidation, req.body)) return;
+    const result = moveSessionToGroup(req.user.id, req.params.id, req.body.groupId ?? null);
+    if (result?.code) return res.status(result.code).json({ error: result.message });
+    stateBroadcaster.broadcast("CONNECTIONS", { accountId: req.user.id });
+    res.json(result);
 });
 
 module.exports = app;

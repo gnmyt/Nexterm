@@ -203,6 +203,42 @@
         border-left: 3px solid colors.$primary
         background-color: colors.$primary-opacity
 
+      &.drop-merge
+        border: 2px dashed colors.$primary
+        background-color: colors.$primary-opacity
+
+      &.drop-reorder-left
+        box-shadow: inset 3px 0 0 colors.$primary
+
+      &.drop-reorder-right
+        box-shadow: inset -3px 0 0 colors.$primary
+
+      .tab-group-count
+        display: inline-flex
+        align-items: center
+        justify-content: center
+        min-width: 1.1rem
+        height: 1.1rem
+        padding: 0 0.3rem
+        margin-left: 0.4rem
+        border-radius: 0.6rem
+        background-color: colors.$primary-opacity
+        color: colors.$primary
+        font-size: 0.75rem
+        font-weight: 600
+
+      .group-name-input
+        flex: 1
+        min-width: 0
+        font-size: 1.1rem
+        font-family: inherit
+        color: inherit
+        background-color: colors.$primary-opacity
+        border: 1px solid colors.$primary
+        border-radius: 0.25rem
+        padding: 0.1rem 0.3rem
+        outline: none
+
       svg
         width: 1.2rem
         height: 1.2rem
@@ -365,3 +401,71 @@
 .progress-icon.page-favicon
   object-fit: contain
   border-radius: 0.2rem
+
+.group-popover
+  position: fixed
+  z-index: 10000
+  min-width: 200px
+  max-width: 320px
+  padding: 0.25rem
+  display: flex
+  flex-direction: column
+  gap: 0.1rem
+  background-color: colors.$lighter-background
+  border: 1px solid colors.$dark-gray
+  border-radius: 0.75rem
+  box-shadow: colors.$shadow-lg
+
+  .group-popover-item
+    display: flex
+    align-items: center
+    gap: 0.5rem
+    padding: 0.4rem 0.5rem
+    border-radius: 0.5rem
+    cursor: pointer
+    color: colors.$white
+
+    &:hover
+      background-color: colors.$gray
+
+    &.active
+      background-color: colors.$gray
+      outline: 2px solid colors.$primary
+
+    .group-popover-icon
+      width: 1.2rem
+      height: 1.2rem
+      flex-shrink: 0
+
+    .group-popover-name
+      flex: 1
+      min-width: 0
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
+      font-size: 0.95rem
+
+    .group-popover-menu
+      width: 1.1rem
+      height: 1.1rem
+      flex-shrink: 0
+      opacity: 0.6
+      border-radius: 0.25rem
+      padding: 0.1rem
+
+      &:hover
+        opacity: 1
+        background-color: colors.$gray
+
+    .group-popover-remove
+      width: 1.1rem
+      height: 1.1rem
+      flex-shrink: 0
+      opacity: 0.6
+      border-radius: 0.25rem
+      padding: 0.1rem
+
+      &:hover
+        opacity: 1
+        background-color: colors.$error-opacity
+        color: colors.$error

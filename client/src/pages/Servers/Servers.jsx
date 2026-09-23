@@ -19,7 +19,7 @@ import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { StateStreamContext, STATE_TYPES } from "@/common/contexts/StateStreamContext.jsx";
 import { isTauri } from "@/common/utils/TauriUtil.js";
 import { getTabId, getBrowserId, requiresIdentity, canConnectWithoutPrompt } from "@/common/utils/ConnectionUtil.js";
-import { postRequest, deleteRequest } from "@/common/utils/RequestUtil";
+import { postRequest, deleteRequest, patchRequest } from "@/common/utils/RequestUtil";
 
 export const Servers = () => {
 
@@ -39,13 +39,28 @@ export const Servers = () => {
     const [currentFolderId, setCurrentFolderId] = useState(null);
     const [currentOrganizationId, setCurrentOrganizationId] = useState(null);
     const [editServerId, setEditServerId] = useState(null);
-    const { activeSessions, setActiveSessions, activeSessionId, setActiveSessionId, poppedOutSessions } = useActiveSessions();
+    const { activeSessions, setActiveSessions, activeSessionId, setActiveSessionId, poppedOutSessions, sessionGroups, setSessionGroups } = useActiveSessions();
     const { liveSessions } = useLiveSessions();
     const { getServerById, servers } = useContext(ServerContext);
     const { registerHandler } = useContext(StateStreamContext);
-    const sessionLayout = useSessionLayout();
     const location = useLocation();
     const navigate = useNavigate();
+
+    const activeGroupId = activeSessions.find(s => s.id === activeSessionId)?.groupId ?? null;
+
+    const layoutPersistTimersRef = useRef(new Map());
+    const persistGroupLayout = useCallback((groupId, layout) => {
+        if (!groupId) return;
+        const timers = layoutPersistTimersRef.current;
+        clearTimeout(timers.get(groupId));
+        timers.set(groupId, setTimeout(() => {
+            timers.delete(groupId);
+            patchRequest(`/connections/groups/${groupId}`, { layout: layout || null })
+                .catch(error => console.debug("Failed to persist group layout:", error));
+        }, 400));
+    }, []);
+
+    const sessionLayout = useSessionLayout(activeGroupId, persistGroupLayout);
 
     const [hibernatedSessions, setHibernatedSessions] = useState([]);
     const closingSessionsRef = useRef(new Set());
@@ -72,8 +87,11 @@ export const Servers = () => {
         setLeftPaneSlot(document.getElementById("left-pane-slot"));
     }, []);
 
-    const handleConnectionsUpdate = useCallback((sessions) => {
+    const handleConnectionsUpdate = useCallback((payload) => {
         if (!servers) return;
+        const sessions = Array.isArray(payload) ? payload : (payload?.sessions || []);
+        const groups = Array.isArray(payload) ? [] : (payload?.groups || []);
+        setSessionGroups(groups);
         const mappedSessions = sessions.map(session => {
             const server = getServerById(session.entryId);
             if (!server) return null;
@@ -91,6 +109,7 @@ export const Servers = () => {
                 shareId: session.shareId || null,
                 shareWritable: session.shareWritable || false,
                 participants: session.participants || [],
+                groupId: session.groupId || null,
             };
         }).filter(Boolean);
 
@@ -128,11 +147,24 @@ export const Servers = () => {
             if (prev && (newActiveIds.has(prev) || mergedSessions.some(s => s.id === prev))) return prev;
             return mergedSessions.at(-1)?.id || null;
         });
-    }, [servers, getServerById, setActiveSessions, setActiveSessionId]);
+    }, [servers, getServerById, setActiveSessions, setActiveSessionId, setSessionGroups]);
 
     useEffect(() => {
         if (servers) return registerHandler(STATE_TYPES.CONNECTIONS, handleConnectionsUpdate);
     }, [servers, registerHandler, handleConnectionsUpdate]);
+
+    const prevGroupIdsRef = useRef(new Set());
+    useEffect(() => {
+        const currentIds = new Set(sessionGroups.map(g => g.groupId));
+        prevGroupIdsRef.current.forEach(id => {
+            if (!currentIds.has(id)) sessionLayout.removeGroupState(id);
+        });
+        prevGroupIdsRef.current = currentIds;
+        sessionGroups.forEach(group => {
+            const memberIds = activeSessions.filter(s => (s.groupId ?? null) === group.groupId).map(s => s.id);
+            sessionLayout.hydrateGroup(group.groupId, group.layout, memberIds);
+        });
+    }, [sessionGroups, activeSessions, sessionLayout]);
 
     const findOrganizationForServer = (serverIdNum, entries, currentOrg = null) => {
         for (const entry of entries) {
@@ -394,6 +426,71 @@ export const Servers = () => {
         }
     };
 
+    const groupMemberIds = useCallback((groupId, extraId = null, excludeId = null) => {
+        const ids = activeSessions
+            .filter(s => (s.groupId ?? null) === groupId && s.id !== excludeId)
+            .map(s => s.id);
+        if (extraId && !ids.includes(extraId)) ids.push(extraId);
+        return ids;
+    }, [activeSessions]);
+
+    const createGroupFrom = useCallback(async (sessionIds, name = null) => {
+        const uniqueIds = [...new Set(sessionIds)].filter(Boolean);
+        if (uniqueIds.length < 1) return;
+        try {
+            const result = await postRequest("/connections/groups", {
+                name: name || undefined,
+                sessionIds: uniqueIds,
+                tabId: getTabId(),
+                browserId: getBrowserId(),
+            });
+            const groupId = result?.groupId;
+            if (!groupId) return;
+            setSessionGroups(prev => [...prev, { groupId, name: result.name, order: result.order ?? 0, layout: null }]);
+            setActiveSessions(prev => prev.map(s => uniqueIds.includes(s.id) ? { ...s, groupId } : s));
+            sessionLayout.rebuildGroup(groupId, uniqueIds);
+            setActiveSessionId(uniqueIds[0]);
+        } catch (error) {
+            console.error("Failed to create session group", error);
+        }
+    }, [sessionLayout, setActiveSessions, setActiveSessionId, setSessionGroups]);
+
+    const moveSessionToGroup = useCallback(async (sessionId, groupId) => {
+        const previousGroupId = activeSessions.find(s => s.id === sessionId)?.groupId ?? null;
+        if (previousGroupId === groupId) return;
+        try {
+            await patchRequest(`/connections/${sessionId}/group`, { groupId });
+            const targetMembers = groupId ? groupMemberIds(groupId, sessionId) : [];
+            const previousMembers = previousGroupId ? groupMemberIds(previousGroupId, null, sessionId) : [];
+            setActiveSessions(prev => prev.map(s => s.id === sessionId ? { ...s, groupId } : s));
+            if (groupId) sessionLayout.rebuildGroup(groupId, targetMembers);
+            if (previousGroupId) sessionLayout.rebuildGroup(previousGroupId, previousMembers);
+            setActiveSessionId(sessionId);
+        } catch (error) {
+            console.error("Failed to move session to group", error);
+        }
+    }, [activeSessions, groupMemberIds, sessionLayout, setActiveSessions, setActiveSessionId]);
+
+    const renameGroup = useCallback(async (groupId, name) => {
+        setSessionGroups(prev => prev.map(g => g.groupId === groupId ? { ...g, name } : g));
+        try {
+            await patchRequest(`/connections/groups/${groupId}`, { name });
+        } catch (error) {
+            console.error("Failed to rename group", error);
+        }
+    }, [setSessionGroups]);
+
+    const dissolveGroup = useCallback(async (groupId) => {
+        setSessionGroups(prev => prev.filter(g => g.groupId !== groupId));
+        setActiveSessions(prev => prev.map(s => (s.groupId ?? null) === groupId ? { ...s, groupId: null } : s));
+        sessionLayout.removeGroupState(groupId);
+        try {
+            await deleteRequest(`/connections/groups/${groupId}`);
+        } catch (error) {
+            console.error("Failed to dissolve group", error);
+        }
+    }, [sessionLayout, setActiveSessions, setSessionGroups]);
+
     const openTerminalFromFileManager = async (sessionId, path) => {
         try {
             const originalSession = activeSessions.find(s => s.id === sessionId);
@@ -565,6 +662,12 @@ export const Servers = () => {
                                setOpenFileEditors={setOpenFileEditors}
                                openTerminalFromFileManager={openTerminalFromFileManager}
                                sessionLayout={sessionLayout}
+                               activeGroupId={activeGroupId}
+                               sessionGroups={sessionGroups}
+                               createGroupFrom={createGroupFrom}
+                               moveSessionToGroup={moveSessionToGroup}
+                               renameGroup={renameGroup}
+                               dissolveGroup={dissolveGroup}
                                connectFromDrop={connectFromDrop} />}
             {openFileEditors.map((editor, index) => (
                 editor.type === "preview" ? (

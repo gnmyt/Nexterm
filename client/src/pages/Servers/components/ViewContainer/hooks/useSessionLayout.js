@@ -24,21 +24,43 @@ const pickFocusedPane = (tree, previousLeaves, previousFocusedId) => {
     return leaves[index]?.id ?? null;
 };
 
-export const useSessionLayout = () => {
-    const [state, setState] = useState(EMPTY_STATE);
-    const stateRef = useRef(EMPTY_STATE);
+/**
+ * Layout engine for split-screen session groups. Each group (identified by
+ * groupId) owns its own binary pane tree; the hook operates on the tree of the
+ * currently active group (activeGroupId). A null activeGroupId means a
+ * standalone session, which never has a tree (always rendered single).
+ */
+export const useSessionLayout = (activeGroupId = null, onLayoutChange = null) => {
+    const [version, setVersion] = useState(0);
+    const bump = useCallback(() => setVersion(v => v + 1), []);
+    const statesRef = useRef(new Map());
     const visibleIdsRef = useRef(new Set());
     const pendingPlacementsRef = useRef(new Map());
+    const hydratedRef = useRef(new Set());
+    const activeGroupRef = useRef(activeGroupId);
+    activeGroupRef.current = activeGroupId;
+    const onLayoutChangeRef = useRef(onLayoutChange);
+    onLayoutChangeRef.current = onLayoutChange;
+
+    const getState = (groupId) => statesRef.current.get(groupId) || EMPTY_STATE;
+
+    const writeState = (groupId, normalized, { persist = true } = {}) => {
+        if (normalized.tree) statesRef.current.set(groupId, normalized);
+        else statesRef.current.delete(groupId);
+        bump();
+        if (persist) onLayoutChangeRef.current?.(groupId, normalized.tree ? normalized : null);
+    };
 
     const update = useCallback((updater) => {
-        const current = stateRef.current;
+        const key = activeGroupRef.current;
+        if (key == null) return EMPTY_STATE;
+        const current = getState(key);
         const next = updater(current);
         const tree = normalizeTree(next.tree);
         const unchanged = tree === current.tree && next.focusedPaneId === current.focusedPaneId;
         if (unchanged) return current;
         const normalized = tree ? { tree, focusedPaneId: next.focusedPaneId } : EMPTY_STATE;
-        stateRef.current = normalized;
-        setState(normalized);
+        writeState(key, normalized);
         return normalized;
     }, []);
 
@@ -131,9 +153,55 @@ export const useSessionLayout = () => {
         return findNodeById(result.tree, result.focusedPaneId)?.sessionId ?? activeSessionId;
     }, [update, splitWithSession]);
 
+    // Rebuild a specific group's grid from its member sessions (used when group
+    // membership changes). Resets manual sash sizes for that group.
+    const rebuildGroup = useCallback((groupId, sessionIds) => {
+        if (groupId == null) return;
+        hydratedRef.current.add(groupId);
+        const ids = sessionIds.filter(Boolean);
+        if (ids.length === 0) {
+            writeState(groupId, EMPTY_STATE);
+            return;
+        }
+        const gridTree = buildGridTree(ids);
+        const tree = normalizeTree(gridTree);
+        writeState(groupId, tree ? { tree, focusedPaneId: collectLeaves(gridTree)[0]?.id ?? null } : EMPTY_STATE);
+    }, []);
+
+    // Seed a group's layout once: from server-persisted state if present,
+    // otherwise from an auto-grid of its current members.
+    const hydrateGroup = useCallback((groupId, layout, memberIds = []) => {
+        if (groupId == null || hydratedRef.current.has(groupId)) return;
+        hydratedRef.current.add(groupId);
+        if (layout?.tree) {
+            statesRef.current.set(groupId, {
+                tree: layout.tree,
+                focusedPaneId: layout.focusedPaneId ?? collectLeaves(layout.tree)[0]?.id ?? null,
+            });
+            bump();
+            return;
+        }
+        const ids = memberIds.filter(Boolean);
+        if (ids.length >= 2) {
+            const gridTree = buildGridTree(ids);
+            const tree = normalizeTree(gridTree);
+            if (tree) {
+                statesRef.current.set(groupId, { tree, focusedPaneId: collectLeaves(gridTree)[0]?.id ?? null });
+                bump();
+            }
+        }
+    }, [bump]);
+
+    const removeGroupState = useCallback((groupId) => {
+        hydratedRef.current.delete(groupId);
+        if (statesRef.current.delete(groupId)) bump();
+    }, [bump]);
+
+    const current = getState(activeGroupId);
+
     return useMemo(() => ({
-        tree: state.tree,
-        focusedPaneId: state.focusedPaneId,
+        tree: current.tree,
+        focusedPaneId: current.focusedPaneId,
         splitWithSession,
         showSessionInPane,
         showSession,
@@ -142,5 +210,8 @@ export const useSessionLayout = () => {
         clearLayout,
         resizeBranch,
         reconcile,
-    }), [state, splitWithSession, showSessionInPane, showSession, placeSession, splitAll, clearLayout, resizeBranch, reconcile]);
+        rebuildGroup,
+        hydrateGroup,
+        removeGroupState,
+    }), [version, activeGroupId, current.tree, current.focusedPaneId, splitWithSession, showSessionInPane, showSession, placeSession, splitAll, clearLayout, resizeBranch, reconcile, rebuildGroup, hydrateGroup, removeGroupState]);
 };
