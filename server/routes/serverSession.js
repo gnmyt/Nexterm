@@ -247,9 +247,10 @@ app.post("/:id/paste-password", async (req, res) => {
         identityId = Number.parseInt(req.body.identityId, 10);
         if (Number.isNaN(identityId)) return res.status(400).json({ error: "Invalid identity ID" });
     }
+    const submit = req.body?.submit === true;
 
     try {
-        const result = await pasteIdentityPassword(req.user.id, req.params.id, req.ip, req.headers?.["user-agent"], identityId);
+        const result = await pasteIdentityPassword(req.user.id, req.params.id, req.ip, req.headers?.["user-agent"], identityId, submit);
         if (result?.code) return res.status(result.code).json({ error: result.message });
         res.json(result);
     } catch (error) {

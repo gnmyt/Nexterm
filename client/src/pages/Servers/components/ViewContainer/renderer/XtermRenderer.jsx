@@ -132,9 +132,13 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     }, [updatePasswordHintIndex]);
 
     const fillIdentityPassword = useCallback(async (identityId) => {
+        const shouldSubmit = Boolean(passwordPromptRef.current);
         hidePasswordHint();
         try {
-            await postRequest(`connections/${session.id}/paste-password`, identityId ? { identityId } : undefined);
+            await postRequest(`connections/${session.id}/paste-password`, {
+                ...(identityId ? { identityId } : {}),
+                submit: shouldSubmit,
+            });
         } catch (err) {
             console.error("Failed to fill identity password:", err);
         }
@@ -715,7 +719,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                     const hintItems = passwordIdentitiesRef.current;
                     const hintIndex = passwordHintIndexRef.current;
 
-                    if (event.key === "Tab") {
+                    if (event.key === "Tab" || event.key === "Enter" || event.code === "NumpadEnter") {
                         event.preventDefault();
                         event.stopPropagation();
                         fillIdentityPasswordRef.current(hintItems[hintIndex]?.id);
