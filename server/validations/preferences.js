@@ -6,6 +6,8 @@ const terminalSchema = Joi.object({
     cursorStyle: Joi.string().valid('block', 'underline', 'bar'),
     cursorBlink: Joi.boolean(),
     smartCopyPaste: Joi.boolean(),
+    copyPasteBehavior: Joi.string().valid('none', 'smart', 'keyboard', 'mouse', 'mouseKeyboard'),
+    passwordPromptDetection: Joi.boolean(),
     theme: Joi.string().max(50),
 }).unknown(false);
 
