@@ -903,7 +903,11 @@
         },
         "copy": {
           "title": "Копировать",
-          "description": "Скопировать выделенный текст в буфер"
+          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+        },
+        "paste": {
+          "title": "Paste",
+          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
         },
         "fullscreen": {
           "title": "Полный экран",
@@ -918,6 +922,7 @@
         "pressKeys": "Нажмите клавиши...",
         "save": "Сохранить",
         "cancel": "Отмена",
+        "disabled": "Disabled",
         "reset": "Сбросить"
       },
       "messages": {
@@ -953,7 +958,17 @@
       "input": {
         "title": "Ввод",
         "description": "Настрой поведение горячих клавиш в терминале.",
-        "smartCopyPaste": "Умное Ctrl+C",
+        "copyPasteBehavior": "Copy/Paste Behavior",
+        "copyPasteBehaviorNone": "None",
+        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
+        "copyPasteBehaviorSmart": "Smart Ctrl+C",
+        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
+        "copyPasteBehaviorKeyboard": "Keyboard",
+        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
+        "copyPasteBehaviorMouse": "Mouse",
+        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
+        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
+        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
         "passwordPromptDetection": "Обнаружение ввода пароля",
         "enabled": "Включено",
         "disabled": "Отключено",
