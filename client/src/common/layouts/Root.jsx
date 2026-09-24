@@ -66,7 +66,7 @@ const AppContent = () => {
         const containsPoint = (rect, x, y) => rect && x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
         const handleMouseMove = (event) => {
             const leftPaneRect = leftPaneRef.current?.getBoundingClientRect();
-            const serverListRect = document.querySelector(".server-list")?.getBoundingClientRect();
+            const serverListRect = isLeftPaneHovering ? document.querySelector(".server-list")?.getBoundingClientRect() : null;
             const hovering = containsPoint(leftPaneRect, event.clientX, event.clientY)
                 || containsPoint(serverListRect, event.clientX, event.clientY);
             setIsLeftPaneHovering(current => current === hovering ? current : hovering);
@@ -74,7 +74,7 @@ const AppContent = () => {
 
         document.addEventListener("mousemove", handleMouseMove);
         return () => document.removeEventListener("mousemove", handleMouseMove);
-    }, [isLeftPaneCollapsed]);
+    }, [isLeftPaneCollapsed, isLeftPaneHovering]);
     if (!tauriReady) {
         return (
             <div className="app-wrapper">
