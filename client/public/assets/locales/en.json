@@ -1081,6 +1081,21 @@
         },
         "messages": {
           "saveFailed": "Failed to save provider"
+        },
+        "groupSync": {
+          "title": "Group Sync",
+          "hint": "Automatically add users to organizations and control access based on group claims from your identity provider.",
+          "groupsAttribute": "Groups Claim",
+          "groupsAttributePlaceholder": "groups",
+          "requiredGroup": "Required Group",
+          "requiredGroupPlaceholder": "nexterm-users",
+          "requiredGroupHint": "If set, only users whose groups claim contains this value are allowed to log in.",
+          "mappings": "Organization Mappings",
+          "mappingsHint": "Map a group claim value to an organization. Membership is kept in sync on every login.",
+          "mappingValuePlaceholder": "Group value",
+          "roleMember": "Member",
+          "roleOwner": "Owner",
+          "addMapping": "Add Mapping"
         }
       },
       "ldapDialog": {
