@@ -24,7 +24,21 @@ app.post("/", async (req, res) => {
         const { entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, displayDpi, scriptId, startPath } = req.body;
         const ipAddress = req.ip || req.socket?.remoteAddress || 'unknown';
         const userAgent = req.headers['user-agent'] || 'unknown';
-        const result = await createSession(req.user.id, entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, displayDpi, scriptId, startPath, ipAddress, userAgent);
+        const result = await createSession({
+            accountId: req.user.id,
+            entryId,
+            identityId,
+            connectionReason,
+            type,
+            directIdentity,
+            tabId,
+            browserId,
+            displayDpi,
+            scriptId,
+            startPath,
+            ipAddress,
+            userAgent,
+        });
         
         if (result?.code) {
             return res.status(result.code).json({ error: result.message });
