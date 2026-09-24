@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+#include "../client.h"
 
 #include "channels/disp.h"
 #include "plugins/channels.h"
@@ -440,8 +441,8 @@ void guac_rdp_disp_update_size(guac_rdp_disp* disp,
             monitors[i].Orientation = 0;
             monitors[i].PhysicalWidth = 0;
             monitors[i].PhysicalHeight = 0;
-            monitors[i].DesktopScaleFactor = 0;
-            monitors[i].DeviceScaleFactor = 0;
+            monitors[i].DesktopScaleFactor = settings->resolution * 100 / GUAC_RDP_NATIVE_RESOLUTION;
+            monitors[i].DeviceScaleFactor = 100;
 
         }
 

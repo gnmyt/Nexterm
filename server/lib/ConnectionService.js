@@ -480,6 +480,7 @@ const prepareGuacamoleSession = async (sessionId, entry, identity, organizationI
         params = await buildPveQemuParams(entry);
     } else if (protocol === "rdp") {
         params = await buildRdpParams(cfg, identity, session.accountId);
+        params.dpi = String(session.configuration.displayDpi || 96);
     } else if (protocol === "vnc") {
         params = await buildVncParams(cfg, identity);
     } else if (protocol === "demo") {
@@ -506,7 +507,7 @@ const prepareGuacamoleSession = async (sessionId, entry, identity, organizationI
     const masterClient = new GuacdClient({
         sessionId,
         connectionSettings: {
-            connection: { type: protocol, width: 1024, height: 768, dpi: 96, ...params },
+            connection: { type: protocol, width: 1024, height: 768, dpi: session.configuration.displayDpi || 96, ...params },
             enableAudio: entry.config?.enableAudio !== false,
         },
         recordingEnabled,

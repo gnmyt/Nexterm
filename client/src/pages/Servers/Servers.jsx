@@ -235,6 +235,7 @@ export const Servers = () => {
                 type,
                 tabId: getTabId(),
                 browserId: getBrowserId(),
+                displayDpi: Math.round((window.devicePixelRatio || 1) * 96),
             };
 
             if (directIdentity) payload.directIdentity = directIdentity;
