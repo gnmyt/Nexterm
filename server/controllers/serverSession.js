@@ -58,7 +58,21 @@ const getRequiredConnectPermission = (entry, type, scriptId) => {
     return ENTRY_TYPE_TO_CONNECT_PERMISSION[entryType] || Permission.CONNECT_SSH;
 };
 
-const createSession = async (accountId, entryId, identityId, connectionReason, type = null, directIdentity = null, tabId = null, browserId = null, scriptId = null, startPath = null, ipAddress = null, userAgent = null) => {
+const createSession = async ({
+    accountId,
+    entryId,
+    identityId,
+    connectionReason,
+    type = null,
+    directIdentity = null,
+    tabId = null,
+    browserId = null,
+    displayDpi = 96,
+    scriptId = null,
+    startPath = null,
+    ipAddress = null,
+    userAgent = null,
+}) => {
     const entry = await Entry.findByPk(entryId);
     if (!entry) {
         return { code: 404, message: "Entry not found" };
@@ -109,6 +123,7 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
         identityId: identity ? identity.id : null,
         type: type || null,
         directIdentity: directIdentity || null,
+        displayDpi,
         scriptId: scriptId || null,
         startPath: startPath || null,
         renderer,
@@ -297,20 +312,21 @@ const duplicateSession = async (accountId, sessionId, tabId = null, browserId = 
 
     const config = session.configuration || {};
     
-    return await createSession(
+    return await createSession({
         accountId,
-        session.entryId,
-        config.identityId,
-        null,
-        config.type,
-        config.directIdentity,
+        entryId: session.entryId,
+        identityId: config.identityId,
+        connectionReason: null,
+        type: config.type,
+        directIdentity: config.directIdentity,
         tabId,
         browserId,
-        config.scriptId,
-        config.startPath || null,
+        displayDpi: config.displayDpi,
+        scriptId: config.scriptId,
+        startPath: config.startPath || null,
         ipAddress,
-        userAgent
-    );
+        userAgent,
+    });
 };
 
 const pasteIdentityPassword = async (accountId, sessionId, ipAddress = null, userAgent = null, requestedIdentityId = null) => {
