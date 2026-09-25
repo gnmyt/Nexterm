@@ -29,7 +29,7 @@
     "flatbuffers": "^25.9.23",
     "joi": "^18.2.9",
     "js-yaml": "^5.4.1",
-    "ldapts": "^9.0.0",
+    "ldapts": "^9.2.0",
     "mysql2": "^3.24.4",
     "openid-client": "^6.8.8",
     "selfsigned": "^5.5.0",
