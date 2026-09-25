@@ -13,6 +13,7 @@ const PATH_TO_GROUP = {
     "terminal.cursorStyle": "terminal.cursor", "terminal.cursorBlink": "terminal.cursor",
     "terminal.copyPasteBehavior": "terminal.input",
     "terminal.passwordPromptDetection": "terminal.input",
+    "terminal.autoReconnect": "terminal.input",
     "terminal.theme": "terminal.theme",
     "theme.mode": "appearance", "theme.accentColor": "appearance", "theme.uiScale": "appearance",
     "files.showThumbnails": "files", "files.defaultViewMode": "files", "files.showHiddenFiles": "files",
@@ -466,6 +467,7 @@ export const PreferencesProvider = ({ children, user, refreshUser }) => {
     const storedCopyPasteBehavior = get("terminal.copyPasteBehavior", smartCopyPaste ? "smart" : "none");
     const copyPasteBehavior = storedCopyPasteBehavior === "shift" ? "keyboard" : storedCopyPasteBehavior;
     const passwordPromptDetection = get("terminal.passwordPromptDetection", true);
+    const autoReconnect = get("terminal.autoReconnect", true);
 
     const getTerminalTheme = useCallback((theme) => {
         const baseTheme = DEFAULT_TERMINAL_THEMES[theme] || DEFAULT_TERMINAL_THEMES.default;
@@ -502,6 +504,7 @@ export const PreferencesProvider = ({ children, user, refreshUser }) => {
     const setCursorBlink = useCallback((blink) => set("terminal.cursorBlink", blink), [set]);
     const setCopyPasteBehavior = useCallback((behavior) => set("terminal.copyPasteBehavior", behavior), [set]);
     const setPasswordPromptDetection = useCallback((enabled) => set("terminal.passwordPromptDetection", enabled), [set]);
+    const setAutoReconnect = useCallback((enabled) => set("terminal.autoReconnect", enabled), [set]);
 
     const showThumbnails = get("files.showThumbnails", true);
     const defaultViewMode = get("files.defaultViewMode", "list");
@@ -537,6 +540,7 @@ export const PreferencesProvider = ({ children, user, refreshUser }) => {
             cursorStyle, setCursorStyle, cursorBlink, setCursorBlink,
             copyPasteBehavior, setCopyPasteBehavior,
             passwordPromptDetection, setPasswordPromptDetection,
+            autoReconnect, setAutoReconnect,
             getCurrentTheme, getTerminalTheme, getAvailableThemes, getAvailableFonts, getCursorStyles,
             isOledMode: themeMode === "oled",
             showThumbnails, setShowThumbnails, toggleThumbnails,

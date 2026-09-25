@@ -32,7 +32,7 @@ const MAX_ZOOM_FONT_SIZE = 40;
 
 const clampFontSize = (size) => Math.min(MAX_ZOOM_FONT_SIZE, Math.max(MIN_ZOOM_FONT_SIZE, size));
 
-const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getSessionError, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false, onOpenSftp }) => {
+const XtermRenderer = ({ session, disconnectFromServer, reconnectSession, reconnectNow, markSessionConnected, reconnectInfo, markSessionErrored, getSessionError, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false, onOpenSftp }) => {
     const ref = useRef(null);
     const termRef = useRef(null);
     const wsRef = useRef(null);
@@ -42,6 +42,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     const onBroadcastToggleRef = useRef(onBroadcastToggle);
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
     const connectionLoaderRef = useRef(null);
+    const hasNotifiedConnectedRef = useRef(false);
     const copyPasteBehaviorRef = useRef("smart");
     const zoomOffsetRef = useRef(0);
 
@@ -640,6 +641,11 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
 
             connectionLoaderRef.current?.hide();
 
+            if (!hasNotifiedConnectedRef.current) {
+                hasNotifiedConnectedRef.current = true;
+                markSessionConnected?.(session.id);
+            }
+
             if (data.startsWith("\x02")) {
                 const prompt = data.substring(1);
                 term.write(prompt);
@@ -882,7 +888,9 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         <div className="xterm-container" onMouseDownCapture={handleMouseDown} onContextMenuCapture={handleContextMenu}>
             <ConnectionLoader onReady={(loader) => { connectionLoaderRef.current = loader; }} />
             {connectionError && (
-                <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)} />
+                <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)}
+                                 onReconnect={() => (reconnectNow || reconnectSession)?.(session.id)}
+                                 reconnectInfo={reconnectInfo} />
             )}
             <div ref={ref} className="xterm-wrapper" />
             <TypingIndicators anchor={cursorAnchor} participants={typingParticipants} />

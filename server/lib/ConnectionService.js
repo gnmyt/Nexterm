@@ -271,12 +271,15 @@ const createSSHConnectionForSession = async (sessionId, entry, identity, organiz
         dataSocket.on("data", (data) => SessionManager.appendLog(sessionId, data.toString()));
         dataSocket.on("close", () => {
             logger.info("SSH data connection closed", { sessionId });
-            SessionManager.remove(sessionId);
+            if (!SessionManager.get(sessionId)?._removing) {
+                SessionManager.markFailed(sessionId, "Connection lost");
+                SessionManager.remove(sessionId, { code: 4017, reason: "Connection lost" });
+            }
         });
         dataSocket.on("error", (err) => {
             logger.error("SSH data socket error", { sessionId, error: err.message });
             SessionManager.markFailed(sessionId, err.message);
-            SessionManager.remove(sessionId, { code: 4017, reason: err.message });
+            SessionManager.remove(sessionId, { code: 4017, reason: "Connection lost" });
         });
 
         let scriptLayer = null;
@@ -326,7 +329,10 @@ const createTelnetConnectionForSession = async (sessionId, entry, organizationId
     dataSocket.on("data", (data) => SessionManager.appendLog(sessionId, data.toString()));
     dataSocket.on("close", () => {
         logger.info("Telnet data connection closed", { sessionId });
-        SessionManager.remove(sessionId);
+        if (!SessionManager.get(sessionId)?._removing) {
+            SessionManager.markFailed(sessionId, "Connection lost");
+            SessionManager.remove(sessionId, { code: 4017, reason: "Connection lost" });
+        }
     });
     dataSocket.on("error", (err) => {
         logger.error("Telnet data socket error", { sessionId, error: err.message });
@@ -387,7 +393,10 @@ const createPveLxcConnectionForSession = async (sessionId, entry, organizationId
 
     dataSocket.on("close", () => {
         clearInterval(keepAliveTimer);
-        SessionManager.remove(sessionId);
+        if (!SessionManager.get(sessionId)?._removing) {
+            SessionManager.markFailed(sessionId, "Connection lost");
+            SessionManager.remove(sessionId, { code: 4017, reason: "Connection lost" });
+        }
     });
 
     dataSocket.on("error", (err) => {

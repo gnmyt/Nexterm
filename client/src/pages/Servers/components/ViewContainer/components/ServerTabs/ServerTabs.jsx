@@ -126,6 +126,7 @@ export const ServerTabs = ({
     activeSessionId,
     closeSession,
     hibernateSession,
+    reconnectSession,
     duplicateSession,
     openNotes,
     layoutMode,
@@ -366,7 +367,7 @@ export const ServerTabs = ({
                          onOpenShortcuts={() => setShowShortcuts(true)}
                          onSplitSession={onSplitSession} onPopOut={popOutSession}
                          onOpenNotes={openNotes} onDuplicate={duplicateSession}
-                         onHibernate={hibernateSession} onCloseSession={closeSession} />
+                         onHibernate={hibernateSession} onReconnect={reconnectSession} onCloseSession={closeSession} />
 
             <SnippetsMenu visible={showSnippets} onClose={() => setShowSnippets(false)}
                           onSelect={handleSnippetSelect} activeSession={activeSession} />

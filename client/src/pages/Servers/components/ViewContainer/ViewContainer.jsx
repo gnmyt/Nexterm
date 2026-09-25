@@ -24,11 +24,15 @@ export const ViewContainer = ({
                                   setActiveSessionId,
                                   disconnectFromServer,
                                   closeSession,
+                                  reconnectSession,
                                   hibernateSession,
                                   duplicateSession,
                                   openNotes,
                                   markSessionErrored,
                                   getSessionError,
+                                  markSessionConnected,
+                                  reconnectNow,
+                                  reconnectStates,
                                   setOpenFileEditors,
                                   openTerminalFromFileManager,
                                   sessionLayout,
@@ -351,6 +355,7 @@ export const ViewContainer = ({
             return <ScriptRenderer
                 session={session}
                 disconnectFromServer={disconnectFromServer}
+                reconnectSession={reconnectSession}
                 markSessionErrored={markSessionErrored}
                 getSessionError={getSessionError}
                 updateProgress={updateSessionProgress}
@@ -363,6 +368,10 @@ export const ViewContainer = ({
         switch (renderer) {
             case "guac":
                 return <GuacamoleRenderer session={session} disconnectFromServer={disconnectFromServer}
+                                          reconnectSession={reconnectSession}
+                                          reconnectNow={reconnectNow}
+                                          markSessionConnected={markSessionConnected}
+                                          reconnectInfo={reconnectStates?.[session.reconnectKey]}
                                           markSessionErrored={markSessionErrored}
                                           getSessionError={getSessionError}
                                           registerGuacamoleRef={registerGuacamoleRef}
@@ -380,6 +389,10 @@ export const ViewContainer = ({
                                         onFullscreenToggle={toggleFullscreenMode} />;
             case "terminal":
                 return <XtermRenderer session={session} disconnectFromServer={disconnectFromServer}
+                                      reconnectSession={reconnectSession}
+                                      reconnectNow={reconnectNow}
+                                      markSessionConnected={markSessionConnected}
+                                      reconnectInfo={reconnectStates?.[session.reconnectKey]}
                                       isShared={!!session.isJoined}
                                       markSessionErrored={markSessionErrored}
                                       getSessionError={getSessionError}
@@ -456,7 +469,7 @@ export const ViewContainer = ({
     const serverTabs = (
         <ServerTabs activeSessions={activeSessions} setActiveSessionId={focusSession}
                     activeSessionId={activeSessionId}
-                    closeSession={closeSession}
+                    closeSession={closeSession} reconnectSession={reconnectSession}
                     layoutMode={layoutMode} onToggleSplit={toggleSplitMode}
                     onSplitSession={splitActiveWith}
                     orderRef={tabOrderRef} onBroadcastToggle={toggleBroadcastMode}

@@ -14,12 +14,16 @@ import FilePreviewWindow from "@/common/components/FilePreviewWindow";
 import { useSessionLayout } from "@/pages/Servers/components/ViewContainer/hooks/useSessionLayout.js";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
 import { useLiveSessions } from "@/common/contexts/LiveSessionContext.jsx";
+import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
+import { useAutoReconnect } from "@/common/hooks/useAutoReconnect.js";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { StateStreamContext, STATE_TYPES } from "@/common/contexts/StateStreamContext.jsx";
 import { isTauri } from "@/common/utils/TauriUtil.js";
 import { getTabId, getBrowserId, requiresIdentity, canConnectWithoutPrompt } from "@/common/utils/ConnectionUtil.js";
 import { postRequest, deleteRequest } from "@/common/utils/RequestUtil";
+
+const makeReconnectKey = () => `rk-${crypto.randomUUID()}`;
 
 export const Servers = () => {
 
@@ -42,7 +46,8 @@ export const Servers = () => {
     const { activeSessions, setActiveSessions, activeSessionId, setActiveSessionId, poppedOutSessions } = useActiveSessions();
     const { liveSessions } = useLiveSessions();
     const { getServerById, servers } = useContext(ServerContext);
-    const { registerHandler } = useContext(StateStreamContext);
+    const { registerHandler, isConnected } = useContext(StateStreamContext);
+    const { autoReconnect } = usePreferences();
     const sessionLayout = useSessionLayout();
     const location = useLocation();
     const navigate = useNavigate();
@@ -50,10 +55,12 @@ export const Servers = () => {
     const [hibernatedSessions, setHibernatedSessions] = useState([]);
     const closingSessionsRef = useRef(new Set());
     const erroredSessionsRef = useRef(new Map());
+    const autoReconnectRef = useRef(null);
 
     const markSessionErrored = useCallback((sessionId, message) => {
         if (erroredSessionsRef.current.has(sessionId)) return;
         erroredSessionsRef.current.set(sessionId, message);
+        autoReconnectRef.current?.handleSessionErrored(sessionId);
     }, []);
 
     const getSessionError = useCallback((sessionId) => {
@@ -113,7 +120,10 @@ export const Servers = () => {
             const localOnly = prev.filter(s => s.type === "notes" || s.isJoined);
             const merged = activeMapped.map(newSession => {
                 const existing = prevMap.get(newSession.id);
-                return existing ? { ...newSession, scriptId: existing.scriptId || newSession.scriptId, scriptName: existing.scriptName, osName: newSession.osName || existing.osName } : newSession;
+                const reconnectKey = existing?.reconnectKey || makeReconnectKey();
+                return existing
+                    ? { ...newSession, reconnectKey, scriptId: existing.scriptId || newSession.scriptId, scriptName: existing.scriptName, osName: newSession.osName || existing.osName }
+                    : { ...newSession, reconnectKey };
             });
             const mergedIds = new Set(merged.map(s => s.id));
             const erroredPinned = prev.filter(s =>
@@ -226,7 +236,7 @@ export const Servers = () => {
     };
 
     const performConnection = async (options, connectionReason = null) => {
-        const { server, identity = null, type = null, directIdentity = null, scriptId = null, scriptName = null, placement = null } = options;
+        const { server, identity = null, type = null, directIdentity = null, scriptId = null, scriptName = null, placement = null, replaceSessionId = null } = options;
         try {
             const payload = {
                 entryId: server.id,
@@ -245,6 +255,10 @@ export const Servers = () => {
             const organization = findOrganizationForServer(server.id, servers);
             const organizationId = organization ? parseInt(organization.id.split("-")[1]) : null;
 
+            const reconnectKey = (replaceSessionId
+                ? activeSessions.find(s => s.id === replaceSessionId)?.reconnectKey
+                : null) || makeReconnectKey();
+
             const sessionData = {
                 server,
                 identity: identity?.id,
@@ -254,27 +268,47 @@ export const Servers = () => {
                 organizationName: organization?.name || null,
                 scriptId: scriptId || undefined,
                 scriptName: scriptName || undefined,
+                reconnectKey,
             };
 
             sessionLayout.placeSession(session.sessionId, placement);
-            setActiveSessions(prevSessions => [...prevSessions, sessionData]);
+            if (replaceSessionId) {
+                closingSessionsRef.current.add(replaceSessionId);
+                erroredSessionsRef.current.delete(replaceSessionId);
+                sessionLayout.replaceSession(replaceSessionId, session.sessionId);
+                deleteRequest(`/connections/${replaceSessionId}`).catch(error => {
+                    console.debug("Old session deletion request failed:", error);
+                });
+                setActiveSessions(prevSessions => {
+                    const idx = prevSessions.findIndex(s => s.id === replaceSessionId);
+                    if (idx === -1) return [...prevSessions, sessionData];
+                    const next = [...prevSessions];
+                    next.splice(idx, 1, sessionData);
+                    return next;
+                });
+            } else {
+                setActiveSessions(prevSessions => [...prevSessions, sessionData]);
+            }
             setActiveSessionId(session.sessionId);
+            return true;
         } catch (error) {
             console.error("Failed to create session", error);
+            return false;
         }
     };
 
-    const initiateConnection = (options) => {
-        if (!options.server) return;
+    const initiateConnection = async (options) => {
+        if (!options.server) return { connected: false, deferred: true };
 
         const requiresReason = checkConnectionReasonRequired(options.server.id, servers);
         if (requiresReason) {
             setPendingConnection(options);
             setConnectionReasonDialogOpen(true);
-            return;
+            return { connected: false, deferred: true };
         }
 
-        void performConnection(options);
+        const connected = await performConnection(options);
+        return { connected, deferred: false };
     };
 
     const runScript = async (serverId, identityId, scriptId) => {
@@ -335,6 +369,31 @@ export const Servers = () => {
         }
         disconnectFromServer(sessionId);
     };
+
+    const reconnectSession = async (sessionId) => {
+        const session = activeSessions.find(s => s.id === sessionId);
+        if (!session || session.type === "notes" || session.isJoined) return { connected: false, deferred: true };
+
+        return await initiateConnection({
+            server: session.server,
+            identity: session.identity ? { id: session.identity } : null,
+            type: session.type ?? null,
+            scriptId: session.scriptId ?? null,
+            scriptName: session.scriptName ?? null,
+            replaceSessionId: sessionId,
+        });
+    };
+
+    const autoReconnectApi = useAutoReconnect({
+        activeSessions,
+        reconnectSession,
+        getSessionError,
+        enabled: autoReconnect,
+        serverConnected: isConnected,
+    });
+    useEffect(() => {
+        autoReconnectRef.current = autoReconnectApi;
+    });
 
     const openNotes = (serverId) => {
         const server = getServerById(serverId);
@@ -557,12 +616,15 @@ export const Servers = () => {
             }
             {visibleSessions.length > 0 &&
                 <ViewContainer activeSessions={visibleSessions} disconnectFromServer={disconnectFromServer}
-                               closeSession={closeSession}
+                               closeSession={closeSession} reconnectSession={reconnectSession}
                                activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                hibernateSession={hibernateSession} duplicateSession={duplicateSession}
                                openNotes={openNotes}
                                markSessionErrored={markSessionErrored}
                                getSessionError={getSessionError}
+                               markSessionConnected={autoReconnectApi.markSessionConnected}
+                               reconnectNow={autoReconnectApi.reconnectNow}
+                               reconnectStates={autoReconnectApi.reconnectStates}
                                setOpenFileEditors={setOpenFileEditors}
                                openTerminalFromFileManager={openTerminalFromFileManager}
                                sessionLayout={sessionLayout}

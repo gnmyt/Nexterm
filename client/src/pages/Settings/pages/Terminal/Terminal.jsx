@@ -17,6 +17,7 @@ export const Terminal = () => {
         fontSize, setFontSize, cursorStyle, setCursorStyle, cursorBlink, setCursorBlink,
         copyPasteBehavior, setCopyPasteBehavior,
         passwordPromptDetection, setPasswordPromptDetection,
+        autoReconnect, setAutoReconnect,
         getAvailableThemes, getAvailableFonts, getTerminalTheme, getCursorStyles,
         isGroupSynced, toggleGroupSync,
     } = usePreferences();
@@ -139,6 +140,7 @@ export const Terminal = () => {
                 <div className="input-settings">
                     {renderFontOption(t("settings.terminal.input.copyPasteBehavior"), copyPasteBehaviorOptions, copyPasteBehavior, setCopyPasteBehavior)}
                     {renderFontOption(t("settings.terminal.input.passwordPromptDetection"), toggleOptions, passwordPromptDetection.toString(), (value) => setPasswordPromptDetection(value === "true"))}
+                    {renderFontOption(t("settings.terminal.input.autoReconnect"), toggleOptions, autoReconnect.toString(), (value) => setAutoReconnect(value === "true"))}
                 </div>
             ))}
 
