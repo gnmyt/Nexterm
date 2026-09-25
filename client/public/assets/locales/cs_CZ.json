@@ -186,6 +186,11 @@
       "connection": {
         "title": "Připojení se nezdařilo",
         "close": "Zavřít kartu",
+        "reconnect": "Reconnect",
+        "reconnectNow": "Reconnect",
+        "reconnecting": "Reconnecting…",
+        "reconnectingIn": "Reconnecting in {{seconds}}s",
+        "reconnectAttempt": "attempt {{count}} of {{max}}",
         "hostUnreachable": "Vzdálený hostitel je nedostupný",
         "refused": "Připojení odmítnuto vzdáleným hostitelem",
         "timeout": "Připojení vypršelo",
@@ -903,7 +908,11 @@
         },
         "copy": {
           "title": "Kopírovat",
-          "description": "Kopírovat vybraný text do schránky"
+          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+        },
+        "paste": {
+          "title": "Paste",
+          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
         },
         "fullscreen": {
           "title": "Celá obrazovka",
@@ -918,6 +927,7 @@
         "pressKeys": "Stiskněte klávesy...",
         "save": "Uložit",
         "cancel": "Zrušit",
+        "disabled": "Disabled",
         "reset": "Obnovit"
       },
       "messages": {
@@ -953,8 +963,19 @@
       "input": {
         "title": "Vstup",
         "description": "Nastavte chování klávesových zkratek v terminálu.",
-        "smartCopyPaste": "Chytré Ctrl+C",
+        "copyPasteBehavior": "Copy/Paste Behavior",
+        "copyPasteBehaviorNone": "None",
+        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
+        "copyPasteBehaviorSmart": "Smart Ctrl+C",
+        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
+        "copyPasteBehaviorKeyboard": "Keyboard",
+        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
+        "copyPasteBehaviorMouse": "Mouse",
+        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
+        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
+        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
         "passwordPromptDetection": "Detekce zadávání hesla",
+        "autoReconnect": "Auto-reconnect",
         "enabled": "Zapnuto",
         "disabled": "Znevýhodnění",
         "syncEnabled": "Nastavení vstupů se nyní synchronizují s vaším účtem",
@@ -1571,6 +1592,7 @@
       "connect": "Připojit",
       "quickConnect": "Rychlé připojení",
       "openSFTP": "Otevřít SFTP",
+      "openBrowser": "Open Browser",
       "forwardPort": "Přesměrovat port",
       "runScript": "Spustit skript",
       "openNotes": "Otevřené poznámky",
@@ -1607,8 +1629,17 @@
         "duplicate": "Duplikát",
         "openNotes": "Otevřené poznámky",
         "hibernateSession": "Hibernace",
-        "closeSession": "Odpojení"
-      }
+        "reconnect": "Reconnect",
+        "closeSession": "Odpojení",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "Magic packet odeslán na {{name}}",
@@ -1961,6 +1992,14 @@
         "error": "Došlo k chybě"
       }
     },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
+    },
     "remoteDesktop": {
       "dropOverlay": "Přetáhněte soubory, které chcete nahrát na vzdálený server",
       "toast": {
@@ -2025,7 +2064,7 @@
       "holdModifier": "Podržte {{key}}",
       "zoomIn": "Přiblížit",
       "zoomOut": "Zmenšit zobrazení",
-      "zoomReset": "Obnovit přizpůsobení velikosti (posunem pomocí prostředního tlačítka myši)"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "Monitor {{number}}",

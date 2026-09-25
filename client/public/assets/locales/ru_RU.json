@@ -186,6 +186,11 @@
       "connection": {
         "title": "Не удалось установить соединение",
         "close": "Закрыть вкладку",
+        "reconnect": "Reconnect",
+        "reconnectNow": "Reconnect",
+        "reconnecting": "Reconnecting…",
+        "reconnectingIn": "Reconnecting in {{seconds}}s",
+        "reconnectAttempt": "attempt {{count}} of {{max}}",
         "hostUnreachable": "Удаленный хост недоступен",
         "refused": "Удаленный хост отказал в подключении",
         "timeout": "Соединение прервалось по таймеру",
@@ -903,7 +908,11 @@
         },
         "copy": {
           "title": "Копировать",
-          "description": "Скопировать выделенный текст в буфер"
+          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+        },
+        "paste": {
+          "title": "Paste",
+          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
         },
         "fullscreen": {
           "title": "Полный экран",
@@ -918,6 +927,7 @@
         "pressKeys": "Нажмите клавиши...",
         "save": "Сохранить",
         "cancel": "Отмена",
+        "disabled": "Disabled",
         "reset": "Сбросить"
       },
       "messages": {
@@ -953,8 +963,19 @@
       "input": {
         "title": "Ввод",
         "description": "Настрой поведение горячих клавиш в терминале.",
-        "smartCopyPaste": "Умное Ctrl+C",
+        "copyPasteBehavior": "Copy/Paste Behavior",
+        "copyPasteBehaviorNone": "None",
+        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
+        "copyPasteBehaviorSmart": "Smart Ctrl+C",
+        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
+        "copyPasteBehaviorKeyboard": "Keyboard",
+        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
+        "copyPasteBehaviorMouse": "Mouse",
+        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
+        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
+        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
         "passwordPromptDetection": "Обнаружение ввода пароля",
+        "autoReconnect": "Auto-reconnect",
         "enabled": "Включено",
         "disabled": "Отключено",
         "syncEnabled": "Настройки ввода теперь будут синхронизироваться с твоей учетной записью",
@@ -1571,6 +1592,7 @@
       "connect": "Подключиться",
       "quickConnect": "Быстрое подключение",
       "openSFTP": "Открыть SFTP",
+      "openBrowser": "Open Browser",
       "forwardPort": "Передовой порт",
       "runScript": "Запустить скрипт",
       "openNotes": "Открытые заметки",
@@ -1607,8 +1629,17 @@
         "duplicate": "Дублировать",
         "openNotes": "Открытые заметки",
         "hibernateSession": "Гибернация",
-        "closeSession": "Отключиться"
-      }
+        "reconnect": "Reconnect",
+        "closeSession": "Отключиться",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "Волшебный пакет, отправленный на {{name}}",
@@ -1961,6 +1992,14 @@
         "error": "Произошла ошибка"
       }
     },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
+    },
     "remoteDesktop": {
       "dropOverlay": "Перетащи файлы, чтобы загрузить их на удаленный сервер",
       "toast": {
@@ -2025,7 +2064,7 @@
       "holdModifier": "Подожди {{key}}",
       "zoomIn": "Увеличить",
       "zoomOut": "Уменьшить масштаб",
-      "zoomReset": "Сбросить масштаб до полного экрана (перетаскивай, удерживая среднюю кнопку мыши, чтобы перемещаться по изображению)"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "Монитор {{number}}",

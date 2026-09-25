@@ -186,6 +186,11 @@
       "connection": {
         "title": "فشل الاتصال",
         "close": "علامة تبويب الإغلاق",
+        "reconnect": "Reconnect",
+        "reconnectNow": "Reconnect",
+        "reconnecting": "Reconnecting…",
+        "reconnectingIn": "Reconnecting in {{seconds}}s",
+        "reconnectAttempt": "attempt {{count}} of {{max}}",
         "hostUnreachable": "يتعذر الوصول إلى المضيف البعيد",
         "refused": "تم رفض الاتصال من قبل المضيف البعيد",
         "timeout": "انتهت مهلة الاتصال",
@@ -903,7 +908,11 @@
         },
         "copy": {
           "title": "نسخ",
-          "description": "نسخ النص المحدد إلى الحافظة"
+          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+        },
+        "paste": {
+          "title": "Paste",
+          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
         },
         "fullscreen": {
           "title": "ملء الشاشة الكاملة",
@@ -918,6 +927,7 @@
         "pressKeys": "اضغط على المفاتيح...",
         "save": "الحفظ",
         "cancel": "إلغاء",
+        "disabled": "Disabled",
         "reset": "إعادة تعيين"
       },
       "messages": {
@@ -953,8 +963,19 @@
       "input": {
         "title": "الإدخال",
         "description": "تحكم في طريقة عمل اختصارات لوحة المفاتيح داخل المحطة الطرفية.",
-        "smartCopyPaste": "Ctrl+C الذكي",
+        "copyPasteBehavior": "Copy/Paste Behavior",
+        "copyPasteBehaviorNone": "None",
+        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
+        "copyPasteBehaviorSmart": "Smart Ctrl+C",
+        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
+        "copyPasteBehaviorKeyboard": "Keyboard",
+        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
+        "copyPasteBehaviorMouse": "Mouse",
+        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
+        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
+        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
         "passwordPromptDetection": "الكشف عن إدخال كلمة المرور",
+        "autoReconnect": "Auto-reconnect",
         "enabled": "ممكّن",
         "disabled": "ذوو الإعاقة",
         "syncEnabled": "ستتم الآن مزامنة إعدادات الإدخال مع حسابك",
@@ -1571,6 +1592,7 @@
       "connect": "الاتصال",
       "quickConnect": "التوصيل السريع",
       "openSFTP": "فتح SFTP",
+      "openBrowser": "Open Browser",
       "forwardPort": "المنفذ الأمامي",
       "runScript": "تشغيل البرنامج النصي",
       "openNotes": "فتح الملاحظات",
@@ -1607,8 +1629,17 @@
         "duplicate": "مكررة",
         "openNotes": "فتح الملاحظات",
         "hibernateSession": "السبات",
-        "closeSession": "قطع الاتصال"
-      }
+        "reconnect": "Reconnect",
+        "closeSession": "قطع الاتصال",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "الحزمة السحرية المرسلة إلى {{name}}",
@@ -1961,6 +1992,14 @@
         "error": "حدث خطأ"
       }
     },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
+    },
     "remoteDesktop": {
       "dropOverlay": "اسحب الملفات لتحميلها إلى الخادم البعيد",
       "toast": {
@@ -2025,7 +2064,7 @@
       "holdModifier": "انتظر {{key}}",
       "zoomIn": "تكبير الصورة",
       "zoomOut": "تصغير العرض",
-      "zoomReset": "إعادة ضبط التكبير/التصغير لملء الشاشة (اسحب باستخدام زر الفأرة الأوسط للتحريك)"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "شاشة {{number}}",

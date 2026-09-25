@@ -186,6 +186,11 @@
       "connection": {
         "title": "连接失败",
         "close": "关闭选项卡",
+        "reconnect": "Reconnect",
+        "reconnectNow": "Reconnect",
+        "reconnecting": "Reconnecting…",
+        "reconnectingIn": "Reconnecting in {{seconds}}s",
+        "reconnectAttempt": "attempt {{count}} of {{max}}",
         "hostUnreachable": "远程主机无法连接",
         "refused": "远程主机拒绝连接",
         "timeout": "连接超时",
@@ -903,7 +908,11 @@
         },
         "copy": {
           "title": "复制",
-          "description": "将选中文本复制到剪贴板"
+          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+        },
+        "paste": {
+          "title": "Paste",
+          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
         },
         "fullscreen": {
           "title": "全屏",
@@ -918,6 +927,7 @@
         "pressKeys": "按下按键...",
         "save": "保存",
         "cancel": "取消",
+        "disabled": "Disabled",
         "reset": "重置"
       },
       "messages": {
@@ -953,8 +963,19 @@
       "input": {
         "title": "输入",
         "description": "控制键盘快捷键在终端中的行为。",
-        "smartCopyPaste": "智能 Ctrl+C",
+        "copyPasteBehavior": "Copy/Paste Behavior",
+        "copyPasteBehaviorNone": "None",
+        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
+        "copyPasteBehaviorSmart": "Smart Ctrl+C",
+        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
+        "copyPasteBehaviorKeyboard": "Keyboard",
+        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
+        "copyPasteBehaviorMouse": "Mouse",
+        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
+        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
+        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
         "passwordPromptDetection": "密码输入检测",
+        "autoReconnect": "Auto-reconnect",
         "enabled": "已启用",
         "disabled": "已禁用",
         "syncEnabled": "输入设置现已同步到您的账户",
@@ -1571,6 +1592,7 @@
       "connect": "连接",
       "quickConnect": "快速连接",
       "openSFTP": "打开 SFTP",
+      "openBrowser": "Open Browser",
       "forwardPort": "转发端口",
       "runScript": "运行脚本",
       "openNotes": "公开说明",
@@ -1607,8 +1629,17 @@
         "duplicate": "复制",
         "openNotes": "公开说明",
         "hibernateSession": "休眠",
-        "closeSession": "断开连接"
-      }
+        "reconnect": "Reconnect",
+        "closeSession": "断开连接",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "魔法数据包发送至 {{name}}",
@@ -1961,6 +1992,14 @@
         "error": "发生错误"
       }
     },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
+    },
     "remoteDesktop": {
       "dropOverlay": "将文件拖放到此处以上传至远程服务器",
       "toast": {
@@ -2025,7 +2064,7 @@
       "holdModifier": "保持 {{key}}",
       "zoomIn": "放大",
       "zoomOut": "缩小",
-      "zoomReset": "将缩放比例重置为“适应视图”（按住鼠标中键拖动可平移）"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "显示器 {{number}}",

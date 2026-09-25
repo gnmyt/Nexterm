@@ -186,6 +186,11 @@
       "connection": {
         "title": "Falha na conexão",
         "close": "Fechar a guia",
+        "reconnect": "Reconnect",
+        "reconnectNow": "Reconnect",
+        "reconnecting": "Reconnecting…",
+        "reconnectingIn": "Reconnecting in {{seconds}}s",
+        "reconnectAttempt": "attempt {{count}} of {{max}}",
         "hostUnreachable": "O host remoto não pode ser acessado",
         "refused": "Conexão recusada pelo host remoto",
         "timeout": "O tempo de conexão expirou",
@@ -903,7 +908,11 @@
         },
         "copy": {
           "title": "Copiar",
-          "description": "Copiar texto selecionado para a área de transferência"
+          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+        },
+        "paste": {
+          "title": "Paste",
+          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
         },
         "fullscreen": {
           "title": "Tela Cheia",
@@ -918,6 +927,7 @@
         "pressKeys": "Pressione as teclas...",
         "save": "Salvar",
         "cancel": "Cancelar",
+        "disabled": "Disabled",
         "reset": "Redefinir"
       },
       "messages": {
@@ -953,8 +963,19 @@
       "input": {
         "title": "Entrada",
         "description": "Controle como os atalhos de teclado funcionam dentro do terminal.",
-        "smartCopyPaste": "Ctrl+C inteligente",
+        "copyPasteBehavior": "Copy/Paste Behavior",
+        "copyPasteBehaviorNone": "None",
+        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
+        "copyPasteBehaviorSmart": "Smart Ctrl+C",
+        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
+        "copyPasteBehaviorKeyboard": "Keyboard",
+        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
+        "copyPasteBehaviorMouse": "Mouse",
+        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
+        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
+        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
         "passwordPromptDetection": "Detecção de digitação de senha",
+        "autoReconnect": "Auto-reconnect",
         "enabled": "Ativado",
         "disabled": "Desativado",
         "syncEnabled": "As configurações de entrada agora vão ser sincronizadas com a sua conta",
@@ -1571,6 +1592,7 @@
       "connect": "Conectar",
       "quickConnect": "Conexão Rápida",
       "openSFTP": "Abrir SFTP",
+      "openBrowser": "Open Browser",
       "forwardPort": "Tunelar Porta",
       "runScript": "Executar Script",
       "openNotes": "Notas abertas",
@@ -1607,8 +1629,17 @@
         "duplicate": "Duplicar",
         "openNotes": "Notas abertas",
         "hibernateSession": "Hibernar",
-        "closeSession": "Desconectar"
-      }
+        "reconnect": "Reconnect",
+        "closeSession": "Desconectar",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "Pacote mágico enviado para {{name}}",
@@ -1961,6 +1992,14 @@
         "error": "Ocorreu um erro"
       }
     },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
+    },
     "remoteDesktop": {
       "dropOverlay": "Arraste os arquivos para fazer o upload para o servidor remoto",
       "toast": {
@@ -2025,7 +2064,7 @@
       "holdModifier": "Aguarda {{key}}",
       "zoomIn": "Ampliar",
       "zoomOut": "Amenizar o zoom",
-      "zoomReset": "Redefinir o zoom para ajustar à tela (arraste com o botão do meio do mouse para deslocar a imagem)"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "Monitor {{number}}",
