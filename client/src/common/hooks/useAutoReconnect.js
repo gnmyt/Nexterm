@@ -60,7 +60,8 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
         lastReconnectByKey.current.set(key, now);
         try {
             const result = await reconnectSessionRef.current?.(sessionId);
-            return result === null ? null : Boolean(result);
+            if (result?.deferred) return null;
+            return result?.connected === true;
         } catch {
             return false;
         }

@@ -23,8 +23,7 @@ import { isTauri } from "@/common/utils/TauriUtil.js";
 import { getTabId, getBrowserId, requiresIdentity, canConnectWithoutPrompt } from "@/common/utils/ConnectionUtil.js";
 import { postRequest, deleteRequest } from "@/common/utils/RequestUtil";
 
-let reconnectKeySeq = 0;
-const makeReconnectKey = () => `rk-${Date.now().toString(36)}-${(reconnectKeySeq++).toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+const makeReconnectKey = () => `rk-${crypto.randomUUID()}`;
 
 export const Servers = () => {
 
@@ -298,17 +297,18 @@ export const Servers = () => {
         }
     };
 
-    const initiateConnection = (options) => {
-        if (!options.server) return false;
+    const initiateConnection = async (options) => {
+        if (!options.server) return { connected: false, deferred: true };
 
         const requiresReason = checkConnectionReasonRequired(options.server.id, servers);
         if (requiresReason) {
             setPendingConnection(options);
             setConnectionReasonDialogOpen(true);
-            return null;
+            return { connected: false, deferred: true };
         }
 
-        return performConnection(options);
+        const connected = await performConnection(options);
+        return { connected, deferred: false };
     };
 
     const runScript = async (serverId, identityId, scriptId) => {
@@ -370,11 +370,11 @@ export const Servers = () => {
         disconnectFromServer(sessionId);
     };
 
-    const reconnectSession = (sessionId) => {
+    const reconnectSession = async (sessionId) => {
         const session = activeSessions.find(s => s.id === sessionId);
-        if (!session || session.type === "notes" || session.isJoined) return false;
+        if (!session || session.type === "notes" || session.isJoined) return { connected: false, deferred: true };
 
-        return initiateConnection({
+        return await initiateConnection({
             server: session.server,
             identity: session.identity ? { id: session.identity } : null,
             type: session.type ?? null,
