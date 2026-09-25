@@ -22,6 +22,7 @@ const filesSchema = Joi.object({
     showThumbnails: Joi.boolean(),
     defaultViewMode: Joi.string().valid('list', 'grid'),
     showHiddenFiles: Joi.boolean(),
+    dimHiddenFiles: Joi.boolean(),
     confirmBeforeDelete: Joi.boolean(),
     dragDropAction: Joi.string().valid('ask', 'copy', 'move'),
 }).unknown(false);

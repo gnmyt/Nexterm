@@ -24,7 +24,7 @@ export const FileList = forwardRef(({
     capabilities = { shell: true, terminal: true },
 }, ref) => {
     const { t } = useTranslation();
-    const { showThumbnails, showHiddenFiles, confirmBeforeDelete, dragDropAction } = usePreferences();
+    const { showThumbnails, showHiddenFiles, dimHiddenFiles, confirmBeforeDelete, dragDropAction } = usePreferences();
     
     const [selectedItem, setSelectedItem] = useState(null);
     const [renamingItem, setRenamingItem] = useState(null);
@@ -251,6 +251,7 @@ export const FileList = forwardRef(({
                             isBeingDragged={draggedItems.some(d => d.name === item.name)}
                             isDropTarget={dropTarget === item.name}
                             isCut={isItemCut(`${path}/${item.name}`)}
+                            isDimmed={dimHiddenFiles && item.name.startsWith(".")}
                             showThumbnails={showThumbnails}
                             highlight={query}
                             renameValue={renameValue}
