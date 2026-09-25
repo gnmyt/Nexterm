@@ -388,8 +388,8 @@ export const ActionBar = ({
                 <Icon path={mdiRefresh} onClick={refreshFiles} title={t("servers.fileManager.actionBar.refresh")} />
                 <Icon path={mdiFileUpload} onClick={uploadFile} title={t("servers.fileManager.actionBar.uploadFile")} />
                 <Icon path={mdiFolderUpload} onClick={uploadFolder} title={t("servers.fileManager.actionBar.uploadFolder")} />
-                <Icon path={mdiFilePlus} onClick={createFile} />
-                <Icon path={mdiFolderPlus} onClick={createFolder} />
+                <Icon path={mdiFilePlus} onClick={createFile} title={t("servers.fileManager.actionBar.createFile")} />
+                <Icon path={mdiFolderPlus} onClick={createFolder} title={t("servers.fileManager.actionBar.createFolder")} />
             </div>
 
             <ContextMenu isOpen={dropMenu.isOpen} position={dropMenu.position} onClose={() => { dropMenu.close(); setPendingDrop(null); }}>
