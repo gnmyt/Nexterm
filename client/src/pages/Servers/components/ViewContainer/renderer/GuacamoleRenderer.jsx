@@ -342,26 +342,46 @@ const GuacamoleRenderer = ({
     }, [session.id, ownsSession]);
 
     const beginRemoteClipboardCopy = () => {
-        remoteClipboardCopyRef.current?.complete(null);
+        remoteClipboardCopyRef.current?.cancel();
 
         let resolve;
         const copy = {
             promise: new Promise((done) => resolve = done),
             timeout: null,
+            expiry: null,
+            settled: false,
             complete: null,
+            cancel: null,
         };
         copy.complete = (text) => {
-            if (!copy.timeout) return;
+            if (copy.settled) return;
+            copy.settled = true;
             clearTimeout(copy.timeout);
             copy.timeout = null;
-            if (remoteClipboardCopyRef.current === copy) remoteClipboardCopyRef.current = null;
             resolve(text);
+            if (text === null) {
+                if (remoteClipboardCopyRef.current === copy) remoteClipboardCopyRef.current = null;
+                return;
+            }
+            copy.expiry = setTimeout(() => {
+                if (remoteClipboardCopyRef.current === copy) remoteClipboardCopyRef.current = null;
+            }, REMOTE_CLIPBOARD_TIMEOUT);
+        };
+        copy.cancel = () => {
+            clearTimeout(copy.timeout);
+            clearTimeout(copy.expiry);
+            if (!copy.settled) copy.complete(null);
+            if (remoteClipboardCopyRef.current === copy) remoteClipboardCopyRef.current = null;
         };
         copy.timeout = setTimeout(() => copy.complete(null), REMOTE_CLIPBOARD_TIMEOUT);
         remoteClipboardCopyRef.current = copy;
+        return copy;
     };
 
-    const completeRemoteClipboardCopy = (text) => remoteClipboardCopyRef.current?.complete(text);
+    const completeRemoteClipboardCopy = (text) => {
+        if (text === clipboardSyncRef.current?.text) return;
+        remoteClipboardCopyRef.current?.complete(text);
+    };
 
     const sendClipboardToServer = (text) => {
         const current = clipboardSyncRef.current;
@@ -574,6 +594,7 @@ const GuacamoleRenderer = ({
             e.preventDefault();
             if (pendingRemoteCopy) {
                 const remoteText = await pendingRemoteCopy.promise;
+                if (remoteClipboardCopyRef.current === pendingRemoteCopy) pendingRemoteCopy.cancel();
                 if (remoteText !== null) text = remoteText;
             }
             if (text) {
@@ -599,18 +620,18 @@ const GuacamoleRenderer = ({
                 clipboardIntervalRef.current = null;
             }
             clipboardSyncRef.current?.complete();
-            remoteClipboardCopyRef.current?.complete(null);
+            remoteClipboardCopyRef.current?.cancel();
         };
     };
 
+    const canConnect = () => {
+        if (getSessionError?.(session.id) || clientRef.current) return false;
+        const credential = session.joinSessionId ? sessionToken : isShared ? session.shareId : sessionToken;
+        return Boolean(credential);
+    };
+
     const connect = () => {
-        if (getSessionError?.(session.id)) return;
-        if (clientRef.current) return;
-        if (session.joinSessionId) {
-            if (!sessionToken) return;
-        } else if (isShared) {
-            if (!session.shareId) return;
-        } else if (!sessionToken) return;
+        if (!canConnect()) return;
         let isCleaningUp = false;
         const tunnelUrl = getWebSocketUrl("/api/ws/guac/", {});
         const tunnel = new Guacamole.WebSocketTunnel(tunnelUrl);
@@ -720,46 +741,62 @@ const GuacamoleRenderer = ({
             client.sendKeyEvent(1, keysym);
             client.sendKeyEvent(0, keysym);
         };
+        const interceptMacMetaKey = (e) => {
+            if (e.key !== "Meta") return false;
+            if (!e.repeat) macCommandRef.current = { active: true, forwarded: false, handled: false };
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            return true;
+        };
+        const interceptMacRdpShortcut = (e, key) => {
+            const command = macCommandRef.current;
+            if (!command.active || command.forwarded || !MACOS_RDP_SHORTCUTS.has(key) || e.ctrlKey || e.altKey) return false;
+
+            command.handled = true;
+            interceptedKeysRef.current.add(e.code);
+            e.stopImmediatePropagation();
+            if (key === "v") return true;
+
+            e.preventDefault();
+            if (e.repeat) return true;
+            const keysym = key.codePointAt(0);
+            if (!keysym) return true;
+            if (key !== "c" && key !== "x") {
+                sendShortcut([CTRL_KEYSYM, keysym]);
+                return true;
+            }
+
+            const copy = beginRemoteClipboardCopy();
+            const sendCopyShortcut = () => {
+                if (remoteClipboardCopyRef.current === copy) sendShortcut([CTRL_KEYSYM, keysym]);
+            };
+            const sync = clipboardSyncRef.current;
+            if (sync && !sync.ready) sync.promise.then(sendCopyShortcut);
+            else sendCopyShortcut();
+            return true;
+        };
+        const forwardMacCommand = () => {
+            const command = macCommandRef.current;
+            if (!command.active || command.forwarded) return;
+            client.sendKeyEvent(1, WIN_KEYSYM);
+            command.forwarded = true;
+        };
+        const interceptPhysicalControlCopy = (e, key) => {
+            if (!e.ctrlKey || e.metaKey || e.altKey || key !== "c") return false;
+            interceptedKeysRef.current.add(e.code);
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            if (!e.repeat) sendKey(0x0063);
+            return true;
+        };
         const interceptMacRdpKeyDown = (e) => {
             if (!translatesMacShortcuts) return false;
+            if (interceptMacMetaKey(e)) return true;
 
-            if (e.key === "Meta") {
-                if (!e.repeat) macCommandRef.current = { active: true, forwarded: false, handled: false };
-                e.preventDefault();
-                e.stopImmediatePropagation();
-                return true;
-            }
-
-            const command = macCommandRef.current;
             const key = e.key.toLowerCase();
-            if (command.active && !command.forwarded && MACOS_RDP_SHORTCUTS.has(key) && !e.ctrlKey && !e.altKey) {
-                command.handled = true;
-                interceptedKeysRef.current.add(e.code);
-                e.stopImmediatePropagation();
-                if (key !== "v") {
-                    e.preventDefault();
-                    if (!e.repeat) {
-                        if (key === "c" || key === "x") beginRemoteClipboardCopy();
-                        sendShortcut([CTRL_KEYSYM, key.charCodeAt(0)]);
-                    }
-                }
-                return true;
-            }
-
-            if (command.active && !command.forwarded) {
-                client.sendKeyEvent(1, WIN_KEYSYM);
-                command.forwarded = true;
-            }
-
-            if (e.ctrlKey && !e.metaKey && !e.altKey && key === "c") {
-                interceptedKeysRef.current.add(e.code);
-                e.preventDefault();
-                e.stopImmediatePropagation();
-                if (!e.repeat) sendKey(0x0063);
-                return true;
-            }
-
-            return false;
+            if (interceptMacRdpShortcut(e, key)) return true;
+            forwardMacCommand();
+            return interceptPhysicalControlCopy(e, key);
         };
         const interceptMacRdpKeyUp = (e) => {
             if (!translatesMacShortcuts) return false;
