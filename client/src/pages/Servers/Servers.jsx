@@ -23,7 +23,11 @@ import { isTauri } from "@/common/utils/TauriUtil.js";
 import { getTabId, getBrowserId, requiresIdentity, canConnectWithoutPrompt } from "@/common/utils/ConnectionUtil.js";
 import { postRequest, deleteRequest } from "@/common/utils/RequestUtil";
 
-const makeReconnectKey = () => `rk-${crypto.randomUUID()}`;
+const makeReconnectKey = () => {
+    const values = new Uint32Array(4);
+    crypto.getRandomValues(values);
+    return `rk-${Array.from(values, value => value.toString(36)).join("-")}`;
+};
 
 export const Servers = () => {
 
