@@ -1,17 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-// Backoff schedule (seconds) between reconnect attempts. Length = max attempts.
 const BACKOFFS = [5, 10, 30, 60, 120];
 const MAX_ATTEMPTS = BACKOFFS.length;
-
-// Cooldown to dedupe near-simultaneous reconnect triggers (e.g. the "online"
-// event and the state-stream reconnect edge firing together) so a session is
-// not reconnected twice within one async POST window.
 const RECONNECT_COOLDOWN_MS = 3000;
-
-// Session types eligible for auto-reconnect: interactive terminal (SSH) and
-// RDP/VNC (Guacamole) only. Scripts (would re-run), SFTP (has its own socket
-// reconnect), notes and joined/shared sessions are excluded.
 const isEligible = (session) => {
     if (!session) return false;
     if (session.type === "notes" || session.isJoined) return false;
@@ -20,30 +11,15 @@ const isEligible = (session) => {
     return true;
 };
 
-/**
- * Auto-reconnect orchestrator for dropped sessions.
- *
- * State is keyed by the session's stable `reconnectKey` (carried across the
- * session-id change that each reconnect causes) rather than by session id.
- *
- * @param activeSessions  current sessions array (each may carry `reconnectKey`)
- * @param reconnectSession(sessionId)  app-level reconnect (creates a fresh session in place)
- * @param getSessionError(sessionId)   returns the pinned error for a session, or null
- * @param enabled         whether auto-reconnect is turned on (the user preference)
- * @param serverConnected whether the Nexterm server is currently reachable (state-stream isConnected)
- */
 export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionError, enabled, serverConnected }) => {
-    // key -> { attempt, maxAttempts, nextAttemptAt }; drives the countdown UI.
     const [reconnectStates, setReconnectStates] = useState({});
 
-    const connectedByKey = useRef(new Map());     // key -> has ever actively connected (eligibility)
-    const attemptsByKey = useRef(new Map());      // key -> retries used in the current failure streak
-    const timersByKey = useRef(new Map());        // key -> pending setTimeout id
-    const lastReconnectByKey = useRef(new Map()); // key -> last reconnect fire timestamp (cooldown)
+    const connectedByKey = useRef(new Map());
+    const attemptsByKey = useRef(new Map());
+    const timersByKey = useRef(new Map());
+    const lastReconnectByKey = useRef(new Map());
+    const scheduleRef = useRef(null);
 
-    // Latest values for use inside stable callbacks / timer bodies. Synced in an
-    // effect (not during render); timers and events fire later, so they read the
-    // up-to-date values.
     const activeSessionsRef = useRef(activeSessions);
     const enabledRef = useRef(enabled);
     const reconnectSessionRef = useRef(reconnectSession);
@@ -63,7 +39,7 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
 
     const clearTimer = useCallback((key) => {
         const timer = timersByKey.current.get(key);
-        if (timer) {
+        if (timer !== undefined) {
             clearTimeout(timer);
             timersByKey.current.delete(key);
         }
@@ -78,42 +54,41 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
         });
     }, []);
 
-    // Fire a reconnect for a key, deduped by a short cooldown so overlapping
-    // triggers don't create duplicate sessions. Returns false if it was
-    // suppressed by the cooldown.
-    const doReconnect = useCallback((sessionId, key) => {
+    const doReconnect = useCallback(async (sessionId, key) => {
         const now = Date.now();
-        if (now - (lastReconnectByKey.current.get(key) || 0) < RECONNECT_COOLDOWN_MS) return false;
+        if (now - (lastReconnectByKey.current.get(key) || 0) < RECONNECT_COOLDOWN_MS) return null;
         lastReconnectByKey.current.set(key, now);
-        reconnectSessionRef.current?.(sessionId);
-        return true;
+        try {
+            const result = await reconnectSessionRef.current?.(sessionId);
+            return result === null ? null : Boolean(result);
+        } catch {
+            return false;
+        }
     }, []);
 
-    const fire = useCallback((key) => {
-        timersByKey.current.delete(key);
-        attemptsByKey.current.set(key, (attemptsByKey.current.get(key) || 0) + 1);
-        // Keep reconnectStates[key] so the failed page shows "Reconnecting…" (0s)
-        // until the fresh session mounts and either connects or errors again.
-        const session = sessionForKey(key);
-        if (session && getSessionErrorRef.current?.(session.id)) {
-            doReconnect(session.id, key);
-        }
-    }, [sessionForKey, doReconnect]);
-
     const schedule = useCallback((key) => {
-        if (timersByKey.current.has(key)) return; // already scheduled
+        if (timersByKey.current.has(key)) return;
         const attempts = attemptsByKey.current.get(key) || 0;
         if (attempts >= MAX_ATTEMPTS) {
-            clearState(key); // give up: fall back to the manual Reconnect button
+            clearState(key);
             return;
         }
         const delay = BACKOFFS[attempts];
         const nextAttemptAt = Date.now() + delay * 1000;
         setReconnectStates(prev => ({ ...prev, [key]: { attempt: attempts + 1, maxAttempts: MAX_ATTEMPTS, nextAttemptAt } }));
-        timersByKey.current.set(key, setTimeout(() => fire(key), delay * 1000));
-    }, [clearState, fire]);
+        timersByKey.current.set(key, setTimeout(async () => {
+            timersByKey.current.delete(key);
+            attemptsByKey.current.set(key, (attemptsByKey.current.get(key) || 0) + 1);
+            const session = sessionForKey(key);
+            if (!session || !getSessionErrorRef.current?.(session.id)) return;
+            const reconnected = await doReconnect(session.id, key);
+            if (reconnected === false) scheduleRef.current?.(key);
+        }, delay * 1000));
+    }, [clearState, doReconnect, sessionForKey]);
 
-    // Called by renderers when a session becomes actively connected.
+    useEffect(() => {
+        scheduleRef.current = schedule;
+    }, [schedule]);
     const markSessionConnected = useCallback((sessionId) => {
         const key = keyForSession(sessionId);
         if (!key) return;
@@ -123,31 +98,27 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
         clearState(key);
     }, [keyForSession, clearTimer, clearState]);
 
-    // Called when a session errors (via markSessionErrored in Servers.jsx).
     const handleSessionErrored = useCallback((sessionId) => {
         if (!enabledRef.current) return;
         const session = activeSessionsRef.current.find(s => s.id === sessionId);
         if (!isEligible(session) || !session.reconnectKey) return;
-        if (!connectedByKey.current.get(session.reconnectKey)) return; // never actively connected
+        if (!connectedByKey.current.get(session.reconnectKey)) return;
         schedule(session.reconnectKey);
     }, [schedule]);
 
-    // Reconnect immediately (from the "Reconnect now" / manual button), cancelling
-    // any pending timer so we don't reconnect twice.
     const reconnectNow = useCallback((sessionId) => {
         const key = keyForSession(sessionId);
         if (key) {
             clearTimer(key);
             clearState(key);
-            doReconnect(sessionId, key);
+            void doReconnect(sessionId, key).then((reconnected) => {
+                if (reconnected === false) schedule(key);
+            });
         } else {
-            reconnectSessionRef.current?.(sessionId);
+            void reconnectSessionRef.current?.(sessionId);
         }
-    }, [keyForSession, clearTimer, clearState, doReconnect]);
+    }, [keyForSession, clearTimer, clearState, doReconnect, schedule]);
 
-    // The Nexterm server just became reachable (or the browser came online):
-    // give every eligible, currently-errored session a fresh retry budget and
-    // reconnect it now instead of waiting out the backoff.
     const retryOnReachable = useCallback(() => {
         if (!enabledRef.current) return;
         for (const session of activeSessionsRef.current) {
@@ -158,13 +129,12 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
             attemptsByKey.current.set(key, 0);
             clearTimer(key);
             clearState(key);
-            // If a reconnect just fired (cooldown), fall back to arming a timer
-            // so the session still retries rather than getting stuck.
-            if (!doReconnect(session.id, key)) schedule(key);
+            void doReconnect(session.id, key).then((reconnected) => {
+                if (reconnected === false) schedule(key);
+            });
         }
     }, [clearTimer, clearState, doReconnect, schedule]);
 
-    // Fire retryOnReachable on the server-reachable rising edge.
     const prevServerConnectedRef = useRef(serverConnected);
     useEffect(() => {
         const was = prevServerConnectedRef.current;
@@ -172,22 +142,18 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
         if (!was && serverConnected) retryOnReachable();
     }, [serverConnected, retryOnReachable]);
 
-    // Also react to the browser regaining network.
     useEffect(() => {
         window.addEventListener("online", retryOnReachable);
         return () => window.removeEventListener("online", retryOnReachable);
     }, [retryOnReachable]);
 
-    // Cancel everything when the feature is turned off.
     useEffect(() => {
         if (enabled) return;
         timersByKey.current.forEach(timer => clearTimeout(timer));
         timersByKey.current.clear();
-        setReconnectStates({});
+        queueMicrotask(() => setReconnectStates({}));
     }, [enabled]);
 
-    // Prune state for sessions that no longer exist (closed tabs). During a
-    // reconnect the key persists (new session carries it), so it is not pruned.
     useEffect(() => {
         const liveKeys = new Set(activeSessions.map(s => s.reconnectKey).filter(Boolean));
         for (const key of Array.from(timersByKey.current.keys())) {
@@ -196,7 +162,7 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
         for (const map of [connectedByKey.current, attemptsByKey.current, lastReconnectByKey.current]) {
             for (const key of Array.from(map.keys())) if (!liveKeys.has(key)) map.delete(key);
         }
-        setReconnectStates(prev => {
+        queueMicrotask(() => setReconnectStates(prev => {
             let changed = false;
             const next = { ...prev };
             for (const key of Object.keys(prev)) {
@@ -206,10 +172,9 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
                 }
             }
             return changed ? next : prev;
-        });
+        }));
     }, [activeSessions, clearTimer]);
 
-    // Clear all timers on unmount.
     useEffect(() => () => {
         timersByKey.current.forEach(timer => clearTimeout(timer));
         timersByKey.current.clear();

@@ -187,7 +187,7 @@
         "title": "Connection failed",
         "close": "Close tab",
         "reconnect": "Reconnect",
-        "reconnectNow": "Reconnect now",
+        "reconnectNow": "Reconnect",
         "reconnecting": "Reconnecting…",
         "reconnectingIn": "Reconnecting in {{seconds}}s",
         "reconnectAttempt": "attempt {{count}} of {{max}}",
@@ -908,7 +908,11 @@
         },
         "copy": {
           "title": "Copy",
-          "description": "Copy selected text to clipboard"
+          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+        },
+        "paste": {
+          "title": "Paste",
+          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
         },
         "fullscreen": {
           "title": "Full-Screen",
@@ -923,6 +927,7 @@
         "pressKeys": "Press keys...",
         "save": "Save",
         "cancel": "Cancel",
+        "disabled": "Disabled",
         "reset": "Reset"
       },
       "messages": {
@@ -958,7 +963,17 @@
       "input": {
         "title": "Input",
         "description": "Control how keyboard shortcuts behave inside the terminal.",
-        "smartCopyPaste": "Smart Ctrl+C",
+        "copyPasteBehavior": "Copy/Paste Behavior",
+        "copyPasteBehaviorNone": "None",
+        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
+        "copyPasteBehaviorSmart": "Smart Ctrl+C",
+        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
+        "copyPasteBehaviorKeyboard": "Keyboard",
+        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
+        "copyPasteBehaviorMouse": "Mouse",
+        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
+        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
+        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
         "passwordPromptDetection": "Password input detection",
         "autoReconnect": "Auto-reconnect",
         "enabled": "Enabled",
@@ -1577,6 +1592,7 @@
       "connect": "Connect",
       "quickConnect": "Quick Connect",
       "openSFTP": "Open SFTP",
+      "openBrowser": "Open Browser",
       "forwardPort": "Forward Port",
       "runScript": "Run Script",
       "openNotes": "Open Notes",
@@ -1614,8 +1630,16 @@
         "openNotes": "Open Notes",
         "hibernateSession": "Hibernate",
         "reconnect": "Reconnect",
-        "closeSession": "Disconnect"
-      }
+        "closeSession": "Disconnect",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "Magic packet sent to {{name}}",
@@ -1968,6 +1992,14 @@
         "error": "An error occurred"
       }
     },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
+    },
     "remoteDesktop": {
       "dropOverlay": "Drop files to upload to remote",
       "toast": {
@@ -2032,7 +2064,7 @@
       "holdModifier": "Hold {{key}}",
       "zoomIn": "Zoom in",
       "zoomOut": "Zoom out",
-      "zoomReset": "Reset zoom to fit (drag with the middle mouse button to pan)"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "Monitor {{number}}",

@@ -154,9 +154,6 @@ db.authenticate()
         controlPlane.on("sessionClosed", ({ sessionId, reason }) => {
             logger.info(`Engine session closed: ${sessionId} (reason: ${reason})`);
             if (reason === "connection lost") {
-                // Abnormal transport drop (e.g. the SSH server restarting): close the
-                // client socket with an error code so the UI shows the reconnect flow
-                // instead of silently removing the tab. Normal exits stay clean.
                 SessionManager.remove(sessionId, { code: 4017, reason: "Connection lost" });
             } else {
                 SessionManager.remove(sessionId);
@@ -166,7 +163,8 @@ db.authenticate()
         controlPlane.on("engineDisconnected", ({ engineId, sessionIds }) => {
             logger.warn(`Engine ${engineId} disconnected, cleaning up ${sessionIds.length} sessions`);
             for (const sessionId of sessionIds) {
-                SessionManager.remove(sessionId);
+                SessionManager.markFailed(sessionId, "Connection lost");
+                SessionManager.remove(sessionId, { code: 4017, reason: "Connection lost" });
             }
         });
 

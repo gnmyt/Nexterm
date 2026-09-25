@@ -8,7 +8,6 @@ import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
 import ConnectionError, { mapConnectionError } from "./components/ConnectionError";
-import SessionToolbar from "./components/SessionToolbar";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 import { openPopout, onPopoutClosed } from "@/common/utils/PopoutUtil.js";
 import { createHostFsProvider } from "@/common/utils/HostFsProvider.js";
@@ -20,6 +19,10 @@ const SIZE_CONFIRM_INTERVAL = 500;
 const SIZE_CONFIRM_ATTEMPTS = 6;
 
 const SHORTCUT_HOLD = 50;
+
+const CLIPBOARD_SYNC_TIMEOUT = 1000;
+
+const CLIPBOARD_POLL_INTERVAL = 250;
 
 const ZOOM_MIN = 1;
 
@@ -44,10 +47,13 @@ const GuacamoleRenderer = ({
                                markSessionErrored,
                                getSessionError,
                                registerGuacamoleRef,
-                               fullscreenEnabled,
                                onFullscreenToggle,
+                               onControlsChange = null,
                                isShared = false,
                                pinnedMonitor = null,
+                               interceptPaste = true,
+                               sendScancodes = true,
+                               onClientReady = null,
                            }) => {
     const ref = useRef(null);
     const { sessionToken } = useContext(UserContext);
@@ -69,7 +75,6 @@ const GuacamoleRenderer = ({
 
     const [heldModifiers, setHeldModifiers] = useState(() => new Set());
     const heldModifiersRef = useRef(heldModifiers);
-    const draggingRef = useRef(false);
 
     const [zoom, setZoom] = useState(ZOOM_MIN);
     const zoomRef = useRef(ZOOM_MIN);
@@ -92,6 +97,9 @@ const GuacamoleRenderer = ({
     const [isDragOver, setIsDragOver] = useState(false);
     const browserFsRef = useRef(null);
     const clipboardIntervalRef = useRef(null);
+    const clipboardReadInFlightRef = useRef(false);
+    const clipboardSyncRef = useRef(null);
+    const ctrlPressedRef = useRef(false);
     const errorMessageRef = useRef(null);
     const [connectionError, setConnectionError] = useState(() => getSessionError?.(session.id) || null);
     const errorShownRef = useRef(!!connectionError);
@@ -116,11 +124,18 @@ const GuacamoleRenderer = ({
         return () => registerGuacamoleRef?.(session.id, null);
     }, [session.id, registerGuacamoleRef, clientRef.current]);
 
+    const samplingFor = (scale) => Math.abs(scale - 1) < 0.001 ? "pixelated" : "auto";
+
     const applyDisplayStyles = (el, x, y, scale, width, height) => Object.assign(el.style, {
         position: "absolute", width: width + "px", height: height + "px",
         transform: `translate(${x}px, ${y}px) scale(${scale})`, transformOrigin: "0 0",
-        imageRendering: "crisp-edges", backfaceVisibility: "hidden", willChange: "transform",
+        imageRendering: samplingFor(scale), backfaceVisibility: "hidden", willChange: "transform",
     });
+
+    const snapToDevicePixel = (value) => {
+        const density = window.devicePixelRatio || 1;
+        return Math.round(value * density) / density;
+    };
 
     const clampPan = (pan, visible, scaled) => {
         const limit = Math.max((scaled - visible) / 2, 0);
@@ -153,8 +168,8 @@ const GuacamoleRenderer = ({
         };
 
         offsetRef.current = {
-            x: (cw - mw * scale) / 2 - mx * scale + panRef.current.x,
-            y: (ch - mh * scale) / 2 - my * scale + panRef.current.y,
+            x: snapToDevicePixel((cw - mw * scale) / 2 - mx * scale + panRef.current.x),
+            y: snapToDevicePixel((ch - mh * scale) / 2 - my * scale + panRef.current.y),
         };
 
         applyDisplayStyles(el, offsetRef.current.x, offsetRef.current.y, scale,
@@ -237,6 +252,16 @@ const GuacamoleRenderer = ({
         }, SHORTCUT_HOLD);
     };
 
+    const sendClipboardShortcut = () => {
+        if (!clientRef.current) return;
+        if (ctrlPressedRef.current || heldModifiersRef.current.has(0xffe3)) {
+            clientRef.current.sendKeyEvent(1, 0x0076);
+            clientRef.current.sendKeyEvent(0, 0x0076);
+            return;
+        }
+        sendShortcut([0xffe3, 0x0076]);
+    };
+
     const selectMonitor = (index) => {
         activeMonitorRef.current = index;
         setActiveMonitor(index);
@@ -300,14 +325,48 @@ const GuacamoleRenderer = ({
     }, [session.id, ownsSession]);
 
     const sendClipboardToServer = (text) => {
-        if (!clientRef.current || !text) return;
+        const current = clipboardSyncRef.current;
+        if (current?.text === text) return current;
+
+        current?.complete();
+
+        let resolve;
+        const sync = {
+            text,
+            ready: false,
+            promise: new Promise((done) => resolve = done),
+            timeout: null,
+            complete: null,
+            pasteInFlight: false,
+        };
+        const complete = () => {
+            if (sync.ready) return;
+            sync.ready = true;
+            if (sync.timeout) clearTimeout(sync.timeout);
+            resolve();
+        };
+
+        sync.complete = complete;
+        sync.timeout = setTimeout(complete, CLIPBOARD_SYNC_TIMEOUT);
+        clipboardSyncRef.current = sync;
+
+        if (!clientRef.current || !text) {
+            complete();
+            return sync;
+        }
+
         try {
             const writer = new Guacamole.StringWriter(clientRef.current.createClipboardStream("text/plain"));
+            writer.onack = (status) => {
+                if (!status.isError()) complete();
+            };
             writer.sendText(text);
             writer.sendEnd();
         } catch (e) {
             console.error("Failed to send clipboard to server:", e);
         }
+
+        return sync;
     };
 
     const uploadFileToRemote = useCallback((file) => {
@@ -406,7 +465,10 @@ const GuacamoleRenderer = ({
 
     const startClipboardPolling = (initialValue = "") => {
         let cached = initialValue;
-        clipboardIntervalRef.current = setInterval(async () => {
+        sendClipboardToServer(initialValue);
+        const pollClipboard = async () => {
+            if (clipboardReadInFlightRef.current) return;
+            clipboardReadInFlightRef.current = true;
             try {
                 const t = await navigator.clipboard.readText();
                 if (t !== cached) {
@@ -414,17 +476,19 @@ const GuacamoleRenderer = ({
                     sendClipboardToServer(t);
                 }
             } catch {
+            } finally {
+                clipboardReadInFlightRef.current = false;
             }
-        }, 500);
+        };
+        clipboardIntervalRef.current = setInterval(pollClipboard, CLIPBOARD_POLL_INTERVAL);
     };
 
     const initClipboardPolling = async () => {
         try {
             const status = await navigator.permissions.query({ name: "clipboard-read" });
             if (status.state === "granted") {
-                startClipboardPolling();
+                startClipboardPolling(await navigator.clipboard.readText());
             } else if (status.state === "prompt") {
-                // Calling readText() triggers the browser permission dialog
                 try {
                     startClipboardPolling(await navigator.clipboard.readText());
                 } catch {
@@ -432,7 +496,6 @@ const GuacamoleRenderer = ({
                 }
             }
         } catch {
-            // permissions API not supported — try readText() directly to prompt
             try {
                 startClipboardPolling(await navigator.clipboard.readText());
             } catch {
@@ -459,30 +522,38 @@ const GuacamoleRenderer = ({
         initClipboardPolling();
         const onPaste = (e) => {
             if (e.clipboardData?.files?.length > 0) {
+            if (!ref.current?.contains(e.target)) return;
+            e.stopImmediatePropagation();
                 e.preventDefault();
                 uploadFiles(Array.from(e.clipboardData.files));
                 return;
             }
+            if (!interceptPaste) return;
             const text = e.clipboardData?.getData("text");
-            if (text) {
-                sendClipboardToServer(text);
-                // After clipboard syncs, send V key to RDP (Ctrl is already held)
-                setTimeout(() => {
-                    if (clientRef.current) {
-                        clientRef.current.sendKeyEvent(1, 0x0076);
-                        clientRef.current.sendKeyEvent(0, 0x0076);
-                    }
-                }, 100);
-            }
             e.preventDefault();
+            if (text) {
+                const sync = sendClipboardToServer(text);
+                if (sync.pasteInFlight) return;
+                sync.pasteInFlight = true;
+                const sendShortcut = () => {
+                    if (clipboardSyncRef.current === sync) sendClipboardShortcut();
+                    queueMicrotask(() => sync.pasteInFlight = false);
+                };
+                if (sync.ready) {
+                    sendShortcut();
+                    return;
+                }
+                sync.promise.then(sendShortcut);
+            }
         };
-        ref.current.addEventListener("paste", onPaste);
+        document.addEventListener("paste", onPaste, true);
         return () => {
-            ref.current?.removeEventListener("paste", onPaste);
+            document.removeEventListener("paste", onPaste, true);
             if (clipboardIntervalRef.current) {
                 clearInterval(clipboardIntervalRef.current);
                 clipboardIntervalRef.current = null;
             }
+            clipboardSyncRef.current?.complete();
         };
     };
 
@@ -498,6 +569,7 @@ const GuacamoleRenderer = ({
         const tunnelUrl = getWebSocketUrl("/api/ws/guac/", {});
         const tunnel = new Guacamole.WebSocketTunnel(tunnelUrl);
         const client = new Guacamole.Client(tunnel);
+        onClientReady?.(client);
         client.getDisplay().onresize = resizeHandler;
 
         client.onmultimonlayout = (layout) => {
@@ -547,7 +619,7 @@ const GuacamoleRenderer = ({
         clientRef.current = client;
         const display = client.getDisplay().getElement();
         display.style.position = "absolute";
-        display.style.imageRendering = "crisp-edges";
+        display.style.imageRendering = samplingFor(scaleRef.current);
         ref.current.appendChild(display);
 
         client.onaudio = (stream, mimetype) => {
@@ -570,8 +642,6 @@ const GuacamoleRenderer = ({
         const mouse = new Guacamole.Mouse(display);
         mouse.onmousedown = mouse.onmouseup = mouse.onmousemove = (state) => {
             if (!scaleRef.current || !offsetRef.current) return;
-
-            if (draggingRef.current) return;
 
             if (zoomRef.current > ZOOM_MIN && state.middle) {
                 const previous = panDragRef.current;
@@ -600,6 +670,8 @@ const GuacamoleRenderer = ({
         ref.current.focus();
 
         const handleKeyDown = (e) => {
+            if (e.key === "Control") ctrlPressedRef.current = true;
+            if (!ref.current?.contains(e.target)) return;
             const kb = getParsedKeybind("fullscreen");
             if (kb && matchesKeybind(e, kb)) {
                 e.preventDefault();
@@ -607,20 +679,39 @@ const GuacamoleRenderer = ({
                 onFullscreenToggleRef.current?.();
                 return false;
             }
-            // Intercept Ctrl+V so the browser fires the paste event
-            // (Guacamole.Keyboard's preventDefault blocks it otherwise)
-            if ((e.ctrlKey || e.metaKey) && (e.key === "v" || e.key === "V")) {
+
+            if (interceptPaste && (e.ctrlKey || e.metaKey) && (e.key === "v" || e.key === "V")) {
                 e.stopImmediatePropagation();
             }
         };
+        const handleKeyUp = (e) => {
+            if (!ref.current?.contains(e.target)) return;
+            if (e.key === "Control") ctrlPressedRef.current = false;
+            if (interceptPaste && (e.ctrlKey || e.metaKey) && (e.key === "v" || e.key === "V")) {
+                e.stopImmediatePropagation();
+            }
+        };
+        const handleKeyPress = (e) => {
+            if (!ref.current?.contains(e.target)) return;
+            if (interceptPaste && (e.ctrlKey || e.metaKey) && (e.key === "v" || e.key === "V")) {
+                e.stopImmediatePropagation();
+            }
+        };
+        document.addEventListener("keydown", handleKeyDown, true);
+        document.addEventListener("keypress", handleKeyPress, true);
+        document.addEventListener("keyup", handleKeyUp, true);
+        ref.current.addEventListener("keypress", handleKeyPress, true);
+        const handleBlur = () => ctrlPressedRef.current = false;
         ref.current.addEventListener("keydown", handleKeyDown, true);
+        ref.current.addEventListener("keyup", handleKeyUp, true);
+        ref.current.addEventListener("blur", handleBlur, true);
 
         const keyboard = new Guacamole.Keyboard(ref.current);
         keyboard.onkeydown = (k, sc) => {
             resumeAudioContext();
-            client.sendKeyEvent(1, k, sc);
+            client.sendKeyEvent(1, k, sendScancodes ? sc : 0);
         };
-        keyboard.onkeyup = (k, sc) => client.sendKeyEvent(0, k, sc);
+        keyboard.onkeyup = (k, sc) => client.sendKeyEvent(0, k, sendScancodes ? sc : 0);
 
         client.onstatechange = (st) => {
             if (isCleaningUp) return;
@@ -673,7 +764,13 @@ const GuacamoleRenderer = ({
             isCleaningUp = true;
             errorShownRef.current = false;
             cleanupClipboard?.();
+            document.removeEventListener("keydown", handleKeyDown, true);
+            document.removeEventListener("keypress", handleKeyPress, true);
+            document.removeEventListener("keyup", handleKeyUp, true);
+            ref.current?.removeEventListener("keypress", handleKeyPress, true);
             ref.current?.removeEventListener("keydown", handleKeyDown, true);
+            ref.current?.removeEventListener("keyup", handleKeyUp, true);
+            ref.current?.removeEventListener("blur", handleBlur, true);
             client.onstatechange = tunnel.onstatechange = tunnel.onerror = null;
             audioPlayersRef.current = [];
             tunnel.disconnect();
@@ -686,7 +783,7 @@ const GuacamoleRenderer = ({
             activeMonitorRef.current = initialMonitor;
             maxMonitorsRef.current = 1;
             heldModifiersRef.current = new Set();
-            draggingRef.current = false;
+            ctrlPressedRef.current = false;
             zoomRef.current = ZOOM_MIN;
             panRef.current = { x: 0, y: 0 };
             panDragRef.current = null;
@@ -708,6 +805,34 @@ const GuacamoleRenderer = ({
         window.addEventListener("blur", releaseModifiers);
         return () => window.removeEventListener("blur", releaseModifiers);
     }, []);
+
+    useEffect(() => {
+        if (!onControlsChange) return;
+        onControlsChange(ready ? {
+            monitorCount,
+            activeMonitor,
+            maxMonitors,
+            heldModifiers,
+            poppedOutMonitors,
+            zoom,
+            minZoom: ZOOM_MIN,
+            maxZoom: ZOOM_MAX,
+            readOnly: isShared,
+            allowMonitors: pinnedMonitor === null,
+            selectMonitor,
+            addMonitor,
+            removeMonitor,
+            popOutMonitor,
+            toggleModifier,
+            sendShortcut,
+            zoomIn,
+            zoomOut,
+            resetZoom,
+            focus: () => ref.current?.focus(),
+        } : null);
+    }, [ready, monitorCount, activeMonitor, maxMonitors, heldModifiers, poppedOutMonitors, zoom, isShared, pinnedMonitor]);
+
+    useEffect(() => () => onControlsChange?.(null), []);
 
     useEffect(() => {
         window.addEventListener("resize", resizeHandler);
@@ -745,18 +870,6 @@ const GuacamoleRenderer = ({
             <ConnectionLoader onReady={(loader) => {
                 connectionLoaderRef.current = loader;
             }} />
-            {ready && (
-                <SessionToolbar containerRef={ref} monitorCount={monitorCount} activeMonitor={activeMonitor}
-                                maxMonitors={maxMonitors} heldModifiers={heldModifiers} readOnly={isShared}
-                                poppedOutMonitors={poppedOutMonitors} allowMonitors={pinnedMonitor === null}
-                                onSelectMonitor={selectMonitor} onAddMonitor={addMonitor}
-                                onRemoveMonitor={removeMonitor} onPopOutMonitor={popOutMonitor}
-                                onToggleModifier={toggleModifier} onSendShortcut={sendShortcut}
-                                zoom={zoom} minZoom={ZOOM_MIN} maxZoom={ZOOM_MAX}
-                                onZoomIn={zoomIn} onZoomOut={zoomOut} onResetZoom={resetZoom}
-                                fullscreenEnabled={fullscreenEnabled} onFullscreenToggle={onFullscreenToggle}
-                                onDraggingChange={(dragging) => draggingRef.current = dragging} />
-            )}
             {connectionError && (
                 <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)}
                                  onReconnect={() => (reconnectNow || reconnectSession)?.(session.id)}

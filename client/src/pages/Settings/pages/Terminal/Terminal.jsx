@@ -15,7 +15,7 @@ export const Terminal = () => {
     const {
         selectedTheme, setSelectedTheme, selectedFont, setSelectedFont,
         fontSize, setFontSize, cursorStyle, setCursorStyle, cursorBlink, setCursorBlink,
-        smartCopyPaste, setSmartCopyPaste,
+        copyPasteBehavior, setCopyPasteBehavior,
         passwordPromptDetection, setPasswordPromptDetection,
         autoReconnect, setAutoReconnect,
         getAvailableThemes, getAvailableFonts, getTerminalTheme, getCursorStyles,
@@ -62,6 +62,14 @@ export const Terminal = () => {
     const toggleOptions = [
         { label: t("settings.terminal.input.enabled"), value: "true" },
         { label: t("settings.terminal.input.disabled"), value: "false" }
+    ];
+
+    const copyPasteBehaviorOptions = [
+        { label: t("settings.terminal.input.copyPasteBehaviorNone"), value: "none", tooltip: t("settings.terminal.input.copyPasteBehaviorNoneHint") },
+        { label: t("settings.terminal.input.copyPasteBehaviorSmart"), value: "smart", tooltip: t("settings.terminal.input.copyPasteBehaviorSmartHint") },
+        { label: t("settings.terminal.input.copyPasteBehaviorKeyboard"), value: "keyboard", tooltip: t("settings.terminal.input.copyPasteBehaviorKeyboardHint") },
+        { label: t("settings.terminal.input.copyPasteBehaviorMouse"), value: "mouse", tooltip: t("settings.terminal.input.copyPasteBehaviorMouseHint") },
+        { label: t("settings.terminal.input.copyPasteBehaviorMouseKeyboard"), value: "mouseKeyboard", tooltip: t("settings.terminal.input.copyPasteBehaviorMouseKeyboardHint") },
     ];
 
     const fontStyle = { fontFamily: selectedFont, fontSize: `${fontSize}px` };
@@ -130,7 +138,7 @@ export const Terminal = () => {
 
             {renderSection(t("settings.terminal.input.title"), t("settings.terminal.input.description"), "terminal.input", (
                 <div className="input-settings">
-                    {renderFontOption(t("settings.terminal.input.smartCopyPaste"), toggleOptions, smartCopyPaste.toString(), (value) => setSmartCopyPaste(value === "true"))}
+                    {renderFontOption(t("settings.terminal.input.copyPasteBehavior"), copyPasteBehaviorOptions, copyPasteBehavior, setCopyPasteBehavior)}
                     {renderFontOption(t("settings.terminal.input.passwordPromptDetection"), toggleOptions, passwordPromptDetection.toString(), (value) => setPasswordPromptDetection(value === "true"))}
                     {renderFontOption(t("settings.terminal.input.autoReconnect"), toggleOptions, autoReconnect.toString(), (value) => setAutoReconnect(value === "true"))}
                 </div>

@@ -81,6 +81,7 @@ set(ENGINE_SOURCES
     src/net/telnet.c
     src/net/http_fetch.c
     src/net/websocket.c
+    src/net/web.c
     src/proto/control_plane.c
 )
 
@@ -182,3 +183,42 @@ set_target_properties(nexterm-engine PROPERTIES
 )
 
 install(TARGETS nexterm-engine DESTINATION bin)
+
+
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+    pkg_check_modules(WEBKITGTK QUIET webkitgtk-6.0)
+    pkg_check_modules(X11 QUIET x11)
+endif()
+
+if(WEBKITGTK_FOUND)
+    set(WEBVIEW_PAGES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/webview/pages)
+    set(WEBVIEW_PAGES
+        ${WEBVIEW_PAGES_DIR}/style.css
+        ${WEBVIEW_PAGES_DIR}/blank.html
+        ${WEBVIEW_PAGES_DIR}/error.html
+    )
+    set(WEBVIEW_PAGES_HEADER ${CMAKE_CURRENT_BINARY_DIR}/generated/webview_pages.h)
+
+    string(REPLACE ";" "|" WEBVIEW_PAGES_ARG "${WEBVIEW_PAGES}")
+
+    add_custom_command(
+        OUTPUT ${WEBVIEW_PAGES_HEADER}
+        COMMAND ${CMAKE_COMMAND} -DOUTPUT=${WEBVIEW_PAGES_HEADER} "-DSOURCES=${WEBVIEW_PAGES_ARG}"
+                -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/embed_pages.cmake
+        DEPENDS ${WEBVIEW_PAGES} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/embed_pages.cmake
+        COMMENT "Embedding webview page assets"
+        VERBATIM
+    )
+
+    add_executable(nexterm-webview webview/nexterm-webview.c ${WEBVIEW_PAGES_HEADER})
+    target_include_directories(nexterm-webview PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated)
+    target_include_directories(nexterm-webview SYSTEM PRIVATE ${WEBKITGTK_INCLUDE_DIRS})
+    target_compile_options(nexterm-webview PRIVATE ${WEBKITGTK_CFLAGS_OTHER})
+    target_link_libraries(nexterm-webview PRIVATE ${WEBKITGTK_LIBRARIES} ${X11_LIBRARIES})
+    target_link_directories(nexterm-webview PRIVATE ${WEBKITGTK_LIBRARY_DIRS})
+    install(TARGETS nexterm-webview DESTINATION bin)
+    message(STATUS "nexterm-webview: enabled (webkitgtk-6.0 ${WEBKITGTK_VERSION})")
+else()
+    message(STATUS "nexterm-webview: disabled (webkitgtk-6.0 not found)")
+endif()

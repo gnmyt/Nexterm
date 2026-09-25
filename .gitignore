@@ -151,3 +151,7 @@ docs/public/openapi.json
 
 # CLI
 cli/target/
+
+# VNC server
+vendor/libvncserver/
+vendor/libvncserver-build.log

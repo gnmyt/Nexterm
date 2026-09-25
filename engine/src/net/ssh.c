@@ -126,9 +126,9 @@ static void ssh_apply_pending_resize(nexterm_session_t* session,
 }
 
 typedef enum {
-    SSH_END_CONTINUE = 0,   // keep bridging
-    SSH_END_NORMAL,         // clean end: shell exit or client/backend closed the connection
-    SSH_END_DISCONNECTED,   // abnormal: the SSH transport dropped (e.g. the server restarting)
+    SSH_END_CONTINUE = 0,
+    SSH_END_NORMAL,
+    SSH_END_DISCONNECTED,
 } ssh_end_reason_t;
 
 static ssh_end_reason_t ssh_bridge_poll(nexterm_session_t* session, int data_fd, int ssh_sock,
@@ -149,27 +149,25 @@ static ssh_end_reason_t ssh_bridge_poll(nexterm_session_t* session, int data_fd,
 
     if (fds[0].revents & POLLIN) {
         ssize_t n = read(data_fd, buf, sizeof(buf));
-        if (n <= 0) return SSH_END_NORMAL;                                   // backend/client closed the data connection
+        if (n <= 0) return SSH_END_NORMAL;
         if (ssh_write_to_channel(channel, buf, (size_t)n) != 0) return SSH_END_DISCONNECTED;
     }
 
     if ((fds[1].revents & POLLIN)
             && ssh_read_channel_to_fd(channel, data_fd) != 0)
-        return SSH_END_DISCONNECTED;                                         // SSH channel read failed
+        return SSH_END_DISCONNECTED;
 
-    // Check the SSH transport hang-up before channel-EOF: a dropped transport
-    // (server restart / network loss) must not be misread as a clean shell exit.
     if (fds[1].revents & (POLLERR | POLLHUP)) {
         ssh_drain_channel(channel, data_fd);
         return SSH_END_DISCONNECTED;
     }
 
     if (fds[0].revents & (POLLERR | POLLHUP))
-        return SSH_END_NORMAL;                                               // client-side data connection gone
+        return SSH_END_NORMAL;
 
     if (libssh2_channel_eof(channel)) {
         ssh_drain_channel(channel, data_fd);
-        return SSH_END_NORMAL;                                               // normal shell exit
+        return SSH_END_NORMAL;
     }
 
     return SSH_END_CONTINUE;

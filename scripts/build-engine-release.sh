@@ -5,6 +5,10 @@ REPO_ROOT="${REPO_ROOT:-$(pwd)}"
 GUAC_SRC="$REPO_ROOT/vendor/guacamole-server"
 GUAC_DIST="$GUAC_SRC/dist"
 ENGINE_SRC="$REPO_ROOT/engine"
+LIBVNC_SRC="$REPO_ROOT/vendor/libvncserver"
+LIBVNC_DIST="$LIBVNC_SRC/dist"
+LIBVNC_VERSION="${LIBVNC_VERSION:-0.9.15}"
+LIBVNC_SHA256="${LIBVNC_SHA256:-62352c7795e231dfce044beb96156065a05a05c974e5de9e023d688d8ff675d7}"
 OUT_DIR="${OUT_DIR:-$REPO_ROOT/dist}"
 ARCH="${ARCH:-$(uname -m)}"
 
@@ -30,6 +34,13 @@ APK_ENGINE="
     pango-dev libwebp-dev
     pulseaudio-dev libvorbis-dev libogg-dev
 "
+APK_WEBVIEW="
+    webkit2gtk-6.0-dev gtk4.0-dev
+"
+APK_LIBVNC="
+    build-base cmake patch curl ca-certificates tar
+    libjpeg-turbo-dev libpng-dev zlib-dev openssl-dev lzo-dev
+"
 
 APT_GUAC="
     build-essential autoconf automake libtool pkg-config
@@ -44,6 +55,15 @@ APT_ENGINE="
     libpango1.0-dev libwebp-dev
     libpulse-dev libvorbis-dev libogg-dev
     file
+"
+
+APT_WEBVIEW="
+    libwebkitgtk-6.0-dev libgtk-4-dev
+"
+
+APT_LIBVNC="
+    build-essential cmake patch curl ca-certificates
+    libjpeg-dev libpng-dev zlib1g-dev libssl-dev liblzo2-dev
 "
 
 apt_setup_repos() {
@@ -75,13 +95,53 @@ deps_engine() {
     if [ "$PKG_MGR" = "apk" ]; then pkg_install "$APK_ENGINE"; else pkg_install "$APT_ENGINE"; fi
 }
 
+deps_libvnc() {
+    if [ "$PKG_MGR" = "apk" ]; then pkg_install "$APK_LIBVNC"; else pkg_install "$APT_LIBVNC"; fi
+}
+
+deps_webview() {
+    if [ "$PKG_MGR" = "apk" ]; then pkg_install "$APK_WEBVIEW"; else pkg_install "$APT_WEBVIEW"; fi
+}
+
 deps_all() {
     deps_guac
+    deps_webview
+    deps_libvnc
     if [ "$PKG_MGR" = "apk" ]; then
         pkg_install "cmake git curl curl-dev ca-certificates patchelf tar"
     else
         pkg_install "cmake git curl libcurl4-openssl-dev file ca-certificates patchelf tar"
     fi
+}
+
+build_libvnc() {
+    rm -rf "$LIBVNC_SRC"
+    mkdir -p "$LIBVNC_SRC"
+    cd "$LIBVNC_SRC"
+
+    curl -fsSL -o libvnc.tar.gz \
+        "https://github.com/LibVNC/libvncserver/archive/refs/tags/LibVNCServer-${LIBVNC_VERSION}.tar.gz"
+    echo "$LIBVNC_SHA256  libvnc.tar.gz" | sha256sum -c -
+    tar xf libvnc.tar.gz
+
+    cd "libvncserver-LibVNCServer-${LIBVNC_VERSION}"
+    patch -p1 < "$REPO_ROOT/vendor/patches/libvncclient-accept-screen-id-zero.patch"
+
+    cmake -B build \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX="$LIBVNC_DIST" \
+        -DWITH_EXAMPLES=OFF \
+        -DWITH_TESTS=OFF \
+        -DBUILD_SHARED_LIBS=ON
+    cmake --build build -j"$(nproc)"
+    cmake --install build
+    strip "$LIBVNC_DIST/lib"/libvnc*.so.*.* 2>/dev/null || true
+}
+
+install_patched_libvnc() {
+    dest="$1"
+    [ -f "$LIBVNC_DIST/lib/libvncclient.so.1" ] || return 0
+    cp -L "$LIBVNC_DIST/lib/libvncclient.so.1" "$dest/libvncclient.so.1"
 }
 
 build_guac() {
@@ -150,6 +210,7 @@ package() {
     mkdir -p "$STAGE/lib"
 
     cp "$ENGINE_SRC/build/nexterm-engine" "$STAGE/nexterm-engine"
+    cp "$ENGINE_SRC/build/nexterm-webview" "$STAGE/nexterm-webview" 2>/dev/null || true
     cp -P "$GUAC_DIST/lib"/*.so* "$STAGE/lib/" 2>/dev/null || true
     if [ -d "$GUAC_DIST/lib/freerdp3" ]; then
         cp -rP "$GUAC_DIST/lib/freerdp3" "$STAGE/lib/"
@@ -166,6 +227,8 @@ package() {
         [ "$before" = "$after" ] && break
         pass=$((pass + 1))
     done
+
+    install_patched_libvnc "$STAGE/lib"
 
     patchelf --set-rpath '$ORIGIN/lib:$ORIGIN/lib/freerdp3' "$STAGE/nexterm-engine"
     find "$STAGE/lib" -maxdepth 1 -name '*.so*' -type f | while read -r so; do
@@ -203,6 +266,8 @@ pkg() {
     cp "$ENGINE_SRC/build/nexterm-engine" "$PKG_STAGE/nexterm-engine"
     patchelf --set-rpath '/usr/lib/nexterm-engine' "$PKG_STAGE/nexterm-engine"
 
+    cp "$ENGINE_SRC/build/nexterm-webview" "$PKG_STAGE/nexterm-webview" 2>/dev/null || true
+
     cp -P "$GUAC_DIST/lib"/libguac*.so* "$PKG_STAGE/lib/" 2>/dev/null || true
 
     for jpeg in \
@@ -217,6 +282,8 @@ pkg() {
             break
         fi
     done
+    install_patched_libvnc "$PKG_STAGE/lib"
+
     find "$PKG_STAGE/lib" -maxdepth 1 -name '*.so*' -type f | while read -r so; do
         patchelf --set-rpath '$ORIGIN' "$so" || true
     done
@@ -268,16 +335,19 @@ install_nfpm() {
 case "${1:-}" in
     deps-guac)   deps_guac ;;
     deps-engine) deps_engine ;;
+    deps-webview) deps_webview ;;
+    deps-libvnc) deps_libvnc ;;
+    libvnc)      build_libvnc ;;
     deps-all)    deps_all ;;
     guac)        build_guac ;;
     engine)      build_engine ;;
     package)     package ;;
     pkg)         install_nfpm; pkg ;;
     install-nfpm) install_nfpm ;;
-    all)         deps_all; build_guac; build_engine; package ;;
-    all-with-pkg) deps_all; build_guac; build_engine; package; install_nfpm; pkg ;;
+    all)         deps_all; build_libvnc; build_guac; build_engine; package ;;
+    all-with-pkg) deps_all; build_libvnc; build_guac; build_engine; package; install_nfpm; pkg ;;
     *)
-        echo "usage: $0 {deps-guac|deps-engine|deps-all|guac|engine|package|pkg|install-nfpm|all|all-with-pkg}" >&2
+        echo "usage: $0 {deps-guac|deps-engine|deps-webview|deps-libvnc|deps-all|libvnc|guac|engine|package|pkg|install-nfpm|all|all-with-pkg}" >&2
         exit 1
         ;;
 esac

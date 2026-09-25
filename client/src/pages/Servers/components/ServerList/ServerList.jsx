@@ -41,6 +41,7 @@ import {
     mdiPlay,
     mdiScript,
     mdiTunnel,
+    mdiWeb,
     mdiNoteEditOutline,
 } from "@mdi/js";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
@@ -100,6 +101,7 @@ export const ServerList = ({
     setEditServerId,
     connectToServer,
     openSFTP,
+    openBrowser,
     setCurrentOrganizationId,
     hibernatedSessions = [],
     joinLiveSession,
@@ -382,6 +384,7 @@ export const ServerList = ({
     const getIdentity = (id = null) => identities?.find(i => i.id === (id || server?.identities[0]));
     const connect = (id = null) => connectToServer(server?.id, getIdentity(id));
     const connectSFTP = (id = null) => openSFTP(server?.id, getIdentity(id));
+    const openBrowserSession = (id = null) => openBrowser(server?.id, getIdentity(id));
 
     const getIdentityName = (identityId) => {
         const identity = identities?.find(id => id.id === identityId);
@@ -822,6 +825,32 @@ export const ServerList = ({
                                                         icon={mdiAccountCircle}
                                                         label={getIdentityName(identityId)}
                                                         onClick={() => connectSFTP(identityId)}
+                                                    />
+                                                ))}
+                                            </ContextMenuItem>
+                                        )}
+                                    </>
+                                )}
+
+                                {server?.identities?.length > 0 && server?.protocol === "ssh" && (
+                                    <>
+                                        {server.identities.length === 1 ? (
+                                            <ContextMenuItem
+                                                icon={mdiWeb}
+                                                label={t("servers.contextMenu.openBrowser")}
+                                                onClick={() => openBrowserSession()}
+                                            />
+                                        ) : (
+                                            <ContextMenuItem
+                                                icon={mdiWeb}
+                                                label={t("servers.contextMenu.openBrowser")}
+                                            >
+                                                {server.identities.map((identityId) => (
+                                                    <ContextMenuItem
+                                                        key={identityId}
+                                                        icon={mdiAccountCircle}
+                                                        label={getIdentityName(identityId)}
+                                                        onClick={() => openBrowserSession(identityId)}
                                                     />
                                                 ))}
                                             </ContextMenuItem>

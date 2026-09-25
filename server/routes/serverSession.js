@@ -21,10 +21,24 @@ app.post("/", async (req, res) => {
     if (validateSchema(res, createSessionValidation, req.body)) return;
     
     try {
-        const { entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, scriptId, startPath } = req.body;
+        const { entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, displayDpi, scriptId, startPath } = req.body;
         const ipAddress = req.ip || req.socket?.remoteAddress || 'unknown';
         const userAgent = req.headers['user-agent'] || 'unknown';
-        const result = await createSession(req.user.id, entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, scriptId, startPath, ipAddress, userAgent);
+        const result = await createSession({
+            accountId: req.user.id,
+            entryId,
+            identityId,
+            connectionReason,
+            type,
+            directIdentity,
+            tabId,
+            browserId,
+            displayDpi,
+            scriptId,
+            startPath,
+            ipAddress,
+            userAgent,
+        });
         
         if (result?.code) {
             return res.status(result.code).json({ error: result.message });
@@ -233,9 +247,10 @@ app.post("/:id/paste-password", async (req, res) => {
         identityId = Number.parseInt(req.body.identityId, 10);
         if (Number.isNaN(identityId)) return res.status(400).json({ error: "Invalid identity ID" });
     }
+    const submit = req.body?.submit === true;
 
     try {
-        const result = await pasteIdentityPassword(req.user.id, req.params.id, req.ip, req.headers?.["user-agent"], identityId);
+        const result = await pasteIdentityPassword(req.user.id, req.params.id, req.ip, req.headers?.["user-agent"], identityId, submit);
         if (result?.code) return res.status(result.code).json({ error: result.message });
         res.json(result);
     } catch (error) {

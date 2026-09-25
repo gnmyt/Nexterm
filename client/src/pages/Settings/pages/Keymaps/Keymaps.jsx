@@ -2,7 +2,7 @@ import "./styles.sass";
 import { useKeymaps } from "@/common/contexts/KeymapContext.jsx";
 import { useEffect, useState } from "react";
 import Button from "@/common/components/Button";
-import { mdiRestore, mdiMagnify, mdiRobotOutline, mdiCodeArray, mdiKeyboard, mdiBroadcast, mdiContentCopy, mdiFullscreen, mdiFlash, mdiKey, mdiCheckCircleOutline, mdiAutoFix } from "@mdi/js";
+import { mdiRestore, mdiMagnify, mdiRobotOutline, mdiCodeArray, mdiKeyboard, mdiBroadcast, mdiContentCopy, mdiContentPaste, mdiFullscreen, mdiFlash, mdiKey, mdiCheckCircleOutline, mdiAutoFix } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
@@ -18,10 +18,11 @@ const KEYMAP_ICONS = {
     "broadcast": mdiBroadcast,
     "copy": mdiContentCopy,
     "fullscreen": mdiFullscreen,
+    "paste": mdiContentPaste,
     "paste-identity-password": mdiKey,
 };
 
-const KeybindRecorder = ({ action, currentKey, onUpdate, onReset }) => {
+const KeybindRecorder = ({ action, currentKey, enabled, onUpdate, onReset }) => {
     const [recording, setRecording] = useState(false);
     const [recordedKey, setRecordedKey] = useState("");
     const { formatKey } = useKeymaps();
@@ -32,7 +33,14 @@ const KeybindRecorder = ({ action, currentKey, onUpdate, onReset }) => {
 
         const handleKeyDown = (e) => {
             e.preventDefault();
-            e.stopPropagation();
+            e.stopImmediatePropagation();
+
+            if (e.key === "Escape") {
+                onUpdate(action, "", false);
+                setRecording(false);
+                setRecordedKey("");
+                return;
+            }
 
             const parts = [];
             if (e.ctrlKey) parts.push("ctrl");
@@ -51,8 +59,8 @@ const KeybindRecorder = ({ action, currentKey, onUpdate, onReset }) => {
             }
         };
 
-        document.addEventListener("keydown", handleKeyDown);
-        return () => document.removeEventListener("keydown", handleKeyDown);
+        document.addEventListener("keydown", handleKeyDown, true);
+        return () => document.removeEventListener("keydown", handleKeyDown, true);
     }, [recording]);
 
     const startRecording = () => {
@@ -79,7 +87,7 @@ const KeybindRecorder = ({ action, currentKey, onUpdate, onReset }) => {
                 {recording ? (
                     <span className="recording-text">{recordedKey ? formatKey(recordedKey) : t("settings.keymaps.recorder.pressKeys")}</span>
                 ) : (
-                    <span className="current-key">{formatKey(currentKey)}</span>
+                    <span className="current-key">{enabled ? formatKey(currentKey) : t("settings.keymaps.recorder.disabled")}</span>
                 )}
             </div>
             <div className="keybind-actions">
@@ -101,9 +109,9 @@ export const Keymaps = () => {
     const { keymaps, loading, updateKeymap, resetKeymap, resetAllKeymaps } = useKeymaps();
     const { sendToast } = useToast();
 
-    const handleUpdate = async (action, key) => {
+    const handleUpdate = async (action, key, enabled = true) => {
         try {
-            await updateKeymap(action, { key });
+            await updateKeymap(action, { key, enabled });
             sendToast("Success", t("settings.keymaps.messages.updateSuccess"));
         } catch (error) {
             sendToast("Error", error.message || t("settings.keymaps.messages.updateFailed"));
@@ -161,6 +169,7 @@ export const Keymaps = () => {
                                 <KeybindRecorder
                                     action={keymap.action}
                                     currentKey={keymap.key}
+                                    enabled={keymap.enabled}
                                     onUpdate={handleUpdate}
                                     onReset={handleReset}
                                 />

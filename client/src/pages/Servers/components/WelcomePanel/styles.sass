@@ -9,6 +9,21 @@
   justify-content: space-around
   padding: 2rem
   gap: 2rem
+  position: relative
+
+  &::after
+    content: ""
+    position: absolute
+    inset: 0.75rem
+    border: 1px solid colors.$primary
+    border-radius: 0.75rem
+    background-color: colors.$primary-opacity
+    opacity: 0
+    pointer-events: none
+    transition: opacity 0.12s ease
+
+  &.drop-target::after
+    opacity: 1
 
   .welcome-left
     width: 30%

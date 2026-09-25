@@ -6,8 +6,9 @@ const terminalSchema = Joi.object({
     cursorStyle: Joi.string().valid('block', 'underline', 'bar'),
     cursorBlink: Joi.boolean(),
     smartCopyPaste: Joi.boolean(),
-    passwordPromptDetection: Joi.boolean(),
     autoReconnect: Joi.boolean(),
+    copyPasteBehavior: Joi.string().valid('none', 'smart', 'keyboard', 'mouse', 'mouseKeyboard'),
+    passwordPromptDetection: Joi.boolean(),
     theme: Joi.string().max(50),
 }).unknown(false);
 
@@ -27,6 +28,7 @@ const filesSchema = Joi.object({
 
 const generalSchema = Joi.object({
     language: Joi.string().max(10),
+    sidebarCollapsed: Joi.boolean(),
 }).unknown(false);
 
 module.exports.preferencesValidation = Joi.object({

@@ -20,6 +20,7 @@ export const Permission = Object.freeze({
     CONNECT_SSH: "connect.ssh",
     CONNECT_RDP: "connect.rdp",
     CONNECT_VNC: "connect.vnc",
+    CONNECT_WEB: "connect.web",
     CONNECT_PROXMOX: "connect.proxmox",
     CONNECT_TUNNEL: "connect.tunnel",
     FILES_VIEW: "files.view",

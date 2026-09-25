@@ -1,0 +1,119 @@
+@use "@/common/styles/colors"
+@use "@/common/styles/breakpoints"
+
+.remote-session-strip
+  display: flex
+  align-items: center
+  gap: 0.35rem
+  flex-shrink: 0
+  margin-left: 0.5rem
+  padding-left: 0.75rem
+  border-left: 1px solid colors.$gray
+  user-select: none
+
+  @media (max-width: breakpoints.$mobile)
+    margin-left: 0.25rem
+    padding-left: 0.35rem
+    gap: 0.2rem
+
+  &__group
+    display: flex
+    align-items: center
+    gap: 0.15rem
+
+  & &__group svg
+    width: 0.9rem
+    height: 0.9rem
+
+  &__icon
+    margin: 0 0.1rem
+    color: colors.$subtext
+    opacity: 0.8
+
+  &__segments
+    display: flex
+    align-items: center
+    gap: 2px
+    padding: 2px
+    border-radius: 0.45rem
+    background-color: colors.$dark-gray
+
+    .remote-session-strip__chip
+      height: 1.3rem
+      min-width: 1.4rem
+      padding: 0 0.3rem
+      border-radius: 0.3rem
+      font-size: 0.7rem
+
+      &.active
+        background-color: colors.$gray
+        color: colors.$white
+
+  &__group.monitors
+    gap: 0.3rem
+
+  &__key, &__chip
+    height: 1.6rem
+    padding: 0 0.45rem
+    border: none
+    border-radius: 0.4rem
+    background-color: transparent
+    color: colors.$subtext
+    font-family: inherit
+    font-size: 0.75rem
+    font-weight: 600
+    line-height: 1
+    cursor: pointer
+    transition: background-color 0.1s ease-out, color 0.1s ease-out
+
+    &:hover
+      background-color: colors.$gray
+      color: colors.$white
+
+    &.held, &.active
+      background-color: colors.$primary
+      color: colors.$white
+
+  &__chip
+    min-width: 1.6rem
+    padding: 0 0.35rem
+
+    &.zoom
+      font-variant-numeric: tabular-nums
+
+  &__action
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 1.6rem
+    height: 1.6rem
+    padding: 0
+    border: none
+    border-radius: 0.4rem
+    background-color: transparent
+    color: colors.$subtext
+    cursor: pointer
+    transition: background-color 0.1s ease-out, color 0.1s ease-out
+
+    &:hover:not(:disabled)
+      background-color: colors.$gray
+      color: colors.$white
+
+    &:disabled
+      opacity: 0.35
+      cursor: not-allowed
+
+.title-bar .remote-session-strip
+  margin-left: 0.35rem
+  padding-left: 0.5rem
+
+  &__key, &__chip, &__action
+    height: 1.45rem
+    font-size: 0.7rem
+
+  &__action
+    width: 1.45rem
+
+  & .remote-session-strip__group svg
+    width: 0.8rem
+    height: 0.8rem

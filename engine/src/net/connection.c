@@ -1,4 +1,5 @@
 #include "connection.h"
+#include "web.h"
 #include "control_plane.h"
 #include "ssh.h"
 #include "telnet.h"
@@ -104,6 +105,8 @@ static void* guac_user_thread(void* arg) {
     user->owner = owner;
     user->active = 1;
 
+    user->pipe_handler = nexterm_web_pipe_handler;
+
     if (owner) {
         int num_client_args = 0;
         while (client->args[num_client_args] != NULL)
@@ -151,6 +154,7 @@ static const char* session_type_to_protocol(session_type_t type) {
         case SESSION_TYPE_SSH:    return "ssh";
         case SESSION_TYPE_TELNET: return "telnet";
         case SESSION_TYPE_DEMO:   return "demo";
+        case SESSION_TYPE_WEB:    return "vnc";
         default:                  return NULL;
     }
 }
@@ -295,21 +299,37 @@ static void* guac_session_thread(void* arg) {
     LOG_INFO("Starting guac session %s with protocol %s", session->session_id, protocol_name);
     session->state = SESSION_STATE_CONNECTING;
 
+    char metadata[64];
+    const char* result_metadata = NULL;
+    if (session->type == SESSION_TYPE_WEB) {
+        uint16_t vnc_port = 0;
+        if (nexterm_web_prepare(session, cp, &vnc_port) != 0) {
+            nexterm_sm_finish(&g_session_manager, session->session_id);
+            free(args);
+            return NULL;
+        }
+
+        snprintf(metadata, sizeof(metadata), "{\"vncPort\":%u}", vnc_port);
+        result_metadata = metadata;
+    }
+
     guac_client* client = guac_setup_client(session, cp, protocol_name);
     if (!client) {
+        nexterm_web_teardown(session);
         nexterm_sm_finish(&g_session_manager, session->session_id);
         free(args);
         return NULL;
     }
 
     session->guac_client = client;
+    if (session->type == SESSION_TYPE_WEB) nexterm_web_attach_client(session, client);
     snprintf(session->guac_connection_id, sizeof(session->guac_connection_id),
              "%s", client->connection_id);
     guac_socket_require_keep_alive(client->socket);
 
     session->state = SESSION_STATE_ACTIVE;
-    nexterm_cp_send_session_result(cp, session->session_id, true,
-                                   NULL, client->connection_id);
+    nexterm_cp_send_session_result_meta(cp, session->session_id, true,
+                                        NULL, client->connection_id, result_metadata);
     LOG_INFO("Guac session %s active (connection_id=%s)",
              session->session_id, client->connection_id);
 
@@ -328,6 +348,7 @@ static void* guac_session_thread(void* arg) {
         nexterm_sm_unlock(&g_session_manager);
         guac_client_stop(client);
         guac_client_free(client);
+        nexterm_web_teardown(session);
         nexterm_cp_send_session_closed(cp, session->session_id, "internal error");
         nexterm_sm_finish(&g_session_manager, session->session_id);
         free(args);
@@ -354,6 +375,8 @@ static void* guac_session_thread(void* arg) {
 
     guac_client_stop(client);
     guac_client_free(client);
+
+    nexterm_web_teardown(session);
 
     char rec_path[512];
     snprintf(rec_path, sizeof(rec_path), "/tmp/nexterm-recordings/%s", session_id);

@@ -95,8 +95,7 @@ int guac_vnc_user_join_handler(guac_user* user, int argc, char** argv) {
 #endif
 
 #ifdef LIBVNC_HAS_RESIZE_SUPPORT
-        /* If user is owner, set size handler. */
-        if (user->owner && !settings->disable_display_resize)
+        if (!settings->disable_display_resize)
             user->size_handler = guac_vnc_user_size_handler;
 #else
         guac_user_log(user, GUAC_LOG_WARNING,
