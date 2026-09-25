@@ -3,7 +3,7 @@ import Guacamole from "guacamole-common-js";
 import Icon from "@mdi/react";
 import { mdiCloudUpload } from "@mdi/js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
+import { useKeymaps, matchesKeybind, isMac } from "@/common/contexts/KeymapContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
@@ -29,6 +29,14 @@ const ZOOM_MIN = 1;
 const ZOOM_MAX = 4;
 
 const ZOOM_STEP = 0.25;
+const REMOTE_CLIPBOARD_TIMEOUT = 1000;
+
+
+const MACOS_RDP_SHORTCUTS = new Set(["c", "x", "v", "a", "z", "f", "w"]);
+
+const CTRL_KEYSYM = 0xffe3;
+
+const WIN_KEYSYM = 0xffeb;
 
 const resumeAudioContext = () => {
     const context = Guacamole.AudioContextFactory.getAudioContext();
@@ -95,8 +103,11 @@ const GuacamoleRenderer = ({
     const connectionLoaderRef = useRef(null);
     const audioPlayersRef = useRef([]);
     const [isDragOver, setIsDragOver] = useState(false);
+    const macCommandRef = useRef({ active: false, forwarded: false, handled: false });
+    const interceptedKeysRef = useRef(new Set());
     const browserFsRef = useRef(null);
     const clipboardIntervalRef = useRef(null);
+    const remoteClipboardCopyRef = useRef(null);
     const clipboardReadInFlightRef = useRef(false);
     const clipboardSyncRef = useRef(null);
     const ctrlPressedRef = useRef(false);
@@ -244,6 +255,12 @@ const GuacamoleRenderer = ({
         setHeldModifiers(new Set());
     };
 
+    const releaseMacCommand = () => {
+        if (macCommandRef.current.forwarded) clientRef.current?.sendKeyEvent(0, WIN_KEYSYM);
+        macCommandRef.current = { active: false, forwarded: false, handled: false };
+        interceptedKeysRef.current.clear();
+    };
+
     const sendShortcut = (keys) => {
         if (!clientRef.current) return;
         keys.forEach((key) => clientRef.current.sendKeyEvent(1, key));
@@ -254,12 +271,12 @@ const GuacamoleRenderer = ({
 
     const sendClipboardShortcut = () => {
         if (!clientRef.current) return;
-        if (ctrlPressedRef.current || heldModifiersRef.current.has(0xffe3)) {
+        if (ctrlPressedRef.current || heldModifiersRef.current.has(CTRL_KEYSYM)) {
             clientRef.current.sendKeyEvent(1, 0x0076);
             clientRef.current.sendKeyEvent(0, 0x0076);
             return;
         }
-        sendShortcut([0xffe3, 0x0076]);
+        sendShortcut([CTRL_KEYSYM, 0x0076]);
     };
 
     const selectMonitor = (index) => {
@@ -323,6 +340,28 @@ const GuacamoleRenderer = ({
             if (poppedOut.delete(monitor)) updatePoppedOutMonitors(poppedOut);
         });
     }, [session.id, ownsSession]);
+
+    const beginRemoteClipboardCopy = () => {
+        remoteClipboardCopyRef.current?.complete(null);
+
+        let resolve;
+        const copy = {
+            promise: new Promise((done) => resolve = done),
+            timeout: null,
+            complete: null,
+        };
+        copy.complete = (text) => {
+            if (!copy.timeout) return;
+            clearTimeout(copy.timeout);
+            copy.timeout = null;
+            if (remoteClipboardCopyRef.current === copy) remoteClipboardCopyRef.current = null;
+            resolve(text);
+        };
+        copy.timeout = setTimeout(() => copy.complete(null), REMOTE_CLIPBOARD_TIMEOUT);
+        remoteClipboardCopyRef.current = copy;
+    };
+
+    const completeRemoteClipboardCopy = (text) => remoteClipboardCopyRef.current?.complete(text);
 
     const sendClipboardToServer = (text) => {
         const current = clipboardSyncRef.current;
@@ -511,6 +550,7 @@ const GuacamoleRenderer = ({
             let data = "";
             reader.ontext = (t) => data += t;
             reader.onend = async () => {
+                completeRemoteClipboardCopy(data);
                 try {
                     await navigator.clipboard.writeText(data);
                 } catch (e) {
@@ -520,7 +560,7 @@ const GuacamoleRenderer = ({
         };
 
         initClipboardPolling();
-        const onPaste = (e) => {
+        const onPaste = async (e) => {
             if (e.clipboardData?.files?.length > 0) {
             if (!ref.current?.contains(e.target)) return;
             e.stopImmediatePropagation();
@@ -529,8 +569,13 @@ const GuacamoleRenderer = ({
                 return;
             }
             if (!interceptPaste) return;
-            const text = e.clipboardData?.getData("text");
+            const pendingRemoteCopy = remoteClipboardCopyRef.current;
+            let text = e.clipboardData?.getData("text");
             e.preventDefault();
+            if (pendingRemoteCopy) {
+                const remoteText = await pendingRemoteCopy.promise;
+                if (remoteText !== null) text = remoteText;
+            }
             if (text) {
                 const sync = sendClipboardToServer(text);
                 if (sync.pasteInFlight) return;
@@ -554,6 +599,7 @@ const GuacamoleRenderer = ({
                 clipboardIntervalRef.current = null;
             }
             clipboardSyncRef.current?.complete();
+            remoteClipboardCopyRef.current?.complete(null);
         };
     };
 
@@ -669,9 +715,73 @@ const GuacamoleRenderer = ({
         };
         ref.current.focus();
 
+        const translatesMacShortcuts = isMac() && (session.server?.protocol || session.server?.config?.protocol || session.server?.type) === "rdp";
+        const sendKey = (keysym) => {
+            client.sendKeyEvent(1, keysym);
+            client.sendKeyEvent(0, keysym);
+        };
+        const interceptMacRdpKeyDown = (e) => {
+            if (!translatesMacShortcuts) return false;
+
+            if (e.key === "Meta") {
+                if (!e.repeat) macCommandRef.current = { active: true, forwarded: false, handled: false };
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                return true;
+            }
+
+            const command = macCommandRef.current;
+            const key = e.key.toLowerCase();
+            if (command.active && !command.forwarded && MACOS_RDP_SHORTCUTS.has(key) && !e.ctrlKey && !e.altKey) {
+                command.handled = true;
+                interceptedKeysRef.current.add(e.code);
+                e.stopImmediatePropagation();
+                if (key !== "v") {
+                    e.preventDefault();
+                    if (!e.repeat) {
+                        if (key === "c" || key === "x") beginRemoteClipboardCopy();
+                        sendShortcut([CTRL_KEYSYM, key.charCodeAt(0)]);
+                    }
+                }
+                return true;
+            }
+
+            if (command.active && !command.forwarded) {
+                client.sendKeyEvent(1, WIN_KEYSYM);
+                command.forwarded = true;
+            }
+
+            if (e.ctrlKey && !e.metaKey && !e.altKey && key === "c") {
+                interceptedKeysRef.current.add(e.code);
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                if (!e.repeat) sendKey(0x0063);
+                return true;
+            }
+
+            return false;
+        };
+        const interceptMacRdpKeyUp = (e) => {
+            if (!translatesMacShortcuts) return false;
+
+            if (e.key === "Meta" && macCommandRef.current.active) {
+                const command = macCommandRef.current;
+                if (!command.forwarded && !command.handled) sendShortcut([WIN_KEYSYM]);
+                macCommandRef.current = { active: false, forwarded: false, handled: false };
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                return true;
+            }
+
+            if (!interceptedKeysRef.current.delete(e.code)) return false;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            return true;
+        };
         const handleKeyDown = (e) => {
             if (e.key === "Control") ctrlPressedRef.current = true;
             if (!ref.current?.contains(e.target)) return;
+            if (interceptMacRdpKeyDown(e)) return;
             const kb = getParsedKeybind("fullscreen");
             if (kb && matchesKeybind(e, kb)) {
                 e.preventDefault();
@@ -687,6 +797,7 @@ const GuacamoleRenderer = ({
         const handleKeyUp = (e) => {
             if (!ref.current?.contains(e.target)) return;
             if (e.key === "Control") ctrlPressedRef.current = false;
+            if (interceptMacRdpKeyUp(e)) return;
             if (interceptPaste && (e.ctrlKey || e.metaKey) && (e.key === "v" || e.key === "V")) {
                 e.stopImmediatePropagation();
             }
@@ -701,7 +812,10 @@ const GuacamoleRenderer = ({
         document.addEventListener("keypress", handleKeyPress, true);
         document.addEventListener("keyup", handleKeyUp, true);
         ref.current.addEventListener("keypress", handleKeyPress, true);
-        const handleBlur = () => ctrlPressedRef.current = false;
+        const handleBlur = () => {
+            releaseMacCommand();
+            ctrlPressedRef.current = false;
+        };
         ref.current.addEventListener("keydown", handleKeyDown, true);
         ref.current.addEventListener("keyup", handleKeyUp, true);
         ref.current.addEventListener("blur", handleBlur, true);
@@ -784,6 +898,8 @@ const GuacamoleRenderer = ({
             maxMonitorsRef.current = 1;
             heldModifiersRef.current = new Set();
             ctrlPressedRef.current = false;
+            macCommandRef.current = { active: false, forwarded: false, handled: false };
+            interceptedKeysRef.current.clear();
             zoomRef.current = ZOOM_MIN;
             panRef.current = { x: 0, y: 0 };
             panDragRef.current = null;
@@ -802,8 +918,12 @@ const GuacamoleRenderer = ({
     }, [sessionToken, session.id, isShared]);
 
     useEffect(() => {
-        window.addEventListener("blur", releaseModifiers);
-        return () => window.removeEventListener("blur", releaseModifiers);
+        const releaseKeyboardState = () => {
+            releaseModifiers();
+            releaseMacCommand();
+        };
+        window.addEventListener("blur", releaseKeyboardState);
+        return () => window.removeEventListener("blur", releaseKeyboardState);
     }, []);
 
     useEffect(() => {
