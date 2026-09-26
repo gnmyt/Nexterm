@@ -950,8 +950,15 @@ const GuacamoleRenderer = ({
     };
 
     useEffect(() => {
-        const cleanup = connect();
-        return () => cleanup?.();
+        let cleanup;
+        const connectTimer = window.setTimeout(() => {
+            cleanup = connect();
+        });
+
+        return () => {
+            window.clearTimeout(connectTimer);
+            cleanup?.();
+        };
     }, [sessionToken, session.id, isShared]);
 
     useEffect(() => {
