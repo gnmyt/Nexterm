@@ -60,6 +60,12 @@ export const Servers = () => {
     const closingSessionsRef = useRef(new Set());
     const erroredSessionsRef = useRef(new Map());
     const autoReconnectRef = useRef(null);
+    const activeSessionsRef = useRef(activeSessions);
+    const reconnectingKeysRef = useRef(new Set());
+
+    useEffect(() => {
+        activeSessionsRef.current = activeSessions;
+    }, [activeSessions]);
 
     const markSessionErrored = useCallback((sessionId, message) => {
         if (erroredSessionsRef.current.has(sessionId)) return;
@@ -240,7 +246,7 @@ export const Servers = () => {
     };
 
     const performConnection = async (options, connectionReason = null) => {
-        const { server, identity = null, type = null, directIdentity = null, scriptId = null, scriptName = null, placement = null, replaceSessionId = null } = options;
+        const { server, identity = null, type = null, directIdentity = null, scriptId = null, scriptName = null, placement = null, replaceSessionId = null, reconnectKey: existingReconnectKey = null } = options;
         try {
             const payload = {
                 entryId: server.id,
@@ -259,9 +265,8 @@ export const Servers = () => {
             const organization = findOrganizationForServer(server.id, servers);
             const organizationId = organization ? parseInt(organization.id.split("-")[1]) : null;
 
-            const reconnectKey = (replaceSessionId
-                ? activeSessions.find(s => s.id === replaceSessionId)?.reconnectKey
-                : null) || makeReconnectKey();
+            const reconnectKey = existingReconnectKey || activeSessionsRef.current
+                .find(s => s.id === replaceSessionId)?.reconnectKey || makeReconnectKey();
 
             const sessionData = {
                 server,
@@ -277,17 +282,22 @@ export const Servers = () => {
 
             sessionLayout.placeSession(session.sessionId, placement);
             if (replaceSessionId) {
-                closingSessionsRef.current.add(replaceSessionId);
-                erroredSessionsRef.current.delete(replaceSessionId);
-                sessionLayout.replaceSession(replaceSessionId, session.sessionId);
-                deleteRequest(`/connections/${replaceSessionId}`).catch(error => {
-                    console.debug("Old session deletion request failed:", error);
+                const replacedSessionIds = new Set(activeSessionsRef.current
+                    .filter(s => s.id === replaceSessionId || s.reconnectKey === reconnectKey)
+                    .map(s => s.id));
+                replacedSessionIds.add(replaceSessionId);
+                replacedSessionIds.forEach(id => {
+                    closingSessionsRef.current.add(id);
+                    erroredSessionsRef.current.delete(id);
+                    deleteRequest(`/connections/${id}`).catch(error => {
+                        console.debug("Old session deletion request failed:", error);
+                    });
                 });
+                sessionLayout.replaceSession(replaceSessionId, session.sessionId);
                 setActiveSessions(prevSessions => {
-                    const idx = prevSessions.findIndex(s => s.id === replaceSessionId);
-                    if (idx === -1) return [...prevSessions, sessionData];
-                    const next = [...prevSessions];
-                    next.splice(idx, 1, sessionData);
+                    const index = prevSessions.findIndex(s => s.id === replaceSessionId);
+                    const next = prevSessions.filter(s => !replacedSessionIds.has(s.id) && s.id !== session.sessionId && s.reconnectKey !== reconnectKey);
+                    next.splice(index === -1 ? next.length : Math.min(index, next.length), 0, sessionData);
                     return next;
                 });
             } else {
@@ -375,17 +385,25 @@ export const Servers = () => {
     };
 
     const reconnectSession = async (sessionId) => {
-        const session = activeSessions.find(s => s.id === sessionId);
-        if (!session || session.type === "notes" || session.isJoined) return { connected: false, deferred: true };
+        const session = activeSessionsRef.current.find(s => s.id === sessionId);
+        if (!session || session.type === "notes" || session.isJoined || reconnectingKeysRef.current.has(session.reconnectKey)) {
+            return { connected: false, deferred: true };
+        }
 
-        return await initiateConnection({
-            server: session.server,
-            identity: session.identity ? { id: session.identity } : null,
-            type: session.type ?? null,
-            scriptId: session.scriptId ?? null,
-            scriptName: session.scriptName ?? null,
-            replaceSessionId: sessionId,
-        });
+        reconnectingKeysRef.current.add(session.reconnectKey);
+        try {
+            return await initiateConnection({
+                server: session.server,
+                identity: session.identity ? { id: session.identity } : null,
+                type: session.type ?? null,
+                scriptId: session.scriptId ?? null,
+                scriptName: session.scriptName ?? null,
+                replaceSessionId: sessionId,
+                reconnectKey: session.reconnectKey,
+            });
+        } finally {
+            reconnectingKeysRef.current.delete(session.reconnectKey);
+        }
     };
 
     const autoReconnectApi = useAutoReconnect({
