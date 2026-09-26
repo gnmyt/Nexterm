@@ -19,6 +19,10 @@ module.exports.createSessionValidation = Joi.object({
     }).optional()
 });
 
+module.exports.reconnectSessionValidation = module.exports.createSessionValidation.keys({
+    connectionGeneration: Joi.number().integer().min(0).required(),
+});
+
 module.exports.sessionIdValidation = Joi.object({
     id: Joi.string().uuid().required()
 });

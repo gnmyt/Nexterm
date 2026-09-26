@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 const BACKOFFS = [5, 10, 30, 60, 120];
 const MAX_ATTEMPTS = BACKOFFS.length;
 const RECONNECT_COOLDOWN_MS = 3000;
+const STABLE_CONNECTION_MS = 10000;
 const isEligible = (session) => {
     if (!session) return false;
     if (session.type === "notes" || session.isJoined) return false;
@@ -18,6 +19,8 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
     const attemptsByKey = useRef(new Map());
     const timersByKey = useRef(new Map());
     const lastReconnectByKey = useRef(new Map());
+    const reconnectsByKey = useRef(new Map());
+    const connectionTimersByKey = useRef(new Map());
     const scheduleRef = useRef(null);
 
     const activeSessionsRef = useRef(activeSessions);
@@ -45,6 +48,14 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
         }
     }, []);
 
+    const clearConnectionTimer = useCallback((key) => {
+        const timer = connectionTimersByKey.current.get(key);
+        if (timer !== undefined) {
+            clearTimeout(timer);
+            connectionTimersByKey.current.delete(key);
+        }
+    }, []);
+
     const clearState = useCallback((key) => {
         setReconnectStates(prev => {
             if (!(key in prev)) return prev;
@@ -54,17 +65,18 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
         });
     }, []);
 
-    const doReconnect = useCallback(async (sessionId, key) => {
+    const doReconnect = useCallback((sessionId, key) => {
+        const reconnecting = reconnectsByKey.current.get(key);
+        if (reconnecting) return reconnecting;
         const now = Date.now();
-        if (now - (lastReconnectByKey.current.get(key) || 0) < RECONNECT_COOLDOWN_MS) return null;
+        if (now - (lastReconnectByKey.current.get(key) || 0) < RECONNECT_COOLDOWN_MS) return Promise.resolve(null);
         lastReconnectByKey.current.set(key, now);
-        try {
-            const result = await reconnectSessionRef.current?.(sessionId);
-            if (result?.deferred) return null;
-            return result?.connected === true;
-        } catch {
-            return false;
-        }
+        const reconnect = Promise.resolve(reconnectSessionRef.current?.(sessionId))
+            .then(result => result?.deferred ? null : result?.connected === true)
+            .catch(() => false)
+            .finally(() => reconnectsByKey.current.delete(key));
+        reconnectsByKey.current.set(key, reconnect);
+        return reconnect;
     }, []);
 
     const schedule = useCallback((key) => {
@@ -94,18 +106,23 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
         const key = keyForSession(sessionId);
         if (!key) return;
         connectedByKey.current.set(key, true);
-        attemptsByKey.current.set(key, 0);
         clearTimer(key);
         clearState(key);
-    }, [keyForSession, clearTimer, clearState]);
+        clearConnectionTimer(key);
+        connectionTimersByKey.current.set(key, setTimeout(() => {
+            attemptsByKey.current.set(key, 0);
+            connectionTimersByKey.current.delete(key);
+        }, STABLE_CONNECTION_MS));
+    }, [keyForSession, clearTimer, clearState, clearConnectionTimer]);
 
     const handleSessionErrored = useCallback((sessionId) => {
         if (!enabledRef.current) return;
         const session = activeSessionsRef.current.find(s => s.id === sessionId);
         if (!isEligible(session) || !session.reconnectKey) return;
         if (!connectedByKey.current.get(session.reconnectKey)) return;
+        clearConnectionTimer(session.reconnectKey);
         schedule(session.reconnectKey);
-    }, [schedule]);
+    }, [schedule, clearConnectionTimer]);
 
     const reconnectNow = useCallback((sessionId) => {
         const key = keyForSession(sessionId);
@@ -127,7 +144,6 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
             if (!key || !isEligible(session)) continue;
             if (!connectedByKey.current.get(key)) continue;
             if (!getSessionErrorRef.current?.(session.id)) continue;
-            attemptsByKey.current.set(key, 0);
             clearTimer(key);
             clearState(key);
             void doReconnect(session.id, key).then((reconnected) => {
@@ -152,6 +168,8 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
         if (enabled) return;
         timersByKey.current.forEach(timer => clearTimeout(timer));
         timersByKey.current.clear();
+        connectionTimersByKey.current.forEach(timer => clearTimeout(timer));
+        connectionTimersByKey.current.clear();
         queueMicrotask(() => setReconnectStates({}));
     }, [enabled]);
 
@@ -160,7 +178,10 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
         for (const key of Array.from(timersByKey.current.keys())) {
             if (!liveKeys.has(key)) clearTimer(key);
         }
-        for (const map of [connectedByKey.current, attemptsByKey.current, lastReconnectByKey.current]) {
+        for (const key of Array.from(connectionTimersByKey.current.keys())) {
+            if (!liveKeys.has(key)) clearConnectionTimer(key);
+        }
+        for (const map of [connectedByKey.current, attemptsByKey.current, lastReconnectByKey.current, reconnectsByKey.current]) {
             for (const key of Array.from(map.keys())) if (!liveKeys.has(key)) map.delete(key);
         }
         queueMicrotask(() => setReconnectStates(prev => {
@@ -174,11 +195,13 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
             }
             return changed ? next : prev;
         }));
-    }, [activeSessions, clearTimer]);
+    }, [activeSessions, clearTimer, clearConnectionTimer]);
 
     useEffect(() => () => {
         timersByKey.current.forEach(timer => clearTimeout(timer));
         timersByKey.current.clear();
+        connectionTimersByKey.current.forEach(timer => clearTimeout(timer));
+        connectionTimersByKey.current.clear();
     }, []);
 
     return useMemo(() => ({
