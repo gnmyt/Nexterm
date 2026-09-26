@@ -555,6 +555,10 @@ class _ServersScreenState extends State<ServersScreen> {
           _menuItem(ctx, MdiIcons.cursorDefaultClick, 'Quick Connect', cs, () {
             Navigator.pop(ctx); _quickConnect(server);
           }),
+        if (server.canWakeOnLan)
+          _menuItem(ctx, MdiIcons.powerPlug, 'Wake-On-LAN', cs, () {
+            Navigator.pop(ctx); _wakeServer(server);
+          }),
         const SizedBox(height: 12),
       ])),
     );
@@ -595,6 +599,35 @@ class _ServersScreenState extends State<ServersScreen> {
       type: ServerService.isGuacamoleProtocol(server.protocol) ? ConnectionType.guacamole : ConnectionType.terminal,
       directIdentity: directIdentity,
     );
+  }
+
+  Future<void> _wakeServer(Server server) async {
+    final token = widget.authManager.sessionToken;
+    if (token == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Not authenticated'), behavior: SnackBarBehavior.floating));
+      }
+      return;
+    }
+    final entryId = server.id;
+    if (entryId == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Failed to send magic packet: missing server id'), behavior: SnackBarBehavior.floating));
+      }
+      return;
+    }
+    try {
+      await ServerService.wakeServer(token: token, entryId: entryId);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Magic packet sent to ${server.name}'), behavior: SnackBarBehavior.floating));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Failed to send magic packet: $e'), behavior: SnackBarBehavior.floating));
+    }
   }
 
   void _connectToServer(Server server) {
