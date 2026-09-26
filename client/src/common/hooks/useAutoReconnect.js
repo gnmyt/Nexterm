@@ -144,7 +144,6 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
             if (!key || !isEligible(session)) continue;
             if (!connectedByKey.current.get(key)) continue;
             if (!getSessionErrorRef.current?.(session.id)) continue;
-            attemptsByKey.current.set(key, 0);
             clearTimer(key);
             clearState(key);
             void doReconnect(session.id, key).then((reconnected) => {

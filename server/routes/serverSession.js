@@ -1,11 +1,30 @@
 const { Router } = require("express");
-const { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword } = require("../controllers/serverSession");
+const { createSession, reconnectSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword } = require("../controllers/serverSession");
 const { execCommand } = require("../controllers/execCommand");
-const { createSessionValidation, sessionIdValidation, resumeSessionValidation, duplicateSessionValidation } = require("../validations/serverSession");
+const { createSessionValidation, reconnectSessionValidation, sessionIdValidation, resumeSessionValidation, duplicateSessionValidation } = require("../validations/serverSession");
 const { validateSchema } = require("../utils/schema");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 
 const app = Router();
+const getSessionOptions = (req) => {
+    const { entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, displayDpi, scriptId, startPath, connectionGeneration } = req.body;
+    return {
+        accountId: req.user.id,
+        entryId,
+        identityId,
+        connectionReason,
+        type,
+        directIdentity,
+        tabId,
+        browserId,
+        displayDpi,
+        scriptId,
+        startPath,
+        connectionGeneration,
+        ipAddress: req.ip || req.socket?.remoteAddress || 'unknown',
+        userAgent: req.headers['user-agent'] || 'unknown',
+    };
+};
 
 /**
  * POST /connections
@@ -21,24 +40,7 @@ app.post("/", async (req, res) => {
     if (validateSchema(res, createSessionValidation, req.body)) return;
     
     try {
-        const { entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, displayDpi, scriptId, startPath } = req.body;
-        const ipAddress = req.ip || req.socket?.remoteAddress || 'unknown';
-        const userAgent = req.headers['user-agent'] || 'unknown';
-        const result = await createSession({
-            accountId: req.user.id,
-            entryId,
-            identityId,
-            connectionReason,
-            type,
-            directIdentity,
-            tabId,
-            browserId,
-            displayDpi,
-            scriptId,
-            startPath,
-            ipAddress,
-            userAgent,
-        });
+        const result = await createSession(getSessionOptions(req));
         
         if (result?.code) {
             return res.status(result.code).json({ error: result.message });
@@ -47,6 +49,25 @@ app.post("/", async (req, res) => {
         res.status(201).json(result);
     } catch (error) {
         console.error('Error creating session:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.post("/:id/reconnect", async (req, res) => {
+    if (validateSchema(res, sessionIdValidation, req.params)) return;
+    if (validateSchema(res, reconnectSessionValidation, req.body)) return;
+
+    try {
+        const result = await reconnectSession({
+            ...getSessionOptions(req),
+            sessionId: req.params.id,
+        });
+        if (result?.code) {
+            return res.status(result.code).json({ error: result.message });
+        }
+        res.json(result);
+    } catch (error) {
+        console.error('Error reconnecting session:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
