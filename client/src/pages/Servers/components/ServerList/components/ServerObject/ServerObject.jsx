@@ -7,16 +7,157 @@ import { useLiveSessions } from "@/common/contexts/LiveSessionContext.jsx";
 import AvatarStack from "@/common/components/AvatarStack";
 import { getSessionOwnerLabel } from "@/common/utils/avatar.js";
 import { useTranslation } from "react-i18next";
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { patchRequest } from "@/common/utils/RequestUtil.js";
 import { DropIndicator } from "../DropIndicator";
+import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
+
+const SCROLL_SPEED = 24;
+const SCROLL_START_PAUSE_MS = 2000;
+const SCROLL_END_PAUSE_MS = 3000;
+const HOVER_END_PAUSE_MS = 2500;
+const HOVER_RESET_MS = 80;
+
+const ServerNote = ({ text, mode, isHovered }) => {
+    const containerRef = useRef(null);
+    const textRef = useRef(null);
+    const trackRef = useRef(null);
+    const animationRef = useRef(null);
+    const hoveredRef = useRef(false);
+    const [hoverPassDone, setHoverPassDone] = useState(false);
+    const [dimensions, setDimensions] = useState({ containerWidth: 0, textWidth: 0 });
+    const overflow = dimensions.textWidth > dimensions.containerWidth + 1;
+    const hoverRun = mode === "hover" && isHovered && !hoverPassDone;
+    const [reducedMotion, setReducedMotion] = useState(() =>
+        window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false
+    );
+
+    useEffect(() => {
+        const container = containerRef.current;
+        const content = textRef.current;
+        if (!container || !content) return;
+
+        const measure = () => {
+            const next = { containerWidth: container.clientWidth, textWidth: content.scrollWidth };
+            setDimensions(current => current.containerWidth === next.containerWidth && current.textWidth === next.textWidth ? current : next);
+        };
+        measure();
+        const observer = new ResizeObserver(measure);
+        observer.observe(container);
+        observer.observe(content);
+        return () => observer.disconnect();
+    }, [text]);
+
+    useEffect(() => {
+        const query = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+        if (!query) return;
+        const update = () => setReducedMotion(query.matches);
+        update();
+        query.addEventListener?.("change", update);
+        return () => query.removeEventListener?.("change", update);
+    }, []);
+
+    useEffect(() => {
+        animationRef.current?.cancel();
+        animationRef.current = null;
+        if (!overflow || mode === "none" || reducedMotion || !trackRef.current || !textRef.current || !containerRef.current) return;
+        if (mode === "hover" && !hoverRun) return;
+
+        const { containerWidth: visibleWidth, textWidth: contentWidth } = dimensions;
+        const distance = mode === "infinite"
+            ? contentWidth + parseFloat(getComputedStyle(trackRef.current).columnGap || "0")
+            : contentWidth - visibleWidth;
+        if (distance <= 0) return;
+
+        const travelMs = distance / SCROLL_SPEED * 1000;
+        let keyframes;
+        let duration;
+        let iterations = Infinity;
+        if (mode === "stop") {
+            duration = travelMs + SCROLL_START_PAUSE_MS + SCROLL_END_PAUSE_MS;
+            const startHold = SCROLL_START_PAUSE_MS / duration;
+            const endHold = (SCROLL_START_PAUSE_MS + travelMs) / duration;
+            keyframes = [
+                { transform: "translateX(0)", offset: 0 },
+                { transform: "translateX(0)", offset: startHold },
+                { transform: `translateX(-${distance}px)`, offset: endHold },
+                { transform: `translateX(-${distance}px)`, offset: 1 },
+            ];
+        } else if (mode === "hover") {
+            duration = travelMs + HOVER_END_PAUSE_MS + HOVER_RESET_MS;
+            const endHold = travelMs / duration;
+            const resetStart = (travelMs + HOVER_END_PAUSE_MS) / duration;
+            iterations = 1;
+            keyframes = [
+                { transform: "translateX(0)", offset: 0 },
+                { transform: `translateX(-${distance}px)`, offset: endHold },
+                { transform: `translateX(-${distance}px)`, offset: resetStart },
+                { transform: "translateX(0)", offset: 1 },
+            ];
+        } else {
+            duration = travelMs;
+            keyframes = [
+                { transform: "translateX(0)" },
+                { transform: `translateX(-${distance}px)` },
+            ];
+        }
+
+        animationRef.current = trackRef.current.animate(keyframes, {
+            duration,
+            iterations,
+            easing: "linear",
+        });
+        const animation = animationRef.current;
+        if (mode === "hover") {
+            animation.onfinish = () => {
+                animation.cancel();
+                if (animationRef.current === animation) animationRef.current = null;
+                setHoverPassDone(true);
+            };
+        } else if (hoveredRef.current) {
+            animation.pause();
+        }
+        return () => {
+            animationRef.current?.cancel();
+            animationRef.current = null;
+        };
+    }, [mode, overflow, reducedMotion, text, dimensions, hoverRun]);
+
+    useEffect(() => {
+        hoveredRef.current = isHovered;
+        if (isHovered) {
+            setHoverPassDone(false);
+            if (mode !== "hover") animationRef.current?.pause();
+        } else if (mode !== "hover") {
+            animationRef.current?.play();
+        }
+    }, [isHovered, mode]);
+
+    const hoverAnimationActive = hoverRun && overflow && !reducedMotion;
+
+    return (
+        <span
+            ref={containerRef}
+            className={`server-note server-note--${mode} ${hoverAnimationActive ? "server-note--hover-active" : ""}`}
+        >
+            <span ref={trackRef} className="server-note-track">
+                <span ref={textRef} className="server-note-text">{text}</span>
+                {mode === "infinite" && overflow && (
+                    <span className="server-note-text" aria-hidden="true">{text}</span>
+                )}
+            </span>
+        </span>
+    );
+};
 
 export const ServerObject = ({ id, name, position, folderId, organizationId, nestedLevel, icon, type, connectToServer, status, tags = [], hibernatedSessionCount = 0 }) => {
     const { loadServers, getServerById } = useContext(ServerContext);
     const { getLiveSessionsForEntry } = useLiveSessions();
     const { t } = useTranslation();
+    const { serverNoteScrollMode } = usePreferences();
     const [dropPlacement, setDropPlacement] = useState(null);
+    const [isServerHovered, setIsServerHovered] = useState(false);
     const elementRef = useRef(null);
 
     const isIntegrationEntry = Boolean(type?.startsWith("pve-"));
@@ -98,7 +239,11 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
                 dragRef(dropRef(node));
             }}
             onDoubleClick={connect}
-            onMouseLeave={() => setDropPlacement(null)}>
+            onMouseEnter={() => setIsServerHovered(true)}
+            onMouseLeave={() => {
+                setIsServerHovered(false);
+                setDropPlacement(null);
+            }}>
             <DropIndicator show={isOver && dropPlacement === 'before'} placement="before" />
             <div className={
                 type && type.startsWith('pve-') 
@@ -109,7 +254,7 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
             </div>
             <div className="server-text">
                 <p className="server-name truncate-text">{name}</p>
-                {noteLine && <span className="server-note truncate-text">{noteLine}</span>}
+                {noteLine && <ServerNote text={noteLine} mode={serverNoteScrollMode || "none"} isHovered={isServerHovered} />}
             </div>
             {hibernatedSessionCount > 0 && (
                 <div className="hibernation-indicator" title={`${hibernatedSessionCount} hibernated session${hibernatedSessionCount > 1 ? 's' : ''}`}>

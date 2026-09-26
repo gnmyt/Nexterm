@@ -617,6 +617,15 @@
       "themeLabel": "Motiv",
       "accentColor": "Akcentová barva",
       "sizeLabel": "Velikost",
+      "serverList": {
+        "title": "Seznam serverů",
+        "description": "Zvolte, jak se mají zobrazovat poznámky pod názvy serverů.",
+        "noteScrollMode": "Režim posouvání poznámek",
+        "scrollModeNone": "Bez posouvání",
+        "scrollModeHover": "Jednou posunout při najetí",
+        "scrollModeStop": "Posouvání s pauzami",
+        "scrollModeInfinite": "Nekonečné posouvání"
+      },
       "sizeXS": "XS",
       "sizeS": "S",
       "sizeM": "M",

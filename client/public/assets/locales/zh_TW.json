@@ -617,6 +617,15 @@
       "themeLabel": "主題",
       "accentColor": "重點顏色",
       "sizeLabel": "尺寸",
+      "serverList": {
+        "title": "伺服器清單",
+        "description": "選擇伺服器名稱下方備註的顯示方式。",
+        "noteScrollMode": "備註捲動模式",
+        "scrollModeNone": "不捲動",
+        "scrollModeHover": "懸停時捲動一次",
+        "scrollModeStop": "間歇捲動",
+        "scrollModeInfinite": "連續捲動"
+      },
       "sizeXS": "XS",
       "sizeS": "S",
       "sizeM": "M",

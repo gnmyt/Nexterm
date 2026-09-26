@@ -617,6 +617,15 @@
       "themeLabel": "Theme",
       "accentColor": "Akzentfarbe",
       "sizeLabel": "Größe",
+      "serverList": {
+        "title": "Serverliste",
+        "description": "Lege fest, wie Notizen unter Servernamen angezeigt werden.",
+        "noteScrollMode": "Notiz-Scrollmodus",
+        "scrollModeNone": "Kein Scrollen",
+        "scrollModeHover": "Einmalig beim Hover scrollen",
+        "scrollModeStop": "Mit Pausen",
+        "scrollModeInfinite": "Endlos"
+      },
       "sizeXS": "XS",
       "sizeS": "S",
       "sizeM": "M",

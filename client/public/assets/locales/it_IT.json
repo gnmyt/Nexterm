@@ -617,6 +617,15 @@
       "themeLabel": "Tema",
       "accentColor": "Colore d'accento",
       "sizeLabel": "Dimensioni",
+      "serverList": {
+        "title": "Elenco dei server",
+        "description": "Scegli come visualizzare le note sotto i nomi dei server.",
+        "noteScrollMode": "Modalità di scorrimento delle note",
+        "scrollModeNone": "Nessuno scorrimento",
+        "scrollModeHover": "Scorri una volta al passaggio",
+        "scrollModeStop": "Scorrimento con pause",
+        "scrollModeInfinite": "Scorrimento continuo"
+      },
       "sizeXS": "XS",
       "sizeS": "S",
       "sizeM": "M",

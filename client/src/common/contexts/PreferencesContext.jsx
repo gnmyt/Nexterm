@@ -6,6 +6,8 @@ const PreferencesContext = createContext({});
 export const usePreferences = () => useContext(PreferencesContext);
 
 const OVERRIDE_KEY_PREFIX = "pref-override-";
+const SERVER_NOTE_SCROLL_MODE_KEY = "serverNoteScrollMode";
+const SERVER_NOTE_SCROLL_MODES = ["none", "hover", "stop", "infinite"];
 const GROUPS = ["terminal.font", "terminal.cursor", "terminal.input", "terminal.theme", "appearance", "files", "general"];
 
 const PATH_TO_GROUP = {
@@ -341,6 +343,14 @@ const ACCENT_COLORS = [
 export const PreferencesProvider = ({ children, user, refreshUser }) => {
     const [overrides, setOverrides] = useState({});
     const [prefs, setPrefs] = useState({});
+    const [serverNoteScrollMode, setServerNoteScrollModeState] = useState(() => {
+        try {
+            const stored = localStorage.getItem(SERVER_NOTE_SCROLL_MODE_KEY);
+            return SERVER_NOTE_SCROLL_MODES.includes(stored) ? stored : "none";
+        } catch {
+            return "none";
+        }
+    });
     const [isLoading, setIsLoading] = useState(!!user);
     const debounceRef = useRef(null);
     const pendingRef = useRef({});
@@ -402,6 +412,14 @@ export const PreferencesProvider = ({ children, user, refreshUser }) => {
             }
         }
     }, [prefs, user, hasOverride, overrides, scheduleFlush]);
+
+    const setServerNoteScrollMode = useCallback((mode) => {
+        if (!SERVER_NOTE_SCROLL_MODES.includes(mode)) return;
+        setServerNoteScrollModeState(mode);
+        try {
+            localStorage.setItem(SERVER_NOTE_SCROLL_MODE_KEY, mode);
+        } catch {}
+    }, []);
 
     const enableGroupSync = useCallback(async (g) => {
         if (!user || !GROUPS.includes(g)) return false;
@@ -533,6 +551,7 @@ export const PreferencesProvider = ({ children, user, refreshUser }) => {
     return (
         <PreferencesContext.Provider value={{
             get, set, isLoading, preferences: prefs,
+            serverNoteScrollMode, setServerNoteScrollMode,
             isGroupSynced, enableGroupSync, disableGroupSync, toggleGroupSync,
             theme: actualTheme, themeMode, setTheme, toggleTheme, accentColor, setAccentColor, accentColors: ACCENT_COLORS,
             uiScale, setUiScale,

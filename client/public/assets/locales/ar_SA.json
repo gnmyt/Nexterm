@@ -617,6 +617,15 @@
       "themeLabel": "الموضوع",
       "accentColor": "لون مميز",
       "sizeLabel": "الحجم",
+      "serverList": {
+        "title": "قائمة الخوادم",
+        "description": "اختر طريقة عرض الملاحظات أسفل أسماء الخوادم.",
+        "noteScrollMode": "وضع تمرير الملاحظات",
+        "scrollModeNone": "بدون تمرير",
+        "scrollModeHover": "مرّر مرة واحدة عند المرور",
+        "scrollModeStop": "تمرير مع توقفات",
+        "scrollModeInfinite": "تمرير مستمر"
+      },
       "sizeXS": "إكس إس إس",
       "sizeS": "S",
       "sizeM": "M",

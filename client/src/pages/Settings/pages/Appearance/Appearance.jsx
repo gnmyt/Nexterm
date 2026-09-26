@@ -24,6 +24,7 @@ export const Appearance = () => {
     const {
         themeMode, setTheme, accentColor, setAccentColor, accentColors,
         uiScale, setUiScale, isGroupSynced, toggleGroupSync, theme: actualTheme,
+        serverNoteScrollMode, setServerNoteScrollMode,
     } = usePreferences();
 
     const sizeOptions = [
@@ -32,6 +33,12 @@ export const Appearance = () => {
         { label: t("settings.account.sizeM"), value: 1 },
         { label: t("settings.account.sizeL"), value: 1.15 },
         { label: t("settings.account.sizeXL"), value: 1.3 },
+    ];
+    const serverNoteScrollOptions = [
+        { label: t("settings.account.serverList.scrollModeNone"), value: "none" },
+        { label: t("settings.account.serverList.scrollModeHover"), value: "hover" },
+        { label: t("settings.account.serverList.scrollModeStop"), value: "stop" },
+        { label: t("settings.account.serverList.scrollModeInfinite"), value: "infinite" },
     ];
     const { sendToast } = useToast();
 
@@ -269,6 +276,26 @@ export const Appearance = () => {
                             ))}
                         </div>
                     )}
+                </div>
+            </div>
+
+            <div className="appearance-section">
+                <div className="section-header">
+                    <div className="header-content">
+                        <h2>{t("settings.account.serverList.title")}</h2>
+                        <p>{t("settings.account.serverList.description")}</p>
+                    </div>
+                </div>
+                <div className="section-inner server-list-settings">
+                    <label className="server-list-setting" htmlFor="server-note-scroll-mode">
+                        <span>{t("settings.account.serverList.noteScrollMode")}</span>
+                        <SelectBox
+                            id="server-note-scroll-mode"
+                            options={serverNoteScrollOptions}
+                            selected={serverNoteScrollMode}
+                            setSelected={setServerNoteScrollMode}
+                        />
+                    </label>
                 </div>
             </div>
 

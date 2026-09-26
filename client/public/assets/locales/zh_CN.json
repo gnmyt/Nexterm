@@ -617,6 +617,15 @@
       "themeLabel": "主题",
       "accentColor": "点缀色",
       "sizeLabel": "尺寸",
+      "serverList": {
+        "title": "服务器列表",
+        "description": "选择服务器名称下方备注的显示方式。",
+        "noteScrollMode": "备注滚动模式",
+        "scrollModeNone": "不滚动",
+        "scrollModeHover": "悬停时滚动一次",
+        "scrollModeStop": "间歇滚动",
+        "scrollModeInfinite": "连续滚动"
+      },
       "sizeXS": "XS",
       "sizeS": "S",
       "sizeM": "M",

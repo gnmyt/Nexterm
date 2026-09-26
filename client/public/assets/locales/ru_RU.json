@@ -617,6 +617,15 @@
       "themeLabel": "Тема",
       "accentColor": "Акцентный цвет",
       "sizeLabel": "Размер",
+      "serverList": {
+        "title": "Список серверов",
+        "description": "Выберите, как отображать заметки под именами серверов.",
+        "noteScrollMode": "Режим прокрутки заметок",
+        "scrollModeNone": "Без прокрутки",
+        "scrollModeHover": "Прокрутить один раз при наведении",
+        "scrollModeStop": "Прокрутка с паузами",
+        "scrollModeInfinite": "Непрерывная прокрутка"
+      },
       "sizeXS": "XS",
       "sizeS": "S",
       "sizeM": "M",

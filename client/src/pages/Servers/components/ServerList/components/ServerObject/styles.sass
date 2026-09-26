@@ -85,13 +85,54 @@
       font-size: 0.95rem
 
   .server-note
+    display: block
+    width: 100%
+    min-width: 0
+    overflow: hidden
     color: colors.$subtext
     font-size: 0.75rem
     font-weight: 500
     line-height: 1.2
+
+  .server-note-track
+    display: inline-flex
+    width: max-content
     white-space: nowrap
+    pointer-events: none
+
+  .server-note--infinite .server-note-track
+    column-gap: 2em
+
+  .server-note-text
+    display: inline-block
+    white-space: nowrap
+
+  .server-note--none .server-note-track
+    display: block
+    width: 100%
+    overflow: hidden
+
+  .server-note--none .server-note-text
+    display: block
+    width: 100%
     overflow: hidden
     text-overflow: ellipsis
+
+  .server-note--hover:not(.server-note--hover-active) .server-note-track
+    display: block
+    width: 100%
+    overflow: hidden
+
+  .server-note--hover:not(.server-note--hover-active) .server-note-text
+    display: block
+    width: 100%
+    overflow: hidden
+    text-overflow: ellipsis
+
+  @media (prefers-reduced-motion: reduce)
+    .server-note--stop .server-note-track,
+    .server-note--infinite .server-note-track
+      transform: none !important
 
   .hibernation-indicator
     display: flex

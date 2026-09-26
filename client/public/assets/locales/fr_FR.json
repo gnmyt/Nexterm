@@ -617,6 +617,15 @@
       "themeLabel": "Thème",
       "accentColor": "Couleur d'accent",
       "sizeLabel": "Taille",
+      "serverList": {
+        "title": "Liste des serveurs",
+        "description": "Choisissez comment afficher les notes sous les noms des serveurs.",
+        "noteScrollMode": "Mode de défilement des notes",
+        "scrollModeNone": "Aucun défilement",
+        "scrollModeHover": "Défiler une fois au survol",
+        "scrollModeStop": "Défilement avec pauses",
+        "scrollModeInfinite": "Défilement continu"
+      },
       "sizeXS": "XS",
       "sizeS": "S",
       "sizeM": "M",
