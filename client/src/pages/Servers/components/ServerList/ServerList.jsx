@@ -11,6 +11,7 @@ import ServerEntries from "./components/ServerEntries.jsx";
 import { isCredentiallessProtocol } from "@/common/utils/ConnectionUtil.js";
 import { useDevFeature } from "@/common/utils/devFeatures.js";
 import { useBodyClass } from "@/common/hooks/useBodyClass.js";
+import { useLongPress } from "@/common/hooks/useLongPress.js";
 import Icon from "@mdi/react";
 import {
     mdiCursorDefaultClick,
@@ -144,8 +145,20 @@ export const ServerList = ({
     const [scriptsMenuServer, setScriptsMenuServer] = useState(null);
     const [isMobile, setIsMobile] = useState(false);
     const [deleteConfirmDialog, setDeleteConfirmDialog] = useState({ open: false, name: "", id: null, isFolder: false });
+    const longPressFiredAtRef = useRef(0);
 
     const contextMenu = useContextMenu();
+
+    const openContextMenuAt = (targetElement, x, y) => {
+        if (targetElement) {
+            setContextClickedId(targetElement.getAttribute("data-id"));
+            setContextClickedType(targetElement.classList[0]);
+        } else {
+            setContextClickedId(null);
+            setContextClickedType(null);
+        }
+        contextMenu.open(null, { x, y });
+    };
 
     useEffect(() => {
         const checkMobile = () => {
@@ -284,18 +297,28 @@ export const ServerList = ({
         : servers;
     const renameStateServers = renameStateId ? filteredServers.map(applyRenameState(renameStateId)) : filteredServers;
 
+    const longPress = useLongPress({
+        onLongPress: ({ x, y, target }) => {
+            if (isDragging) return;
+            const targetElement = target?.closest?.("[data-id]") || null;
+            longPressFiredAtRef.current = Date.now();
+            openContextMenuAt(targetElement, x, y);
+        },
+    });
+
+    const suppressClickAfterLongPress = (e) => {
+        if (longPress.didFire() && Date.now() - longPressFiredAtRef.current < 800) {
+            e.preventDefault();
+            e.stopPropagation();
+            longPress.reset();
+        }
+    };
+
     const handleContextMenu = (e) => {
         e.preventDefault();
-        const targetElement = e.target.closest("[data-id]");
-        if (targetElement !== null) {
-            setContextClickedId(targetElement.getAttribute("data-id"));
-            setContextClickedType(targetElement.classList[0]);
-        } else {
-            setContextClickedId(null);
-            setContextClickedType(null);
-        }
-
-        contextMenu.open(e, { x: e.clientX, y: e.clientY });
+        if (Date.now() - longPressFiredAtRef.current < 800) return;
+        const targetElement = e.target.closest?.("[data-id]") ?? null;
+        openContextMenuAt(targetElement, e.clientX, e.clientY);
     };
 
     const liveSessionsForServer = server ? getLiveSessionsForEntry(server.id) : [];
@@ -589,6 +612,11 @@ export const ServerList = ({
                     {servers && servers.length >= 1 && (
                         <div className={`servers${isOver ? " drop-zone-active" : ""}`}
                             onContextMenu={handleContextMenu}
+                            onTouchStart={longPress.onTouchStart}
+                            onTouchMove={longPress.onTouchMove}
+                            onTouchEnd={longPress.onTouchEnd}
+                            onTouchCancel={longPress.onTouchCancel}
+                            onClickCapture={suppressClickAfterLongPress}
                             ref={serversContainerRef}>
                             <ServerEntries entries={renameStateServers} setRenameStateId={setRenameStateId}
                                 nestedLevel={0} connectToServer={connectToServer} hibernatedSessions={hibernatedSessions} />
@@ -596,7 +624,12 @@ export const ServerList = ({
                     )}
                     {servers && servers.length === 0 && (
                         <div className={`no-servers${isOver ? " drop-zone-active" : ""}`}
-                            onContextMenu={handleContextMenu}>
+                            onContextMenu={handleContextMenu}
+                            onTouchStart={longPress.onTouchStart}
+                            onTouchMove={longPress.onTouchMove}
+                            onTouchEnd={longPress.onTouchEnd}
+                            onTouchCancel={longPress.onTouchCancel}
+                            onClickCapture={suppressClickAfterLongPress}>
                             <Icon path={mdiCursorDefaultClick} />
                             <p>{t("servers.addServerNote")}</p>
                         </div>
