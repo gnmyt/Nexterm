@@ -65,6 +65,7 @@ class _SftpRendererState extends State<SftpRenderer> {
   final Set<int> _selectedIndices = {};
   bool _selectionMode = false;
   bool _uploading = false;
+  bool _openingTerminal = false;
   bool _initialized = false;
   int _reconnectAttempts = 0;
   static const int _maxReconnectAttempts = 5;
@@ -1352,6 +1353,19 @@ class _SftpRendererState extends State<SftpRenderer> {
                 }
               },
             ),
+            if (entry.isDir &&
+                widget.session.server.protocol?.toLowerCase() == 'ssh' &&
+                !widget.session.server.isPve)
+              ListTile(
+                leading: Icon(MdiIcons.console),
+                title: const Text('Open Terminal Here'),
+                onTap: _openingTerminal
+                    ? null
+                    : () {
+                        Navigator.pop(ctx);
+                        _openTerminalHere(entry);
+                      },
+              ),
             ListTile(
               leading: Icon(MdiIcons.pencilOutline),
               title: const Text('Rename'),
@@ -1367,6 +1381,34 @@ class _SftpRendererState extends State<SftpRenderer> {
         ),
       ),
     );
+  }
+
+  String _terminalStartPath(String sftpPath) {
+    final match = RegExp(r'^/([A-Za-z]:(/.*)?)$').firstMatch(sftpPath);
+    if (match == null) return sftpPath;
+    final drive = match.group(1)!;
+    return drive.length == 2 ? '$drive/' : drive;
+  }
+
+  Future<void> _openTerminalHere(SftpEntry entry) async {
+    if (_openingTerminal) return;
+    setState(() => _openingTerminal = true);
+    final path = _terminalStartPath(_remotePath(entry.name));
+    try {
+      await widget.sessionManager.createTerminalSession(
+        token: widget.token,
+        server: widget.session.server,
+        startPath: path,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to open terminal: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _openingTerminal = false);
+    }
   }
 
   void _showAddMenu() {

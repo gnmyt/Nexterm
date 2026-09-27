@@ -108,6 +108,7 @@ class SessionManager extends ChangeNotifier {
     required Server server,
     Map<String, dynamic>? directIdentity,
     String? connectionReason,
+    String? startPath,
   }) async {
     final identityId = directIdentity != null
         ? null
@@ -119,6 +120,7 @@ class SessionManager extends ChangeNotifier {
       identityId: identityId ?? 0,
       directIdentity: directIdentity,
       connectionReason: connectionReason,
+      startPath: startPath,
     );
 
     final terminal = Terminal(maxLines: 10000);

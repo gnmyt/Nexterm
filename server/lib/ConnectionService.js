@@ -315,7 +315,11 @@ const createSSHConnectionForSession = async (sessionId, entry, identity, organiz
         });
 
         if (!script && session.configuration.startPath) {
-            const raw = String(session.configuration.startPath);
+            let raw = String(session.configuration.startPath);
+            const driveMatch = raw.match(/^\/([A-Za-z]:(\/.*)?)$/);
+            if (driveMatch) {
+                raw = driveMatch[1].length === 2 ? `${driveMatch[1]}/` : driveMatch[1];
+            }
             if (/[\r\n\x00]/.test(raw)) {
                 logger.warn("Ignoring startPath containing control characters", { sessionId });
             } else {
