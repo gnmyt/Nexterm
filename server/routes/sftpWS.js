@@ -72,7 +72,7 @@ const requireShell = (capabilities) => {
 const buildOperationHandlers = (sftp, getBg, ws, logAudit, capabilities) => ({
     [OP.LIST_FILES]: async (p) => {
         requirePath(p);
-        sendResult(ws, OP.LIST_FILES, { files: await sftp.listDir(p.path) });
+        sendResult(ws, OP.LIST_FILES, { files: await sftp.listDir(p.path), path: p.path });
     },
     [OP.CREATE_FILE]: async (p) => {
         requirePath(p);
