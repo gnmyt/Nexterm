@@ -4,7 +4,17 @@ import UIKit
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate, UIDocumentInteractionControllerDelegate {
   private var activeDocControllers: [UIDocumentInteractionController] = []
-  private weak var previewPresenter: UIViewController?
+  private var previewHosts: [(controller: UIDocumentInteractionController, presenter: UIViewController)] = []
+
+  private func rememberPresenter(_ presenter: UIViewController, for controller: UIDocumentInteractionController) {
+    previewHosts.removeAll { $0.controller === controller }
+    previewHosts.append((controller: controller, presenter: presenter))
+  }
+
+  private func forgetPresenter(for controller: UIDocumentInteractionController) {
+    previewHosts.removeAll { $0.controller === controller }
+    activeDocControllers.removeAll { $0 === controller }
+  }
 
   override func application(
     _ application: UIApplication,
@@ -27,6 +37,8 @@ import UIKit
           DispatchQueue.main.async {
             result(self?.presentDocument(atPath: path) ?? false)
           }
+        } else if call.method == "updateEditing" {
+          result(true)
         } else {
           result(FlutterMethodNotImplemented)
         }
@@ -86,13 +98,13 @@ import UIKit
     }
     let controller = UIDocumentInteractionController(url: fileURL)
     controller.delegate = self
-    previewPresenter = presenter
+    rememberPresenter(presenter, for: controller)
     activeDocControllers.append(controller)
     let presented = controller.presentPreview(animated: true)
     if !presented {
       let menuPresented = controller.presentOpenInMenu(from: presenter.view.bounds, in: presenter.view, animated: true)
       if !menuPresented {
-        activeDocControllers.removeAll { $0 === controller }
+        forgetPresenter(for: controller)
       }
       return menuPresented
     }
@@ -100,21 +112,21 @@ import UIKit
   }
 
   func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController {
-    if let presenter = previewPresenter {
-      return presenter
+    if let host = previewHosts.first(where: { $0.controller === controller }) {
+      return host.presenter
     }
     return topViewController() ?? UIViewController()
   }
 
   func documentInteractionControllerDidEndPreview(_ controller: UIDocumentInteractionController) {
-    activeDocControllers.removeAll { $0 === controller }
+    forgetPresenter(for: controller)
   }
 
   func documentInteractionControllerDidDismissOpenInMenu(_ controller: UIDocumentInteractionController) {
-    activeDocControllers.removeAll { $0 === controller }
+    forgetPresenter(for: controller)
   }
 
   func documentInteractionControllerDidDismissOptionsMenu(_ controller: UIDocumentInteractionController) {
-    activeDocControllers.removeAll { $0 === controller }
+    forgetPresenter(for: controller)
   }
 }

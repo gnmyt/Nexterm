@@ -4,7 +4,6 @@ import android.app.DownloadManager
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.DocumentsContract
 import android.webkit.MimeTypeMap
@@ -15,6 +14,25 @@ import io.flutter.plugin.common.MethodChannel
 import java.io.File
 
 class MainActivity : FlutterActivity() {
+    private var pendingEditingCount: Int? = null
+    private var notificationPermissionAsked = false
+
+    private fun isNotificationPermissionAsked(): Boolean {
+        return try {
+            getPreferences(MODE_PRIVATE).getBoolean("nexterm_notif_asked", false)
+        } catch (e: Exception) {
+            notificationPermissionAsked
+        }
+    }
+
+    private fun setNotificationPermissionAsked() {
+        notificationPermissionAsked = true
+        try {
+            getPreferences(MODE_PRIVATE).edit().putBoolean("nexterm_notif_asked", true).apply()
+        } catch (e: Exception) {
+        }
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(
@@ -45,6 +63,13 @@ class MainActivity : FlutterActivity() {
                 } catch (e: Exception) {
                     result.error("OPEN_FAILED", e.message, null)
                 }
+            } else if (call.method == "updateEditing") {
+                try {
+                    val count = call.argument<Int>("count") ?: 0
+                    updateEditingNotification(count)
+                } catch (e: Exception) {
+                }
+                result.success(true)
             } else {
                 result.notImplemented()
             }
@@ -78,17 +103,6 @@ class MainActivity : FlutterActivity() {
         view.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         view.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
         view.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        val resolved = packageManager.queryIntentActivities(
-            view,
-            PackageManager.MATCH_DEFAULT_ONLY
-        )
-        for (info in resolved) {
-            grantUriPermission(
-                info.activityInfo.packageName,
-                uri,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-            )
-        }
         val chooser = Intent.createChooser(view, null)
         chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         chooser.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -99,6 +113,79 @@ class MainActivity : FlutterActivity() {
             return false
         }
         return true
+    }
+
+    private fun updateEditingNotification(count: Int) {
+        val manager = getSystemService(android.app.NotificationManager::class.java) ?: return
+        if (count <= 0) {
+            pendingEditingCount = null
+            manager.cancel(1001)
+            return
+        }
+        if (android.os.Build.VERSION.SDK_INT >= 33 &&
+            checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) !=
+                android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            pendingEditingCount = count
+            if (!notificationPermissionAsked && !isNotificationPermissionAsked()) {
+                setNotificationPermissionAsked()
+                requestPermissions(
+                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                    1002
+                )
+            }
+            return
+        }
+        pendingEditingCount = null
+        val channelId = "nexterm_edit"
+        if (android.os.Build.VERSION.SDK_INT >= 26) {
+            val channel = android.app.NotificationChannel(
+                channelId,
+                "Nexterm",
+                android.app.NotificationManager.IMPORTANCE_LOW
+            )
+            manager.createNotificationChannel(channel)
+        }
+        val intent = packageManager.getLaunchIntentForPackage(packageName)?.apply {
+            addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
+        if (intent == null) return
+        val pending = android.app.PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE
+        )
+        val text = if (count == 1) {
+            "1 file open in editor"
+        } else {
+            "$count files open in editor"
+        }
+        val notification = androidx.core.app.NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(android.R.drawable.ic_menu_edit)
+            .setContentTitle("Nexterm")
+            .setContentText("$text – tap to return")
+            .setContentIntent(pending)
+            .setOngoing(true)
+            .build()
+        manager.notify(1001, notification)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1002) {
+            val pending = pendingEditingCount
+            pendingEditingCount = null
+            setNotificationPermissionAsked()
+            if (pending != null &&
+                grantResults.isNotEmpty() &&
+                grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                updateEditingNotification(pending)
+            }
+        }
     }
 
     private fun openSavedLocation(value: String) {

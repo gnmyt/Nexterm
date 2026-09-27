@@ -148,7 +148,8 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
   String _joinPath(List<String> segments) {
     final root = _normalizeRoot(_rootPath);
     if (segments.isEmpty) return root;
-    final prefix = root == '/' ? '' : root.endsWith('/') ? root : '$root/';
+    if (root == '/') return '/${segments.join('/')}';
+    final prefix = root.endsWith('/') ? root : '$root/';
     return '$prefix${segments.join('/')}';
   }
 
@@ -184,6 +185,7 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
         _errorMessage = 'No SFTP channel available';
         _loading = false;
         _connected = false;
+        _listBusyQueue.clear();
       });
       return;
     }
@@ -194,12 +196,17 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
         onError: (error) {
           if (_pickerOpen) {
             _connectionLostWhilePicking = true;
+            _listBusyQueue.clear();
+            if (mounted) {
+              setState(() {});
+            }
             return;
           }
           if (mounted) {
             setState(() {
               _errorMessage = 'Connection error: $error';
               _connected = false;
+              _listBusyQueue.clear();
             });
           }
           widget.session.isConnected = false;
@@ -208,9 +215,18 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
         onDone: () {
           if (_pickerOpen) {
             _connectionLostWhilePicking = true;
+            _listBusyQueue.clear();
+            if (mounted) {
+              setState(() {});
+            }
             return;
           }
-          if (mounted) setState(() => _connected = false);
+          if (mounted) {
+            setState(() {
+              _connected = false;
+              _listBusyQueue.clear();
+            });
+          }
           widget.session.isConnected = false;
           _attemptReconnect();
         },
@@ -218,7 +234,7 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
     } else {
       _connected = widget.session.isConnected;
       if (_connected) {
-        _listDirectory(_currentPath);
+        _listDirectory(_currentPath, keepOffset: true);
       } else {
         _attemptReconnect();
       }
@@ -276,11 +292,11 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
   }
 
   Future<bool> _reconnectNow() async {
+    final quiet = _quietLoop;
     final success = await widget.sessionManager.reconnectSftpSession(
       token: widget.token,
       session: widget.session,
     );
-    final quiet = _quietLoop;
     if (!mounted || !success) return false;
     _quietReadyOnce = quiet;
     _reconnectAttempts = 0;
@@ -292,7 +308,6 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
     widget.session.sftpSubscription = null;
     setState(() {
       _errorMessage = null;
-      if (!quiet) _loading = true;
     });
     _setupConnection();
     return true;
@@ -344,46 +359,66 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
         try {
           ready = json.decode(jsonPayload) as Map<String, dynamic>;
         } catch (_) {}
+        final readyRoot = ready['rootPath'] is String ? ready['rootPath'] as String : '/';
+        final readyPath = ready['path'] is String ? ready['path'] as String : readyRoot;
+        final samePath = !mounted || readyPath == _currentPath;
+        final quiet = _quietReadyOnce;
+        _quietReadyOnce = false;
         if (mounted) {
+          final newRoot = readyRoot;
+          final initialPath = readyPath;
           setState(() {
             _connected = true;
             _errorMessage = null;
-            _rootPath = ready['rootPath'] as String? ?? '/';
-            final initialPath = ready['path'] as String? ?? _rootPath;
+            _rootPath = newRoot;
             _currentPath = initialPath;
             widget.session.sftpPath = initialPath;
             widget.session.sftpRootPath = _rootPath;
-            _history = [initialPath];
-            _historyIndex = 0;
+            if (!quiet || !samePath) {
+              _history = [initialPath];
+              _historyIndex = 0;
+            }
             _selectedIndices.clear();
             _selectionMode = false;
           });
         }
         widget.session.isConnected = true;
         _reconnectAttempts = 0;
-        final quiet = _quietReadyOnce;
-        _quietReadyOnce = false;
-        _listDirectory(ready['path'] as String? ?? _rootPath, silent: quiet);
+        _listDirectory(readyPath, silent: quiet, keepOffset: samePath);
         break;
       case _SftpOps.listFiles:
         _handleDirectoryListed(jsonPayload);
         break;
       case _SftpOps.error:
+        var listFailed = _listBusyQueue.isNotEmpty;
         try {
           final decoded = json.decode(jsonPayload);
+          if (decoded is Map<String, dynamic> && decoded.containsKey('op')) {
+            listFailed = (decoded['op'] as num?)?.toInt() == _SftpOps.listFiles;
+          }
           if (mounted) {
             setState(() {
-              _errorMessage = decoded['message'] ?? 'Unknown error';
-              _loading = false;
+              _errorMessage = decoded is Map<String, dynamic>
+                  ? decoded['message'] ?? 'Unknown error'
+                  : 'Unknown error';
+              if (listFailed) {
+                _loading = false;
+              }
             });
           }
         } catch (_) {
+          listFailed = _listBusyQueue.isNotEmpty;
           if (mounted) {
             setState(() {
               _errorMessage = jsonPayload.isNotEmpty ? jsonPayload : 'Unknown error';
-              _loading = false;
+              if (listFailed) {
+                _loading = false;
+              }
             });
           }
+        }
+        if (listFailed) {
+          _endListBusy();
         }
         break;
       case _SftpOps.pathSync:
@@ -411,7 +446,10 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
 
   void _handleDirectoryListed(String jsonPayload) {
     if (!mounted) return;
-    if (_currentPath != _lastRequestedPath) return;
+    if (_currentPath != _lastRequestedPath) {
+      _endListBusy();
+      return;
+    }
     try {
       final decoded = json.decode(jsonPayload);
       if (decoded is Map<String, dynamic>) {
@@ -419,6 +457,7 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
         if (echoed is String &&
             echoed.isNotEmpty &&
             echoed != _currentPath) {
+          _endListBusy();
           return;
         }
         final message = decoded['message'] ?? decoded['error'];
@@ -427,6 +466,7 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
             _errorMessage = message;
             _loading = false;
           });
+          _endListBusy();
           return;
         }
         if (!decoded.containsKey('files') &&
@@ -435,6 +475,7 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
             _errorMessage = 'Failed to load directory';
             _loading = false;
           });
+          _endListBusy();
           return;
         }
       }
@@ -462,11 +503,23 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
         _selectedIndices.clear();
         _selectionMode = false;
       });
+      _endListBusy();
+      if (_savedOffset != null) {
+        final target = _savedOffset!;
+        _savedOffset = null;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted || !_scrollController.hasClients) return;
+          final max = _scrollController.position.maxScrollExtent;
+          if (max <= 0) return;
+          _scrollController.jumpTo(target.clamp(0.0, max).toDouble());
+        });
+      }
     } catch (e) {
       setState(() {
         _errorMessage = 'Failed to parse directory listing: $e';
         _loading = false;
       });
+      _endListBusy();
     }
   }
 
@@ -484,11 +537,43 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
   }
 
   String _lastRequestedPath = '/';
+  double? _savedOffset;
+  final List<bool> _listBusyQueue = [];
 
-  void _listDirectory(String path, {bool silent = false}) {
+  void _endListBusy() {
+    if (_listBusyQueue.isNotEmpty) {
+      _listBusyQueue.removeAt(0);
+    }
+  }
+
+  bool get _showProgress =>
+      _uploading || _listBusyQueue.any((counted) => counted);
+
+  void _listDirectory(String path, {bool silent = false, bool keepOffset = false}) {
     if (!mounted) return;
+    if (widget.session.sftpChannel == null) {
+      _lastRequestedPath = path;
+      setState(() {
+        _errorMessage = 'No SFTP channel available';
+        _loading = false;
+      });
+      return;
+    }
     _lastRequestedPath = path;
-    if (!silent || _entries.isEmpty) setState(() => _loading = true);
+    if (_entries.isEmpty) {
+      _savedOffset = null;
+      _listBusyQueue.add(false);
+      if (!silent) {
+        setState(() => _loading = true);
+      }
+    } else {
+      if (keepOffset && _scrollController.hasClients) {
+        _savedOffset = _scrollController.offset;
+      } else {
+        _savedOffset = null;
+      }
+      _listBusyQueue.add(!silent);
+    }
     _sendOperation(_SftpOps.listFiles, {'path': path});
   }
 
@@ -556,7 +641,7 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
     });
   }
 
-  void _refresh() => _listDirectory(_currentPath, silent: true);
+  void _refresh() => _listDirectory(_currentPath, silent: true, keepOffset: true);
 
   void _onSftpSettingsChanged() {
     final settings = widget.sftpSettings;
@@ -611,22 +696,22 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
               }
               final oldPath = _remotePathIn(dialogBase, entry.name);
               final newPath = _remotePathIn(dialogBase, newName);
-              if (_hasUploadingFor(oldPath) || _hasUploadingFor(newPath)) {
+              if (_hasUploadingFor(oldPath, dialogSid) || _hasUploadingFor(newPath, dialogSid)) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Upload in progress, please retry shortly')),
                 );
                 return;
               }
-              if (_hasPendingFor(oldPath) || _hasPendingFor(newPath)) {
+              if (_hasPendingFor(oldPath, dialogSid) || _hasPendingFor(newPath, dialogSid)) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('File is still open in an external editor')),
                 );
                 return;
               }
-              _dropPendingFor(oldPath);
-              _dropPendingFor(newPath);
+              _dropPendingFor(oldPath, dialogSid);
+              _dropPendingFor(newPath, dialogSid);
               _sendOperation(_SftpOps.renameFile, {
                 'path': oldPath,
                 'newPath': newPath,
@@ -692,24 +777,24 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
     }
     for (final entry in entries) {
       final path = _remotePathIn(snapshot, entry.name);
-      if (_hasUploadingFor(path)) {
+      if (_hasUploadingFor(path, actionSid)) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Upload in progress, please retry shortly')),
         );
         return;
       }
-      if (_hasPendingFor(path)) {
+      if (_hasPendingFor(path, actionSid)) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('File is open in the editor, save or discard changes first')),
+          const SnackBar(content: Text('File is still open in an external editor')),
         );
         return;
       }
     }
     for (final entry in entries) {
       final path = _remotePathIn(snapshot, entry.name);
-      _dropPendingFor(path);
+      _dropPendingFor(path, actionSid);
       _sendOperation(
         entry.isDir ? _SftpOps.deleteFolder : _SftpOps.deleteFile,
         {'path': path},
@@ -717,10 +802,10 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
     }
   }
 
-  void _showCreateFolderDialog() {
+  void _showCreateFolderDialog([String? base, String? sheetSid]) {
     final controller = TextEditingController();
-    final base = _currentPath;
-    final dialogSid = _sessionId;
+    final dialogBase = base ?? _currentPath;
+    final dialogSid = sheetSid ?? _sessionId;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -748,7 +833,7 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
                 _refresh();
                 return;
               }
-              if (base != _currentPath) {
+              if (dialogBase != _currentPath) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Directory changed, please retry')),
@@ -756,15 +841,15 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
                 _refresh();
                 return;
               }
-              final target = _remotePathIn(base, name);
-              if (_hasUploadingFor(target)) {
+              final target = _remotePathIn(dialogBase, name);
+              if (_hasUploadingFor(target, dialogSid)) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Upload in progress, please retry shortly')),
                 );
                 return;
               }
-              if (_hasPendingFor(target)) {
+              if (_hasPendingFor(target, dialogSid)) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('File is still open in an external editor')),
@@ -780,9 +865,9 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
     );
   }
 
-  Future<void> _uploadFile() async {
-    final pickBase = _currentPath;
-    final pickSid = _sessionId;
+  Future<void> _uploadFile([String? base, String? sheetSid]) async {
+    final pickBase = base ?? _currentPath;
+    final pickSid = sheetSid ?? _sessionId;
     _enterPicker();
     FilePickerResult? result;
     try {
@@ -820,22 +905,33 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
     int uploaded = 0, failed = 0;
     final targetBase = _currentPath;
     final sid = _sessionId;
+    final batchFiles =
+        result.files.where((pickedFile) => pickedFile.path != null).toList();
+    if (batchFiles.isEmpty) {
+      _activeUploads--;
+      _setBusy(false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No files selected')),
+        );
+      }
+      return;
+    }
     final batchPaths = <String>[];
-    for (final pickedFile in result.files) {
-      if (pickedFile.path == null) continue;
+    for (final pickedFile in batchFiles) {
       batchPaths.add(_upKey(sid, _remotePathIn(targetBase, pickedFile.name)));
     }
     _uploadingPaths.addAll(batchPaths);
     var dirChanged = false;
     var sessionChanged = false;
     var skippedOpen = 0;
+    final succeeded = <String>[];
     try {
-      for (final pickedFile in result.files) {
-        if (pickedFile.path == null) { failed++; continue; }
+      for (final pickedFile in batchFiles) {
         if (sid != _sessionId || targetBase != _currentPath) {
           dirChanged = targetBase != _currentPath;
           sessionChanged = sid != _sessionId;
-          failed += result.files.length - uploaded - failed - skippedOpen;
+          failed += batchFiles.length - uploaded - failed - skippedOpen;
           break;
         }
         final file = File(pickedFile.path!);
@@ -871,8 +967,7 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
         await response.stream.drain();
         if (!readFailed &&
             (response.statusCode == 200 || response.statusCode == 201)) {
-          _uploadingPaths.remove(_upKey(sid, remotePath));
-          _dropPendingFor(remotePath, sid);
+          succeeded.add(remotePath);
           uploaded++;
         } else {
           failed++;
@@ -885,20 +980,23 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
       for (final p in batchPaths) {
         _uploadingPaths.remove(p);
       }
+      for (final remotePath in succeeded) {
+        _dropPendingFor(remotePath, sid);
+      }
       if (_activeUploads > 0) _activeUploads--;
       _setBusy(false);
     }
 
     if (mounted) {
+      final skippedSuffix =
+          skippedOpen > 0 ? ', $skippedOpen skipped (open in editor)' : '';
       final msg = sessionChanged
-          ? 'Session changed, upload stopped (uploaded $uploaded, failed $failed)'
+          ? 'Session changed, upload stopped (uploaded $uploaded, failed $failed$skippedSuffix)'
           : dirChanged
-              ? 'Directory changed, upload stopped (uploaded $uploaded, failed $failed)'
-              : skippedOpen > 0 && failed == 0
-                  ? 'Uploaded $uploaded file${uploaded != 1 ? 's' : ''}, $skippedOpen skipped (open in editor)'
-                  : failed == 0
-                      ? 'Uploaded $uploaded file${uploaded != 1 ? 's' : ''}'
-                      : 'Uploaded $uploaded, failed $failed';
+              ? 'Directory changed, upload stopped (uploaded $uploaded, failed $failed$skippedSuffix)'
+              : failed == 0
+                  ? 'Uploaded $uploaded file${uploaded != 1 ? 's' : ''}$skippedSuffix'
+                  : 'Uploaded $uploaded, failed $failed$skippedSuffix';
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
       _refresh();
     }
@@ -1256,12 +1354,36 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _checkPendingUploads();
+    } else if (state == AppLifecycleState.paused) {
+      unawaited(_syncEditBadge());
     }
+  }
+
+  Future<void> _syncEditBadge() async {
+    try {
+      await _editChannel.invokeMethod(
+        'updateEditing',
+        {
+          'count': _pendingEdits.values
+              .where((p) =>
+                  !_uploadingPaths.contains(_upKey(p.sessionId, p.remotePath)))
+              .length
+        },
+      );
+    } catch (_) {}
+  }
+
+  String? _pendingKeyFor(String remotePath, [String? sessionId]) {
+    final full = _upKey(sessionId ?? _sessionId, remotePath);
+    if (_pendingEdits.containsKey(full)) {
+      return full;
+    }
+    return null;
   }
 
   bool _hasPendingFor(String remotePath, [String? sessionId]) {
     final full = _upKey(sessionId ?? _sessionId, remotePath);
-    final prefix = '$full/';
+    final prefix = full.endsWith('/') ? full : '$full/';
     for (final key in _pendingEdits.keys) {
       if (key == full || key.startsWith(prefix)) {
         return true;
@@ -1270,14 +1392,15 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
     return false;
   }
 
-  bool _hasUploadingFor(String remotePath) {
-    final full = _upKey(_sessionId, remotePath);
+  bool _hasUploadingFor(String remotePath, [String? sessionId]) {
+    final sid = sessionId ?? _sessionId;
+    final full = _upKey(sid, remotePath);
     if (_uploadingPaths.contains(full)) {
       return true;
     }
-    final prefix = remotePath.endsWith('/') ? remotePath : '$remotePath/';
+    final childPrefix = full.endsWith('/') ? full : '$full/';
     for (final key in _uploadingPaths) {
-      if (key.startsWith('${_sessionId}|$prefix')) {
+      if (key.startsWith(childPrefix)) {
         return true;
       }
     }
@@ -1286,7 +1409,8 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
 
   void _dropPendingFor(String remotePath, [String? sessionId]) {
     final full = _upKey(sessionId ?? _sessionId, remotePath);
-    final prefix = '$full/';
+    final prefix = full.endsWith('/') ? full : '$full/';
+    var changed = false;
     for (final key in _pendingEdits.keys.toList()) {
       if (key == full || key.startsWith(prefix)) {
         final stale = _pendingEdits[key];
@@ -1295,10 +1419,14 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
           continue;
         }
         _pendingEdits.remove(key);
+        changed = true;
         if (stale != null) {
           unawaited(_deleteQuietly(File(stale.tempPath)));
         }
       }
+    }
+    if (changed) {
+      unawaited(_syncEditBadge());
     }
   }
 
@@ -1306,7 +1434,12 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
   void didUpdateWidget(SftpRenderer oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.session.sessionId != widget.session.sessionId) {
+      final oldSid = oldWidget.session.sessionId;
       for (final key in _pendingEdits.keys.toList()) {
+        final current = _pendingEdits[key];
+        if (current == null || current.sessionId != oldSid) {
+          continue;
+        }
         if (_uploadingPaths.contains(key)) {
           continue;
         }
@@ -1315,11 +1448,14 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
           unawaited(_deleteQuietly(File(pending.tempPath)));
         }
       }
-      _openingPaths.clear();
+      _openingPaths.removeWhere((k) => k.startsWith('$oldSid|'));
+      _uploadingPaths.removeWhere((k) => k.startsWith('$oldSid|'));
       _entries = [];
       _currentPath = widget.session.sftpPath ?? '/';
       _rootPath = widget.session.sftpRootPath ?? '/';
       _lastRequestedPath = _currentPath;
+      _savedOffset = null;
+      _listBusyQueue.clear();
       _history = [_currentPath];
       _historyIndex = 0;
       _selectedIndices.clear();
@@ -1339,6 +1475,7 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
         oldWidget.session.sftpSubscription = null;
       }
       _setupConnection();
+      unawaited(_syncEditBadge());
     }
   }
 
@@ -1627,6 +1764,7 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
       _openingPaths.remove(pkey);
       await _deleteQuietly(temp);
       _setBusy(false);
+      await _syncEditBadge();
     }
   }
 
@@ -1635,6 +1773,7 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
     for (final key in _pendingEdits.keys.toList()) {
       await _checkPendingUpload(key);
     }
+    await _syncEditBadge();
   }
 
   Future<void> _checkPendingUpload(String pkey) async {
@@ -1709,6 +1848,7 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
         _pendingEdits.remove(pkey);
       }
       await _deleteQuietly(file);
+      unawaited(_syncEditBadge());
       return;
     }
     final sid = pending.sessionId;
@@ -1717,6 +1857,7 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
         _pendingEdits.remove(pkey);
       }
       await _deleteQuietly(file);
+      unawaited(_syncEditBadge());
       return;
     }
     if (_uploadingPaths.contains(pkey)) {
@@ -1725,9 +1866,16 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
       );
       return;
     }
+    if (_activeUploads > 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Upload in progress, please retry shortly')),
+      );
+      return;
+    }
     _activeUploads++;
     _setBusy(true);
-    _uploadingPaths.add(_upKey(sid, remotePath));
+    _uploadingPaths.add(pkey);
+    unawaited(_syncEditBadge());
     try {
       final editedSize = await file.length();
       if (editedSize > _maxOpenBytes) {
@@ -1796,9 +1944,10 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
         );
       }
     } finally {
-      _uploadingPaths.remove(_upKey(sid, remotePath));
+      _uploadingPaths.remove(pkey);
       if (_activeUploads > 0) _activeUploads--;
       _setBusy(false);
+      await _syncEditBadge();
     }
   }
 
@@ -1821,6 +1970,7 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
     _openingPaths.clear();
     _scrollController.dispose();
     widget.sftpSettings.removeListener(_onSftpSettingsChanged);
+    unawaited(_syncEditBadge());
     super.dispose();
   }
 
@@ -1853,7 +2003,7 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
         _buildHeader(),
         _buildPathBar(),
         if (_errorMessage != null) _buildErrorBanner(),
-        if (_uploading) const LinearProgressIndicator(),
+        if (_showProgress) const LinearProgressIndicator(),
         Expanded(child: _buildBody()),
       ],
     );
@@ -1866,7 +2016,7 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
         _buildSelectionBar(),
         _buildPathBar(),
         if (_errorMessage != null) _buildErrorBanner(),
-        if (_uploading) const LinearProgressIndicator(),
+        if (_showProgress) const LinearProgressIndicator(),
         Expanded(child: _buildBody()),
       ],
     );
@@ -2230,6 +2380,54 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
                   _openEntry(entry, base, sheetSid);
                 },
               ),
+            if (!entry.isDir && _pendingKeyFor(_remotePathIn(base, entry.name), sheetSid) != null)
+              ListTile(
+                leading: Icon(MdiIcons.closeCircleOutline),
+                title: const Text('End edit session'),
+                subtitle: const Text('Forgets the open file without uploading'),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  if (sheetSid != _sessionId) {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Session changed, please retry')),
+                      );
+                      _refresh();
+                    }
+                    return;
+                  }
+                  if (base != _currentPath) {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Directory changed, please retry')),
+                      );
+                      _refresh();
+                    }
+                    return;
+                  }
+                  if (_uploadingPaths.contains(_upKey(sheetSid, _remotePathIn(base, entry.name)))) {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Upload in progress, please retry shortly')),
+                      );
+                    }
+                    return;
+                  }
+                  final key = _pendingKeyFor(_remotePathIn(base, entry.name), sheetSid);
+                  if (key != null) {
+                    final pend = _pendingEdits.remove(key);
+                    if (pend != null) {
+                      unawaited(_deleteQuietly(File(pend.tempPath)));
+                    }
+                    unawaited(_syncEditBadge());
+                  }
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Edit session ended')),
+                    );
+                  }
+                },
+              ),
             ListTile(
               leading: Icon(MdiIcons.downloadOutline),
               title: const Text('Download'),
@@ -2260,6 +2458,8 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
   }
 
   void _showAddMenu() {
+    final base = _currentPath;
+    final menuSid = _sessionId;
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -2281,12 +2481,12 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
             ListTile(
               leading: Icon(MdiIcons.folderPlusOutline),
               title: const Text('New Folder'),
-              onTap: () { Navigator.pop(ctx); _showCreateFolderDialog(); },
+              onTap: () { Navigator.pop(ctx); _showCreateFolderDialog(base, menuSid); },
             ),
             ListTile(
               leading: Icon(MdiIcons.uploadOutline),
               title: const Text('Upload File'),
-              onTap: () { Navigator.pop(ctx); _uploadFile(); },
+              onTap: () { Navigator.pop(ctx); _uploadFile(base, menuSid); },
             ),
             const SizedBox(height: 8),
           ],

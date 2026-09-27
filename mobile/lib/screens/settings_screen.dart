@@ -476,7 +476,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     title: const Text('Show Servers in Files App', style: TextStyle(fontSize: 15)),
                     subtitle: Text(
                       Platform.isIOS
-                          ? 'Adds all SFTP/FTP/FTPS servers to the iOS Files app'
+                          ? 'Prepares all SFTP/FTP/FTPS servers for the iOS Files app integration'
                           : 'Only available on iOS',
                       style: TextStyle(fontSize: 12, color: cs.outline),
                     ),
