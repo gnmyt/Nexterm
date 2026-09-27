@@ -85,12 +85,14 @@ export const ContextMenu = ({
         };
 
         document.addEventListener("mousedown", handleClickOutside, true);
+        document.addEventListener("touchstart", handleClickOutside, true);
         document.addEventListener("keydown", handleKeyDown);
 
         setTimeout(() => menuRef.current?.querySelector('.context-menu-item:not(.disabled):not(.custom)')?.focus(), 50);
 
         return () => {
             document.removeEventListener("mousedown", handleClickOutside, true);
+            document.removeEventListener("touchstart", handleClickOutside, true);
             document.removeEventListener("keydown", handleKeyDown);
         };
     }, [isOpen, onClose, trigger]);
