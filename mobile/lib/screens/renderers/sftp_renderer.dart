@@ -1399,18 +1399,18 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
     final proceed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Offene Datei verwerfen?'),
+        title: const Text('Discard open file?'),
         content: const Text(
-          'Die geöffnete Datei enthält möglicherweise ungespeicherte Änderungen, die beim Öffnen verloren gehen.',
+          'The open file may contain unsaved changes that will be lost.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Abbrechen'),
+            child: const Text('Cancel'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Fortfahren'),
+            child: const Text('Continue'),
           ),
         ],
       ),
