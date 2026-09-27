@@ -12,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../widgets/connection_loader.dart';
+import '../sftp_code_editor_screen.dart';
 import 'package:http/http.dart' as http;
 
 import '../../models/sftp_entry.dart';
@@ -1246,6 +1247,46 @@ class _SftpRendererState extends State<SftpRenderer> {
     );
   }
 
+  void _pushEditor(SftpEntry entry) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => SftpCodeEditorScreen(
+          sessionId: _sessionId,
+          remotePath: _remotePath(entry.name),
+          token: widget.token,
+        ),
+      ),
+    );
+  }
+
+  void _openInEditor(SftpEntry entry) {
+    if (entry.isDir) return;
+    if (entry.size > 5242880) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Large file'),
+          content:
+              Text('This file is ${entry.formattedSize}. Open it anyway?'),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancel')),
+            FilledButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                _pushEditor(entry);
+              },
+              child: const Text('Open'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    _pushEditor(entry);
+  }
+
   void _showEntryActions(SftpEntry entry) {
     showModalBottomSheet(
       context: context,
@@ -1290,6 +1331,15 @@ class _SftpRendererState extends State<SftpRenderer> {
               ]),
             ),
             const Divider(height: 1),
+            if (!entry.isDir)
+              ListTile(
+                leading: Icon(MdiIcons.fileCodeOutline),
+                title: const Text('Open in Editor'),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _openInEditor(entry);
+                },
+              ),
             ListTile(
               leading: Icon(MdiIcons.downloadOutline),
               title: const Text('Download'),
