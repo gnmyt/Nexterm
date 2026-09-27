@@ -1629,7 +1629,6 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
       _setBusy(false);
     }
   }
-  }
 
   Future<void> _checkPendingUploads() async {
     if (!mounted || _pendingEdits.isEmpty) return;
