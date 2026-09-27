@@ -1333,10 +1333,17 @@ class _SftpRendererState extends State<SftpRenderer> {
     );
   }
 
+  String _terminalStartPath(String sftpPath) {
+    final match = RegExp(r'^/([A-Za-z]:(/.*)?)$').firstMatch(sftpPath);
+    if (match == null) return sftpPath;
+    final drive = match.group(1)!;
+    return drive.length == 2 ? '$drive/' : drive;
+  }
+
   Future<void> _openTerminalHere(SftpEntry entry) async {
     if (_openingTerminal) return;
     setState(() => _openingTerminal = true);
-    final path = _remotePath(entry.name);
+    final path = _terminalStartPath(_remotePath(entry.name));
     try {
       await widget.sessionManager.createTerminalSession(
         token: widget.token,
