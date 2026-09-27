@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import '../utils/theme_manager.dart';
 import '../utils/auth_manager.dart';
@@ -96,11 +99,70 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (shouldLogout == true && mounted) await widget.authManager.logout();
   }
 
+  static const MethodChannel _fileProviderChannel =
+      MethodChannel('nexterm/fileprovider');
+
+  Future<void> _onExposeToFilesAppChanged(BuildContext context, bool value) async {
+    if (!Platform.isIOS) {
+      await showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Only available on iOS'),
+          content: const Text(
+            'Showing all SFTP/FTP/FTPS servers in the system file manager is only available on iOS. '
+            'On Android third-party storage providers are only partially supported.',
+          ),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    try {
+      await widget.sftpSettings.setExposeToFilesApp(value);
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not update Files app integration')),
+      );
+      return;
+    }
+    if (!context.mounted) return;
+    if (widget.sftpSettings.exposeToFilesApp != value) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not update Files app integration')),
+      );
+      return;
+    }
+    try {
+      await _fileProviderChannel.invokeMethod('setExposeEnabled', {'enabled': value});
+    } catch (_) {
+      try {
+        await widget.sftpSettings.setExposeToFilesApp(!value);
+      } catch (_) {}
+      if (!context.mounted) return;
+      final recovered = widget.sftpSettings.exposeToFilesApp == !value;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            recovered
+                ? 'Could not update Files app integration'
+                : 'Could not update Files app integration (setting may be out of sync)',
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
-    final server = ApiConfig.baseUrl.replaceAll(RegExp(r'https?://'), '').replaceAll('/api', '');
+    final server = ApiConfig.baseUrl.replaceFirst(RegExp(r'^https?://'), '').replaceFirst(RegExp(r'/api/?$'), '');
 
     return Scaffold(
       body: SafeArea(
@@ -402,6 +464,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     title: const Text('Sort Folders First', style: TextStyle(fontSize: 15)),
                     value: sf.sortFoldersFirst,
                     onChanged: (v) => sf.setSortFoldersFirst(v),
+                  ),
+                  Divider(height: 1, indent: 56, color: cs.outlineVariant.withValues(alpha: 0.3)),
+                  SwitchListTile(
+                    contentPadding: const EdgeInsets.only(left: 16, right: 12),
+                    secondary: Container(
+                      width: 36, height: 36,
+                      decoration: BoxDecoration(color: cs.primaryContainer, borderRadius: BorderRadius.circular(10)),
+                      child: Icon(MdiIcons.folderMultipleOutline, color: cs.onPrimaryContainer, size: 18),
+                    ),
+                    title: const Text('Show Servers in Files App', style: TextStyle(fontSize: 15)),
+                    subtitle: Text(
+                      Platform.isIOS
+                          ? 'Adds all SFTP/FTP/FTPS servers to the iOS Files app'
+                          : 'Only available on iOS',
+                      style: TextStyle(fontSize: 12, color: cs.outline),
+                    ),
+                    value: Platform.isIOS && sf.exposeToFilesApp,
+                    onChanged: (v) => _onExposeToFilesAppChanged(context, v),
                   ),
                 ]);
               },

@@ -1,12 +1,18 @@
 package dev.gnm.nexterm
 
 import android.app.DownloadManager
+import android.content.ActivityNotFoundException
+import android.content.ClipData
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.DocumentsContract
+import android.webkit.MimeTypeMap
+import androidx.core.content.FileProvider
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import java.io.File
 
 class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -26,6 +32,73 @@ class MainActivity : FlutterActivity() {
                 result.notImplemented()
             }
         }
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            "nexterm/edit"
+        ).setMethodCallHandler { call, result ->
+            if (call.method == "open") {
+                try {
+                    val path = call.argument<String>("path").orEmpty()
+                    result.success(openLocalFile(path))
+                } catch (e: IllegalArgumentException) {
+                    result.error("BAD_PATH", e.message, null)
+                } catch (e: Exception) {
+                    result.error("OPEN_FAILED", e.message, null)
+                }
+            } else {
+                result.notImplemented()
+            }
+        }
+    }
+
+    private fun mimeTypeFor(name: String): String {
+        val dot = name.lastIndexOf('.')
+        val ext = if (dot >= 0) name.substring(dot + 1).lowercase() else ""
+        if (ext.isEmpty()) return "*/*"
+        MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)?.let { return it }
+        return when (ext) {
+            "md", "log", "yaml", "yml", "toml", "conf", "cfg", "ini", "env", "sh" -> "text/plain"
+            else -> "*/*"
+        }
+    }
+
+    private fun openLocalFile(path: String): Boolean {
+        if (path.isEmpty()) return false
+        val file = File(path)
+        if (!file.exists() || !file.isFile) return false
+        val uri: Uri = FileProvider.getUriForFile(
+            this,
+            "${applicationContext.packageName}.fileprovider",
+            file
+        )
+        val type = mimeTypeFor(file.name)
+        val view = Intent(Intent.ACTION_VIEW)
+        view.setDataAndType(uri, type)
+        view.clipData = ClipData.newUri(contentResolver, file.name, uri)
+        view.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        view.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        view.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val resolved = packageManager.queryIntentActivities(
+            view,
+            PackageManager.MATCH_DEFAULT_ONLY
+        )
+        for (info in resolved) {
+            grantUriPermission(
+                info.activityInfo.packageName,
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            )
+        }
+        val chooser = Intent.createChooser(view, null)
+        chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        chooser.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        chooser.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        try {
+            startActivity(chooser)
+        } catch (e: ActivityNotFoundException) {
+            return false
+        }
+        return true
     }
 
     private fun openSavedLocation(value: String) {
