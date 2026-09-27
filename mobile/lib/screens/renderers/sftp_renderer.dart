@@ -703,13 +703,6 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
                 );
                 return;
               }
-              if (_hasPendingFor(oldPath, dialogSid) || _hasPendingFor(newPath, dialogSid)) {
-                if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('File is still open in an external editor')),
-                );
-                return;
-              }
               _dropPendingFor(oldPath, dialogSid);
               _dropPendingFor(newPath, dialogSid);
               _sendOperation(_SftpOps.renameFile, {
@@ -785,11 +778,7 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
         return;
       }
       if (_hasPendingFor(path, actionSid)) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('File is still open in an external editor')),
-        );
-        return;
+        _dropPendingFor(path, actionSid);
       }
     }
     for (final entry in entries) {
@@ -850,11 +839,7 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
                 return;
               }
               if (_hasPendingFor(target, dialogSid)) {
-                if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('File is still open in an external editor')),
-                );
-                return;
+                _dropPendingFor(target, dialogSid);
               }
               _sendOperation(_SftpOps.createFolder, {'path': target});
             },
@@ -924,23 +909,18 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
     _uploadingPaths.addAll(batchPaths);
     var dirChanged = false;
     var sessionChanged = false;
-    var skippedOpen = 0;
     final succeeded = <String>[];
     try {
       for (final pickedFile in batchFiles) {
         if (sid != _sessionId || targetBase != _currentPath) {
           dirChanged = targetBase != _currentPath;
           sessionChanged = sid != _sessionId;
-          failed += batchFiles.length - uploaded - failed - skippedOpen;
+          failed += batchFiles.length - uploaded - failed;
           break;
         }
         final file = File(pickedFile.path!);
         final remotePath = _remotePathIn(targetBase, pickedFile.name);
-        if (_hasPendingFor(remotePath, sid)) {
-          _uploadingPaths.remove(_upKey(sid, remotePath));
-          skippedOpen++;
-          continue;
-        }
+        _dropPendingFor(remotePath, sid);
 
         try {
           final uploadUrl = Uri.parse(
@@ -988,15 +968,13 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
     }
 
     if (mounted) {
-      final skippedSuffix =
-          skippedOpen > 0 ? ', $skippedOpen skipped (open in editor)' : '';
       final msg = sessionChanged
-          ? 'Session changed, upload stopped (uploaded $uploaded, failed $failed$skippedSuffix)'
+          ? 'Session changed, upload stopped (uploaded $uploaded, failed $failed)'
           : dirChanged
-              ? 'Directory changed, upload stopped (uploaded $uploaded, failed $failed$skippedSuffix)'
+              ? 'Directory changed, upload stopped (uploaded $uploaded, failed $failed)'
               : failed == 0
-                  ? 'Uploaded $uploaded file${uploaded != 1 ? 's' : ''}$skippedSuffix'
-                  : 'Uploaded $uploaded, failed $failed$skippedSuffix';
+                  ? 'Uploaded $uploaded file${uploaded != 1 ? 's' : ''}'
+                  : 'Uploaded $uploaded, failed $failed';
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
       _refresh();
     }
@@ -1353,32 +1331,8 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      _checkPendingUploads();
-    } else if (state == AppLifecycleState.paused) {
-      unawaited(_syncEditBadge());
+      _flushPendingUploads();
     }
-  }
-
-  Future<void> _syncEditBadge() async {
-    try {
-      await _editChannel.invokeMethod(
-        'updateEditing',
-        {
-          'count': _pendingEdits.values
-              .where((p) =>
-                  !_uploadingPaths.contains(_upKey(p.sessionId, p.remotePath)))
-              .length
-        },
-      );
-    } catch (_) {}
-  }
-
-  String? _pendingKeyFor(String remotePath, [String? sessionId]) {
-    final full = _upKey(sessionId ?? _sessionId, remotePath);
-    if (_pendingEdits.containsKey(full)) {
-      return full;
-    }
-    return null;
   }
 
   bool _hasPendingFor(String remotePath, [String? sessionId]) {
@@ -1410,7 +1364,6 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
   void _dropPendingFor(String remotePath, [String? sessionId]) {
     final full = _upKey(sessionId ?? _sessionId, remotePath);
     final prefix = full.endsWith('/') ? full : '$full/';
-    var changed = false;
     for (final key in _pendingEdits.keys.toList()) {
       if (key == full || key.startsWith(prefix)) {
         final stale = _pendingEdits[key];
@@ -1419,15 +1372,50 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
           continue;
         }
         _pendingEdits.remove(key);
-        changed = true;
         if (stale != null) {
           unawaited(_deleteQuietly(File(stale.tempPath)));
         }
       }
     }
-    if (changed) {
-      unawaited(_syncEditBadge());
+  }
+
+  void _dropAllPendingEdits(String sessionId) {
+    for (final key in _pendingEdits.keys.toList()) {
+      final stale = _pendingEdits[key];
+      if (stale == null || stale.sessionId != sessionId) {
+        continue;
+      }
+      if (_uploadingPaths.contains(key)) {
+        continue;
+      }
+      _pendingEdits.remove(key);
+      unawaited(_deleteQuietly(File(stale.tempPath)));
     }
+  }
+
+  Future<bool> _confirmDiscardOpenEdits() async {
+    if (!widget.sftpSettings.warnBeforeDiscardEdit) return true;
+    if (!mounted) return false;
+    final proceed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Offene Datei verwerfen?'),
+        content: const Text(
+          'Die geöffnete Datei enthält möglicherweise ungespeicherte Änderungen, die beim Öffnen verloren gehen.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Abbrechen'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Fortfahren'),
+          ),
+        ],
+      ),
+    );
+    return proceed == true;
   }
 
   @override
@@ -1475,7 +1463,6 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
         oldWidget.session.sftpSubscription = null;
       }
       _setupConnection();
-      unawaited(_syncEditBadge());
     }
   }
 
@@ -1690,18 +1677,8 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
         }
         return;
       }
-      if (_hasPendingFor(remotePath, openSessionId)) {
-        await _checkPendingUpload(pkey);
-        if (_hasPendingFor(remotePath, openSessionId)) {
-          await _deleteQuietly(temp);
-          temp = null;
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('File is still open in an external editor')),
-            );
-          }
-          return;
-        }
+      if (_pendingEdits.isNotEmpty) {
+        final proceed = await _confirmDiscardOpenEdits();
         if (!mounted ||
             openSessionId != _sessionId ||
             base != _currentPath ||
@@ -1710,6 +1687,12 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
           temp = null;
           return;
         }
+        if (!proceed) {
+          await _deleteQuietly(temp);
+          temp = null;
+          return;
+        }
+        _dropAllPendingEdits(openSessionId);
       }
       _dropPendingFor(remotePath, openSessionId);
       _pendingEdits[pkey] = snapshot;
@@ -1740,7 +1723,7 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
         return;
       }
       temp = null;
-      await _checkPendingUpload(pkey);
+      await _flushPendingUpload(pkey);
     } catch (e) {
       await _deleteQuietly(temp);
       if (snapshot != null &&
@@ -1764,19 +1747,17 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
       _openingPaths.remove(pkey);
       await _deleteQuietly(temp);
       _setBusy(false);
-      await _syncEditBadge();
     }
   }
 
-  Future<void> _checkPendingUploads() async {
+  Future<void> _flushPendingUploads() async {
     if (!mounted || _pendingEdits.isEmpty) return;
     for (final key in _pendingEdits.keys.toList()) {
-      await _checkPendingUpload(key);
+      await _flushPendingUpload(key);
     }
-    await _syncEditBadge();
   }
 
-  Future<void> _checkPendingUpload(String pkey) async {
+  Future<void> _flushPendingUpload(String pkey) async {
     final pending = _pendingEdits[pkey];
     if (pending == null || !mounted) return;
     final remotePath = pending.remotePath;
@@ -1796,47 +1777,8 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
     }
     final changed = await _editChanged(pending);
     if (!changed || !mounted) return;
-    final shouldUpload = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Save changes?'),
-        content: Text('"${pending.fileName}" was changed. Upload back to the server?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Discard'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Upload'),
-          ),
-        ],
-      ),
-    );
-    if (!mounted) return;
     if (!identical(_pendingEdits[pkey], pending)) return;
-    if (pending.sessionId != _sessionId) {
-      if (identical(_pendingEdits[pkey], pending)) {
-        _pendingEdits.remove(pkey);
-      }
-      await _deleteQuietly(File(pending.tempPath));
-      return;
-    }
-    if (!await File(pending.tempPath).exists()) {
-      if (identical(_pendingEdits[pkey], pending)) {
-        _pendingEdits.remove(pkey);
-      }
-      return;
-    }
-    if (!await _editChanged(pending)) return;
-    if (shouldUpload == true) {
-      await _uploadEditedFile(pending);
-    } else if (shouldUpload == false) {
-      if (identical(_pendingEdits[pkey], pending)) {
-        _pendingEdits.remove(pkey);
-        await _deleteQuietly(File(pending.tempPath));
-      }
-    }
+    await _uploadEditedFile(pending);
   }
 
   Future<void> _uploadEditedFile(_PendingEdit pending) async {
@@ -1848,7 +1790,6 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
         _pendingEdits.remove(pkey);
       }
       await _deleteQuietly(file);
-      unawaited(_syncEditBadge());
       return;
     }
     final sid = pending.sessionId;
@@ -1857,33 +1798,20 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
         _pendingEdits.remove(pkey);
       }
       await _deleteQuietly(file);
-      unawaited(_syncEditBadge());
       return;
     }
     if (_uploadingPaths.contains(pkey)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Upload in progress, please retry shortly')),
-      );
       return;
     }
     if (_activeUploads > 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Upload in progress, please retry shortly')),
-      );
       return;
     }
     _activeUploads++;
     _setBusy(true);
     _uploadingPaths.add(pkey);
-    unawaited(_syncEditBadge());
     try {
       final editedSize = await file.length();
       if (editedSize > _maxOpenBytes) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('File is too large to upload, trim it in the editor and retry')),
-          );
-        }
         return;
       }
       final uploadUrl = Uri.parse(
@@ -1928,26 +1856,13 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
           (response.statusCode == 200 || response.statusCode == 201)) {
         _pendingEdits.remove(pkey);
         await _deleteQuietly(file);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('"${pending.fileName}" saved to server')),
-        );
         _refresh();
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Upload failed: HTTP ${response.statusCode}')),
-        );
       }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Upload failed: $e')),
-        );
-      }
+    } catch (_) {
     } finally {
       _uploadingPaths.remove(pkey);
       if (_activeUploads > 0) _activeUploads--;
       _setBusy(false);
-      await _syncEditBadge();
     }
   }
 
@@ -1970,7 +1885,6 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
     _openingPaths.clear();
     _scrollController.dispose();
     widget.sftpSettings.removeListener(_onSftpSettingsChanged);
-    unawaited(_syncEditBadge());
     super.dispose();
   }
 
@@ -2378,54 +2292,6 @@ class _SftpRendererState extends State<SftpRenderer> with WidgetsBindingObserver
                 onTap: () {
                   Navigator.pop(ctx);
                   _openEntry(entry, base, sheetSid);
-                },
-              ),
-            if (!entry.isDir && _pendingKeyFor(_remotePathIn(base, entry.name), sheetSid) != null)
-              ListTile(
-                leading: Icon(MdiIcons.closeCircleOutline),
-                title: const Text('End edit session'),
-                subtitle: const Text('Forgets the open file without uploading'),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  if (sheetSid != _sessionId) {
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Session changed, please retry')),
-                      );
-                      _refresh();
-                    }
-                    return;
-                  }
-                  if (base != _currentPath) {
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Directory changed, please retry')),
-                      );
-                      _refresh();
-                    }
-                    return;
-                  }
-                  if (_uploadingPaths.contains(_upKey(sheetSid, _remotePathIn(base, entry.name)))) {
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Upload in progress, please retry shortly')),
-                      );
-                    }
-                    return;
-                  }
-                  final key = _pendingKeyFor(_remotePathIn(base, entry.name), sheetSid);
-                  if (key != null) {
-                    final pend = _pendingEdits.remove(key);
-                    if (pend != null) {
-                      unawaited(_deleteQuietly(File(pend.tempPath)));
-                    }
-                    unawaited(_syncEditBadge());
-                  }
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Edit session ended')),
-                    );
-                  }
                 },
               ),
             ListTile(

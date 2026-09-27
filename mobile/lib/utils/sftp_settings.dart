@@ -7,18 +7,21 @@ class SftpSettings extends ChangeNotifier {
   static const String _confirmBeforeDeleteKey = 'sftp_confirmBeforeDelete';
   static const String _sortFoldersFirstKey = 'sftp_sortFoldersFirst';
   static const String _exposeToFilesAppKey = 'sftp_exposeToFilesApp';
+  static const String _warnBeforeDiscardEditKey = 'sftp_warnBeforeDiscardEdit';
 
   bool _showHiddenFiles;
   bool _dimHiddenFiles;
   bool _confirmBeforeDelete;
   bool _sortFoldersFirst;
   bool _exposeToFilesApp;
+  bool _warnBeforeDiscardEdit;
 
   bool get showHiddenFiles => _showHiddenFiles;
   bool get dimHiddenFiles => _dimHiddenFiles;
   bool get confirmBeforeDelete => _confirmBeforeDelete;
   bool get sortFoldersFirst => _sortFoldersFirst;
   bool get exposeToFilesApp => _exposeToFilesApp;
+  bool get warnBeforeDiscardEdit => _warnBeforeDiscardEdit;
 
   SftpSettings._({
     required bool showHiddenFiles,
@@ -26,11 +29,13 @@ class SftpSettings extends ChangeNotifier {
     required bool confirmBeforeDelete,
     required bool sortFoldersFirst,
     required bool exposeToFilesApp,
+    required bool warnBeforeDiscardEdit,
   })  : _showHiddenFiles = showHiddenFiles,
         _dimHiddenFiles = dimHiddenFiles,
         _confirmBeforeDelete = confirmBeforeDelete,
         _sortFoldersFirst = sortFoldersFirst,
-        _exposeToFilesApp = exposeToFilesApp;
+        _exposeToFilesApp = exposeToFilesApp,
+        _warnBeforeDiscardEdit = warnBeforeDiscardEdit;
 
   static Future<SftpSettings> load() async {
     final prefs = await SharedPreferences.getInstance();
@@ -40,6 +45,7 @@ class SftpSettings extends ChangeNotifier {
       confirmBeforeDelete: prefs.getBool(_confirmBeforeDeleteKey) ?? true,
       sortFoldersFirst: prefs.getBool(_sortFoldersFirstKey) ?? true,
       exposeToFilesApp: prefs.getBool(_exposeToFilesAppKey) ?? false,
+      warnBeforeDiscardEdit: prefs.getBool(_warnBeforeDiscardEditKey) ?? true,
     );
   }
 
@@ -84,6 +90,15 @@ class SftpSettings extends ChangeNotifier {
     final stored = await prefs.setBool(_exposeToFilesAppKey, value);
     if (stored) {
       _exposeToFilesApp = value;
+      notifyListeners();
+    }
+  }
+
+  Future<void> setWarnBeforeDiscardEdit(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    final stored = await prefs.setBool(_warnBeforeDiscardEditKey, value);
+    if (stored) {
+      _warnBeforeDiscardEdit = value;
       notifyListeners();
     }
   }

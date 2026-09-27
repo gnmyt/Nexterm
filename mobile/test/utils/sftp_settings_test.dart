@@ -14,4 +14,14 @@ void main() {
     final reloaded = await SftpSettings.load();
     expect(reloaded.exposeToFilesApp, isTrue);
   });
+
+  test('warnBeforeDiscardEdit defaults to true and persists', () async {
+    SharedPreferences.setMockInitialValues({});
+    final settings = await SftpSettings.load();
+    expect(settings.warnBeforeDiscardEdit, isTrue);
+    await settings.setWarnBeforeDiscardEdit(false);
+    expect(settings.warnBeforeDiscardEdit, isFalse);
+    final reloaded = await SftpSettings.load();
+    expect(reloaded.warnBeforeDiscardEdit, isFalse);
+  });
 }

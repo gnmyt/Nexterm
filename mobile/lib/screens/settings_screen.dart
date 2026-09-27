@@ -483,6 +483,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     value: Platform.isIOS && sf.exposeToFilesApp,
                     onChanged: (v) => _onExposeToFilesAppChanged(context, v),
                   ),
+                  Divider(height: 1, indent: 56, color: cs.outlineVariant.withValues(alpha: 0.3)),
+                  SwitchListTile(
+                    contentPadding: const EdgeInsets.only(left: 16, right: 12),
+                    secondary: Container(
+                      width: 36, height: 36,
+                      decoration: BoxDecoration(color: cs.primaryContainer, borderRadius: BorderRadius.circular(10)),
+                      child: Icon(MdiIcons.alertOutline, color: cs.onPrimaryContainer, size: 18),
+                    ),
+                    title: const Text('Warn Before Discarding', style: TextStyle(fontSize: 15)),
+                    subtitle: Text(
+                      'Warn before replacing a file that is still open in an external editor',
+                      style: TextStyle(fontSize: 12, color: cs.outline),
+                    ),
+                    value: sf.warnBeforeDiscardEdit,
+                    onChanged: (v) => sf.setWarnBeforeDiscardEdit(v),
+                  ),
                 ]);
               },
             ),

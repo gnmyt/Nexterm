@@ -37,8 +37,6 @@ import UIKit
           DispatchQueue.main.async {
             result(self?.presentDocument(atPath: path) ?? false)
           }
-        } else if call.method == "updateEditing" {
-          result(true)
         } else {
           result(FlutterMethodNotImplemented)
         }
