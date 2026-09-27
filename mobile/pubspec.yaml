@@ -31,6 +31,8 @@ dependencies:
   mobile_scanner: ^7.2.0
   gpt_markdown: ^1.0.19
   speech_to_text: ^7.0.0
+  re_editor: ^0.10.0
+  re_highlight: ^0.0.3
 
 dev_dependencies:
   flutter_test:
