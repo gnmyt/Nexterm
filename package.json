@@ -12,12 +12,12 @@
     "node": ">=22"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^4.0.59",
-    "@ai-sdk/openai": "^4.0.72",
-    "@ai-sdk/openai-compatible": "^3.0.53",
+    "@ai-sdk/anthropic": "^4.0.63",
+    "@ai-sdk/openai": "^4.0.75",
+    "@ai-sdk/openai-compatible": "^3.0.55",
     "@inquirer/password": "^5.2.2",
     "@simplewebauthn/server": "^14.0.2",
-    "ai": "^7.0.109",
+    "ai": "^7.0.114",
     "archiver": "^8.0.0",
     "bcrypt": "^6.0.0",
     "commander": "^15.0.0",
@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "concurrently": "^10.0.5",
-    "dotenv": "^18.0.2",
+    "dotenv": "^18.0.3",
     "esbuild": "^0.28.2",
     "nodemon": "^3.1.11",
     "vitepress": "^1.6.4",
