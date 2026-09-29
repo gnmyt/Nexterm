@@ -220,6 +220,9 @@ export const Permissions = () => {
                                                 ) : (
                                                     <PermissionMatrix catalog={catalog}
                                                                       values={detail?.permissions || {}}
+                                                                      inherited={group.isDefault
+                                                                          ? (catalog?.permissions || []).filter((p) => p.default).map((p) => p.id)
+                                                                          : null}
                                                                       onChange={(permId, value) => changePermission(group, permId, value)} />
                                                 )
                                             )}
