@@ -588,6 +588,7 @@ const GuacamoleRenderer = ({
                 uploadFiles(Array.from(e.clipboardData.files));
                 return;
             }
+            if (!ref.current?.contains(e.target)) return;
             if (!interceptPaste) return;
             const pendingRemoteCopy = remoteClipboardCopyRef.current;
             let text = e.clipboardData?.getData("text");
