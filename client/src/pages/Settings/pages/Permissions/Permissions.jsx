@@ -229,7 +229,10 @@ export const Permissions = () => {
 
                                             {subTab === "members" && detail && (
                                                 <RoleMembers groupId={group.id} members={detail.members || []}
-                                                             onChanged={() => { loadDetail(group.id); loadGroups(); }} />
+                                                             onChanged={() => {
+                                                                 void loadDetail(group.id);
+                                                                 void loadGroups();
+                                                             }} />
                                             )}
 
                                             {subTab === "settings" && !group.isSystem && (
