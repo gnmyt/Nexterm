@@ -207,30 +207,24 @@ export const Sources = () => {
                                     </div>
                                 </div>
                                 <div className="source-actions">
-                                    <button
-                                        className="action-btn sync-btn"
-                                        onClick={() => handleSync(source.id)}
-                                        disabled={syncing[source.id] || !source.enabled}
-                                        title={t("settings.sources.sync")}
-                                    >
+                                    <button className="action-btn sync-btn"
+                                            onClick={() => handleSync(source.id)}
+                                            disabled={syncing[source.id] || !source.enabled}
+                                            aria-label={t("settings.sources.sync")}>
                                         <Icon path={syncing[source.id] ? mdiLoading : mdiSync}
                                               spin={syncing[source.id] ? 1 : 0} />
                                     </button>
                                     {!source.isDefault && (
-                                        <button
-                                            className="action-btn edit-btn"
-                                            onClick={() => openEditDialog(source)}
-                                            title={t("settings.sources.edit")}
-                                        >
+                                        <button className="action-btn edit-btn"
+                                                onClick={() => openEditDialog(source)}
+                                                aria-label={t("settings.sources.edit")}>
                                             <Icon path={mdiPencil} />
                                         </button>
                                     )}
                                     {!source.isDefault && (
-                                        <button
-                                            className="action-btn delete-btn"
-                                            onClick={() => handleDeleteRequest(source)}
-                                            title={t("settings.sources.delete")}
-                                        >
+                                        <button className="action-btn delete-btn"
+                                                onClick={() => handleDeleteRequest(source)}
+                                                aria-label={t("settings.sources.delete")}>
                                             <Icon path={mdiTrashCan} />
                                         </button>
                                     )}
