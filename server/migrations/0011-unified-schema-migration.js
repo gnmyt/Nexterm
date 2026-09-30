@@ -26,7 +26,7 @@ module.exports = {
             } else {
                 [columns] = await queryInterface.sequelize.query("PRAGMA table_info(folders);");
             }
-            
+
             const hasTypeColumn = columns.some(col => col.name === 'type');
             const hasIntegrationIdColumn = columns.some(col => col.name === 'integrationId');
             
@@ -37,10 +37,10 @@ module.exports = {
             }
             if (!hasIntegrationIdColumn) {
                 // MariaDB requires specific syntax for adding columns with foreign keys in a single statement
-                const fkSyntax = isMysql 
+                const fkSyntax = isMysql
                     ? "ADD COLUMN integrationId INTEGER DEFAULT NULL, ADD CONSTRAINT fk_folders_integrations FOREIGN KEY (integrationId) REFERENCES integrations(id) ON DELETE CASCADE"
                     : "ADD COLUMN integrationId INTEGER DEFAULT NULL REFERENCES integrations(id) ON DELETE CASCADE";
-                
+
                 await queryInterface.sequelize.query(`ALTER TABLE folders ${fkSyntax}`);
             }
         }

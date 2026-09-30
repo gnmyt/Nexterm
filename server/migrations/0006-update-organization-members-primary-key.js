@@ -1,14 +1,11 @@
 const { DataTypes } = require("sequelize");
 const logger = require('../utils/logger');
-const Sequelize = require('sequelize');
 
 
 module.exports = {
     async up(queryInterface) {
         const isMysql = queryInterface.sequelize.options.dialect === 'mysql';
         const nowValue = isMysql ? 'NOW()' : "datetime('now')";
-        // SQLite uses rowid for deduplication, MariaDB can just use GROUP BY
-        const dedupeSuffix = isMysql ? "" : "HAVING MIN(rowid)";
 
         const tables = await queryInterface.showAllTables();
         if (!tables.includes("organization_members")) {
@@ -61,15 +58,29 @@ module.exports = {
             freezeTableName: true,
         });
 
-        await queryInterface.sequelize.query(`
-            INSERT INTO organization_members(organizationId, accountId, role, status, invitedBy, createdAt, updatedAt)
-            SELECT DISTINCT organizationId, accountId, role, status, invitedBy, 
-                   COALESCE(createdAt, ${nowValue}) as createdAt,
-                   COALESCE(updatedAt, ${nowValue}) as updatedAt
-            FROM organization_members_backup
-            GROUP BY organizationId, accountId
-            ${dedupeSuffix}
-        `);
+        if (isMysql) {
+            await queryInterface.sequelize.query(`
+                INSERT INTO organization_members(organizationId, accountId, role, status, invitedBy, createdAt, updatedAt)
+                SELECT organizationId, accountId,
+                       MIN(role) as role,
+                       MIN(status) as status,
+                       MIN(invitedBy) as invitedBy,
+                       COALESCE(MIN(createdAt), ${nowValue}) as createdAt,
+                       COALESCE(MIN(updatedAt), ${nowValue}) as updatedAt
+                FROM organization_members_backup
+                GROUP BY organizationId, accountId
+            `);
+        } else {
+            await queryInterface.sequelize.query(`
+                INSERT INTO organization_members(organizationId, accountId, role, status, invitedBy, createdAt, updatedAt)
+                SELECT DISTINCT organizationId, accountId, role, status, invitedBy,
+                       COALESCE(createdAt, ${nowValue}) as createdAt,
+                       COALESCE(updatedAt, ${nowValue}) as updatedAt
+                FROM organization_members_backup
+                GROUP BY organizationId, accountId
+                HAVING MIN(rowid)
+            `);
+        }
 
         await queryInterface.sequelize.query("DROP TABLE organization_members_backup");
     },

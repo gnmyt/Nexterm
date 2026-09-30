@@ -10,7 +10,21 @@ module.exports = {
             await queryInterface.sequelize.query("PRAGMA foreign_keys = OFF");
         }
 
-        await queryInterface.addColumn("accounts", "preferences", {
+        const accountsColumns = await queryInterface.describeTable("accounts");
+
+        if (!accountsColumns.preferences) {
+            await queryInterface.addColumn("accounts", "preferences", {
+                type: DataTypes.JSON,
+                allowNull: true,
+            });
+        }
+
+        await queryInterface.sequelize.query(
+            "UPDATE accounts SET preferences = ? WHERE preferences IS NULL OR preferences = ''",
+            { replacements: [JSON.stringify({})] }
+        );
+
+        await queryInterface.changeColumn("accounts", "preferences", {
             type: DataTypes.JSON,
             defaultValue: {},
             allowNull: false,
