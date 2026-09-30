@@ -51,6 +51,7 @@
     "vitepress-openapi": "^0.2.5"
   },
   "scripts": {
+    "test": "node --test server/tests/*.test.js",
     "dev:server": "nodemon --ignore docs --ignore vendor --ignore client --ignore mobile --ignore data server/index.js",
     "dev:client": "cd client && yarn run dev",
     "dev:guacd": "./scripts/build-guacd.sh",

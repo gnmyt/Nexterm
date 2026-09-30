@@ -7,7 +7,8 @@ import { useKeymaps, matchesKeybind, isMac } from "@/common/contexts/KeymapConte
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
-import ConnectionError, { mapConnectionError } from "./components/ConnectionError";
+import ConnectionError from "./components/ConnectionError";
+import { classifyConnectionError } from "@/common/utils/ConnectionErrorUtil.js";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 import { openPopout, onPopoutClosed } from "@/common/utils/PopoutUtil.js";
 import { createHostFsProvider } from "@/common/utils/HostFsProvider.js";
@@ -115,12 +116,13 @@ const GuacamoleRenderer = ({
     const [connectionError, setConnectionError] = useState(() => getSessionError?.(session.id) || null);
     const errorShownRef = useRef(!!connectionError);
 
-    const reportError = (rawMessage) => {
+    const reportError = (rawMessage, statusCode = null) => {
         if (errorShownRef.current) return;
         errorShownRef.current = true;
-        const mapped = mapConnectionError(rawMessage, t);
-        markSessionErrored?.(session.id, mapped);
-        setConnectionError(mapped);
+        const protocol = session.server?.config?.protocol || session.server?.protocol || session.server?.type;
+        const failure = classifyConnectionError({ rawMessage, statusCode, protocol, t });
+        markSessionErrored?.(session.id, failure.message, { autoReconnect: failure.autoReconnect });
+        setConnectionError(failure.message);
     };
 
     useEffect(() => {
@@ -679,9 +681,17 @@ const GuacamoleRenderer = ({
                 setReady(true);
             }
             if (opcode === "error" && args?.length) {
-                errorMessageRef.current = args[0] || "Connection failed";
+                errorMessageRef.current = {
+                    message: args[0] || "Connection failed",
+                    statusCode: args[1] ?? null,
+                };
             }
             clientOnInstruction?.(opcode, args);
+        };
+
+        client.onerror = (status) => {
+            const error = errorMessageRef.current;
+            reportError(status?.message || error?.message || t("common.errors.connection.error"), status?.code ?? error?.statusCode);
         };
 
         clientRef.current = client;
@@ -875,20 +885,21 @@ const GuacamoleRenderer = ({
             }
             if (st === Guacamole.Client.State.DISCONNECTED || st === Guacamole.Client.State.ERROR) {
                 if (errorShownRef.current) return;
-                if (errorMessageRef.current) reportError(errorMessageRef.current);
+                if (errorMessageRef.current) reportError(errorMessageRef.current.message, errorMessageRef.current.statusCode);
                 else disconnectFromServer(s.id);
             }
         };
         tunnel.onstatechange = (st) => {
             if (isCleaningUp || st !== Guacamole.Tunnel.State.CLOSED) return;
             if (errorShownRef.current) return;
-            if (errorMessageRef.current) reportError(errorMessageRef.current);
+            if (errorMessageRef.current) reportError(errorMessageRef.current.message, errorMessageRef.current.statusCode);
             else disconnectFromServer(s.id);
         };
         tunnel.onerror = (status) => {
             if (isCleaningUp) return;
-            const message = status?.message || errorMessageRef.current || t("common.errors.connection.error");
-            reportError(message);
+            const error = errorMessageRef.current;
+            const message = status?.message || error?.message || t("common.errors.connection.error");
+            reportError(message, status?.code ?? error?.statusCode);
         };
         const cleanupClipboard = handleClipboardEvents();
 
@@ -923,7 +934,7 @@ const GuacamoleRenderer = ({
             ref.current?.removeEventListener("keydown", handleKeyDown, true);
             ref.current?.removeEventListener("keyup", handleKeyUp, true);
             ref.current?.removeEventListener("blur", handleBlur, true);
-            client.onstatechange = tunnel.onstatechange = tunnel.onerror = null;
+            client.onstatechange = client.onerror = tunnel.onstatechange = tunnel.onerror = null;
             audioPlayersRef.current = [];
             tunnel.disconnect();
             clientRef.current = null;

@@ -29,6 +29,8 @@ const makeReconnectKey = () => {
     return `rk-${Array.from(values, value => value.toString(36)).join("-")}`;
 };
 
+const getConnectionVersion = (session) => session?.connectionVersion ?? 0;
+
 const upsertSession = (sessions, session) => {
     const index = sessions.findIndex(current => current.id === session.id);
     if (index === -1) return [...sessions, session];
@@ -70,19 +72,43 @@ export const Servers = () => {
     const erroredSessionsRef = useRef(new Map());
     const autoReconnectRef = useRef(null);
     const activeSessionsRef = useRef(activeSessions);
-    const reconnectingKeysRef = useRef(new Set());
+    const reconnectingKeysRef = useRef(new Map());
 
     useEffect(() => {
         activeSessionsRef.current = activeSessions;
+        for (const session of activeSessions) {
+            const targetVersion = reconnectingKeysRef.current.get(session.reconnectKey);
+            if (targetVersion !== undefined && getConnectionVersion(session) >= targetVersion) {
+                reconnectingKeysRef.current.delete(session.reconnectKey);
+            }
+        }
     }, [activeSessions]);
 
-    const markSessionErrored = useCallback((sessionId, message) => {
+    const markSessionErrored = useCallback((sessionId, message, {
+        autoReconnect: shouldAutoReconnect = true,
+        connectionVersion = null,
+    } = {}) => {
+        const session = activeSessionsRef.current.find(current => current.id === sessionId);
+        if (!session) return;
+        const currentVersion = getConnectionVersion(session);
+        const reportedVersion = connectionVersion ?? currentVersion;
+        const targetVersion = reconnectingKeysRef.current.get(session.reconnectKey);
+        if (targetVersion !== undefined && reportedVersion < targetVersion) return;
+        if (reportedVersion !== currentVersion) return;
+        if (targetVersion !== undefined) reconnectingKeysRef.current.delete(session.reconnectKey);
         if (erroredSessionsRef.current.has(sessionId)) return;
-        erroredSessionsRef.current.set(sessionId, message);
-        autoReconnectRef.current?.handleSessionErrored(sessionId);
+        erroredSessionsRef.current.set(sessionId, {
+            message,
+            autoReconnect: shouldAutoReconnect,
+        });
+        if (shouldAutoReconnect) autoReconnectRef.current?.handleSessionErrored(sessionId);
     }, []);
 
     const getSessionError = useCallback((sessionId) => {
+        return erroredSessionsRef.current.get(sessionId)?.message || null;
+    }, []);
+
+    const getSessionErrorInfo = useCallback((sessionId) => {
         return erroredSessionsRef.current.get(sessionId) || null;
     }, []);
 
@@ -347,18 +373,36 @@ export const Servers = () => {
 
     const handleConnectionReasonProvided = (reason) => {
         if (pendingConnection) {
-            void performConnection(pendingConnection, reason);
+            const connection = pendingConnection;
+            void performConnection(connection, reason).then((connected) => {
+                if (!connected && connection.reconnectKey) {
+                    reconnectingKeysRef.current.delete(connection.reconnectKey);
+                }
+            });
             setPendingConnection(null);
         }
         setConnectionReasonDialogOpen(false);
     };
 
     const handleConnectionReasonCanceled = () => {
+        if (pendingConnection?.reconnectKey) {
+            reconnectingKeysRef.current.delete(pendingConnection.reconnectKey);
+        }
         setPendingConnection(null);
         setConnectionReasonDialogOpen(false);
     };
 
-    const disconnectFromServer = useCallback((sessionId) => {
+    const disconnectFromServer = useCallback((sessionId, { force = false, connectionVersion = null } = {}) => {
+        const session = activeSessionsRef.current.find(current => current.id === sessionId);
+        if (!force && session) {
+            const currentVersion = getConnectionVersion(session);
+            const reportedVersion = connectionVersion ?? currentVersion;
+            const targetVersion = reconnectingKeysRef.current.get(session.reconnectKey);
+            if (targetVersion !== undefined && reportedVersion < targetVersion) return;
+            if (reportedVersion !== currentVersion) return;
+            if (targetVersion !== undefined) reconnectingKeysRef.current.delete(session.reconnectKey);
+        }
+
         erroredSessionsRef.current.delete(sessionId);
         setActiveSessions(prev => {
             const newSessions = prev.filter(session => session.id !== sessionId);
@@ -379,7 +423,7 @@ export const Servers = () => {
                 console.debug("Session deletion request failed:", error);
             });
         }
-        disconnectFromServer(sessionId);
+        disconnectFromServer(sessionId, { force: true });
     };
 
     const reconnectSession = async (sessionId) => {
@@ -388,26 +432,39 @@ export const Servers = () => {
             return { connected: false, deferred: true };
         }
 
-        reconnectingKeysRef.current.add(session.reconnectKey);
-        try {
-            return await initiateConnection({
-                server: session.server,
-                identity: session.identity ? { id: session.identity } : null,
-                type: session.type ?? null,
-                scriptId: session.scriptId ?? null,
-                scriptName: session.scriptName ?? null,
-                reconnectSessionId: sessionId,
-                reconnectKey: session.reconnectKey,
-            });
-        } finally {
+        reconnectingKeysRef.current.set(session.reconnectKey, getConnectionVersion(session) + 1);
+        const result = await initiateConnection({
+            server: session.server,
+            identity: session.identity ? { id: session.identity } : null,
+            type: session.type ?? null,
+            scriptId: session.scriptId ?? null,
+            scriptName: session.scriptName ?? null,
+            reconnectSessionId: sessionId,
+            reconnectKey: session.reconnectKey,
+        });
+        if (!result.connected && !result.deferred) {
             reconnectingKeysRef.current.delete(session.reconnectKey);
         }
+        return result;
     };
+
+    const markSessionConnected = useCallback((sessionId, connectionVersion = null) => {
+        const session = activeSessionsRef.current.find(current => current.id === sessionId);
+        if (!session) return;
+        const currentVersion = getConnectionVersion(session);
+        const reportedVersion = connectionVersion ?? currentVersion;
+        if (reportedVersion !== currentVersion) return;
+        const targetVersion = reconnectingKeysRef.current.get(session.reconnectKey);
+        if (targetVersion !== undefined && reportedVersion >= targetVersion) {
+            reconnectingKeysRef.current.delete(session.reconnectKey);
+        }
+        autoReconnectRef.current?.markSessionConnected(sessionId);
+    }, []);
 
     const autoReconnectApi = useAutoReconnect({
         activeSessions,
         reconnectSession,
-        getSessionError,
+        getSessionErrorInfo,
         enabled: autoReconnect,
         serverConnected: isConnected,
     });
@@ -642,7 +699,7 @@ export const Servers = () => {
                                openNotes={openNotes}
                                markSessionErrored={markSessionErrored}
                                getSessionError={getSessionError}
-                               markSessionConnected={autoReconnectApi.markSessionConnected}
+                               markSessionConnected={markSessionConnected}
                                reconnectNow={autoReconnectApi.reconnectNow}
                                reconnectStates={autoReconnectApi.reconnectStates}
                                setOpenFileEditors={setOpenFileEditors}
