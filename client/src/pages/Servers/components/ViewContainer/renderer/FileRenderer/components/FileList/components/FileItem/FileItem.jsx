@@ -29,7 +29,7 @@ export const FileItem = memo(({
                                   onClick,
                                   onContextMenu,
                                   onDotsClick,
-                                  onDotsMouseDown,
+                                  onDotsPointerDown,
                                   onDragStart,
                                   onDragEnd,
                                   onDragOver,
@@ -133,7 +133,7 @@ export const FileItem = memo(({
                 path={mdiDotsVertical}
                 className="dots-menu"
                 onClick={onDotsClick}
-                onMouseDown={onDotsMouseDown}
+                onPointerDown={onDotsPointerDown}
             />
         </div>
     );
