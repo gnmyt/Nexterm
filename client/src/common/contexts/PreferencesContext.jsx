@@ -19,6 +19,7 @@ const PATH_TO_GROUP = {
     "terminal.theme": "terminal.theme",
     "theme.mode": "appearance", "theme.accentColor": "appearance", "theme.uiScale": "appearance",
     "files.showThumbnails": "files", "files.defaultViewMode": "files", "files.showHiddenFiles": "files",
+    "files.dimHiddenFiles": "files",
     "files.confirmBeforeDelete": "files", "files.dragDropAction": "files",
     "general.language": "general",
 };
@@ -527,12 +528,14 @@ export const PreferencesProvider = ({ children, user, refreshUser }) => {
     const showThumbnails = get("files.showThumbnails", true);
     const defaultViewMode = get("files.defaultViewMode", "list");
     const showHiddenFiles = get("files.showHiddenFiles", false);
+    const dimHiddenFiles = get("files.dimHiddenFiles", true);
     const confirmBeforeDelete = get("files.confirmBeforeDelete", true);
     const dragDropAction = get("files.dragDropAction", "ask");
 
     const setShowThumbnails = useCallback((v) => set("files.showThumbnails", v), [set]);
     const setDefaultViewMode = useCallback((v) => set("files.defaultViewMode", v), [set]);
     const setShowHiddenFiles = useCallback((v) => set("files.showHiddenFiles", v), [set]);
+    const setDimHiddenFiles = useCallback((v) => set("files.dimHiddenFiles", v), [set]);
     const setConfirmBeforeDelete = useCallback((v) => set("files.confirmBeforeDelete", v), [set]);
     const setDragDropAction = useCallback((v) => set("files.dragDropAction", v), [set]);
     const toggleThumbnails = useCallback(() => setShowThumbnails(!showThumbnails), [setShowThumbnails, showThumbnails]);
@@ -565,6 +568,7 @@ export const PreferencesProvider = ({ children, user, refreshUser }) => {
             showThumbnails, setShowThumbnails, toggleThumbnails,
             defaultViewMode, setDefaultViewMode,
             showHiddenFiles, setShowHiddenFiles, toggleHiddenFiles,
+            dimHiddenFiles, setDimHiddenFiles,
             confirmBeforeDelete, setConfirmBeforeDelete, toggleConfirmBeforeDelete,
             dragDropAction, setDragDropAction,
             language, setLanguage,
