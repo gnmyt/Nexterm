@@ -256,7 +256,7 @@ export const SelectBox = ({ options, selected, setSelected, id, disabled = false
                         {filteredOptions.length > 0 ? filteredOptions.map((option, index) => {
                             const optionElement = (
                                 <div
-                                    key={index}
+                                    key={option.value}
                                     ref={(el) => (optionRefs.current[index] = el)}
                                     className={`select-box__option ${!option.icon && !multiple ? 'icon-only' : ''} ${isOptionSelected(option.value) ? "selected" : ""} ${highlightedIndex === index ? "highlighted" : ""}`}
                                     onClick={() => handleOptionClick(option.value)}
@@ -275,7 +275,7 @@ export const SelectBox = ({ options, selected, setSelected, id, disabled = false
                             );
 
                             return option.tooltip ? (
-                                <Tooltip key={index} text={option.tooltip} delay={500}>
+                                <Tooltip key={option.value} text={option.tooltip} delay={500}>
                                     {optionElement}
                                 </Tooltip>
                             ) : optionElement;

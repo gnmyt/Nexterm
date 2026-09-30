@@ -315,12 +315,12 @@ export const ActionBar = ({
                                 </>
                             )}
                             <Tooltip text={part} delay={500} asChild>
-                                <div className={`path-part ${isDropping ? "drop-target" : ""}`}
+                                <button type="button" className={`path-part ${isDropping ? "drop-target" : ""}`}
                                     onClick={(e) => { e.stopPropagation(); navigate(i, showEllipsis, originalIndex); }}
                                     onDragOver={(e) => handlePathDragOver(e, targetPath)}
                                     onDragLeave={handlePathDragLeave}
                                     onDrop={(e) => handlePathDrop(e, targetPath)}
-                                >{part}</div>
+                                >{part}</button>
                             </Tooltip>
                             <div className="path-part-divider">/</div>
                         </Fragment>
