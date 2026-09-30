@@ -32,7 +32,7 @@ const MAX_ZOOM_FONT_SIZE = 40;
 
 const clampFontSize = (size) => Math.min(MAX_ZOOM_FONT_SIZE, Math.max(MIN_ZOOM_FONT_SIZE, size));
 
-const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getSessionError, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false, onOpenSftp }) => {
+const XtermRenderer = ({ session, disconnectFromServer, reconnectSession, reconnectNow, markSessionConnected, reconnectInfo, markSessionErrored, getSessionError, registerTerminalRef, broadcastMode, terminalRefs, updateProgress, layoutMode, onBroadcastToggle, onFullscreenToggle, isShared = false, onOpenSftp }) => {
     const ref = useRef(null);
     const termRef = useRef(null);
     const wsRef = useRef(null);
@@ -42,13 +42,15 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     const onBroadcastToggleRef = useRef(onBroadcastToggle);
     const onFullscreenToggleRef = useRef(onFullscreenToggle);
     const connectionLoaderRef = useRef(null);
-    const smartCopyPasteRef = useRef(false);
+    const hasNotifiedConnectedRef = useRef(false);
+    const copyPasteBehaviorRef = useRef("smart");
     const zoomOffsetRef = useRef(0);
 
     const userContext = useContext(UserContext);
     const sessionToken = userContext?.sessionToken;
-    const { theme, getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, smartCopyPaste, passwordPromptDetection } = usePreferences();
+    const { theme, getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme, copyPasteBehavior, passwordPromptDetection } = usePreferences();
 
+    copyPasteBehaviorRef.current = copyPasteBehavior;
     const effectiveFont = (isShared && session.fontFamily) ? session.fontFamily : selectedFont;
     const effectiveFontSize = (isShared && session.fontSize) ? session.fontSize : fontSize;
     const hintForeground = (theme === "light" && selectedTheme === "light") ? "#000000" : getCurrentTheme().foreground;
@@ -63,6 +65,15 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         aiAvailableRef.current = isAIAvailable();
     });
     const { getParsedKeybind } = useKeymaps();
+    const copyKeybindRef = useRef(null);
+    const pasteKeybindRef = useRef(null);
+    const clipboardTextRef = useRef("");
+    const nativePasteRequestedRef = useRef(false);
+    useEffect(() => {
+        copyKeybindRef.current = getParsedKeybind("copy");
+        pasteKeybindRef.current = getParsedKeybind("paste");
+    }, [getParsedKeybind]);
+
     const { t } = useTranslation();
     const [showAIAssistant, setShowAIAssistant] = useState(false);
     const [suggestion, setSuggestion] = useState(null);
@@ -122,9 +133,13 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     }, [updatePasswordHintIndex]);
 
     const fillIdentityPassword = useCallback(async (identityId) => {
+        const shouldSubmit = Boolean(passwordPromptRef.current);
         hidePasswordHint();
         try {
-            await postRequest(`connections/${session.id}/paste-password`, identityId ? { identityId } : undefined);
+            await postRequest(`connections/${session.id}/paste-password`, {
+                ...(identityId ? { identityId } : {}),
+                submit: shouldSubmit,
+            });
         } catch (err) {
             console.error("Failed to fill identity password:", err);
         }
@@ -146,8 +161,8 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     }, [broadcastMode]);
 
     useEffect(() => {
-        smartCopyPasteRef.current = smartCopyPaste;
-    }, [smartCopyPaste]);
+        copyPasteBehaviorRef.current = copyPasteBehavior;
+    }, [copyPasteBehavior]);
 
     useEffect(() => {
         passwordDetectionRef.current = passwordPromptDetection;
@@ -296,14 +311,28 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         };
     }, [openSuggestionPrompt, editSuggestionQuery, submitSuggestionQuery, acceptSuggestion, cycleSuggestion, hideSuggestion]);
 
+    const handleMouseDown = (e) => {
+        if (!["mouse", "mouseKeyboard"].includes(copyPasteBehaviorRef.current) || e.button !== 2 || e.ctrlKey) return;
+        e.preventDefault();
+        e.stopPropagation();
+        void pasteFromClipboard();
+        termRef.current?.focus();
+    };
+
     const handleContextMenu = (e) => {
+        if (["mouse", "mouseKeyboard"].includes(copyPasteBehaviorRef.current) && !e.ctrlKey) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
+        if (isShared) return;
         e.preventDefault();
         e.stopPropagation();
         contextMenu.open(e, { x: e.clientX, y: e.clientY });
     };
 
     const copyToClipboard = (text) => {
-        navigator.clipboard.writeText(text).catch(() => {
+        const fallbackCopy = () => {
             const textArea = document.createElement('textarea');
             textArea.value = text;
             textArea.style.cssText = 'position:fixed;left:-9999px;top:-9999px';
@@ -311,7 +340,14 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             textArea.select();
             document.execCommand('copy');
             document.body.removeChild(textArea);
-        });
+            termRef.current?.focus();
+        };
+
+        if (!navigator.clipboard?.writeText) {
+            fallbackCopy();
+            return;
+        }
+        navigator.clipboard.writeText(text).catch(fallbackCopy);
     };
 
     const handleCopy = () => {
@@ -321,13 +357,22 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         termRef.current?.focus();
     };
 
-    const handlePaste = async () => {
+    const pasteText = (text) => {
+        if (!text) return;
+        clipboardTextRef.current = text;
+        termRef.current?.paste(text);
+    };
+
+    const pasteFromClipboard = async () => {
         try {
-            const text = await navigator.clipboard.readText();
-            if (text) termRef.current?.paste(text);
-        } catch (err) {
-            console.error('Failed to paste:', err);
+            pasteText(await navigator.clipboard.readText());
+        } catch {
+            pasteText(clipboardTextRef.current);
         }
+    };
+
+    const handlePaste = async () => {
+        await pasteFromClipboard();
         contextMenu.close();
         termRef.current?.focus();
     };
@@ -476,13 +521,55 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
         ref.current?.addEventListener("wheel", handleWheelZoom, { passive: false, capture: true });
 
         const handleNativePaste = (e) => {
+            if (!nativePasteRequestedRef.current) return;
+            nativePasteRequestedRef.current = false;
             const text = e.clipboardData?.getData('text');
-            if (text) {
-                e.preventDefault();
-                term.paste(text);
-            }
+            if (!text) return;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            pasteText(text);
         };
-        ref.current?.addEventListener('paste', handleNativePaste);
+        ref.current?.addEventListener('paste', handleNativePaste, true);
+
+        const handleCopyPasteKeydown = (event) => {
+            if (!ref.current?.contains(document.activeElement)) return;
+
+            const copyKeybind = copyKeybindRef.current;
+            const pasteKeybind = pasteKeybindRef.current;
+            const copyMatches = matchesKeybind(event, copyKeybind);
+            const pasteMatches = matchesKeybind(event, pasteKeybind);
+            if (!copyMatches && !pasteMatches) return;
+            const supportsKeyboard = ["keyboard", "mouseKeyboard"].includes(copyPasteBehaviorRef.current);
+            const supportsPasteKeymap = supportsKeyboard || copyPasteBehaviorRef.current === "smart";
+
+            if (copyMatches) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                if (supportsKeyboard) {
+                    const selection = term.getSelection();
+                    if (selection) copyToClipboard(selection);
+                }
+                return;
+            }
+
+            if (!supportsPasteKeymap) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                return;
+            }
+
+            if (event.key.toLowerCase() === "v" && (event.ctrlKey || event.metaKey)) {
+                nativePasteRequestedRef.current = true;
+                event.stopImmediatePropagation();
+                return;
+            }
+
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            void pasteFromClipboard();
+        };
+        window.addEventListener("keydown", handleCopyPasteKeydown, true);
 
         let ws;
 
@@ -554,6 +641,11 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
 
             connectionLoaderRef.current?.hide();
 
+            if (!hasNotifiedConnectedRef.current) {
+                hasNotifiedConnectedRef.current = true;
+                markSessionConnected?.(session.id);
+            }
+
             if (data.startsWith("\x02")) {
                 const prompt = data.substring(1);
                 term.write(prompt);
@@ -594,6 +686,12 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             hidePasswordHint();
             suggestionActionsRef.current.hideSuggestion?.();
         });
+        const selectionDisposable = term.onSelectionChange(() => {
+            if (!["mouse", "mouseKeyboard"].includes(copyPasteBehaviorRef.current)) return;
+            const selection = term.getSelection();
+            if (selection) copyToClipboard(selection);
+        });
+
 
         term.onData((data) => {
             if (passwordPromptRef.current) hidePasswordHint();
@@ -627,7 +725,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                     const hintItems = passwordIdentitiesRef.current;
                     const hintIndex = passwordHintIndexRef.current;
 
-                    if (event.key === "Tab") {
+                    if (event.key === "Tab" || event.key === "Enter" || event.code === "NumpadEnter") {
                         event.preventDefault();
                         event.stopPropagation();
                         fillIdentityPasswordRef.current(hintItems[hintIndex]?.id);
@@ -678,19 +776,11 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                     return false;
                 }
 
-                const copyKeybind = getParsedKeybind("copy");
-                if (copyKeybind && matchesKeybind(event, copyKeybind)) {
-                    const selection = term.getSelection();
-                    if (selection) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        copyToClipboard(selection);
-                        return false;
-                    }
-                }
 
-                if (smartCopyPasteRef.current && !isMac() && event.key.toLowerCase() === "c"
-                    && event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey) {
+
+                if (copyPasteBehaviorRef.current === "smart" && event.key.toLowerCase() === "c"
+                    && !event.shiftKey && !event.altKey
+                    && (isMac() ? event.metaKey && !event.ctrlKey : event.ctrlKey && !event.metaKey)) {
                     const selection = term.getSelection();
                     if (selection) {
                         event.preventDefault();
@@ -777,7 +867,8 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
             }
             window.removeEventListener("resize", handleResize);
             resizeObserver.disconnect();
-            ref.current?.removeEventListener('paste', handleNativePaste);
+            ref.current?.removeEventListener('paste', handleNativePaste, true);
+            window.removeEventListener("keydown", handleCopyPasteKeydown, true);
             ref.current?.removeEventListener("wheel", handleWheelZoom, { capture: true });
             if (ws) {
                 ws.onclose = null;
@@ -785,6 +876,7 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
                 ws.close();
             }
             cursorSyncDisposable.dispose();
+            selectionDisposable.dispose();
             term.dispose();
             clearInterval(interval);
             termRef.current = null;
@@ -793,10 +885,12 @@ const XtermRenderer = ({ session, disconnectFromServer, markSessionErrored, getS
     }, [sessionToken, effectiveFont, effectiveFontSize, cursorStyle, cursorBlink, selectedTheme, isShared]);
 
     return (
-        <div className="xterm-container" onContextMenu={!isShared ? handleContextMenu : undefined}>
+        <div className="xterm-container" onMouseDownCapture={handleMouseDown} onContextMenuCapture={handleContextMenu}>
             <ConnectionLoader onReady={(loader) => { connectionLoaderRef.current = loader; }} />
             {connectionError && (
-                <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)} />
+                <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)}
+                                 onReconnect={() => (reconnectNow || reconnectSession)?.(session.id)}
+                                 reconnectInfo={reconnectInfo} />
             )}
             <div ref={ref} className="xterm-wrapper" />
             <TypingIndicators anchor={cursorAnchor} participants={typingParticipants} />

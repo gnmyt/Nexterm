@@ -111,7 +111,7 @@ const DraggableTab = ({
             <AvatarStack className="tab-participants" users={otherParticipants} max={2}
                          getKey={participant => participant.viewerId} />
             <div className="tab-actions">
-                <Icon path={mdiClose} className="close-btn" title="Close Session" onClick={(e) => {
+                <Icon path={mdiClose} className="close-btn" aria-label={t("common.close")} onClick={(e) => {
                     e.stopPropagation();
                     closeSession(session.id);
                 }} />
@@ -126,6 +126,7 @@ export const ServerTabs = ({
     activeSessionId,
     closeSession,
     hibernateSession,
+    reconnectSession,
     duplicateSession,
     openNotes,
     layoutMode,
@@ -318,14 +319,13 @@ export const ServerTabs = ({
             <div className={`server-tabs${reveal ? " revealed" : ""}${pinned ? " pinned" : ""}`}>
                 <div className="layout-controls">
                     <Icon path={mdiMenu} className={`layout-btn ${menu.isOpen ? "active" : ""}`}
-                        title={t("servers.tabs.sessionMenu")}
-                        onClick={openActiveMenu} />
+                        aria-label={t("servers.tabs.sessionMenu")} onClick={openActiveMenu} />
                     <Icon path={mdiViewSplitVertical} className={`layout-btn split-btn ${layoutMode !== "single" ? "active" : ""}`}
-                        title={layoutMode === "single" ? t("servers.tabs.enableSplitView") : t("servers.tabs.disableSplitView")}
+                        aria-label={layoutMode === "single" ? t("servers.tabs.enableSplitView") : t("servers.tabs.disableSplitView")}
                         onClick={onToggleSplit} />
                     <Icon path={fullscreenEnabled ? mdiFullscreenExit : mdiFullscreen}
                         className={`layout-btn fullscreen-btn ${fullscreenEnabled ? "active" : ""}`}
-                        title={fullscreenEnabled ? t("servers.terminalActions.exitFullScreen") : t("servers.terminalActions.fullScreen")}
+                        aria-label={fullscreenEnabled ? t("servers.terminalActions.exitFullScreen") : t("servers.terminalActions.fullScreen")}
                         onClick={onFullscreenToggle} />
                 </div>
                 <div className="tabs-container">
@@ -366,7 +366,7 @@ export const ServerTabs = ({
                          onOpenShortcuts={() => setShowShortcuts(true)}
                          onSplitSession={onSplitSession} onPopOut={popOutSession}
                          onOpenNotes={openNotes} onDuplicate={duplicateSession}
-                         onHibernate={hibernateSession} onCloseSession={closeSession} />
+                         onHibernate={hibernateSession} onReconnect={reconnectSession} onCloseSession={closeSession} />
 
             <SnippetsMenu visible={showSnippets} onClose={() => setShowSnippets(false)}
                           onSelect={handleSnippetSelect} activeSession={activeSession} />

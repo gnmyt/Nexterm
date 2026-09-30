@@ -111,17 +111,14 @@ const BrowserRenderer = (props) => {
         <div className="browser-renderer">
             <form className="browser-toolbar" onSubmit={submitAddress}>
                 <button type="button" className="browser-toolbar__action" disabled={!canControl || !state.canBack}
-                        title={t("servers.browser.back")} aria-label={t("servers.browser.back")}
-                        onClick={() => sendCommand("back")}>
+                        aria-label={t("servers.browser.back")} onClick={() => sendCommand("back")}>
                     <Icon path={mdiArrowLeft} size={0.8} />
                 </button>
                 <button type="button" className="browser-toolbar__action" disabled={!canControl || !state.canForward}
-                        title={t("servers.browser.forward")} aria-label={t("servers.browser.forward")}
-                        onClick={() => sendCommand("forward")}>
+                        aria-label={t("servers.browser.forward")} onClick={() => sendCommand("forward")}>
                     <Icon path={mdiArrowRight} size={0.8} />
                 </button>
                 <button type="button" className="browser-toolbar__action" disabled={!canControl}
-                        title={state.loading ? t("servers.browser.stop") : t("servers.browser.reload")}
                         aria-label={state.loading ? t("servers.browser.stop") : t("servers.browser.reload")}
                         onClick={() => sendCommand(state.loading ? "stop" : "reload")}>
                     <Icon path={state.loading ? mdiClose : mdiRefresh} size={0.8} />

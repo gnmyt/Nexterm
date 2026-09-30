@@ -5,6 +5,7 @@ import "./styles.sass";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { useLiveSessions } from "@/common/contexts/LiveSessionContext.jsx";
 import AvatarStack from "@/common/components/AvatarStack";
+import Tooltip from "@/common/components/Tooltip";
 import { getSessionOwnerLabel } from "@/common/utils/avatar.js";
 import { useTranslation } from "react-i18next";
 import { useContext, useRef, useState } from "react";
@@ -112,22 +113,21 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
                 {noteLine && <span className="server-note truncate-text">{noteLine}</span>}
             </div>
             {hibernatedSessionCount > 0 && (
-                <div className="hibernation-indicator" title={`${hibernatedSessionCount} hibernated session${hibernatedSessionCount > 1 ? 's' : ''}`}>
-                    <Icon path={mdiSleep} />
-                    <span>{hibernatedSessionCount}</span>
-                </div>
+                <Tooltip text={`${hibernatedSessionCount} hibernated session${hibernatedSessionCount > 1 ? 's' : ''}`} delay={500} asChild>
+                    <div className="hibernation-indicator">
+                        <Icon path={mdiSleep} />
+                        <span>{hibernatedSessionCount}</span>
+                    </div>
+                </Tooltip>
             )}
             <AvatarStack className="live-session-avatars" users={liveSessionOwners} max={2}
                          title={liveSessionsTitle} getKey={owner => owner.sessionId} />
             {tags && tags.length > 0 && (
                 <div className="tag-circles">
                     {tags.map(tag => (
-                        <div
-                            key={tag.id}
-                            className="tag-circle"
-                            style={{ backgroundColor: tag.color }}
-                            title={tag.name}
-                        />
+                        <Tooltip key={tag.id} text={tag.name} delay={500} asChild>
+                            <div className="tag-circle" style={{ backgroundColor: tag.color }} />
+                        </Tooltip>
                     ))}
                 </div>
             )}

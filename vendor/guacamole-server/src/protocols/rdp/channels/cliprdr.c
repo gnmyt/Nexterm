@@ -30,6 +30,8 @@
 #include <freerdp/freerdp.h>
 #include <guacamole/client.h>
 #include <guacamole/mem.h>
+#include <guacamole/protocol.h>
+#include <guacamole/socket.h>
 #include <guacamole/stream.h>
 #include <guacamole/user.h>
 #include <winpr/wtsapi.h>
@@ -678,8 +680,12 @@ int guac_rdp_clipboard_handler(guac_user* user, guac_stream* stream,
     /* Ignore stream creation if no clipboard structure is available to handle
      * received data */
     guac_rdp_clipboard* clipboard = rdp_client->clipboard;
-    if (clipboard == NULL)
+    if (clipboard == NULL) {
+        guac_protocol_send_ack(user->socket, stream, "Clipboard unavailable",
+                GUAC_PROTOCOL_STATUS_RESOURCE_NOT_FOUND);
+        guac_socket_flush(user->socket);
         return 0;
+    }
 
     /* Handle any future "blob" and "end" instructions for this stream with
      * handlers that are aware of the RDP clipboard state */
@@ -719,8 +725,12 @@ int guac_rdp_clipboard_end_handler(guac_user* user, guac_stream* stream) {
     /* Ignore end of stream if no clipboard structure is available to handle
      * the data that was received */
     guac_rdp_clipboard* clipboard = rdp_client->clipboard;
-    if (clipboard == NULL)
+    if (clipboard == NULL) {
+        guac_protocol_send_ack(user->socket, stream, "Clipboard unavailable",
+                GUAC_PROTOCOL_STATUS_RESOURCE_NOT_FOUND);
+        guac_socket_flush(user->socket);
         return 0;
+    }
 
     /* Terminate clipboard data with NULL */
     guac_common_clipboard_append(clipboard->clipboard, "", 1);
@@ -729,12 +739,22 @@ int guac_rdp_clipboard_end_handler(guac_user* user, guac_stream* stream) {
     if (clipboard->cliprdr != NULL) {
         guac_client_log(client, GUAC_LOG_DEBUG, "Clipboard data received. "
                 "Reporting availability of clipboard data to RDP server.");
-        guac_rdp_cliprdr_send_format_list(clipboard->cliprdr);
+        if (guac_rdp_cliprdr_send_format_list(clipboard->cliprdr) == CHANNEL_RC_OK)
+            guac_protocol_send_ack(user->socket, stream, "Clipboard data received",
+                    GUAC_PROTOCOL_STATUS_SUCCESS);
+        else
+            guac_protocol_send_ack(user->socket, stream, "Clipboard unavailable",
+                    GUAC_PROTOCOL_STATUS_SERVER_ERROR);
     }
-    else
+    else {
         guac_client_log(client, GUAC_LOG_DEBUG, "Clipboard data has been "
                 "received, but cannot be sent to the RDP server because the "
                 "CLIPRDR channel is not yet connected.");
+        guac_protocol_send_ack(user->socket, stream, "Clipboard unavailable",
+                GUAC_PROTOCOL_STATUS_RESOURCE_NOT_FOUND);
+    }
+
+    guac_socket_flush(user->socket);
 
     return 0;
 

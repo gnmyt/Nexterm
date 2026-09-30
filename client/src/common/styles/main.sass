@@ -65,46 +65,35 @@ body.tauri-mode
   display: flex
   align-items: stretch
   z-index: 30
-  transform: translateX(0)
-  transition: transform 0.2s ease, box-shadow 0.2s ease
+  transition: box-shadow 0.2s ease
   flex-shrink: 0
 
   &.collapsed
-    position: absolute
-    transform: translateX(-100%)
-    box-shadow: none
-    pointer-events: none
+    .left-pane-slot
+      position: absolute
+      left: 100%
+      top: 0
+      visibility: hidden
+      opacity: 0
+      pointer-events: none
+      transform: translateX(-0.5rem)
+      transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease
 
-  &.collapsed.open
-    transform: translateX(0)
-    box-shadow: colors.$shadow-lg
-    pointer-events: auto
-
-  &.collapsed
     .resizer
       display: none
+
+  &.collapsed.open
+    .left-pane-slot
+      visibility: visible
+      opacity: 1
+      pointer-events: auto
+      transform: translateX(0)
+      box-shadow: colors.$shadow-lg
 
 .left-pane-slot
   display: flex
   height: 100%
 
-.left-pane-hover-bar
-  width: 10px
-  height: 100%
-  flex-shrink: 0
-  background-color: colors.$lighter-background
-  border-right: 1px solid colors.$lighter-background
-  cursor: pointer
-  opacity: 0.6
-  transition: opacity 0.15s ease, background-color 0.15s ease
-  display: none
-
-  &.active
-    display: block
-
-  &:hover
-    opacity: 1
-    background-color: colors.$gray
 
 .sidebar
   width: calc(5rem + 2px)
@@ -123,9 +112,6 @@ body.tauri-mode
     transform: none
     box-shadow: none
     pointer-events: auto
-
-  .left-pane-hover-bar
-    display: none
 
 ::-webkit-scrollbar
   width: 13px
