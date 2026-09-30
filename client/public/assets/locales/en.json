@@ -201,7 +201,7 @@
         "error": "Connection error occurred",
         "scriptClosedUnexpectedly": "Script connection closed unexpectedly",
         "scriptError": "Script connection error occurred",
-        "rdpSessionConflict": "The RDP session was disconnected because another connection was opened.",
+        "rdpSessionConflict": "The session was disconnected by the server because another connection was opened.",
         "rdpSessionTimeout": "The RDP session was disconnected because its session time limit was reached.",
         "rdpSessionClosed": "The RDP session was ended by the remote server or an administrator."
       }
