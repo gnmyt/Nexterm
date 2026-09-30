@@ -385,8 +385,14 @@ export const ActionBar = ({
                 <Icon path={viewMode === "list" ? mdiViewGrid : mdiViewList}
                       onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")} />
                 <Icon path={mdiRefresh} onClick={refreshFiles} />
-                <Icon path={mdiFileUpload} onClick={uploadFile} />
-                <Icon path={mdiFolderUpload} onClick={uploadFolder} />
+                <Tooltip text={t("servers.fileManager.actionBar.uploadFile")} delay={500} asChild>
+                    <Icon path={mdiFileUpload} onClick={uploadFile}
+                          aria-label={t("servers.fileManager.actionBar.uploadFile")} />
+                </Tooltip>
+                <Tooltip text={t("servers.fileManager.actionBar.uploadFolder")} delay={500} asChild>
+                    <Icon path={mdiFolderUpload} onClick={uploadFolder}
+                          aria-label={t("servers.fileManager.actionBar.uploadFolder")} />
+                </Tooltip>
                 <Tooltip text={t("servers.fileManager.createFile.title")} delay={500} asChild>
                     <Icon path={mdiFilePlus} onClick={createFile} aria-label={t("servers.fileManager.createFile.title")} />
                 </Tooltip>
