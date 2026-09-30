@@ -200,7 +200,10 @@
         "closedUnexpectedly": "Conexión cerrada inesperadamente",
         "error": "Se ha producido un error de conexión",
         "scriptClosedUnexpectedly": "Conexión de script cerrada inesperadamente",
-        "scriptError": "Se ha producido un error de conexión del script"
+        "scriptError": "Se ha producido un error de conexión del script",
+        "rdpSessionConflict": "The session was disconnected by the server because another connection was opened.",
+        "rdpSessionTimeout": "The RDP session was disconnected because its session time limit was reached.",
+        "rdpSessionClosed": "The RDP session was ended by the remote server or an administrator."
       }
     },
     "messages": {
