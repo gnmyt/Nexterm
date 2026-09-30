@@ -11,7 +11,8 @@ import TableDialog from "./components/TableDialog";
 import MessageBoxDialog from "./components/MessageBoxDialog";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
-import ConnectionError, { mapConnectionError } from "../components/ConnectionError";
+import ConnectionError from "../components/ConnectionError";
+import { mapConnectionError } from "@/common/utils/ConnectionErrorUtil.js";
 import "@xterm/xterm/css/xterm.css";
 import "./styles.sass";
 
