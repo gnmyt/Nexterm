@@ -10,10 +10,10 @@
     "@ai-sdk/provider" "4.0.18"
     "@ai-sdk/provider-utils" "5.0.49"
 
-"@ai-sdk/gateway@4.0.94":
-  version "4.0.94"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-4.0.94.tgz#c40a0c61bb6379e9a9df257096030840f34185d9"
-  integrity sha512-hcp7GLnMynH6NfMnemgvW9acn7j3WsUe/dHFzX3/fhPit08xhm1aYmDGHMiIT6YwsXVBxkit9TriKb2SGAOg+Q==
+"@ai-sdk/gateway@4.0.96":
+  version "4.0.96"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-4.0.96.tgz#9c5b5090da0e2fb6bd8a68d6a17b14b44b08e0df"
+  integrity sha512-1aniRTzEf9T7uRHdKnBQ36WgEVQswK6wDgkPVsNMl+sPy7otcmrBa2HEurdFBS51s1q3/UXlh8nNcguwU79Hkg==
   dependencies:
     "@ai-sdk/provider" "4.0.18"
     "@ai-sdk/provider-utils" "5.0.49"
@@ -34,17 +34,6 @@
   dependencies:
     "@ai-sdk/provider" "4.0.18"
     "@ai-sdk/provider-utils" "5.0.49"
-
-"@ai-sdk/provider-utils@5.0.47":
-  version "5.0.47"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.47.tgz#63ba49175aeef10d3fd070a9be8b2157df22a79f"
-  integrity sha512-NZQ1hMxY6Hd4ZiinjpU5HUOsyCHiTFkHw7AiM1EVN+Cd3kNTi47flZWNvFwGqnBojntB1+2eBRTeHRuVLtPhEg==
-  dependencies:
-    "@ai-sdk/provider" "4.0.18"
-    "@standard-schema/spec" "^1.1.0"
-    "@workflow/serde" "4.1.0"
-    eventsource-parser "^3.0.8"
-    undici "^7.29.0"
 
 "@ai-sdk/provider-utils@5.0.49":
   version "5.0.49"
@@ -1485,12 +1474,12 @@ agent-base@^7.1.0, agent-base@^7.1.2:
   resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-7.1.4.tgz#e3cd76d4c548ee895d3c3fd8dc1f6c5b9032e7a8"
   integrity sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==
 
-ai@^7.0.116:
-  version "7.0.116"
-  resolved "https://registry.yarnpkg.com/ai/-/ai-7.0.116.tgz#557ff3b7ee0c1955e11752f40e794012d54815ee"
-  integrity sha512-gmkVGPzTNPcJixBiG9zUvP3gmvwko85dHiKrxFKK0zcVJIIu1FP6YDo3jna+ZrC2twMAsUPLr5htCwZjCINH3Q==
+ai@^7.0.118:
+  version "7.0.118"
+  resolved "https://registry.yarnpkg.com/ai/-/ai-7.0.118.tgz#f46df3db2a981a82cb43c9765eaa483d27fa3999"
+  integrity sha512-ZjkbbOffH09yQAjeZ5yGXd8ePTQlFIyKH5aW0s0LOMmvaR1TSoeg5wVURwLvFry/IzzaLndmw9glTKwWRoog3Q==
   dependencies:
-    "@ai-sdk/gateway" "4.0.94"
+    "@ai-sdk/gateway" "4.0.96"
     "@ai-sdk/provider" "4.0.18"
     "@ai-sdk/provider-utils" "5.0.49"
 
