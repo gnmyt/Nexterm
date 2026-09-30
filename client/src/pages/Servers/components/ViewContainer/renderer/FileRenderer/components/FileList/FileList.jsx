@@ -160,6 +160,14 @@ export const FileList = forwardRef(({
         contextMenu.open(event, fromDots ? undefined : { x: event.pageX, y: event.pageY });
     };
 
+    const handleDotsPointerDown = (event, item) => {
+        if (event.button !== 0 || !event.isPrimary) return;
+
+        event.stopPropagation();
+        event.currentTarget.setPointerCapture(event.pointerId);
+        handleContextMenu(event, item, true);
+    };
+
     const handleDelete = () => sendOperation(selectedItem.type === "folder" ? OPERATIONS.DELETE_FOLDER : OPERATIONS.DELETE_FILE, { path: `${path}/${selectedItem?.name}` });
     const handleDeleteClick = () => confirmBeforeDelete ? setDeleteDialogOpen(true) : handleDelete();
     const handleRename = (item, newName) => { if (newName && newName !== item.name) sendOperation(OPERATIONS.RENAME_FILE, { path: `${path}/${item.name}`, newPath: `${path}/${newName}` }); setRenamingItem(null); };
@@ -260,6 +268,7 @@ export const FileList = forwardRef(({
                             onClick={(e) => renamingItem?.name !== item.name && handleItemClick(e, item)}
                             onContextMenu={(e) => handleContextMenu(e, item)}
                             onDotsClick={(e) => { e.stopPropagation(); handleContextMenu(e, item, true); }}
+                            onDotsPointerDown={(e) => handleDotsPointerDown(e, item)}
                             onDragStart={(e) => handleDragStart(e, item)}
                             onDragEnd={handleDragEnd}
                             onDragOver={(e) => handleDragOver(e, item)}
