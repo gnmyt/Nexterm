@@ -24,7 +24,7 @@ export const FileList = forwardRef(({
     capabilities = { shell: true, terminal: true },
 }, ref) => {
     const { t } = useTranslation();
-    const { showThumbnails, showHiddenFiles, dimHiddenFiles, confirmBeforeDelete, dragDropAction } = usePreferences();
+    const { showThumbnails, showHiddenFiles, confirmBeforeDelete, dragDropAction } = usePreferences();
     
     const [selectedItem, setSelectedItem] = useState(null);
     const [renamingItem, setRenamingItem] = useState(null);
