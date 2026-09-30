@@ -200,7 +200,10 @@
         "closedUnexpectedly": "连接意外关闭",
         "error": "出现连接错误",
         "scriptClosedUnexpectedly": "脚本连接意外关闭",
-        "scriptError": "脚本连接发生错误"
+        "scriptError": "脚本连接发生错误",
+        "rdpSessionConflict": "The session was disconnected by the server because another connection was opened.",
+        "rdpSessionTimeout": "The RDP session was disconnected because its session time limit was reached.",
+        "rdpSessionClosed": "The RDP session was ended by the remote server or an administrator."
       }
     },
     "messages": {
