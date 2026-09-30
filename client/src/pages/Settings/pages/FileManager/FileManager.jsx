@@ -9,8 +9,8 @@ import Button from "@/common/components/Button";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 
-const SettingItem = ({ icon, title, description, children, className }) => (
-    <div className={["setting-item", className].filter(Boolean).join(" ")}>
+const SettingItem = ({ icon, title, description, children }) => (
+    <div className="setting-item">
         <div className="setting-info">
             {icon && (
                 <div className="setting-icon">
@@ -41,7 +41,6 @@ export const FileManager = () => {
         showThumbnails, setShowThumbnails,
         defaultViewMode, setDefaultViewMode,
         showHiddenFiles, setShowHiddenFiles,
-        dimHiddenFiles, setDimHiddenFiles,
         confirmBeforeDelete, setConfirmBeforeDelete,
         dragDropAction, setDragDropAction,
         isGroupSynced, toggleGroupSync,
@@ -118,21 +117,6 @@ export const FileManager = () => {
                         onChange={setShowHiddenFiles} 
                     />
                 </SettingItem>
-
-                {showHiddenFiles && (
-                    <SettingItem
-                        className="dim-icon"
-                        icon={mdiEyeOff}
-                        title={t("settings.fileManager.hiddenFiles.dim.title")} 
-                        description={t("settings.fileManager.hiddenFiles.dim.description")}
-                    >
-                        <ToggleSwitch 
-                            id="dim-hidden-files" 
-                            checked={dimHiddenFiles} 
-                            onChange={setDimHiddenFiles} 
-                        />
-                    </SettingItem>
-                )}
 
                 <SettingItem 
                     icon={mdiShieldCheck}
