@@ -72,6 +72,13 @@ export const useSessionLayout = () => {
         return { tree: replaceLeafSession(current.tree, current.focusedPaneId, sessionId), focusedPaneId: current.focusedPaneId };
     }), [update]);
 
+    const replaceSession = useCallback((currentSessionId, nextSessionId) => update((current) => {
+        if (!current.tree) return current;
+        const leaf = findLeafBySession(current.tree, currentSessionId);
+        if (!leaf) return current;
+        return { ...current, tree: replaceLeafSession(current.tree, leaf.id, nextSessionId) };
+    }), [update]);
+
     const placeSession = useCallback((sessionId, placement) => {
         if (!placement || placement.edge === "center") return;
         if (visibleIdsRef.current.has(sessionId)) {
@@ -135,6 +142,7 @@ export const useSessionLayout = () => {
         tree: state.tree,
         focusedPaneId: state.focusedPaneId,
         splitWithSession,
+        replaceSession,
         showSessionInPane,
         showSession,
         placeSession,
@@ -142,5 +150,5 @@ export const useSessionLayout = () => {
         clearLayout,
         resizeBranch,
         reconcile,
-    }), [state, splitWithSession, showSessionInPane, showSession, placeSession, splitAll, clearLayout, resizeBranch, reconcile]);
+    }), [state, splitWithSession, showSessionInPane, showSession, replaceSession, placeSession, splitAll, clearLayout, resizeBranch, reconcile]);
 };

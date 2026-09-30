@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+#include "client.h"
 
 #include "argv.h"
 #include "common/defaults.h"
@@ -1553,7 +1554,9 @@ void guac_rdp_push_settings(guac_client* client,
     /* Session */
 
     freerdp_settings_set_uint32(rdp_settings, FreeRDP_DesktopWidth, guac_settings->width);
+    freerdp_settings_set_uint32(rdp_settings, FreeRDP_DeviceScaleFactor, 100);
     freerdp_settings_set_uint32(rdp_settings, FreeRDP_DesktopHeight, guac_settings->height);
+    freerdp_settings_set_uint32(rdp_settings, FreeRDP_DesktopScaleFactor, guac_settings->resolution * 100 / GUAC_RDP_NATIVE_RESOLUTION);
     freerdp_settings_set_uint32(rdp_settings, FreeRDP_ColorDepth, guac_settings->color_depth);
     freerdp_settings_set_string(rdp_settings, FreeRDP_AlternateShell, guac_strdup(guac_settings->initial_program));
     freerdp_settings_set_uint32(rdp_settings, FreeRDP_KeyboardLayout, guac_settings->server_layout->freerdp_keyboard_layout);

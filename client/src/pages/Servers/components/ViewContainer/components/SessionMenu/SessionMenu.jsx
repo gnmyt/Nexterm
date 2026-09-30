@@ -16,6 +16,7 @@ import {
     mdiNoteEditOutline,
     mdiOpenInNew,
     mdiPencil,
+    mdiRefresh,
     mdiShareVariant,
     mdiSleep,
     mdiViewSplitHorizontal,
@@ -59,6 +60,7 @@ export const SessionMenu = ({
     onSplitSession,
     onPopOut,
     onOpenNotes,
+    onReconnect,
     onDuplicate,
     onHibernate,
     onCloseSession,
@@ -73,6 +75,7 @@ export const SessionMenu = ({
     const canShare = canPopOut;
     const canHibernate = !isNotes && !isJoined;
     const canDuplicate = !isNotes && !isJoined;
+    const canReconnect = !!session && !isNotes && !isJoined;
     const canOpenNotes = !isNotes && !isJoined && !!server?.id && !session?.scriptId;
     const isSharing = !!session?.shareId;
     const showBroadcast = isTerminal && isActive && layoutMode !== "single";
@@ -156,6 +159,10 @@ export const SessionMenu = ({
                     {canHibernate && (
                         <ContextMenuItem icon={mdiSleep} label={t("servers.tabs.contextMenu.hibernateSession")}
                                          onClick={() => onHibernate(session.id)} />
+                    )}
+                    {canReconnect && (
+                        <ContextMenuItem icon={mdiRefresh} label={t("servers.tabs.contextMenu.reconnect")}
+                                         onClick={() => onReconnect(session.id)} />
                     )}
                     <ContextMenuItem icon={mdiClose} label={t("servers.tabs.contextMenu.closeSession")}
                                      onClick={() => onCloseSession(session.id)} danger />

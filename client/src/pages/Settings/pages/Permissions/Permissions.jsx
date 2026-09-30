@@ -220,13 +220,19 @@ export const Permissions = () => {
                                                 ) : (
                                                     <PermissionMatrix catalog={catalog}
                                                                       values={detail?.permissions || {}}
+                                                                      inherited={group.isDefault
+                                                                          ? (catalog?.permissions || []).filter((p) => p.default).map((p) => p.id)
+                                                                          : null}
                                                                       onChange={(permId, value) => changePermission(group, permId, value)} />
                                                 )
                                             )}
 
                                             {subTab === "members" && detail && (
                                                 <RoleMembers groupId={group.id} members={detail.members || []}
-                                                             onChanged={() => { loadDetail(group.id); loadGroups(); }} />
+                                                             onChanged={() => {
+                                                                 void loadDetail(group.id);
+                                                                 void loadGroups();
+                                                             }} />
                                             )}
 
                                             {subTab === "settings" && !group.isSystem && (

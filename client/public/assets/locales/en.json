@@ -186,6 +186,11 @@
       "connection": {
         "title": "Connection failed",
         "close": "Close tab",
+        "reconnect": "Reconnect",
+        "reconnectNow": "Reconnect",
+        "reconnecting": "Reconnecting…",
+        "reconnectingIn": "Reconnecting in {{seconds}}s",
+        "reconnectAttempt": "attempt {{count}} of {{max}}",
         "hostUnreachable": "Remote host unreachable",
         "refused": "Connection refused by remote host",
         "timeout": "Connection timed out",
@@ -903,7 +908,11 @@
         },
         "copy": {
           "title": "Copy",
-          "description": "Copy selected text to clipboard"
+          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+        },
+        "paste": {
+          "title": "Paste",
+          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
         },
         "fullscreen": {
           "title": "Full-Screen",
@@ -918,6 +927,7 @@
         "pressKeys": "Press keys...",
         "save": "Save",
         "cancel": "Cancel",
+        "disabled": "Disabled",
         "reset": "Reset"
       },
       "messages": {
@@ -953,8 +963,19 @@
       "input": {
         "title": "Input",
         "description": "Control how keyboard shortcuts behave inside the terminal.",
-        "smartCopyPaste": "Smart Ctrl+C",
+        "copyPasteBehavior": "Copy/Paste Behavior",
+        "copyPasteBehaviorNone": "None",
+        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
+        "copyPasteBehaviorSmart": "Smart Ctrl+C",
+        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
+        "copyPasteBehaviorKeyboard": "Keyboard",
+        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
+        "copyPasteBehaviorMouse": "Mouse",
+        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
+        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
+        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
         "passwordPromptDetection": "Password input detection",
+        "autoReconnect": "Auto-reconnect",
         "enabled": "Enabled",
         "disabled": "Disabled",
         "syncEnabled": "Input settings will now sync to your account",
@@ -1612,6 +1633,7 @@
         "duplicate": "Duplicate",
         "openNotes": "Open Notes",
         "hibernateSession": "Hibernate",
+        "reconnect": "Reconnect",
         "closeSession": "Disconnect",
         "splitRight": "Split Right",
         "splitDown": "Split Down",

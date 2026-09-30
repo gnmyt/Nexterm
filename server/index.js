@@ -153,13 +153,18 @@ db.authenticate()
 
         controlPlane.on("sessionClosed", ({ sessionId, reason }) => {
             logger.info(`Engine session closed: ${sessionId} (reason: ${reason})`);
-            SessionManager.remove(sessionId);
+            if (reason === "connection lost") {
+                SessionManager.remove(sessionId, { code: 4017, reason: "Connection lost" });
+            } else {
+                SessionManager.remove(sessionId);
+            }
         });
 
         controlPlane.on("engineDisconnected", ({ engineId, sessionIds }) => {
             logger.warn(`Engine ${engineId} disconnected, cleaning up ${sessionIds.length} sessions`);
             for (const sessionId of sessionIds) {
-                SessionManager.remove(sessionId);
+                SessionManager.markFailed(sessionId, "Connection lost");
+                SessionManager.remove(sessionId, { code: 4017, reason: "Connection lost" });
             }
         });
 
