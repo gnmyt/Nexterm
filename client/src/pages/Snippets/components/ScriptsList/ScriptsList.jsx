@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import Button from "@/common/components/Button";
+import Tooltip from "@/common/components/Tooltip";
 import { parseOsFilter } from "@/common/utils/osUtils.js";
 
 const ScriptItem = ({ script, onEdit, onDelete, isReadOnly, onReposition, t }) => {
@@ -22,10 +23,12 @@ const ScriptItem = ({ script, onEdit, onDelete, isReadOnly, onReposition, t }) =
                     <h3>{script.name}</h3>
                     <div className="script-badges">
                         {osFilter.length > 0 && (
-                            <span className="os-badge" title={osFilter.join(", ")}>
-                                <Icon path={osFilter.includes("Windows") ? mdiMicrosoftWindows : mdiLinux} size={0.5} />
-                                {osFilter.length === 1 ? osFilter[0] : `${osFilter.length} OS`}
-                            </span>
+                            <Tooltip text={osFilter.join(", ")} delay={500} asChild>
+                                <span className="os-badge">
+                                    <Icon path={osFilter.includes("Windows") ? mdiMicrosoftWindows : mdiLinux} size={0.5} />
+                                    {osFilter.length === 1 ? osFilter[0] : `${osFilter.length} OS`}
+                                </span>
+                            </Tooltip>
                         )}
                         {script.sourceId && <Icon path={mdiCloudDownloadOutline} size={0.65} className="source-badge" />}
                     </div>
@@ -35,8 +38,14 @@ const ScriptItem = ({ script, onEdit, onDelete, isReadOnly, onReposition, t }) =
             </div>
             {!isReadOnly && (
                 <div className="script-actions">
-                    <button className="action-button" onClick={e => { e.stopPropagation(); onEdit(script.id); }} title={t('scripts.list.actions.edit')}><Icon path={mdiPencil} /></button>
-                    <button className="action-button delete" onClick={e => { e.stopPropagation(); onDelete(script.id); }} title={t('scripts.list.actions.delete')}><Icon path={mdiTrashCan} /></button>
+                    <button className="action-button" aria-label={t('scripts.list.actions.edit')}
+                            onClick={e => { e.stopPropagation(); onEdit(script.id); }}>
+                        <Icon path={mdiPencil} />
+                    </button>
+                    <button className="action-button delete" aria-label={t('scripts.list.actions.delete')}
+                            onClick={e => { e.stopPropagation(); onDelete(script.id); }}>
+                        <Icon path={mdiTrashCan} />
+                    </button>
                 </div>
             )}
         </div>

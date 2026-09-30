@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import Icon from "@mdi/react";
 import { mdiMagnify, mdiConsole, mdiSortAscending, mdiSortDescending } from "@mdi/js";
 import { useTranslation } from "react-i18next";
+import Tooltip from "@/common/components/Tooltip";
 import "./styles.sass";
 
 const SORT_FIELDS = ["cpu", "mem", "pid"];
@@ -52,7 +53,9 @@ export const ProcessesTab = ({ processList = [] }) => {
             <div className="processes-list">
                 {processes.map((p, i) => (
                     <div key={`${p.pid}-${i}`} className="process-item">
-                        <div className="process-command" title={p.command}>{p.command?.length > 50 ? p.command.slice(0, 50) + "…" : p.command}</div>
+                        <Tooltip text={p.command} delay={500} asChild>
+                            <div className="process-command">{p.command?.length > 50 ? p.command.slice(0, 50) + "…" : p.command}</div>
+                        </Tooltip>
                         <div className="process-info"><span className="process-user">{p.user}</span><span className="process-pid">{p.pid}</span></div>
                         <div className="process-stats">
                             {["cpu", "mem"].map(stat => (

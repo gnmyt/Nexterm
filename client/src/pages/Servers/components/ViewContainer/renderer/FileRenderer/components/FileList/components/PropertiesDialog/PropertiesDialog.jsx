@@ -4,6 +4,7 @@ import Icon from "@mdi/react";
 import { mdiFile, mdiFolder, mdiLoading } from "@mdi/js";
 import { DialogProvider } from "@/common/components/Dialog";
 import Button from "@/common/components/Button";
+import Tooltip from "@/common/components/Tooltip";
 import TabSwitcher from "@/common/components/TabSwitcher";
 import { parsePermissions, permissionsToMode, formatOctal } from "../../utils/fileUtils";
 import { GeneralTab } from "./tabs/GeneralTab.jsx";
@@ -114,7 +115,9 @@ export const PropertiesDialog = ({ open, onClose, item, path, sendOperation, OPE
                         <Icon path={isFolder ? mdiFolder : mdiFile} />
                     </div>
                     <div className="file-info">
-                        <h2 title={displayName}>{displayName}</h2>
+                        <Tooltip text={displayName} delay={500} asChild>
+                            <h2>{displayName}</h2>
+                        </Tooltip>
                         <span className="file-type">{isFolder ? t("servers.fileManager.properties.folder") : t("servers.fileManager.properties.file")}</span>
                     </div>
                 </div>

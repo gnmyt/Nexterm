@@ -3,7 +3,8 @@ import Icon from "@mdi/react";
 
 export const Button = ({onClick, text, icon, disabled, type, buttonType, title}) => {
     return (
-        <button className={"btn" + (type ? " type-" + type : "") + (!text ? " icon-only" : "")} onClick={onClick} disabled={disabled} type={buttonType} title={title}>
+        <button className={"btn" + (type ? " type-" + type : "") + (!text ? " icon-only" : "")} onClick={onClick}
+                disabled={disabled} type={buttonType} aria-label={!text ? title : undefined}>
             {icon ? <Icon path={icon} /> : null}
             {text && <h3>{text}</h3>}
         </button>

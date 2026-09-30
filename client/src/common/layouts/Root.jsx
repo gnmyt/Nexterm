@@ -100,7 +100,7 @@ const AppContent = () => {
                                             <TagProvider>
                                             <SessionProvider>
                                                 <QuickActionProvider>
-                                                    <div className="app-wrapper">
+                                                    <div className="app-wrapper" onMouseLeave={() => setIsLeftPaneHovering(false)}>
                                                         <TitleBar showTabs />
                                                         <ConnectionErrorBanner />
                                                         <div className="content-wrapper">

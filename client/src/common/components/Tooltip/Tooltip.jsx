@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import "./styles.sass";
 
-export const Tooltip = ({ children, text, disabled = false, delay = 0 }) => {
+export const Tooltip = ({ children, text, disabled = false, delay = 0, asChild = false }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [tooltipStyle, setTooltipStyle] = useState({});
     const triggerRef = useRef(null);
@@ -10,9 +10,9 @@ export const Tooltip = ({ children, text, disabled = false, delay = 0 }) => {
     const delayTimeoutRef = useRef(null);
 
     const updatePosition = useCallback(() => {
-        if (!triggerRef.current || !tooltipRef.current) return;
-
-        const triggerRect = triggerRef.current.getBoundingClientRect();
+        const triggerElement = asChild ? triggerRef.current?.firstElementChild : triggerRef.current;
+        if (!triggerElement || !tooltipRef.current) return;
+        const triggerRect = triggerElement.getBoundingClientRect();
         const tooltipRect = tooltipRef.current.getBoundingClientRect();
 
         const viewportWidth = window.innerWidth;
@@ -38,7 +38,7 @@ export const Tooltip = ({ children, text, disabled = false, delay = 0 }) => {
         top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
 
         setTooltipStyle({ position: "fixed", top: `${top}px`, left: `${left}px`, zIndex: 99999 });
-    }, []);
+    }, [asChild]);
 
     useEffect(() => {
         if (isVisible) {
@@ -70,7 +70,9 @@ export const Tooltip = ({ children, text, disabled = false, delay = 0 }) => {
     }, []);
 
     return (
-        <div ref={triggerRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <div ref={triggerRef} className={asChild ? "tooltip-trigger-as-child" : undefined}
+             onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}
+             onFocus={handleMouseEnter} onBlur={handleMouseLeave}>
             {children}
 
             {isVisible && createPortal(

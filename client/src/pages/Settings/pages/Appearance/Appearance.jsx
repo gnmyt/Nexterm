@@ -225,7 +225,6 @@ export const Appearance = () => {
                                         className={`accent-color ${accentColor === color.value ? "active" : ""}`}
                                         style={{ backgroundColor: color.value }}
                                         onClick={() => setAccentColor(color.value)}
-                                        title={color.name}
                                     >
                                         {accentColor === color.value && (
                                             <Icon path={mdiCheck} size={0.6} className="check-icon" />

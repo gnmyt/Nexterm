@@ -2,43 +2,54 @@
 # yarn lockfile v1
 
 
-"@ai-sdk/anthropic@^4.0.63":
-  version "4.0.63"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/anthropic/-/anthropic-4.0.63.tgz#0643becf5811992bd63a68f3412b927f007e50ea"
-  integrity sha512-DuhaMr18pIvTLOd8sNm+kc1T/Uh0lv3prNKhgFMp0yXEnLy1MeHdoiokaimwHINPqI/9JzAiHZO/rq19L7iRQA==
+"@ai-sdk/anthropic@^4.0.65":
+  version "4.0.65"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/anthropic/-/anthropic-4.0.65.tgz#f863987582eaf4b1dbb3fbd7deaf70fa203287d5"
+  integrity sha512-3fmxxn5xWGOPU1wGrUCI30YFW5r6h2WrY+sz3rokkVlBHrDr889hPYP1yNoSmOVvtAwCFWlm79P2lRngIPOObg==
   dependencies:
     "@ai-sdk/provider" "4.0.18"
-    "@ai-sdk/provider-utils" "5.0.47"
+    "@ai-sdk/provider-utils" "5.0.49"
 
-"@ai-sdk/gateway@4.0.92":
-  version "4.0.92"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-4.0.92.tgz#18a74526a20c5f42df29286c5b993cebfe97f87a"
-  integrity sha512-awX24+QedfcIDTAdwkCUNG08vPJjkQI9KZLGh4Ua+vNbgeaNFJre96OIbBefOD9XPHSVpdXjwqtWmo4Yh7oczw==
+"@ai-sdk/gateway@4.0.94":
+  version "4.0.94"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-4.0.94.tgz#c40a0c61bb6379e9a9df257096030840f34185d9"
+  integrity sha512-hcp7GLnMynH6NfMnemgvW9acn7j3WsUe/dHFzX3/fhPit08xhm1aYmDGHMiIT6YwsXVBxkit9TriKb2SGAOg+Q==
   dependencies:
     "@ai-sdk/provider" "4.0.18"
-    "@ai-sdk/provider-utils" "5.0.47"
+    "@ai-sdk/provider-utils" "5.0.49"
     "@vercel/oidc" "3.2.0"
 
-"@ai-sdk/openai-compatible@^3.0.55":
-  version "3.0.55"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/openai-compatible/-/openai-compatible-3.0.55.tgz#1b04a4e8460c545caa1a29e4b93b9418464fc60c"
-  integrity sha512-mM/+YepFSgd1som+WYm8OAUYrl0X6T9ix327/2vszLGrrql8K7ZwL3MQ7AIs0tYS6QEy3mhvqz4w9pBFz7UhSg==
+"@ai-sdk/openai-compatible@^3.0.57":
+  version "3.0.57"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/openai-compatible/-/openai-compatible-3.0.57.tgz#337b7c726b27d2c168849832c4535897db76c6a5"
+  integrity sha512-TEY5Ng/bTJXrYy9wpdxK70gABdYejYedaKbmPCZLhBkPe21rmLzkGxAGkfPYgAfCKPaoAO9THrEhmwUZ4Xhg2Q==
   dependencies:
     "@ai-sdk/provider" "4.0.18"
-    "@ai-sdk/provider-utils" "5.0.47"
+    "@ai-sdk/provider-utils" "5.0.49"
 
-"@ai-sdk/openai@^4.0.75":
-  version "4.0.75"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/openai/-/openai-4.0.75.tgz#9c73b51615bbb2604b45b844e23a789306bc56e4"
-  integrity sha512-CMGKG95Q9gnycHr++W2z2JCizhRvIbvR/sKaZvxinnzpAS2UJeiL74DEAV8eNDJCZ3XWyeOvlKn9vZP3jqrv4g==
+"@ai-sdk/openai@^4.0.78":
+  version "4.0.78"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/openai/-/openai-4.0.78.tgz#3f5e1e1e44854bc2c73b9d01d197ec0aad678af7"
+  integrity sha512-S9WLSZUqebRjZbwYM8uorb4fsjo4Lhz/PGA3rWl01x88WeF/1PdHtNckcxqNZy5xMRzCHPVv9iA3F+ckV74zfA==
   dependencies:
     "@ai-sdk/provider" "4.0.18"
-    "@ai-sdk/provider-utils" "5.0.47"
+    "@ai-sdk/provider-utils" "5.0.49"
 
 "@ai-sdk/provider-utils@5.0.47":
   version "5.0.47"
   resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.47.tgz#63ba49175aeef10d3fd070a9be8b2157df22a79f"
   integrity sha512-NZQ1hMxY6Hd4ZiinjpU5HUOsyCHiTFkHw7AiM1EVN+Cd3kNTi47flZWNvFwGqnBojntB1+2eBRTeHRuVLtPhEg==
+  dependencies:
+    "@ai-sdk/provider" "4.0.18"
+    "@standard-schema/spec" "^1.1.0"
+    "@workflow/serde" "4.1.0"
+    eventsource-parser "^3.0.8"
+    undici "^7.29.0"
+
+"@ai-sdk/provider-utils@5.0.49":
+  version "5.0.49"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.49.tgz#8c60cfd3079265415b615d43fa4a3533d40fb6d3"
+  integrity sha512-T+/H8DCvqJoCqLhltVatS7ffA779Iyk/ZZrgNXkrgv51E0n2Cd6eIdCmtwhCGIKqtbTtwCvTmQdAMv5Z8rOGHQ==
   dependencies:
     "@ai-sdk/provider" "4.0.18"
     "@standard-schema/spec" "^1.1.0"
@@ -1135,10 +1146,10 @@
   resolved "https://registry.yarnpkg.com/@shikijs/vscode-textmate/-/vscode-textmate-10.0.2.tgz#a90ab31d0cc1dfb54c66a69e515bf624fa7b2224"
   integrity sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==
 
-"@simplewebauthn/server@^14.0.2":
-  version "14.0.2"
-  resolved "https://registry.yarnpkg.com/@simplewebauthn/server/-/server-14.0.2.tgz#e58b8c933365fe3b03ed9f1eec5a1177ff9c7bc1"
-  integrity sha512-g+m/xv9/8FRWsDY22CwsTYRzt3WwS9fJrR3P7eY3Ti01FXH5FQ36Xn55v6D+5tb6VajlqOj4hywP/Vxsb6a3Sg==
+"@simplewebauthn/server@^14.0.3":
+  version "14.0.3"
+  resolved "https://registry.yarnpkg.com/@simplewebauthn/server/-/server-14.0.3.tgz#5bc2c4caac265bf48c80572f2df3202e484429d2"
+  integrity sha512-D39/0fiDiYmGV+nraY9s63D1Ho2AX/waMLy22/9gUadTUuvbAnstfb4bpbHYbwZuV5ZLDYN1SmzDKuiHzKAA4Q==
   dependencies:
     "@hexagon/base64" "^1.1.27"
     "@levischuck/tiny-cbor" "^0.2.2"
@@ -1474,14 +1485,14 @@ agent-base@^7.1.0, agent-base@^7.1.2:
   resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-7.1.4.tgz#e3cd76d4c548ee895d3c3fd8dc1f6c5b9032e7a8"
   integrity sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==
 
-ai@^7.0.114:
-  version "7.0.114"
-  resolved "https://registry.yarnpkg.com/ai/-/ai-7.0.114.tgz#800ebc4972073b216fa943ad9eeae1c3921a5748"
-  integrity sha512-jRMOw7tPMWVYomoHWY5xHBXPQDyKTY1Pn3BX0Rh39UOP6y9FYq6xCIB6khgIC/b9CRg4+IxadwIbie+Eu7yU3g==
+ai@^7.0.116:
+  version "7.0.116"
+  resolved "https://registry.yarnpkg.com/ai/-/ai-7.0.116.tgz#557ff3b7ee0c1955e11752f40e794012d54815ee"
+  integrity sha512-gmkVGPzTNPcJixBiG9zUvP3gmvwko85dHiKrxFKK0zcVJIIu1FP6YDo3jna+ZrC2twMAsUPLr5htCwZjCINH3Q==
   dependencies:
-    "@ai-sdk/gateway" "4.0.92"
+    "@ai-sdk/gateway" "4.0.94"
     "@ai-sdk/provider" "4.0.18"
-    "@ai-sdk/provider-utils" "5.0.47"
+    "@ai-sdk/provider-utils" "5.0.49"
 
 algoliasearch@^5.14.2:
   version "5.46.2"
@@ -2205,10 +2216,10 @@ doctrine@^3.0.0:
   dependencies:
     esutils "^2.0.2"
 
-dotenv@^18.0.3:
-  version "18.0.3"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-18.0.3.tgz#b631bd444652cd971357123dc2342976589467ab"
-  integrity sha512-/8CJTyL817qPnfbQrJgOEcrU3fDrJkRIoXBE566wHuvIXKOCHUZhPqGPbCPi9SogjdGnreF0TlvnTgK6J/8zpA==
+dotenv@^18.0.4:
+  version "18.0.4"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-18.0.4.tgz#419bbe784f30915bfeb10e2d407e13ca5528504f"
+  integrity sha512-jGt9uI5BIxpVO15kvy+iEFqNAwxYClKWnkptLjSNPnFLC003Imd0ofr3aEVsbpHdSBdSsbcApNIlz4nbyGMwdA==
 
 dottie@^2.0.6:
   version "2.0.6"

@@ -24,7 +24,7 @@ export const FileList = forwardRef(({
     capabilities = { shell: true, terminal: true },
 }, ref) => {
     const { t } = useTranslation();
-    const { showThumbnails, showHiddenFiles, dimHiddenFiles, confirmBeforeDelete, dragDropAction } = usePreferences();
+    const { showThumbnails, showHiddenFiles, confirmBeforeDelete, dragDropAction } = usePreferences();
     
     const [selectedItem, setSelectedItem] = useState(null);
     const [renamingItem, setRenamingItem] = useState(null);
@@ -42,7 +42,6 @@ export const FileList = forwardRef(({
     
     const containerRef = useRef(null);
     const itemRefs = useRef({});
-    const dotsPressRef = useRef(null);
     const contextMenu = useContextMenu();
     const emptyContextMenu = useContextMenu();
     const dropMenu = useContextMenu();
@@ -123,11 +122,6 @@ export const FileList = forwardRef(({
     });
 
     const handleItemClick = useCallback((event, item) => {
-        const p = dotsPressRef.current;
-        if (p && Date.now() - p.t < 800 && Math.hypot(event.clientX - p.x, event.clientY - p.y) < 10) {
-            dotsPressRef.current = null;
-            return;
-        }
         if (event.ctrlKey || event.metaKey) {
             event.preventDefault();
             setSelectedItems(prev => prev.some(s => s.name === item.name)
@@ -166,10 +160,11 @@ export const FileList = forwardRef(({
         contextMenu.open(event, fromDots ? undefined : { x: event.pageX, y: event.pageY });
     };
 
-    const handleDotsMouseDown = (event, item) => {
-        if (event.button !== 0) return;
+    const handleDotsPointerDown = (event, item) => {
+        if (event.button !== 0 || !event.isPrimary) return;
+
         event.stopPropagation();
-        dotsPressRef.current = { x: event.clientX, y: event.clientY, t: Date.now() };
+        event.currentTarget.setPointerCapture(event.pointerId);
         handleContextMenu(event, item, true);
     };
 
@@ -274,7 +269,7 @@ export const FileList = forwardRef(({
                             onClick={(e) => renamingItem?.name !== item.name && handleItemClick(e, item)}
                             onContextMenu={(e) => handleContextMenu(e, item)}
                             onDotsClick={(e) => { e.stopPropagation(); handleContextMenu(e, item, true); }}
-                            onDotsMouseDown={(e) => handleDotsMouseDown(e, item)}
+                            onDotsPointerDown={(e) => handleDotsPointerDown(e, item)}
                             onDragStart={(e) => handleDragStart(e, item)}
                             onDragEnd={handleDragEnd}
                             onDragOver={(e) => handleDragOver(e, item)}

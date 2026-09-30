@@ -6,6 +6,7 @@ import { mdiMagnify, mdiCloudDownloadOutline, mdiLinux, mdiMicrosoftWindows } fr
 import Icon from "@mdi/react";
 import { getRequest } from "@/common/utils/RequestUtil.js";
 import { parseOsFilter, matchesOsFilter, normalizeOsName, normalizeOsNameFromIcon } from "@/common/utils/osUtils.js";
+import Tooltip from "@/common/components/Tooltip";
 
 export const SnippetsMenu = ({ onSelect, onClose, visible, activeSession }) => {
     const { allSnippets, sourceSnippets } = useSnippets();
@@ -204,10 +205,12 @@ export const SnippetsMenu = ({ onSelect, onClose, visible, activeSession }) => {
                                             return (
                                                 <div className="snippets-menu__item-badges">
                                                     {osFilter.length > 0 && (
-                                                        <span className="snippets-menu__os-badge" title={osFilter.join(", ")}>
-                                                            <Icon path={osFilter.includes("Windows") ? mdiMicrosoftWindows : mdiLinux} size={0.5} />
-                                                            {osFilter.length === 1 ? osFilter[0] : `${osFilter.length} OS`}
-                                                        </span>
+                                                        <Tooltip text={osFilter.join(", ")} delay={500} asChild>
+                                                            <span className="snippets-menu__os-badge">
+                                                                <Icon path={osFilter.includes("Windows") ? mdiMicrosoftWindows : mdiLinux} size={0.5} />
+                                                                {osFilter.length === 1 ? osFilter[0] : `${osFilter.length} OS`}
+                                                            </span>
+                                                        </Tooltip>
                                                     )}
                                                     {snippet.sourceId && (
                                                         <Icon path={mdiCloudDownloadOutline} size={0.65}
