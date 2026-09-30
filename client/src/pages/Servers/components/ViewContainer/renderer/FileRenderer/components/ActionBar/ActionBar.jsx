@@ -20,6 +20,7 @@ import { Fragment, useState, useRef, useEffect, useCallback } from "react";
 import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
 import { useTranslation } from "react-i18next";
 import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
+import Tooltip from "@/common/components/Tooltip";
 
 export const ActionBar = ({
                               path,
@@ -305,21 +306,22 @@ export const ActionBar = ({
                         <Fragment key={`${originalIndex}-${part}`}>
                             {showEllipsis && i === ellipsisIndex && (
                                 <>
-                                    <div className="path-part ellipsis"
-                                         title={t("servers.fileManager.actionBar.hiddenDirectories", { count: originalLength - parts.length + 1 })}>
-                                        ...
-                                    </div>
+                                    <Tooltip text={t("servers.fileManager.actionBar.hiddenDirectories", { count: originalLength - parts.length + 1 })} delay={500} asChild>
+                                        <div className="path-part ellipsis">
+                                            ...
+                                        </div>
+                                    </Tooltip>
                                     <div className="path-part-divider">/</div>
                                 </>
                             )}
-                            <div 
-                                title={part} 
-                                className={`path-part ${isDropping ? "drop-target" : ""}`}
-                                onClick={(e) => { e.stopPropagation(); navigate(i, showEllipsis, originalIndex); }}
-                                onDragOver={(e) => handlePathDragOver(e, targetPath)}
-                                onDragLeave={handlePathDragLeave}
-                                onDrop={(e) => handlePathDrop(e, targetPath)}
-                            >{part}</div>
+                            <Tooltip text={part} delay={500} asChild>
+                                <div className={`path-part ${isDropping ? "drop-target" : ""}`}
+                                    onClick={(e) => { e.stopPropagation(); navigate(i, showEllipsis, originalIndex); }}
+                                    onDragOver={(e) => handlePathDragOver(e, targetPath)}
+                                    onDragLeave={handlePathDragLeave}
+                                    onDrop={(e) => handlePathDrop(e, targetPath)}
+                                >{part}</div>
+                            </Tooltip>
                             <div className="path-part-divider">/</div>
                         </Fragment>
                     );
@@ -374,20 +376,17 @@ export const ActionBar = ({
                     {searchQuery.trim() && (
                         <span className="search-count">{t("servers.fileManager.search.results", { count: searchResultCount })}</span>
                     )}
-                    <Icon path={mdiClose} className="search-close" onClick={closeSearch}
-                          title={t("servers.fileManager.actionBar.closeSearch")} />
+                    <Icon path={mdiClose} className="search-close" onClick={closeSearch} />
                 </div>
             )}
 
             <div className="file-actions">
-                <Icon path={mdiMagnify} onClick={() => searchOpen ? closeSearch?.() : setSearchOpen?.(true)}
-                      className={searchOpen ? "active" : ""} title={t("servers.fileManager.actionBar.search")} />
+                <Icon path={mdiMagnify} onClick={() => searchOpen ? closeSearch?.() : setSearchOpen?.(true)} className={searchOpen ? "active" : ""} />
                 <Icon path={viewMode === "list" ? mdiViewGrid : mdiViewList}
-                      onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")}
-                      title={viewMode === "list" ? t("servers.fileManager.actionBar.switchToGrid") : t("servers.fileManager.actionBar.switchToList")} />
-                <Icon path={mdiRefresh} onClick={refreshFiles} title={t("servers.fileManager.actionBar.refresh")} />
-                <Icon path={mdiFileUpload} onClick={uploadFile} title={t("servers.fileManager.actionBar.uploadFile")} />
-                <Icon path={mdiFolderUpload} onClick={uploadFolder} title={t("servers.fileManager.actionBar.uploadFolder")} />
+                      onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")} />
+                <Icon path={mdiRefresh} onClick={refreshFiles} />
+                <Icon path={mdiFileUpload} onClick={uploadFile} />
+                <Icon path={mdiFolderUpload} onClick={uploadFolder} />
                 <Icon path={mdiFilePlus} onClick={createFile} />
                 <Icon path={mdiFolderPlus} onClick={createFolder} />
             </div>

@@ -153,12 +153,9 @@ export const TagsSubmenu = ({ entryId, entryTags = [], onClose }) => {
                                 }}
                             />
                         ))}
-                        <label
-                            className={`color-option custom-color ${!TAG_COLORS.includes(selectedColor) ? "selected" : ""}`}
+                        <label className={`color-option custom-color ${!TAG_COLORS.includes(selectedColor) ? "selected" : ""}`}
                             style={!TAG_COLORS.includes(selectedColor) ? { background: selectedColor } : undefined}
-                            onClick={(e) => e.stopPropagation()}
-                            title="Custom color"
-                        >
+                            onClick={(e) => e.stopPropagation()}>
                             <input
                                 type="color"
                                 value={selectedColor}
@@ -224,12 +221,9 @@ export const TagsSubmenu = ({ entryId, entryTags = [], onClose }) => {
                                             }}
                                         />
                                     ))}
-                                    <label
-                                        className={`color-option custom-color ${!TAG_COLORS.includes(editTagColor) ? "selected" : ""}`}
+                                    <label className={`color-option custom-color ${!TAG_COLORS.includes(editTagColor) ? "selected" : ""}`}
                                         style={!TAG_COLORS.includes(editTagColor) ? { background: editTagColor } : undefined}
-                                        onClick={(e) => e.stopPropagation()}
-                                        title="Custom color"
-                                    >
+                                        onClick={(e) => e.stopPropagation()}>
                                         <input
                                             type="color"
                                             value={editTagColor}
