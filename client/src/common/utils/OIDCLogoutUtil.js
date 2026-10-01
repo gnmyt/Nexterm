@@ -13,8 +13,8 @@ export const consumeExplicitLogout = () => {
         const value = window.sessionStorage.getItem(SKIP_AUTO_LOGIN_KEY);
         window.sessionStorage.removeItem(SKIP_AUTO_LOGIN_KEY);
         return value === "1";
-    } catch (_) {
-        // Auto-login remains enabled when session storage is unavailable.
+    } catch (error) {
+        console.warn("Failed to consume the OIDC logout marker from session storage:", error);
         return false;
     }
 };
