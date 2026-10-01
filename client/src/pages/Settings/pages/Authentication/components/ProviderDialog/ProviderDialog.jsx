@@ -11,6 +11,7 @@ import {
     mdiKey,
     mdiKeyChain,
     mdiLink,
+    mdiLogoutVariant,
 } from "@mdi/js";
 import Button from "@/common/components/Button";
 import { patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
@@ -26,6 +27,7 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
     const [clientId, setClientId] = useState("");
     const [clientSecret, setClientSecret] = useState("");
     const [redirectUri, setRedirectUri] = useState("");
+    const [endSessionEndpoint, setEndSessionEndpoint] = useState("");
     const [scope, setScope] = useState("openid profile");
 
     const [usernameAttr, setUsernameAttr] = useState("preferred_username");
@@ -40,6 +42,7 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
             setClientId(provider.clientId);
             setClientSecret("********");
             setRedirectUri(provider.redirectUri);
+            setEndSessionEndpoint(provider.endSessionEndpoint || "");
             setScope(provider.scope);
             setUsernameAttr(provider.usernameAttribute);
             setFirstNameAttr(provider.firstNameAttribute);
@@ -51,6 +54,7 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
             setClientSecret("");
             const baseUrl = getBaseUrl() || window.location.origin;
             setRedirectUri(baseUrl + "/api/auth/oidc/callback");
+            setEndSessionEndpoint("");
             setScope("openid profile");
             setUsernameAttr("preferred_username");
             setFirstNameAttr("given_name");
@@ -63,6 +67,7 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
         try {
             const data = {
                 name, issuer, clientId, redirectUri, scope,
+                endSessionEndpoint: endSessionEndpoint.trim() || null,
                 usernameAttribute: usernameAttr, firstNameAttribute: firstNameAttr, lastNameAttribute: lastNameAttr,
             };
 
@@ -133,6 +138,13 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
 
                     {showAdvanced && (
                         <div className="advanced-form">
+                            <div className="form-group">
+                                <label htmlFor="endSessionEndpoint">{t('settings.authentication.providerDialog.fields.endSessionEndpoint')}</label>
+                                <Input type="url" id="endSessionEndpoint" icon={mdiLogoutVariant}
+                                       placeholder={t('settings.authentication.providerDialog.fields.endSessionEndpointPlaceholder')}
+                                       value={endSessionEndpoint} setValue={setEndSessionEndpoint} />
+                            </div>
+
                             <div className="form-group">
                                 <label htmlFor="usernameAttr">{t('settings.authentication.providerDialog.fields.usernameAttribute')}</label>
                                 <Input type="text" id="usernameAttr" icon={mdiAccountMultiple}

@@ -38,6 +38,10 @@ module.exports = db.define("oidc_providers", {
             type: Sequelize.STRING,
             allowNull: false,
         },
+        endSessionEndpoint: {
+            type: Sequelize.STRING,
+            allowNull: true,
+        },
         scope: {
             type: Sequelize.STRING,
             allowNull: false,

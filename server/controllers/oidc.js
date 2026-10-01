@@ -7,6 +7,9 @@ const { genSalt, hash } = require("bcrypt");
 const crypto = require("crypto");
 const { Op } = require("sequelize");
 const logger = require("../utils/logger");
+const { decrypt } = require("../utils/encryption");
+const { createOIDCSessionContext } = require("../utils/oidcSession");
+const { buildOIDCLogoutUrl, normalizeProviderData } = require("../utils/oidcLogout");
 
 const stateStore = new Map();
 
@@ -30,6 +33,7 @@ module.exports.listProviders = async (includeSecret = false, forPublic = false) 
         return providers.map(provider => ({
             id: provider.id, name: provider.name, issuer: provider.issuer,
             clientId: provider.clientId, redirectUri: provider.redirectUri, scope: provider.scope,
+            ...(forPublic ? {} : { endSessionEndpoint: provider.endSessionEndpoint }),
             enabled: Boolean((forPublic && provider.isInternal) ? (provider.enabled || ldapEnabled) : provider.enabled),
             usernameAttribute: provider.usernameAttribute,
             firstNameAttribute: provider.firstNameAttribute, lastNameAttribute: provider.lastNameAttribute,
@@ -48,10 +52,11 @@ module.exports.getProvider = async (providerId) => {
 };
 
 module.exports.createProvider = async (data) => {
-    return OIDCProvider.create(data);
+    return OIDCProvider.create(normalizeProviderData(data));
 };
 
 module.exports.updateProvider = async (providerId, data) => {
+    data = normalizeProviderData(data);
     const provider = await OIDCProvider.findByPk(providerId);
     if (!provider) return { code: 404, message: "Provider not found" };
 
@@ -198,10 +203,12 @@ module.exports.handleOIDCCallback = async (query, userInfo) => {
             }, { where: { id: account.id } });
         }
 
+        const oidcSessionContext = createOIDCSessionContext(provider.id, tokens.id_token);
         const session = await Session.create({
             accountId: account.id,
             ip: userInfo.ip || "OIDC Login",
             userAgent: userInfo.userAgent || "OIDC Client",
+            ...oidcSessionContext,
         });
 
         return {
@@ -217,6 +224,22 @@ module.exports.handleOIDCCallback = async (query, userInfo) => {
         logger.error("OIDC callback processing failed", { error: error.message, stack: error.stack });
         return { code: 500, message: "Failed to process OIDC login: " + error.message };
     }
+};
+
+module.exports.createLogoutUrlForSession = async (session) => {
+    if (!session?.oidcProviderId || !session.oidcIdTokenEncrypted
+        || !session.oidcIdTokenIV || !session.oidcIdTokenAuthTag) return null;
+
+    const provider = await OIDCProvider.findByPk(session.oidcProviderId);
+    if (!provider) throw new Error("OIDC provider is no longer available");
+
+    const idToken = decrypt(
+        session.oidcIdTokenEncrypted,
+        session.oidcIdTokenIV,
+        session.oidcIdTokenAuthTag,
+    );
+
+    return buildOIDCLogoutUrl(provider, idToken);
 };
 
 module.exports.ensureInternalProvider = async () => {

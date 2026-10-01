@@ -313,4 +313,15 @@ app.get("/oidc/callback", async (req, res) => {
     }
 });
 
+/**
+ * GET /auth/oidc/logout/callback
+ *  OIDC Logout Callback
+ *  Returns the browser to Nexterm after the identity provider completes logout.
+ *  Auth Providers
+ *  {redirect} 302 - Redirects to the Nexterm login screen
+ */
+app.get("/oidc/logout/callback", (req, res) => {
+    res.redirect("/");
+});
+
 module.exports = app;
