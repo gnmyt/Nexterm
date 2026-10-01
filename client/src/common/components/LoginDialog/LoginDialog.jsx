@@ -75,7 +75,7 @@ export const LoginDialog = ({ open }) => {
 
     useEffect(() => {
         if (open) {
-            loadProviders(autoLoginSuppressionGuardRef.current(true));
+            void loadProviders(autoLoginSuppressionGuardRef.current(true));
         } else {
             autoLoginSuppressionGuardRef.current(false);
         }

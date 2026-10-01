@@ -1,7 +1,7 @@
 const client = require("openid-client");
 
 const normalizeProviderData = (data) => {
-    if (!Object.prototype.hasOwnProperty.call(data, "endSessionEndpoint")) return data;
+    if (!Object.hasOwn(data, "endSessionEndpoint")) return data;
     return { ...data, endSessionEndpoint: data.endSessionEndpoint?.trim() || null };
 };
 
@@ -13,10 +13,18 @@ const parseHTTPUrl = (value, description) => {
     return url;
 };
 
+const trimTrailingSlashes = (value) => {
+    let end = value.length;
+    while (end > 0 && value[end - 1] === "/") {
+        end -= 1;
+    }
+    return value.slice(0, end);
+};
+
 const getPostLogoutRedirectUri = (loginRedirectUri) => {
     const url = parseHTTPUrl(loginRedirectUri, "OIDC callback URL");
     const loginCallbackPath = "/api/auth/oidc/callback";
-    const normalizedPath = url.pathname.replace(/\/+$/, "");
+    const normalizedPath = trimTrailingSlashes(url.pathname);
 
     if (!normalizedPath.endsWith(loginCallbackPath)) {
         throw new Error("OIDC callback URL has an unexpected path");

@@ -42,7 +42,7 @@ test("derives the post-logout callback from the configured login callback", () =
 
 test("derives the post-logout callback when the login callback has a trailing slash", () => {
     assert.equal(
-        getPostLogoutRedirectUri("https://nexterm.example.com/api/auth/oidc/callback/"),
+        getPostLogoutRedirectUri("https://nexterm.example.com/api/auth/oidc/callback///"),
         "https://nexterm.example.com/api/auth/oidc/logout/callback",
     );
 });

@@ -14,6 +14,7 @@ export const consumeExplicitLogout = () => {
         window.sessionStorage.removeItem(SKIP_AUTO_LOGIN_KEY);
         return value === "1";
     } catch (_) {
+        // Auto-login remains enabled when session storage is unavailable.
         return false;
     }
 };

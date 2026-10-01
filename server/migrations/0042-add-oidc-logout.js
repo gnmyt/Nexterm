@@ -21,11 +21,14 @@ module.exports = {
                 oidcIdTokenAuthTag: Sequelize.STRING,
             };
 
-            for (const [name, type] of Object.entries(columns)) {
-                if (!sessionColumns[name]) {
-                    await queryInterface.addColumn("sessions", name, { type, allowNull: true });
-                }
-            }
+            const missingColumns = Object.entries(columns)
+                .filter(([name]) => !sessionColumns[name]);
+            await missingColumns.reduce(
+                (pending, [name, type]) => pending.then(
+                    () => queryInterface.addColumn("sessions", name, { type, allowNull: true }),
+                ),
+                Promise.resolve(),
+            );
         }
     },
 };
