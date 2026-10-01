@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { startAuthentication } from "@simplewebauthn/browser";
 import { getProviderIcon } from "@/common/utils/iconUtils";
 import { QRCodeCanvas } from "qrcode.react";
+import { createAutoLoginSuppressionGuard } from "@/common/utils/OIDCLogoutUtil.js";
 
 export const LoginDialog = ({ open }) => {
     const { t } = useTranslation();
@@ -31,6 +32,11 @@ export const LoginDialog = ({ open }) => {
     const [qrCode, setQrCode] = useState(null);
     const [qrLoading, setQrLoading] = useState(false);
     const pollTimerRef = useRef(null);
+    const autoLoginSuppressionGuardRef = useRef(null);
+
+    if (!autoLoginSuppressionGuardRef.current) {
+        autoLoginSuppressionGuardRef.current = createAutoLoginSuppressionGuard();
+    }
 
     const { sendToast } = useToast();
 
@@ -45,7 +51,7 @@ export const LoginDialog = ({ open }) => {
         return internalAuthEnabled;
     };
 
-    const loadProviders = async () => {
+    const loadProviders = async (skipAutoLogin = false) => {
         try {
             const providers = await getRequest("auth/providers");
 
@@ -57,7 +63,7 @@ export const LoginDialog = ({ open }) => {
             setRegistrationEnabled(internalProvider ? Boolean(internalProvider.allowRegistration) : false);
             setProviders(externalProviders);
 
-            if (!firstTimeSetup && externalProviders.length === 1 && !internalAuthEnabled) {
+            if (!skipAutoLogin && !firstTimeSetup && externalProviders.length === 1 && !internalAuthEnabled) {
                 setTimeout(() => {
                     handleOIDCLogin(null, externalProviders[0].id);
                 }, 300);
@@ -69,7 +75,9 @@ export const LoginDialog = ({ open }) => {
 
     useEffect(() => {
         if (open) {
-            loadProviders();
+            loadProviders(autoLoginSuppressionGuardRef.current(true));
+        } else {
+            autoLoginSuppressionGuardRef.current(false);
         }
     }, [open]);
 
