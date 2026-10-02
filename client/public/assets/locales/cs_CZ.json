@@ -1071,6 +1071,8 @@
           "clientSecretPlaceholderEdit": "Ponechte prázdné pro zachování stávajícího",
           "redirectUri": "URI přesměrování",
           "redirectUriPlaceholder": "https://vase-domena.cz/api/oidc/callback",
+          "endSessionEndpoint": "End Session Endpoint (Optional)",
+          "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
           "scope": "Rozsah",
           "scopePlaceholder": "openid profile email",
           "usernameAttribute": "Atribut uživatelského jména",
