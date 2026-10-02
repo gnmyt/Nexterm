@@ -1071,6 +1071,8 @@
           "clientSecretPlaceholderEdit": "Lascia in bianco per mantenere l'esistente",
           "redirectUri": "Reindirizzamento URI",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
+          "endSessionEndpoint": "End Session Endpoint (Optional)",
+          "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
           "scope": "Ambito di applicazione",
           "scopePlaceholder": "profilo openid",
           "usernameAttribute": "Attributo Nome utente",
