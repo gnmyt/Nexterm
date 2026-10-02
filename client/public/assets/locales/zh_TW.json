@@ -1071,6 +1071,8 @@
           "clientSecretPlaceholderEdit": "留空以保留現有",
           "redirectUri": "重定向 URI",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
+          "endSessionEndpoint": "End Session Endpoint (Optional)",
+          "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
           "scope": "範圍",
           "scopePlaceholder": "開放資料",
           "usernameAttribute": "使用者名稱屬性",
