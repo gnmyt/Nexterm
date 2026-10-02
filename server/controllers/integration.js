@@ -3,6 +3,10 @@ const logger = require("../utils/logger");
 const Folder = require("../models/Folder");
 const Credential = require("../models/Credential");
 const Entry = require("../models/Entry");
+const MonitoringData = require("../models/MonitoringData");
+const MonitoringSnapshot = require("../models/MonitoringSnapshot");
+const db = require("../utils/database");
+const { Op } = require("sequelize");
 const { hasOrganizationAccess, hasOrganizationPermission, hasAccountPermission, validateFolderAccess } = require("../utils/permission");
 const { Permission } = require("../permissions/registry");
 const { getProvider, entryKey } = require("../lib/hypervisors");
@@ -268,9 +272,20 @@ module.exports.deleteIntegration = async (accountId, integrationId) => {
 
     if (!accessCheck.valid) return accessCheck.error;
 
-    await Entry.destroy({ where: { integrationId } });
-    await Folder.destroy({ where: { integrationId } });
-    await Integration.destroy({ where: { id: integrationId } });
+    const entries = await Entry.findAll({ where: { integrationId }, attributes: ["id"] });
+    const entryIds = entries.map((entry) => entry.id);
+    const monitoringWhere = entryIds.length
+        ? { [Op.or]: [{ integrationId }, { entryId: entryIds }] }
+        : { integrationId };
+
+    await db.transaction(async (transaction) => {
+        await MonitoringData.destroy({ where: monitoringWhere, transaction });
+        await MonitoringSnapshot.destroy({ where: monitoringWhere, transaction });
+        await Credential.destroy({ where: { integrationId }, transaction });
+        await Entry.destroy({ where: { integrationId }, transaction });
+        await Folder.destroy({ where: { integrationId }, transaction });
+        await Integration.destroy({ where: { id: integrationId }, transaction });
+    });
 
     logger.info(`Integration deleted`, { integrationId, name: integration.name });
 
@@ -284,6 +299,31 @@ module.exports.editIntegration = async (accountId, integrationId, configuration)
     if (!accessCheck.valid) return accessCheck.error;
 
     const rootFolder = await Folder.findOne({ where: { integrationId, type: "integration-root" } });
+
+    const connectionChanged = ["ip", "port", "username", "password"].some((field) => configuration[field] !== undefined);
+    if (connectionChanged) {
+        const provider = getProvider(integration.type);
+        const ip = configuration.ip !== undefined ? configuration.ip : integration.config.ip;
+        const port = configuration.port !== undefined ? configuration.port : integration.config.port;
+
+        if (provider?.testConnection) {
+            const existingCredential = configuration.password === undefined
+                ? await Credential.findOne({ where: { integrationId, type: "password" } })
+                : null;
+
+            try {
+                await provider.testConnection({
+                    ip,
+                    port,
+                    username: configuration.username !== undefined ? configuration.username : integration.config.username,
+                    password: configuration.password !== undefined ? configuration.password : (existingCredential ? existingCredential.secret : null),
+                });
+            } catch (error) {
+                logger.error("Failed to connect to integration host", { ip, port, error: error.message });
+                return mapConnectionError(error, ip, port);
+            }
+        }
+    }
 
     if (configuration.folderId) {
         const folderCheck = await validateFolderAccess(accountId, configuration.folderId);
