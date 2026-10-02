@@ -1071,6 +1071,8 @@
           "clientSecretPlaceholderEdit": "留空表示保留现有密钥",
           "redirectUri": "重定向 URI",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback  ",
+          "endSessionEndpoint": "End Session Endpoint (Optional)",
+          "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
           "scope": "范围",
           "scopePlaceholder": "openid profile",
           "usernameAttribute": "用户名属性",
