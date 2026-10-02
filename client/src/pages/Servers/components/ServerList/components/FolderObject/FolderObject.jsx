@@ -12,6 +12,8 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
 
     const { loadServers } = useContext(ServerContext);
     const [nameState, setNameState] = useState(name || "");
+    const elementRef = useRef(null);
+    const [dropZone, setDropZone] = useState(null);
 
     useEffect(() => {
         if (!renameState) {
@@ -35,26 +37,42 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
 
     const [{ isOver }, dropRef] = useDrop({
         accept: ["server", "folder"],
+        hover: (item, monitor) => {
+            if (item.type !== "folder" || item.id === id || !acceptsDrop(item) || !elementRef.current) return;
+            const offset = monitor.getClientOffset();
+            if (!offset) return;
+            const rect = elementRef.current.getBoundingClientRect();
+            const y = offset.y - rect.top;
+            let zone = "nest";
+            if (y < rect.height * 0.3) zone = "before";
+            else if (y > rect.height * 0.7) zone = "after";
+            setDropZone(prev => prev === zone ? prev : zone);
+        },
         drop: async (item) => {
-            if (item.id === id || !acceptsDrop(item)) return { id };
+            if (item.id === id || !acceptsDrop(item)) { setDropZone(null); return { id }; }
+            const zone = dropZone;
+            setDropZone(null);
             try {
                 if (item.type === "server") {
-                    await patchRequest(`entries/${item.id}/reposition`, { 
+                    await patchRequest(`entries/${item.id}/reposition`, {
                         targetId: null,
                         placement: 'after',
                         folderId: id,
                         organizationId: organizationId
                     });
-                    loadServers();
-                    return { id };
+                } else if (zone === "before" || zone === "after") {
+                    await patchRequest(`folders/${item.id}/reposition`, {
+                        targetId: id,
+                        placement: zone,
+                        organizationId: organizationId
+                    });
+                } else {
+                    await patchRequest(`folders/${item.id}/reposition`, { parentId: id });
                 }
-
-                await patchRequest(`folders/${item.id}`, { parentId: item.id !== id ? id : undefined });
+                loadServers();
             } catch (error) {
                 console.error("Failed to drop item", error.message);
             }
-
-            loadServers();
 
             return { id };
         },
@@ -62,6 +80,9 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
             isOver: monitor.isOver() && monitor.getItem() != null && acceptsDrop(monitor.getItem()),
         }),
     });
+
+    const zoneClasses = { before: " folder-drop-before", after: " folder-drop-after" };
+    const dropZoneClass = isOver ? (zoneClasses[dropZone] || " folder-is-over") : "";
 
     const changeName = () => {
         setNameState(name => {
@@ -88,8 +109,10 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
         }
     }, [renameState]);
     return (
-        <div className={"folder-object" + (isOver ? " folder-is-over" : "")} data-id={id}
-             ref={(node) => dragRef(dropRef(node))} onClick={renameState ? (e) => e.stopPropagation() : onClick}
+        <div className={"folder-object" + dropZoneClass} data-id={id}
+             role="button" tabIndex={0}
+             onKeyDown={(e) => { if (!renameState && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); onClick?.(e); } }}
+             ref={(node) => { elementRef.current = node; dragRef(dropRef(node)); }} onClick={renameState ? (e) => e.stopPropagation() : onClick}
              style={{ paddingLeft: `${10 + (nestedLevel * 15)}px`, opacity }}>
             {(folderType === 'integration-node' || folderType === 'integration-root') ? (
                 <img src={ProxmoxIcon} alt="Proxmox" style={{ width: '1.5rem', height: '1.5rem' }} />

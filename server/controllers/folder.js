@@ -11,6 +11,19 @@ const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const logger = require("../utils/logger");
 const SessionManager = require("../lib/SessionManager");
+const { reorderSiblings } = require("../utils/reposition");
+
+const checkFolderManageAccess = async (accountId, folder) => {
+    if (folder.organizationId) {
+        if (!(await hasOrganizationPermission(accountId, folder.organizationId, Permission.RESOURCES_MANAGE)))
+            return { code: 403, message: "You don't have permission to manage resources in this organization" };
+    } else if (folder.accountId !== accountId) {
+        return { code: 403, message: "You don't have permission to edit this folder" };
+    } else if (!(await hasAccountPermission(accountId, Permission.RESOURCES_MANAGE))) {
+        return { code: 403, message: "You don't have permission to manage resources" };
+    }
+    return null;
+};
 
 const cleanupOrganizationIdentities = async (entryIds, oldOrganizationId) => {
     if (!entryIds.length || !oldOrganizationId) return;
@@ -174,14 +187,8 @@ module.exports.editFolder = async (accountId, folderId, configuration) => {
         return { code: 301, message: "Folder does not exist" };
     }
 
-    if (folder.organizationId) {
-        if (!(await hasOrganizationPermission(accountId, folder.organizationId, Permission.RESOURCES_MANAGE)))
-            return { code: 403, message: "You don't have permission to manage resources in this organization" };
-    } else if (folder.accountId !== accountId) {
-        return { code: 403, message: "You don't have permission to edit this folder" };
-    } else if (!(await hasAccountPermission(accountId, Permission.RESOURCES_MANAGE))) {
-        return { code: 403, message: "You don't have permission to manage resources" };
-    }
+    const accessError = await checkFolderManageAccess(accountId, folder);
+    if (accessError) return accessError;
 
     if (configuration.parentId !== undefined && folder.type === "integration-node") {
         return { code: 403, message: "Integration nodes cannot be moved out of their integration folder" };
@@ -281,6 +288,98 @@ module.exports.editFolder = async (accountId, folderId, configuration) => {
     });
 
     stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: folder.organizationId });
+
+    return { success: true };
+};
+
+const isDescendantFolder = async (ancestorId, folderId) => {
+    let current = await Folder.findByPk(ancestorId);
+    while (current) {
+        if (current.id === folderId) return true;
+        if (current.parentId === null) return false;
+        current = await Folder.findByPk(current.parentId);
+    }
+    return false;
+};
+
+const resolveTargetLocation = async (folder, { targetId, parentId, organizationId }) => {
+    if (targetId !== null && targetId !== undefined) {
+        const target = await Folder.findByPk(Number.parseInt(targetId));
+        if (!target) return { error: { code: 302, message: "Target folder does not exist" } };
+        return { targetParentId: target.parentId, targetOrganizationId: target.organizationId || null };
+    }
+    if (parentId !== undefined && parentId !== null) {
+        const parent = await Folder.findByPk(Number.parseInt(parentId));
+        if (!parent) return { error: { code: 302, message: "Target parent folder does not exist" } };
+        return { targetParentId: parent.id, targetOrganizationId: parent.organizationId || null };
+    }
+    return {
+        targetParentId: null,
+        targetOrganizationId: organizationId !== undefined ? organizationId : (folder.organizationId || null),
+    };
+};
+
+const resolveRepositionScope = async (accountId, folder, params) => {
+    const location = await resolveTargetLocation(folder, params);
+    if (location.error) return location;
+
+    const { targetParentId, targetOrganizationId } = location;
+    const targetAccountId = targetOrganizationId ? null : accountId;
+    const parentChanged = (folder.parentId || null) !== (targetParentId || null);
+
+    if (parentChanged && folder.type === "integration-node") {
+        return { error: { code: 403, message: "Integration nodes cannot be moved out of their integration folder" } };
+    }
+
+    if (targetOrganizationId && targetOrganizationId !== folder.organizationId
+        && !(await hasOrganizationPermission(accountId, targetOrganizationId, Permission.RESOURCES_MANAGE))) {
+        return { error: { code: 403, message: "You don't have permission to manage resources in the target organization" } };
+    }
+
+    if (parentChanged && targetParentId && await isDescendantFolder(targetParentId, folder.id)) {
+        return { error: { code: 303, message: "Cannot move folder to its own subfolder" } };
+    }
+
+    return { targetParentId, targetOrganizationId, targetAccountId };
+};
+
+module.exports.repositionFolder = async (accountId, folderId, { targetId, placement, parentId, organizationId }) => {
+    const folderIdNum = Number.parseInt(folderId);
+    const folder = await Folder.findByPk(folderIdNum);
+    if (folder === null) return { code: 301, message: "Folder does not exist" };
+
+    const accessError = await checkFolderManageAccess(accountId, folder);
+    if (accessError) return accessError;
+
+    const scope = await resolveRepositionScope(accountId, folder, { targetId, parentId, organizationId });
+    if (scope.error) return scope.error;
+    const { targetParentId, targetOrganizationId, targetAccountId } = scope;
+
+    if (folder.organizationId !== targetOrganizationId) {
+        await updateFolderContext(folderIdNum, targetOrganizationId, targetAccountId, folder.organizationId);
+    }
+
+    const siblings = await Folder.findAll({
+        where: { parentId: targetParentId, organizationId: targetOrganizationId, accountId: targetAccountId },
+        order: [["position", "ASC"]],
+    });
+    await reorderSiblings(Folder, siblings, folder, targetId, placement, {
+        parentId: targetParentId, organizationId: targetOrganizationId, accountId: targetAccountId,
+    });
+
+    await createAuditLog({
+        action: AUDIT_ACTIONS.FOLDER_MGMT_UPDATE,
+        accountId,
+        organizationId: folder.organizationId,
+        resource: RESOURCE_TYPES.FOLDER,
+        resourceId: folderIdNum,
+        details: { action: "reposition", targetId, placement, parentId: targetParentId },
+    });
+
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: folder.organizationId });
+    if (targetOrganizationId && targetOrganizationId !== folder.organizationId) {
+        stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: targetOrganizationId });
+    }
 
     return { success: true };
 };

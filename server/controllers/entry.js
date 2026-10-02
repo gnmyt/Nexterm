@@ -14,6 +14,7 @@ const { listIdentities } = require("./identity");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
 const logger = require("../utils/logger");
 const { sendWakeOnLan } = require("../utils/wol");
+const { reorderSiblings } = require("../utils/reposition");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const SessionManager = require("../lib/SessionManager");
 
@@ -589,32 +590,15 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
         order: [["position", "ASC"]],
     });
 
-    const normalizedEntries = entries.filter(e => e.id !== entryIdNum);
-
-    let targetIndex;
-    if (targetId === null || targetId === undefined) {
-        targetIndex = normalizedEntries.length;
-    } else {
-        targetIndex = normalizedEntries.findIndex(e => e.id === parseInt(targetId));
-        if (targetIndex === -1) return { code: 404, message: "Target entry not found" };
-
-        if (placement === 'after') {
-            targetIndex += 1;
-        }
+    if (targetId !== null && targetId !== undefined && !entries.some(e => e.id === Number.parseInt(targetId))) {
+        return { code: 404, message: "Target entry not found" };
     }
 
-    normalizedEntries.splice(targetIndex, 0, entry);
-
-    for (let i = 0; i < normalizedEntries.length; i++) {
-        const updateData = { position: i, folderId: targetFolderId };
-
-        if (normalizedEntries[i].id === entryIdNum) {
-            updateData.organizationId = targetOrganizationId;
-            updateData.accountId = targetAccountId;
-        }
-
-        await Entry.update(updateData, { where: { id: normalizedEntries[i].id } });
-    }
+    await reorderSiblings(Entry, entries, entry, targetId, placement, {
+        organizationId: targetOrganizationId,
+        accountId: targetAccountId,
+        folderId: targetFolderId,
+    });
 
     const oldOrganizationId = entry.organizationId;
     if (oldOrganizationId !== targetOrganizationId) {
