@@ -1071,6 +1071,8 @@
           "clientSecretPlaceholderEdit": "Оставьте пустым, чтобы сохранить текущий",
           "redirectUri": "URI перенаправления",
           "redirectUriPlaceholder": "https://ваш-домен.com/api/oidc/callback",
+          "endSessionEndpoint": "End Session Endpoint (Optional)",
+          "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
           "scope": "Область",
           "scopePlaceholder": "профиль openid",
           "usernameAttribute": "Атрибут имени пользователя",
