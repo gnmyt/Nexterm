@@ -77,21 +77,6 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!name.trim()) {
-            sendToast("Error", t('settings.identities.dialog.messages.nameRequired'));
-            return;
-        }
-
-        if ((authType === "password" || authType === "password-only" || authType === "both") && !password && !isEditing) {
-            sendToast("Error", t('settings.identities.dialog.messages.passwordRequired'));
-            return;
-        }
-
-        if ((authType === "ssh" || authType === "both") && !sshKey && !isEditing) {
-            sendToast("Error", t('settings.identities.dialog.messages.sshKeyRequired'));
-            return;
-        }
-
         setIsLoading(true);
 
         try {
@@ -166,7 +151,7 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                                 <div className="form-group">
                                     <label htmlFor="username">{t('settings.identities.dialog.fields.username')}</label>
                                     <IconInput icon={mdiAccountCircleOutline} value={username} setValue={setUsername}
-                                               placeholder={t('settings.identities.dialog.fields.usernamePlaceholder')} id="username" />
+                                               placeholder={t('settings.identities.dialog.fields.usernamePlaceholder')} id="username" required />
                                 </div>
                             )}
 
