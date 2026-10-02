@@ -1071,6 +1071,8 @@
           "clientSecretPlaceholderEdit": "اتركه فارغًا للحفاظ على الحالي",
           "redirectUri": "رابط إعادة التوجيه",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
+          "endSessionEndpoint": "End Session Endpoint (Optional)",
+          "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
           "scope": "النطاق",
           "scopePlaceholder": "ملف تعريف OpenID",
           "usernameAttribute": "سمة اسم المستخدم",
