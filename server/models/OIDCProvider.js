@@ -3,6 +3,19 @@ const logger = require("../utils/logger");
 const db = require("../utils/database");
 const { encrypt, decrypt } = require("../utils/encryption");
 
+const parseGroupMappings = (provider) => {
+    if (provider?.groupMappings && typeof provider.groupMappings === "string") {
+        try {
+            provider.groupMappings = JSON.parse(provider.groupMappings);
+        } catch (error) {
+            logger.warn("Failed to parse group mappings for OIDC provider", {
+                providerId: provider.id, error: error.message,
+            });
+            provider.groupMappings = [];
+        }
+    }
+};
+
 module.exports = db.define("oidc_providers", {
         id: {
             type: Sequelize.INTEGER,
@@ -77,6 +90,19 @@ module.exports = db.define("oidc_providers", {
             allowNull: false,
             defaultValue: false,
         },
+        groupsAttribute: {
+            type: Sequelize.STRING,
+            allowNull: true,
+        },
+        requiredGroup: {
+            type: Sequelize.STRING,
+            allowNull: true,
+        },
+        groupMappings: {
+            type: Sequelize.JSON,
+            allowNull: true,
+            defaultValue: [],
+        },
     },
     {
         freezeTableName: true,
@@ -115,17 +141,21 @@ module.exports = db.define("oidc_providers", {
                                 logger.error("Failed to decrypt client secret for OIDC provider", { providerId: provider.id, error: error.message });
                             }
                         }
+                        parseGroupMappings(provider);
                     });
-                } else if (providers.clientSecret) {
-                    try {
-                        providers.clientSecret = decrypt(
-                            providers.clientSecret,
-                            providers.clientSecretIV,
-                            providers.clientSecretAuthTag,
-                        );
-                    } catch (error) {
-                        logger.error("Failed to decrypt client secret for OIDC provider", { providerId: providers.id, error: error.message });
+                } else {
+                    if (providers.clientSecret) {
+                        try {
+                            providers.clientSecret = decrypt(
+                                providers.clientSecret,
+                                providers.clientSecretIV,
+                                providers.clientSecretAuthTag,
+                            );
+                        } catch (error) {
+                            logger.error("Failed to decrypt client secret for OIDC provider", { providerId: providers.id, error: error.message });
+                        }
                     }
+                    parseGroupMappings(providers);
                 }
 
                 return providers;
