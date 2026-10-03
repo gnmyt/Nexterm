@@ -31,6 +31,34 @@ const resolveMappedRoles = (groups, mappings) => {
     return roleByOrgId;
 };
 
+const syncMappedMembership = async (accountId, mapping, models) => {
+    const [organizationId, role] = mapping;
+    const organization = await models.organization.findByPk(organizationId);
+    if (!organization) return null;
+
+    const [membership, created] = await models.member.findOrCreate({
+        where: { organizationId: organization.id, accountId },
+        defaults: { role, status: "active", invitedBy: accountId, managedByOidc: true },
+    });
+
+    if (!created && membership.managedByOidc && membership.role !== role) {
+        await models.member.update({ role }, { where: { organizationId: organization.id, accountId } });
+    }
+
+    return organization.id;
+};
+
+const removeStaleMembership = async (accountId, membership, dependencies) => {
+    const where = { organizationId: membership.organizationId, accountId };
+    await dependencies.memberModel.destroy({ where });
+    await dependencies.permissionModel.destroy({ where });
+    dependencies.revokeAccess(membership.organizationId, accountId);
+
+    dependencies.logger.system("Removed OIDC-managed organization membership no longer matched by group claims", {
+        accountId, organizationId: membership.organizationId,
+    });
+};
+
 const syncOrganizationMemberships = async (accountId, groups, provider, dependencies = {}) => {
     const organizationModel = dependencies.organizationModel || require("../models/Organization");
     const memberModel = dependencies.memberModel || require("../models/OrganizationMember");
@@ -40,38 +68,25 @@ const syncOrganizationMemberships = async (accountId, groups, provider, dependen
     const log = dependencies.logger || require("./logger");
     const mappings = Array.isArray(provider.groupMappings) ? provider.groupMappings : [];
     const roleByOrgId = resolveMappedRoles(groups, mappings);
-    const matchedOrgIds = new Set();
-
-    for (const [organizationId, role] of roleByOrgId) {
-        const organization = await organizationModel.findByPk(organizationId);
-        if (!organization) continue;
-
-        matchedOrgIds.add(organization.id);
-
-        const [membership, created] = await memberModel.findOrCreate({
-            where: { organizationId: organization.id, accountId },
-            defaults: { role, status: "active", invitedBy: accountId, managedByOidc: true },
-        });
-
-        if (!created && membership.managedByOidc && membership.role !== role) {
-            await memberModel.update({ role }, { where: { organizationId: organization.id, accountId } });
-        }
-    }
+    const matchedOrganizationIds = await Promise.all(
+        [...roleByOrgId].map(mapping => syncMappedMembership(accountId, mapping, {
+            organization: organizationModel,
+            member: memberModel,
+        })),
+    );
+    const matchedOrgIds = new Set(matchedOrganizationIds.filter(id => id !== null));
 
     const managedMemberships = await memberModel.findAll({ where: { accountId, managedByOidc: true } });
+    const staleMemberships = managedMemberships.filter(membership => (
+        !matchedOrgIds.has(membership.organizationId) && membership.role !== "owner"
+    ));
 
-    for (const membership of managedMemberships) {
-        if (matchedOrgIds.has(membership.organizationId)) continue;
-        if (membership.role === "owner") continue;
-
-        await memberModel.destroy({ where: { organizationId: membership.organizationId, accountId } });
-        await permissionModel.destroy({ where: { organizationId: membership.organizationId, accountId } });
-        revokeAccess(membership.organizationId, accountId);
-
-        log.system("Removed OIDC-managed organization membership no longer matched by group claims", {
-            accountId, organizationId: membership.organizationId,
-        });
-    }
+    await Promise.all(staleMemberships.map(membership => removeStaleMembership(accountId, membership, {
+        memberModel,
+        permissionModel,
+        revokeAccess,
+        logger: log,
+    })));
 };
 
 module.exports = {
