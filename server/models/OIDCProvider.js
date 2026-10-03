@@ -7,7 +7,12 @@ const parseGroupMappings = (provider) => {
     if (provider?.groupMappings && typeof provider.groupMappings === "string") {
         try {
             provider.groupMappings = JSON.parse(provider.groupMappings);
-        } catch (e) {}
+        } catch (error) {
+            logger.warn("Failed to parse group mappings for OIDC provider", {
+                providerId: provider.id, error: error.message,
+            });
+            provider.groupMappings = [];
+        }
     }
 };
 
@@ -45,6 +50,10 @@ module.exports = db.define("oidc_providers", {
         redirectUri: {
             type: Sequelize.STRING,
             allowNull: false,
+        },
+        endSessionEndpoint: {
+            type: Sequelize.STRING,
+            allowNull: true,
         },
         scope: {
             type: Sequelize.STRING,

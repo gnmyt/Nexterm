@@ -114,6 +114,28 @@ class ControlPlaneServer extends EventEmitter {
         this._sessionEngineMap.delete(sessionId);
     }
 
+    closeSessionAndWait(sessionId, engineId = null, timeoutMs = 5000) {
+        const engine = this._resolveEngineForSession(sessionId, engineId);
+        if (!engine) return Promise.resolve(false);
+
+        return new Promise((resolve) => {
+            let timeout = null;
+            const finish = (closed) => {
+                this.off("sessionClosed", handleClosed);
+                if (timeout) clearTimeout(timeout);
+                resolve(closed);
+            };
+            const handleClosed = (event) => {
+                if (event.sessionId === sessionId) finish(true);
+            };
+
+            this.on("sessionClosed", handleClosed);
+            this._sendFrame(engine.socket, buildSessionClose(sessionId));
+            this._sessionEngineMap.delete(sessionId);
+            timeout = setTimeout(() => finish(false), timeoutMs);
+        });
+    }
+
     joinSession(sessionId, engineId = null) {
         const engine = this._resolveEngineForSession(sessionId, engineId);
         if (!engine) return Promise.reject(new Error("No engine connected"));
@@ -584,8 +606,10 @@ class ControlPlaneServer extends EventEmitter {
             case MessageType.SessionClosed: {
                 const closed = envelope.sessionClosed();
                 if (!closed) break;
-                logger.info(`SessionClosed: session=${closed.sessionId()} reason=${closed.reason()}`);
-                this.emit("sessionClosed", { sessionId: closed.sessionId(), reason: closed.reason() });
+                const sessionId = closed.sessionId();
+                this._sessionEngineMap.delete(sessionId);
+                logger.info(`SessionClosed: session=${sessionId} reason=${closed.reason()}`);
+                this.emit("sessionClosed", { sessionId, reason: closed.reason() });
                 break;
             }
 

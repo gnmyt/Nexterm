@@ -5,6 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import Icon from "@mdi/react";
 import Button from "@/common/components/Button";
+import Tooltip from "@/common/components/Tooltip";
 import { useTranslation } from "react-i18next";
 
 const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, orgId, allowedAuthTypes }) => {
@@ -61,11 +62,13 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
                 </div>
                 {isNew && <span className="new-badge">NEW</span>}
                 {!isOrg && !isNew && isOrgContext && orgId && (
-                    <button className="move-to-org-btn" onClick={() => onMoveToOrg(identity.id, orgId)} title={t("servers.dialog.identities.moveToOrg")} type="button">
-                        <Icon path={mdiArrowRight} size={0.8} /><Icon path={mdiAccountGroup} size={0.8} />
-                    </button>
+                    <Tooltip text={t("servers.dialog.identities.moveToOrg")} delay={500} asChild>
+                        <button className="move-to-org-btn" onClick={() => onMoveToOrg(identity.id, orgId)} aria-label={t("servers.dialog.identities.moveToOrg")} type="button">
+                            <Icon path={mdiArrowRight} size={0.8} /><Icon path={mdiAccountGroup} size={0.8} />
+                        </button>
+                    </Tooltip>
                 )}
-                <button className="unlink-identity-btn" onClick={() => onDelete(identity.id)} title={t(isNew ? "servers.dialog.identities.removeIdentity" : "servers.dialog.identities.unlinkIdentity")} type="button">
+                <button className="unlink-identity-btn" onClick={() => onDelete(identity.id)} aria-label={t(isNew ? "servers.dialog.identities.removeIdentity" : "servers.dialog.identities.unlinkIdentity")} type="button">
                     <Icon path={isNew ? mdiTrashCan : mdiLinkOff} size={1} />
                 </button>
             </div>

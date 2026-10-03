@@ -677,10 +677,9 @@ static int guac_rdp_handle_connection(guac_client* client) {
         if (connection_closing)
             guac_rdp_client_abort(client, rdp_inst);
 
-        /* If a low-level connection error occurred, fail */
+        /* Preserve FreeRDP's disconnect reason for low-level failures. */
         else if (wait_result < 0)
-            guac_client_abort(client, GUAC_PROTOCOL_STATUS_UPSTREAM_UNAVAILABLE,
-                    "Connection closed.");
+            guac_rdp_client_abort(client, rdp_inst);
 
     }
 

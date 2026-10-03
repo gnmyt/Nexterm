@@ -291,11 +291,12 @@ void guac_rdp_client_abort(guac_client* client, freerdp* rdp_inst) {
 
     }
 
-    /* Send error code if an error occurred */
-    if (status != GUAC_PROTOCOL_STATUS_SUCCESS) {
-        guac_protocol_send_error(client->socket, message, status);
-        guac_socket_flush(client->socket);
-    }
+    /* Always surface an RDP server-initiated close to the client. */
+    if (status == GUAC_PROTOCOL_STATUS_SUCCESS)
+        status = GUAC_PROTOCOL_STATUS_SESSION_CLOSED;
+
+    guac_protocol_send_error(client->socket, message, status);
+    guac_socket_flush(client->socket);
 
     /* Log human-readable description of disconnect at info level */
     guac_client_log(client, GUAC_LOG_INFO, "RDP server closed/refused "

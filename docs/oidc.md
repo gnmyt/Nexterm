@@ -16,6 +16,7 @@ Go to **Settings** → **Authentication** → **Add Provider**.
 | Client Secret | From your IdP            |
 | Redirect URI  | Copy this to your IdP    |
 | Scope         | Usually `openid profile` |
+| End Session Endpoint | Optional logout URL override when discovery does not advertise one |
 
 ## Provider Setup
 
@@ -67,6 +68,20 @@ identity_providers:
 ```
 
 Issuer URL: `https://auth.yourdomain.com`
+
+## Logout Setup
+
+Register this post-logout redirect URI with your identity provider in addition to the login redirect URI:
+
+```text
+https://<nexterm-host>/api/auth/oidc/logout/callback
+```
+
+Nexterm uses the provider's discovered `end_session_endpoint` by default. If the provider does not advertise one, set **End Session Endpoint** in the provider's **Advanced Settings**. The configured override takes precedence over discovery.
+
+Sessions created before upgrading do not have an ID-token hint and therefore use local-only logout until the user signs in again. Providers without a logout endpoint also continue to log out locally.
+
+For Authentik, add both the login callback and post-logout callback to the provider's allowed redirect URIs.
 
 ## Attribute Mapping
 

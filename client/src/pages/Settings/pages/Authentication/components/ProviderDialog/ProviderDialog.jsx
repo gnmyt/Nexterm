@@ -1,6 +1,6 @@
 import { DialogProvider } from "@/common/components/Dialog";
 import "./styles.sass";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Input from "@/common/components/IconInput";
 import SelectBox from "@/common/components/SelectBox";
@@ -13,6 +13,7 @@ import {
     mdiKey,
     mdiKeyChain,
     mdiLink,
+    mdiLogoutVariant,
     mdiPlus,
     mdiShieldLockOutline,
     mdiTrashCanOutline,
@@ -36,6 +37,7 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
     const [clientId, setClientId] = useState("");
     const [clientSecret, setClientSecret] = useState("");
     const [redirectUri, setRedirectUri] = useState("");
+    const [endSessionEndpoint, setEndSessionEndpoint] = useState("");
     const [scope, setScope] = useState("openid profile");
 
     const [usernameAttr, setUsernameAttr] = useState("preferred_username");
@@ -47,6 +49,7 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
     const [requiredGroup, setRequiredGroup] = useState("");
     const [groupMappings, setGroupMappings] = useState([]);
     const [organizations, setOrganizations] = useState([]);
+    const nextMappingKey = useRef(0);
 
     useEffect(() => {
         if (!open) return;
@@ -63,13 +66,16 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
             setClientId(provider.clientId);
             setClientSecret("********");
             setRedirectUri(provider.redirectUri);
+            setEndSessionEndpoint(provider.endSessionEndpoint || "");
             setScope(provider.scope);
             setUsernameAttr(provider.usernameAttribute);
             setFirstNameAttr(provider.firstNameAttribute);
             setLastNameAttr(provider.lastNameAttribute);
             setGroupsAttribute(provider.groupsAttribute || "");
             setRequiredGroup(provider.requiredGroup || "");
-            setGroupMappings(Array.isArray(provider.groupMappings) ? provider.groupMappings : []);
+            setGroupMappings(Array.isArray(provider.groupMappings)
+                ? provider.groupMappings.map(mapping => ({ ...mapping, clientKey: nextMappingKey.current++ }))
+                : []);
         } else {
             setName("");
             setIssuer("");
@@ -77,6 +83,7 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
             setClientSecret("");
             const baseUrl = getBaseUrl() || window.location.origin;
             setRedirectUri(baseUrl + "/api/auth/oidc/callback");
+            setEndSessionEndpoint("");
             setScope("openid profile");
             setUsernameAttr("preferred_username");
             setFirstNameAttr("given_name");
@@ -89,26 +96,39 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
     }, [provider, open]);
 
     const addGroupMapping = () => {
-        setGroupMappings([...groupMappings, { value: "", organizationId: organizations[0]?.id || "", role: "member" }]);
+        setGroupMappings(current => [...current, {
+            value: "",
+            organizationId: organizations[0]?.id || "",
+            role: "member",
+            clientKey: nextMappingKey.current++,
+        }]);
     };
 
     const updateGroupMapping = (index, changes) => {
-        setGroupMappings(groupMappings.map((mapping, i) => (i === index ? { ...mapping, ...changes } : mapping)));
+        setGroupMappings(current => current.map(
+            (mapping, i) => (i === index ? { ...mapping, ...changes } : mapping),
+        ));
     };
 
     const removeGroupMapping = (index) => {
-        setGroupMappings(groupMappings.filter((_, i) => i !== index));
+        setGroupMappings(current => current.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async () => {
         try {
             const data = {
                 name, issuer, clientId, redirectUri, scope,
+                endSessionEndpoint: endSessionEndpoint.trim() || null,
                 usernameAttribute: usernameAttr, firstNameAttribute: firstNameAttr, lastNameAttribute: lastNameAttr,
-                groupsAttribute: groupsAttribute || null, requiredGroup: requiredGroup || null,
+                groupsAttribute: groupsAttribute.trim() || null,
+                requiredGroup: requiredGroup.trim() || null,
                 groupMappings: groupMappings
                     .filter((mapping) => mapping.value && mapping.organizationId)
-                    .map((mapping) => ({ ...mapping, organizationId: parseInt(mapping.organizationId, 10) })),
+                    .map((mapping) => ({
+                        value: mapping.value,
+                        organizationId: Number.parseInt(mapping.organizationId, 10),
+                        role: mapping.role,
+                    })),
             };
 
             if (clientSecret && clientSecret !== "********") {
@@ -179,6 +199,13 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
                     {showAdvanced && (
                         <div className="advanced-form">
                             <div className="form-group">
+                                <label htmlFor="endSessionEndpoint">{t('settings.authentication.providerDialog.fields.endSessionEndpoint')}</label>
+                                <Input type="url" id="endSessionEndpoint" icon={mdiLogoutVariant}
+                                       placeholder={t('settings.authentication.providerDialog.fields.endSessionEndpointPlaceholder')}
+                                       value={endSessionEndpoint} setValue={setEndSessionEndpoint} />
+                            </div>
+
+                            <div className="form-group">
                                 <label htmlFor="usernameAttr">{t('settings.authentication.providerDialog.fields.usernameAttribute')}</label>
                                 <Input type="text" id="usernameAttr" icon={mdiAccountMultiple}
                                        placeholder={t('settings.authentication.providerDialog.fields.usernameAttributePlaceholder')} value={usernameAttr}
@@ -222,7 +249,7 @@ export const ProviderDialog = ({ open, onClose, provider, onSave }) => {
 
                                     <div className="group-mappings">
                                         {groupMappings.map((mapping, index) => (
-                                            <div className="group-mapping-row" key={index}>
+                                            <div className="group-mapping-row" key={mapping.clientKey}>
                                                 <Input type="text"
                                                        placeholder={t('settings.authentication.providerDialog.groupSync.mappingValuePlaceholder')}
                                                        value={mapping.value}

@@ -12,6 +12,7 @@ import {
     mdiAlertCircle
 } from "@mdi/js";
 import { useTranslation } from "react-i18next";
+import Tooltip from "@/common/components/Tooltip";
 import "./ScriptOverlay.sass";
 
 const StepIndicator = ({ type, progressValue, stepNumber }) => {
@@ -129,11 +130,9 @@ const ScriptOverlay = ({
                         {steps.slice(0, 8).map((_, index) => {
                             const type = getTypeByIndex(index);
                             return (
-                                <div 
-                                    key={index} 
-                                    className={`step-dot ${type}`}
-                                    title={steps[index]}
-                                />
+                                <Tooltip key={index} text={steps[index]} delay={500} asChild>
+                                    <div className={`step-dot ${type}`} />
+                                </Tooltip>
                             );
                         })}
                         {steps.length > 8 && (
@@ -144,11 +143,9 @@ const ScriptOverlay = ({
 
                 <div className="overlay-right">
                     {!isCompleted && !failedStep && (
-                        <button 
-                            className="overlay-btn cancel-btn" 
+                        <button className="overlay-btn cancel-btn"
                             onClick={(e) => { e.stopPropagation(); onCancel(); }}
-                            title={t("common.actions.cancel")}
-                        >
+                            aria-label={t("common.actions.cancel")}>
                             <Icon path={mdiStop} />
                         </button>
                     )}
@@ -170,7 +167,9 @@ const ScriptOverlay = ({
                         return (
                             <div key={index} className={`step-item ${type}`}>
                                 <StepIndicator type={type} progressValue={currentProgress} stepNumber={index + 1} />
-                                <span className="step-text" title={step}>{step}</span>
+                                <Tooltip text={step} delay={500} asChild>
+                                    <span className="step-text">{step}</span>
+                                </Tooltip>
                             </div>
                         );
                     })}
