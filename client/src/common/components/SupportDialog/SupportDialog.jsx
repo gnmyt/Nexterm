@@ -3,7 +3,7 @@ import { DialogProvider } from "@/common/components/Dialog";
 import Icon from "@mdi/react";
 import { mdiBugOutline, mdiOpenInNew } from "@mdi/js";
 import { siDiscord, siGithub } from "simple-icons";
-import { DISCORD_URL, GITHUB_URL } from "@/App.jsx";
+import { DISCORD_URL, DOCS_URL, GITHUB_URL } from "@/App.jsx";
 import { useTranslation } from "react-i18next";
 import { openExternalUrl } from "@/common/utils/TauriUtil.js";
 
@@ -40,6 +40,17 @@ export const SupportDialog = ({ open, onClose }) => {
                         <div className="option-text">
                             <span className="option-title">{t("support.discord.title")}</span>
                             <span className="option-desc">{t("support.discord.description")}</span>
+                        </div>
+                        <Icon path={mdiOpenInNew} className="option-arrow" />
+                    </div>
+
+                    <div className="support-option" onClick={() => openUrl(DOCS_URL)}>
+                        <div className="option-icon">
+                            <Icon path={siDocumentation.path} />
+                        </div>
+                        <div className="option-text">
+                            <span className="option-title">{t("support.docs.title")}</span>
+                            <span className="option-desc">{t("support.docs.description")}</span>
                         </div>
                         <Icon path={mdiOpenInNew} className="option-arrow" />
                     </div>
