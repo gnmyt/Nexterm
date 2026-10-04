@@ -1,7 +1,7 @@
 import "./styles.sass";
 import { DialogProvider } from "@/common/components/Dialog";
 import Icon from "@mdi/react";
-import { mdiBugOutline, mdiBookOpenVariantOutline, mdiOpenInNew } from "@mdi/js";
+import { mdiBugOutline, mdiBookOpenBlankVariantOutline, mdiOpenInNew } from "@mdi/js";
 import { siDiscord, siGithub } from "simple-icons";
 import { DISCORD_URL, DOCS_URL, GITHUB_URL } from "@/App.jsx";
 import { useTranslation } from "react-i18next";
@@ -46,7 +46,7 @@ export const SupportDialog = ({ open, onClose }) => {
 
                     <div className="support-option" onClick={() => openUrl(DOCS_URL)}>
                         <div className="option-icon">
-                            <Icon path={mdiBookOpenVariantOutline} />
+                            <Icon path={mdiBookOpenBlankVariantOutline} />
                         </div>
                         <div className="option-text">
                             <span className="option-title">{t("support.docs.title")}</span>
