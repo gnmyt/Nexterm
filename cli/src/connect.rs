@@ -1,6 +1,6 @@
 use anyhow::Result;
 use console::style;
-use dialoguer::Select;
+use dialoguer::{Input, Select};
 use crate::api::{ApiClient, flatten_entries};
 use crate::entries::resolve_entry;
 use crate::terminal;
@@ -19,10 +19,25 @@ async fn setup(target: &str) -> Result<(ApiClient, u64, Option<u64>, String)> {
     Ok((client, entry_id, identity_id, entry.name().to_string()))
 }
 
-pub async fn interactive(target: &str) -> Result<()> {
+pub fn prompt_reason() -> Result<String> {
+    let reason: String = Input::new().with_prompt("Connection reason").interact_text()?;
+    let trimmed = reason.trim().to_string();
+    if trimmed.is_empty() { anyhow::bail!("Connection reason is required"); }
+    Ok(trimmed)
+}
+
+pub async fn interactive(target: &str, reason: Option<String>) -> Result<()> {
     let (client, entry_id, identity_id, name) = setup(target).await?;
     println!("Connecting to {} ...", style(&name).bold().green());
-    let conn = client.create_connection(entry_id, identity_id).await?;
+    let mut reason = reason.map(|r| r.trim().to_string()).filter(|r| !r.is_empty());
+    let conn = match client.create_connection(entry_id, identity_id, reason.as_deref()).await {
+        Ok(conn) => conn,
+        Err(e) if reason.is_none() && e.to_string().contains("Connection reason required") => {
+            reason = Some(prompt_reason()?);
+            client.create_connection(entry_id, identity_id, reason.as_deref()).await?
+        }
+        Err(e) => return Err(e),
+    };
     terminal::run_session(&client.ws_url(&conn.session_id)?).await?;
     println!("Connection closed.");
     Ok(())

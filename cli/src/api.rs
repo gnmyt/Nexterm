@@ -194,12 +194,26 @@ impl ApiClient {
     pub async fn list_entries(&self) -> Result<Vec<Entry>> { self.get_authed("/entries/list").await }
     pub async fn list_identities(&self) -> Result<Vec<Identity>> { self.get_authed("/identities/list").await }
 
-    pub async fn create_connection(&self, entry_id: u64, identity_id: Option<u64>) -> Result<CreateConnectionResponse> {
+    async fn response_error(resp: reqwest::Response, prefix: &str) -> String {
+        let status = resp.status();
+        let body = resp.text().await.unwrap_or_default();
+        let detail = serde_json::from_str::<serde_json::Value>(&body)
+            .ok()
+            .and_then(|v| v.get("error").or_else(|| v.get("message")).and_then(|e| e.as_str()).map(|s| s.to_string()))
+            .filter(|s| !s.is_empty())
+            .unwrap_or_else(|| {
+                let trimmed = body.trim();
+                if trimmed.is_empty() { status.to_string() } else { format!("{trimmed} ({status})") }
+            });
+        format!("{prefix}: {detail}")
+    }
+
+    pub async fn create_connection(&self, entry_id: u64, identity_id: Option<u64>, reason: Option<&str>) -> Result<CreateConnectionResponse> {
         let resp = self.client.post(self.url("/connections"))
             .header("Authorization", self.auth()?)
-            .json(&serde_json::json!({"entryId": entry_id, "identityId": identity_id}))
+            .json(&serde_json::json!({"entryId": entry_id, "identityId": identity_id, "connectionReason": reason}))
             .send().await?;
-        if !resp.status().is_success() { bail!("Failed to create connection: {}", resp.status()); }
+        if !resp.status().is_success() { bail!("{}", Self::response_error(resp, "Failed to create connection").await); }
         Ok(resp.json().await?)
     }
 
@@ -210,7 +224,7 @@ impl ApiClient {
             .header("Authorization", self.auth()?)
             .json(&serde_json::json!({"command": command}))
             .send().await?;
-        if !resp.status().is_success() { bail!("Exec failed: {}", resp.status()); }
+        if !resp.status().is_success() { bail!("{}", Self::response_error(resp, "Exec failed").await); }
         Ok(resp.json().await?)
     }
 

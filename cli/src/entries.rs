@@ -89,7 +89,7 @@ fn entry_label(e: &Entry) -> String {
     format!("{} [{}] {}", e.name(), e.protocol(), e.ip())
 }
 
-pub async fn search(query: &str, command: Option<&str>) -> Result<()> {
+pub async fn search(query: &str, command: Option<&str>, reason: Option<String>) -> Result<()> {
     let client = ApiClient::from_config()?;
     let entries = client.list_entries().await?;
     let connectable: Vec<&Entry> = flatten_entries(&entries).into_iter().filter(|e| e.is_terminal()).collect();
@@ -105,7 +105,7 @@ pub async fn search(query: &str, command: Option<&str>) -> Result<()> {
     let id = entry.id_num().ok_or_else(|| anyhow::anyhow!("Invalid entry"))?.to_string();
     match command {
         Some(cmd) => connect::exec(&id, cmd).await,
-        None => connect::interactive(&id).await,
+        None => connect::interactive(&id, reason).await,
     }
 }
 
@@ -118,7 +118,7 @@ pub async fn recent() -> Result<()> {
     let items: Vec<String> = connectable.iter().map(|e| entry_label(e)).collect();
     let sel = Select::new().with_prompt("Select a server").items(&items).default(0).interact()?;
     let id = connectable[sel].id_num().ok_or_else(|| anyhow::anyhow!("Invalid entry"))?.to_string();
-    connect::interactive(&id).await
+    connect::interactive(&id, None).await
 }
 
 pub fn resolve_entry<'a>(flat: &[&'a Entry], target: &str) -> Result<&'a Entry> {
