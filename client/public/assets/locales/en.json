@@ -2116,6 +2116,10 @@
       "title": "Join Discord",
       "description": "Chat with the community and get help."
     },
+    "docs": {
+      "title": "View Documentation",
+      "description": "Read the documentation and learn how to use Nexterm."
+    },
     "github": {
       "title": "View on GitHub",
       "description": "Browse source code and contribute."
