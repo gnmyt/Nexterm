@@ -28,7 +28,7 @@
     "express-ws": "^5.0.2",
     "flatbuffers": "^25.9.23",
     "joi": "^18.2.9",
-    "js-yaml": "^5.4.1",
+    "js-yaml": "^5.4.2",
     "ldapts": "^9.0.0",
     "mysql2": "^3.24.4",
     "openid-client": "^6.8.8",
