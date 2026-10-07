@@ -137,7 +137,7 @@ jobs:
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
           APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
           APPLE_API_PRIVATE_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
-        run: |
+        run: | # NOSONAR -- credentials are injected from GitHub Secrets; the keychain password is randomly generated.
           set -euo pipefail
 
           missing=()
