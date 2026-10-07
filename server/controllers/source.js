@@ -211,6 +211,7 @@ module.exports.syncSource = async (sourceId) => {
         let snippetCount = 0;
         let scriptCount = 0;
         let themeCount = 0;
+        let incompleteFetches = 0;
 
         const processedSnippetNames = new Set();
         const processedScriptNames = new Set();
@@ -235,7 +236,13 @@ module.exports.syncSource = async (sourceId) => {
 
             const content = await fetchSourceFile(source.url, indexSnippet.path);
             if (!content) {
+                incompleteFetches++;
                 logger.warn(`Failed to fetch snippet: ${indexSnippet.path}`);
+                const fallbackName = indexSnippet.path.split("/").pop().replace(/\.[^.]+$/, "");
+                if (existingSnippetMap.has(fallbackName)) {
+                    processedSnippetNames.add(fallbackName);
+                    snippetCount++;
+                }
                 continue;
             }
 
@@ -284,7 +291,13 @@ module.exports.syncSource = async (sourceId) => {
 
             const content = await fetchSourceFile(source.url, indexScript.path);
             if (!content) {
+                incompleteFetches++;
                 logger.warn(`Failed to fetch script: ${indexScript.path}`);
+                const fallbackName = indexScript.path.split("/").pop().replace(/\.[^.]+$/, "");
+                if (existingScriptMap.has(fallbackName)) {
+                    processedScriptNames.add(fallbackName);
+                    scriptCount++;
+                }
                 continue;
             }
 
@@ -333,7 +346,13 @@ module.exports.syncSource = async (sourceId) => {
 
             const content = await fetchSourceFile(source.url, indexTheme.path);
             if (!content) {
+                incompleteFetches++;
                 logger.warn(`Failed to fetch theme: ${indexTheme.path}`);
+                const fallbackName = indexTheme.path.split("/").pop().replace(/\.theme\.css$/i, "");
+                if (existingThemeMap.has(fallbackName)) {
+                    processedThemeNames.add(fallbackName);
+                    themeCount++;
+                }
                 continue;
             }
 
@@ -360,28 +379,40 @@ module.exports.syncSource = async (sourceId) => {
             themeCount++;
         }
 
-        for (const [name, snippet] of existingSnippetMap) {
-            if (!processedSnippetNames.has(name)) {
-                await Snippet.destroy({ where: { id: snippet.id } });
+        // Only remove stale synced items after a complete fetch pass. A transient
+        // download failure must not delete existing snippets/scripts/themes.
+        if (incompleteFetches > 0) {
+            logger.warn(`Skipping source cleanup for ${source.name}: ${incompleteFetches} file fetch failure(s); preserving existing content`);
+        } else {
+            for (const [name, snippet] of existingSnippetMap) {
+                if (!processedSnippetNames.has(name)) {
+                    await Snippet.destroy({ where: { id: snippet.id } });
+                }
             }
-        }
-        for (const [name, script] of existingScriptMap) {
-            if (!processedScriptNames.has(name)) {
-                await Script.destroy({ where: { id: script.id } });
+            for (const [name, script] of existingScriptMap) {
+                if (!processedScriptNames.has(name)) {
+                    await Script.destroy({ where: { id: script.id } });
+                }
             }
-        }
-        for (const [name, theme] of existingThemeMap) {
-            if (!processedThemeNames.has(name)) {
-                await Theme.destroy({ where: { id: theme.id } });
+            for (const [name, theme] of existingThemeMap) {
+                if (!processedThemeNames.has(name)) {
+                    await Theme.destroy({ where: { id: theme.id } });
+                }
             }
         }
 
         await Source.update({
-            lastSyncStatus: "success",
+            lastSyncStatus: incompleteFetches > 0 ? "error" : "success",
             snippetCount,
             scriptCount,
             themeCount,
         }, { where: { id: sourceId } });
+
+        if (incompleteFetches > 0) {
+            const error = `Sync incomplete: ${incompleteFetches} file(s) failed to download; existing content preserved`;
+            logger.warn(`Source sync incomplete: ${source.name} - ${error}`);
+            return { success: false, error };
+        }
 
         logger.info(`Source sync completed: ${source.name} - ${snippetCount} snippets, ${scriptCount} scripts, ${themeCount} themes`);
         return { success: true };
