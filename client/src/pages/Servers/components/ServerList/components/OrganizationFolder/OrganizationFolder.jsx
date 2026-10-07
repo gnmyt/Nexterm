@@ -35,7 +35,7 @@ const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, c
                 }
 
                 if (item.type === "folder") {
-                    await patchRequest(`folders/${item.id}`, { 
+                    await patchRequest(`folders/${item.id}/reposition`, {
                         parentId: null,
                         organizationId: parseInt(orgId)
                     });
