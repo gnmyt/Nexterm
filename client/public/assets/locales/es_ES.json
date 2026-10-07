@@ -186,6 +186,11 @@
       "connection": {
         "title": "Error de conexión",
         "close": "Cerrar pestaña",
+        "reconnect": "Reconnect",
+        "reconnectNow": "Reconnect",
+        "reconnecting": "Reconnecting…",
+        "reconnectingIn": "Reconnecting in {{seconds}}s",
+        "reconnectAttempt": "attempt {{count}} of {{max}}",
         "hostUnreachable": "Host remoto inalcanzable",
         "refused": "Conexión rechazada por el host remoto",
         "timeout": "Conexión interrumpida",
@@ -195,7 +200,10 @@
         "closedUnexpectedly": "Conexión cerrada inesperadamente",
         "error": "Se ha producido un error de conexión",
         "scriptClosedUnexpectedly": "Conexión de script cerrada inesperadamente",
-        "scriptError": "Se ha producido un error de conexión del script"
+        "scriptError": "Se ha producido un error de conexión del script",
+        "rdpSessionConflict": "The session was disconnected by the server because another connection was opened.",
+        "rdpSessionTimeout": "The RDP session was disconnected because its session time limit was reached.",
+        "rdpSessionClosed": "The RDP session was ended by the remote server or an administrator."
       }
     },
     "messages": {
@@ -903,7 +911,11 @@
         },
         "copy": {
           "title": "Copia",
-          "description": "Copiar el texto seleccionado al portapapeles"
+          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+        },
+        "paste": {
+          "title": "Paste",
+          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
         },
         "fullscreen": {
           "title": "Pantalla completa",
@@ -918,6 +930,7 @@
         "pressKeys": "Pulsa las teclas...",
         "save": "Guarda",
         "cancel": "Cancela",
+        "disabled": "Disabled",
         "reset": "Restablece"
       },
       "messages": {
@@ -953,8 +966,19 @@
       "input": {
         "title": "Entrada",
         "description": "Controla cómo funcionan los atajos de teclado dentro del terminal.",
-        "smartCopyPaste": "Ctrl+C inteligente",
+        "copyPasteBehavior": "Copy/Paste Behavior",
+        "copyPasteBehaviorNone": "None",
+        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
+        "copyPasteBehaviorSmart": "Smart Ctrl+C",
+        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
+        "copyPasteBehaviorKeyboard": "Keyboard",
+        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
+        "copyPasteBehaviorMouse": "Mouse",
+        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
+        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
+        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
         "passwordPromptDetection": "Detección de la introducción de la contraseña",
+        "autoReconnect": "Auto-reconnect",
         "enabled": "Activado",
         "disabled": "Desactivado",
         "syncEnabled": "Ahora los ajustes de entrada se sincronizarán con tu cuenta",
@@ -1047,6 +1071,8 @@
           "clientSecretPlaceholderEdit": "Dejar en blanco para mantener el existente",
           "redirectUri": "Redirigir URI",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
+          "endSessionEndpoint": "End Session Endpoint (Optional)",
+          "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
           "scope": "Alcance",
           "scopePlaceholder": "perfil openid",
           "usernameAttribute": "Atributo Nombre de usuario",
@@ -1066,6 +1092,21 @@
         },
         "messages": {
           "saveFailed": "No se ha podido guardar el proveedor"
+        },
+        "groupSync": {
+          "title": "Group Sync",
+          "hint": "Automatically add users to organizations and control access based on group claims from your identity provider.",
+          "groupsAttribute": "Groups Claim",
+          "groupsAttributePlaceholder": "groups",
+          "requiredGroup": "Required Group",
+          "requiredGroupPlaceholder": "nexterm-users",
+          "requiredGroupHint": "If set, only users whose groups claim contains this value are allowed to log in.",
+          "mappings": "Organization Mappings",
+          "mappingsHint": "Map a group claim value to an organization. Membership is kept in sync on every login.",
+          "mappingValuePlaceholder": "Group value",
+          "roleMember": "Member",
+          "roleOwner": "Owner",
+          "addMapping": "Add Mapping"
         }
       },
       "ldapDialog": {
@@ -1571,6 +1612,7 @@
       "connect": "Conecta",
       "quickConnect": "Conexión rápida",
       "openSFTP": "Abrir SFTP",
+      "openBrowser": "Open Browser",
       "forwardPort": "Puerto de reenvío",
       "runScript": "Ejecutar script",
       "openNotes": "Notas abiertas",
@@ -1607,8 +1649,17 @@
         "duplicate": "Duplicar",
         "openNotes": "Notas abiertas",
         "hibernateSession": "Hibernar",
-        "closeSession": "Desconecta"
-      }
+        "reconnect": "Reconnect",
+        "closeSession": "Desconecta",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "Paquete mágico enviado a {{name}}",
@@ -1961,6 +2012,14 @@
         "error": "Se ha producido un error"
       }
     },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
+    },
     "remoteDesktop": {
       "dropOverlay": "Arrastra los archivos para subirlos al servidor remoto",
       "toast": {
@@ -2025,7 +2084,7 @@
       "holdModifier": "Espera {{key}}",
       "zoomIn": "Acercar la imagen",
       "zoomOut": "Alejar la imagen",
-      "zoomReset": "Restablecer el zoom para ajustar la imagen (arrastra con el botón central del ratón para desplazar la imagen)"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "Monitor {{number}}",

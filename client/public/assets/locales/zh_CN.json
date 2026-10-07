@@ -186,6 +186,11 @@
       "connection": {
         "title": "连接失败",
         "close": "关闭选项卡",
+        "reconnect": "Reconnect",
+        "reconnectNow": "Reconnect",
+        "reconnecting": "Reconnecting…",
+        "reconnectingIn": "Reconnecting in {{seconds}}s",
+        "reconnectAttempt": "attempt {{count}} of {{max}}",
         "hostUnreachable": "远程主机无法连接",
         "refused": "远程主机拒绝连接",
         "timeout": "连接超时",
@@ -195,7 +200,10 @@
         "closedUnexpectedly": "连接意外关闭",
         "error": "出现连接错误",
         "scriptClosedUnexpectedly": "脚本连接意外关闭",
-        "scriptError": "脚本连接发生错误"
+        "scriptError": "脚本连接发生错误",
+        "rdpSessionConflict": "The session was disconnected by the server because another connection was opened.",
+        "rdpSessionTimeout": "The RDP session was disconnected because its session time limit was reached.",
+        "rdpSessionClosed": "The RDP session was ended by the remote server or an administrator."
       }
     },
     "messages": {
@@ -903,7 +911,11 @@
         },
         "copy": {
           "title": "复制",
-          "description": "将选中文本复制到剪贴板"
+          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+        },
+        "paste": {
+          "title": "Paste",
+          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
         },
         "fullscreen": {
           "title": "全屏",
@@ -918,6 +930,7 @@
         "pressKeys": "按下按键...",
         "save": "保存",
         "cancel": "取消",
+        "disabled": "Disabled",
         "reset": "重置"
       },
       "messages": {
@@ -953,8 +966,19 @@
       "input": {
         "title": "输入",
         "description": "控制键盘快捷键在终端中的行为。",
-        "smartCopyPaste": "智能 Ctrl+C",
+        "copyPasteBehavior": "Copy/Paste Behavior",
+        "copyPasteBehaviorNone": "None",
+        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
+        "copyPasteBehaviorSmart": "Smart Ctrl+C",
+        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
+        "copyPasteBehaviorKeyboard": "Keyboard",
+        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
+        "copyPasteBehaviorMouse": "Mouse",
+        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
+        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
+        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
         "passwordPromptDetection": "密码输入检测",
+        "autoReconnect": "Auto-reconnect",
         "enabled": "已启用",
         "disabled": "已禁用",
         "syncEnabled": "输入设置现已同步到您的账户",
@@ -1047,6 +1071,8 @@
           "clientSecretPlaceholderEdit": "留空表示保留现有密钥",
           "redirectUri": "重定向 URI",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback  ",
+          "endSessionEndpoint": "End Session Endpoint (Optional)",
+          "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
           "scope": "范围",
           "scopePlaceholder": "openid profile",
           "usernameAttribute": "用户名属性",
@@ -1066,6 +1092,21 @@
         },
         "messages": {
           "saveFailed": "保存提供程序失败"
+        },
+        "groupSync": {
+          "title": "Group Sync",
+          "hint": "Automatically add users to organizations and control access based on group claims from your identity provider.",
+          "groupsAttribute": "Groups Claim",
+          "groupsAttributePlaceholder": "groups",
+          "requiredGroup": "Required Group",
+          "requiredGroupPlaceholder": "nexterm-users",
+          "requiredGroupHint": "If set, only users whose groups claim contains this value are allowed to log in.",
+          "mappings": "Organization Mappings",
+          "mappingsHint": "Map a group claim value to an organization. Membership is kept in sync on every login.",
+          "mappingValuePlaceholder": "Group value",
+          "roleMember": "Member",
+          "roleOwner": "Owner",
+          "addMapping": "Add Mapping"
         }
       },
       "ldapDialog": {
@@ -1571,6 +1612,7 @@
       "connect": "连接",
       "quickConnect": "快速连接",
       "openSFTP": "打开 SFTP",
+      "openBrowser": "Open Browser",
       "forwardPort": "转发端口",
       "runScript": "运行脚本",
       "openNotes": "公开说明",
@@ -1607,8 +1649,17 @@
         "duplicate": "复制",
         "openNotes": "公开说明",
         "hibernateSession": "休眠",
-        "closeSession": "断开连接"
-      }
+        "reconnect": "Reconnect",
+        "closeSession": "断开连接",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "魔法数据包发送至 {{name}}",
@@ -1961,6 +2012,14 @@
         "error": "发生错误"
       }
     },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
+    },
     "remoteDesktop": {
       "dropOverlay": "将文件拖放到此处以上传至远程服务器",
       "toast": {
@@ -2025,7 +2084,7 @@
       "holdModifier": "保持 {{key}}",
       "zoomIn": "放大",
       "zoomOut": "缩小",
-      "zoomReset": "将缩放比例重置为“适应视图”（按住鼠标中键拖动可平移）"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "显示器 {{number}}",
