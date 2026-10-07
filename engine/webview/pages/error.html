@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{{URL}}</title>
+    <style>{{STYLE}}</style>
+</head>
+<body>
+<div class="wrap">
+    <svg class="icon" viewBox="0 0 72 72" fill="none" stroke="currentColor" stroke-width="4">
+        <path d="M14 4h28l16 16v48H14z"/>
+        <path d="M42 4v18h16"/>
+        <path d="M26 38h20"/>
+    </svg>
+    <h1>This page could not be loaded</h1>
+    <p>The page at <span class="url">{{URL}}</span> could not be reached.</p>
+    <p>{{MESSAGE}}</p>
+    <div class="code">{{CODE}}</div>
+    <button data-url="{{URL}}" onclick="location.href=this.dataset.url">Reload</button>
+</div>
+</body>
+</html>

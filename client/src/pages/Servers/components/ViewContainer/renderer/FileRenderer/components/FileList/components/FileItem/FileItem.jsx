@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
 import { mdiDotsVertical, mdiFolder, mdiLinkVariant } from "@mdi/js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
+import Tooltip from "@/common/components/Tooltip";
 import { getBaseUrl } from "@/common/utils/ConnectionUtil.js";
 import {
     getExtension, getIconByFileEnding, getIconColor, convertUnits, isThumbnailSupported,
@@ -20,6 +21,7 @@ export const FileItem = memo(({
                                   isBeingDragged,
                                   isDropTarget,
                                   isCut,
+                                  isDimmed,
                                   showThumbnails,
                                   highlight,
                                   renameValue,
@@ -29,6 +31,7 @@ export const FileItem = memo(({
                                   onClick,
                                   onContextMenu,
                                   onDotsClick,
+                                  onDotsPointerDown,
                                   onDragStart,
                                   onDragEnd,
                                   onDragOver,
@@ -71,6 +74,7 @@ export const FileItem = memo(({
         isBeingDragged && "dragging",
         isDropTarget && "drop-target",
         isCut && "cut",
+        isDimmed && "dimmed",
     ].filter(Boolean).join(" ");
 
     return (
@@ -114,17 +118,20 @@ export const FileItem = memo(({
                         autoFocus
                     />
                 ) : (
-                    <h2 title={item.name}>{renderName()}</h2>
+                    <Tooltip text={item.name} delay={500} asChild>
+                        <h2>{renderName()}</h2>
+                    </Tooltip>
                 )}
                 {item.isSymlink && <span className="symlink-badge"><Icon path={mdiLinkVariant} />{t("servers.fileManager.item.link")}</span>}
             </div>
             {viewMode === "list" && (
                 <>
                     <p className="file-size">{item.type === "file" && convertUnits(item.size)}</p>
-                    <p className="file-permissions"
-                       title={`${formatOctal(item.mode)} - ${formatPermissionsString(item.mode)}`}>
-                        <span className="perms-text">{formatPermissionsString(item.mode)}</span>
-                    </p>
+                    <Tooltip text={`${formatOctal(item.mode)} - ${formatPermissionsString(item.mode)}`} delay={500} asChild>
+                        <p className="file-permissions">
+                            <span className="perms-text">{formatPermissionsString(item.mode)}</span>
+                        </p>
+                    </Tooltip>
                     <p className="file-date">{new Date(item.last_modified * 1000).toLocaleDateString()}</p>
                 </>
             )}
@@ -132,6 +139,7 @@ export const FileItem = memo(({
                 path={mdiDotsVertical}
                 className="dots-menu"
                 onClick={onDotsClick}
+                onPointerDown={onDotsPointerDown}
             />
         </div>
     );

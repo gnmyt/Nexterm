@@ -87,6 +87,12 @@ const buildVncParams = async (cfg, identity) => {
     return params;
 };
 
+const buildWebParams = (vncPort) => ({
+    hostname: "127.0.0.1",
+    port: String(vncPort),
+    "color-depth": "24",
+});
+
 const buildDemoParams = async () => ({});
 
-module.exports = { buildPveQemuParams, buildRdpParams, buildVncParams, buildDemoParams };
+module.exports = { buildPveQemuParams, buildRdpParams, buildVncParams, buildWebParams, buildDemoParams };

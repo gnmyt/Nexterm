@@ -1,0 +1,77 @@
+@use "@/common/styles/colors"
+
+.session-overlay-zone
+  position: fixed
+  top: var(--title-bar-height, 0px)
+  left: 0
+  right: 0
+  height: 8px
+  z-index: 8999
+
+.session-overlay-bar
+  position: fixed
+  top: var(--title-bar-height, 0px)
+  left: 50%
+  z-index: 9000
+  display: flex
+  align-items: center
+  gap: 0.5rem
+  padding: 0.3rem 0.5rem
+  border: 1px solid colors.$dark-gray
+  border-top: none
+  border-radius: 0 0 0.75rem 0.75rem
+  background-color: colors.$lighter-background
+  box-shadow: colors.$shadow-lg
+  user-select: none
+  transform: translate(-50%, -100%)
+  opacity: 0
+  transition: transform 0.2s ease, opacity 0.2s ease
+
+  .session-overlay-zone:hover ~ &, &:hover, &.pinned
+    transform: translate(-50%, 0)
+    opacity: 1
+
+  &__title
+    display: flex
+    align-items: center
+    gap: 0.4rem
+    padding: 0 0.35rem
+    color: colors.$white
+    font-size: 0.85rem
+    font-weight: 600
+    white-space: nowrap
+
+    svg
+      width: 1rem
+      height: 1rem
+      color: colors.$subtext
+
+  &__actions
+    display: flex
+    align-items: center
+    gap: 0.15rem
+    margin-left: 0.25rem
+    padding-left: 0.5rem
+    border-left: 1px solid colors.$gray
+
+  &__button
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 1.75rem
+    height: 1.75rem
+    padding: 0
+    border: none
+    border-radius: 0.4rem
+    background-color: transparent
+    color: colors.$subtext
+    cursor: pointer
+    transition: background-color 0.1s ease-out, color 0.1s ease-out
+
+    svg
+      width: 1.1rem
+      height: 1.1rem
+
+    &:hover, &.active
+      background-color: colors.$gray
+      color: colors.$white

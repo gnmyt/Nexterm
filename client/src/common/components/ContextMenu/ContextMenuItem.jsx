@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Icon from "@mdi/react";
-import { mdiChevronRight, mdiChevronDown } from "@mdi/js";
+import { mdiChevronRight, mdiChevronDown, mdiCheck } from "@mdi/js";
 
 export const ContextMenuItem = ({
     icon,
@@ -11,6 +11,7 @@ export const ContextMenuItem = ({
     children,
     customContent = null,
     danger = false,
+    checked = false,
 }) => {
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
     const itemRef = useRef(null);
@@ -149,6 +150,7 @@ export const ContextMenuItem = ({
         >
             {icon && (typeof icon === "string" ? <Icon path={icon} className="menu-icon" /> : <span className="menu-icon">{icon}</span>)}
             <span className="menu-label">{label}</span>
+            {checked && !hasSubmenu && <Icon path={mdiCheck} className="menu-check" />}
             {hasSubmenu && (
                 <>
                     <Icon path={isMobile ? mdiChevronDown : mdiChevronRight} className={`submenu-arrow ${isSubmenuOpen ? "open" : ""}`} />

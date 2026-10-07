@@ -1,0 +1,61 @@
+name: PR template guard (stale)
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+env:
+  LABEL: "incomplete template"
+  GRACE_DAYS: 14
+
+jobs:
+  close:
+    runs-on: ubuntu-latest
+    if: github.repository == 'gnmyt/Nexterm'
+    steps:
+      - name: Close pull requests with an unfinished template
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          cutoff=$(( $(date +%s) - GRACE_DAYS * 86400 ))
+
+          gh pr list --repo "$REPO" --state open --label "$LABEL" --limit 100 \
+            --json number,isDraft,author \
+            --jq '.[] | select(.isDraft | not) | "\(.number) \(.author.login)"' > prs.txt
+
+          while read -r number author; do
+            [ -z "$number" ] && continue
+
+            labeled_at=$(gh api --paginate "repos/$REPO/issues/$number/timeline" \
+              --jq "[.[] | select(.event == \"labeled\" and .label.name == \"$LABEL\") | .created_at] | last")
+
+            if [ -z "$labeled_at" ] || [ "$labeled_at" = "null" ]; then
+              echo "PR #$number: no label event found, skipping."
+              continue
+            fi
+
+            if [ "$(date -d "$labeled_at" +%s)" -gt "$cutoff" ]; then
+              echo "PR #$number: still within the grace period."
+              continue
+            fi
+
+            echo "PR #$number: labeled at $labeled_at, closing."
+
+            {
+              echo "<!-- pr-template-guard-stale -->"
+              echo "Hey @$author, we haven't heard back on this one, so we're closing it for now."
+              echo
+              echo "The pull request template is still incomplete after $GRACE_DAYS days. Feel free to fill it in"
+              echo "and reopen whenever you get the chance, we're happy to take another look."
+            } > comment.md
+
+            gh pr comment "$number" --repo "$REPO" --body-file comment.md
+            gh pr close "$number" --repo "$REPO"
+          done < prs.txt

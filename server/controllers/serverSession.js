@@ -12,12 +12,14 @@ const { Permission } = require("../permissions/registry");
 const Organization = require('../models/Organization');
 const logger = require("../utils/logger");
 const stateBroadcaster = require("../lib/StateBroadcaster");
+const reconnectOperations = new Map();
 
 const ENTRY_TYPE_TO_AUDIT_ACTION = {
     'ssh': AUDIT_ACTIONS.SSH_CONNECT,
     'telnet': AUDIT_ACTIONS.SSH_CONNECT,
     'rdp': AUDIT_ACTIONS.RDP_CONNECT,
     'vnc': AUDIT_ACTIONS.VNC_CONNECT,
+    'web': AUDIT_ACTIONS.WEB_CONNECT,
     'demo': AUDIT_ACTIONS.DEMO_CONNECT,
     'pve-lxc': AUDIT_ACTIONS.PVE_CONNECT,
     'pve-shell': AUDIT_ACTIONS.PVE_CONNECT,
@@ -32,6 +34,7 @@ const ENTRY_TYPE_TO_CONNECT_PERMISSION = {
     'telnet': Permission.CONNECT_SSH,
     'rdp': Permission.CONNECT_RDP,
     'vnc': Permission.CONNECT_VNC,
+    'web': Permission.CONNECT_WEB,
     'demo': Permission.CONNECT_VNC,
     'pve-lxc': Permission.CONNECT_PROXMOX,
     'pve-shell': Permission.CONNECT_PROXMOX,
@@ -41,20 +44,39 @@ const ENTRY_TYPE_TO_CONNECT_PERMISSION = {
     'ftps': Permission.FILES_VIEW,
 };
 
-const getAuditAction = (entry, scriptId) => {
+const getAuditAction = (entry, type, scriptId) => {
     if (scriptId) return AUDIT_ACTIONS.SCRIPT_EXECUTE;
-    const type = entry.type === 'server' ? entry.config?.protocol : entry.type;
-    return ENTRY_TYPE_TO_AUDIT_ACTION[type] || AUDIT_ACTIONS.SSH_CONNECT;
+    if (type === "web") return AUDIT_ACTIONS.WEB_CONNECT;
+    const entryType = entry.type === 'server' ? entry.config?.protocol : entry.type;
+    return ENTRY_TYPE_TO_AUDIT_ACTION[entryType] || AUDIT_ACTIONS.SSH_CONNECT;
 };
 
 const getRequiredConnectPermission = (entry, type, scriptId) => {
     if (scriptId) return Permission.SCRIPTS_EXECUTE;
     if (type === "sftp") return Permission.FILES_VIEW;
+    if (type === "web") return Permission.CONNECT_WEB;
     const entryType = entry.type === 'server' ? entry.config?.protocol : entry.type;
     return ENTRY_TYPE_TO_CONNECT_PERMISSION[entryType] || Permission.CONNECT_SSH;
 };
 
-const createSession = async (accountId, entryId, identityId, connectionReason, type = null, directIdentity = null, tabId = null, browserId = null, scriptId = null, startPath = null, ipAddress = null, userAgent = null) => {
+const createSession = async ({
+    accountId,
+    entryId,
+    identityId,
+    connectionReason,
+    type = null,
+    directIdentity = null,
+    tabId = null,
+    browserId = null,
+    displayDpi = 96,
+    scriptId = null,
+    startPath = null,
+    ipAddress = null,
+    userAgent = null,
+    sessionId = null,
+    broadcast = true,
+    connectionGeneration = 0,
+}) => {
     const entry = await Entry.findByPk(entryId);
     if (!entry) {
         return { code: 404, message: "Entry not found" };
@@ -91,7 +113,7 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
     const auditLogId = await createAuditLog({
         accountId,
         organizationId: entry.organizationId,
-        action: getAuditAction(entry, scriptId),
+        action: getAuditAction(entry, type, scriptId),
         resource: scriptId ? RESOURCE_TYPES.SCRIPT : RESOURCE_TYPES.ENTRY,
         resourceId: scriptId || entry.id,
         details: { connectionReason, ...(scriptId && { serverId: entry.id }) },
@@ -99,19 +121,35 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
         userAgent,
     });
 
+    const renderer = type === "sftp" || type === "web" ? type : entry.renderer;
+
     const configuration = {
         identityId: identity ? identity.id : null,
         type: type || null,
         directIdentity: directIdentity || null,
+        displayDpi,
         scriptId: scriptId || null,
         startPath: startPath || null,
-        renderer: type === "sftp" ? "sftp" : entry.renderer,
+        renderer,
     };
 
-    const session = SessionManager.create(accountId, entryId, configuration, connectionReason, tabId, browserId, auditLogId, entry.organizationId);
+    const session = SessionManager.create({
+        accountId,
+        entryId,
+        configuration,
+        connectionReason,
+        tabId,
+        browserId,
+        auditLogId,
+        organizationId: entry.organizationId,
+        sessionId: sessionId || undefined,
+        connectionGeneration,
+    });
 
-    stateBroadcaster.broadcast("CONNECTIONS", { accountId });
-    if (entry.organizationId) stateBroadcaster.broadcast("LIVE_SESSIONS", { organizationId: entry.organizationId });
+    if (broadcast) {
+        stateBroadcaster.broadcast("CONNECTIONS", { accountId });
+        if (entry.organizationId) stateBroadcaster.broadcast("LIVE_SESSIONS", { organizationId: entry.organizationId });
+    }
 
     createConnectionForSession(session.sessionId, accountId)
         .then(() => {
@@ -127,7 +165,56 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
             SessionManager.remove(session.sessionId, { code: 4017, reason: error.message });
         });
 
-    return { sessionId: session.sessionId };
+    return { sessionId: session.sessionId, connectionGeneration: session.connectionGeneration };
+};
+
+const reconnectSession = ({ accountId, sessionId, ...options }) => {
+    const pending = reconnectOperations.get(sessionId);
+    if (pending) {
+        return pending.accountId === accountId
+            ? pending.operation
+            : Promise.resolve({ code: 403, message: "Access denied" });
+    }
+
+    const operation = (async () => {
+        const expectedGeneration = options.connectionGeneration ?? 0;
+        const existing = SessionManager.get(sessionId);
+        if (existing?.accountId !== undefined && existing.accountId !== accountId) {
+            return { code: 403, message: "Access denied" };
+        }
+        if (existing?.connectionGeneration > expectedGeneration) {
+            return { sessionId, connectionGeneration: existing.connectionGeneration };
+        }
+        if (existing && existing.connectionGeneration !== expectedGeneration) {
+            return { code: 409, message: "Session generation mismatch" };
+        }
+        if (existing && existing.entryId !== options.entryId) {
+            return { code: 400, message: "Session entry cannot be changed" };
+        }
+
+        if (existing) await SessionManager.remove(sessionId, { broadcast: false });
+        SessionManager.clearFailedReason(sessionId);
+
+        const result = await createSession({
+            accountId,
+            sessionId,
+            ...options,
+            broadcast: false,
+            connectionGeneration: expectedGeneration + 1,
+        });
+        const current = SessionManager.get(sessionId);
+        const organizationId = current?.organizationId || existing?.organizationId;
+
+        stateBroadcaster.broadcast("CONNECTIONS", { accountId });
+        if (organizationId) stateBroadcaster.broadcast("LIVE_SESSIONS", { organizationId });
+        return result;
+    })();
+
+    const trackedOperation = operation.finally(() => {
+        if (reconnectOperations.get(sessionId)?.operation === trackedOperation) reconnectOperations.delete(sessionId);
+    });
+    reconnectOperations.set(sessionId, { accountId, operation: trackedOperation });
+    return trackedOperation;
 };
 
 const getSessions = async (accountId, tabId = null, browserId = null) => {
@@ -160,6 +247,7 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
         const { directIdentity, ...safeConfiguration } = session.configuration;
         return {
             sessionId: session.sessionId,
+            connectionGeneration: session.connectionGeneration,
             entryId: session.entryId,
             configuration: safeConfiguration,
             isHibernated: session.isHibernated,
@@ -291,23 +379,24 @@ const duplicateSession = async (accountId, sessionId, tabId = null, browserId = 
 
     const config = session.configuration || {};
     
-    return await createSession(
+    return await createSession({
         accountId,
-        session.entryId,
-        config.identityId,
-        null,
-        config.type,
-        config.directIdentity,
+        entryId: session.entryId,
+        identityId: config.identityId,
+        connectionReason: null,
+        type: config.type,
+        directIdentity: config.directIdentity,
         tabId,
         browserId,
-        config.scriptId,
-        config.startPath || null,
+        displayDpi: config.displayDpi,
+        scriptId: config.scriptId,
+        startPath: config.startPath || null,
         ipAddress,
-        userAgent
-    );
+        userAgent,
+    });
 };
 
-const pasteIdentityPassword = async (accountId, sessionId, ipAddress = null, userAgent = null, requestedIdentityId = null) => {
+const pasteIdentityPassword = async (accountId, sessionId, ipAddress = null, userAgent = null, requestedIdentityId = null, submit = false) => {
     const { session, error } = validateSessionOwnership(accountId, sessionId);
     if (error) return error;
 
@@ -332,7 +421,7 @@ const pasteIdentityPassword = async (accountId, sessionId, ipAddress = null, use
     const entry = await Entry.findByPk(session.entryId);
 
     try {
-        connection.dataSocket.write(password);
+        connection.dataSocket.write(`${password}${submit ? "\r" : ""}`);
 
         await createAuditLog({
             accountId,
@@ -352,4 +441,4 @@ const pasteIdentityPassword = async (accountId, sessionId, ipAddress = null, use
     }
 };
 
-module.exports = { createSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword };
+module.exports = { createSession, reconnectSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword };

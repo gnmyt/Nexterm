@@ -27,6 +27,7 @@ const Permission = Object.freeze({
     CONNECT_SSH: "connect.ssh",
     CONNECT_RDP: "connect.rdp",
     CONNECT_VNC: "connect.vnc",
+    CONNECT_WEB: "connect.web",
     CONNECT_PROXMOX: "connect.proxmox",
     CONNECT_TUNNEL: "connect.tunnel",
     FILES_VIEW: "files.view",
@@ -88,6 +89,7 @@ const PERMISSIONS = [
     { id: P.CONNECT_SSH, scopes: BOTH, category: "connections", default: true, label: "Connect via SSH / Telnet", description: "Open terminal sessions to servers." },
     { id: P.CONNECT_RDP, scopes: BOTH, category: "connections", default: true, label: "Connect via RDP", description: "Open remote desktop sessions to servers." },
     { id: P.CONNECT_VNC, scopes: BOTH, category: "connections", default: true, label: "Connect via VNC", description: "Open VNC sessions to servers." },
+    { id: P.CONNECT_WEB, scopes: BOTH, category: "connections", default: true, label: "Open Browser", description: "Open an isolated browser that reaches the web through a server." },
     { id: P.CONNECT_PROXMOX, scopes: BOTH, category: "connections", default: true, label: "Connect to Proxmox", description: "Open Proxmox VM, container and shell sessions." },
     { id: P.CONNECT_TUNNEL, scopes: BOTH, category: "connections", default: true, label: "Port Forwarding", description: "Create SSH tunnels and port forwards to servers." },
 

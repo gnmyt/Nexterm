@@ -18,6 +18,7 @@ typedef enum {
     SESSION_TYPE_TUNNEL,
     SESSION_TYPE_WEBSOCKET,
     SESSION_TYPE_DEMO,
+    SESSION_TYPE_WEB,
 } session_type_t;
 
 typedef enum {
@@ -54,6 +55,7 @@ typedef struct nexterm_session {
     int join_pipe[2];
 
     void* guac_client;
+    void* web_ctx;
 
     void* ssh_session;
     void* ssh_channel;

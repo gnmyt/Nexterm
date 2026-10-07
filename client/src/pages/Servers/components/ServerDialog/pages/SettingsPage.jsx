@@ -212,11 +212,8 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
                                                 searchable={serverOptions.length > 5}
                                             />
                                         </div>
-                                        <button 
-                                            className="jump-host-remove"
-                                            onClick={() => removeJumpHost(index)}
-                                            title={t('servers.dialog.settings.jumpHosts.removeTooltip')}
-                                        >
+                                        <button className="jump-host-remove" onClick={() => removeJumpHost(index)}
+                                                aria-label={t('servers.dialog.settings.jumpHosts.removeTooltip')}>
                                             <Icon path={mdiClose} size={0.8} />
                                         </button>
                                     </div>

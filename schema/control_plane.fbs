@@ -40,6 +40,7 @@ enum SessionType : byte {
     Tunnel = 5,
     WebSocket = 6,
     Demo = 7,
+    Web = 8,
 }
 
 enum ErrorCode : byte {
@@ -99,6 +100,7 @@ table SessionOpenResult {
     error_code: ErrorCode;
     error_message: string;
     connection_id: string;
+    metadata: string;
 }
 
 table SessionClose {
