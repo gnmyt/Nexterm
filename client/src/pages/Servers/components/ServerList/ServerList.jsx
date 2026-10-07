@@ -373,7 +373,7 @@ export const ServerList = ({
             setCurrentOrganizationId(parseInt(contextClickedId.toString().split("-")[1]));
         } else {
             setCurrentFolderId(contextClickedId);
-            setCurrentOrganizationId(null);
+            setCurrentOrganizationId(contextFolder?.organizationId || null);
         }
     };
 
