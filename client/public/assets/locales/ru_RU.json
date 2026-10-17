@@ -186,7 +186,7 @@
       "connection": {
         "title": "Не удалось установить соединение",
         "close": "Закрыть вкладку",
-        "reconnect": "Reconnect",
+        "reconnect": "Переподключиться",
         "reconnectNow": "Reconnect",
         "reconnecting": "Reconnecting…",
         "reconnectingIn": "Reconnecting in {{seconds}}s",
