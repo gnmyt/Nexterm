@@ -32,15 +32,15 @@ static int mock_interactive(LIBSSH2_SESSION* s, const char* u,
     interactive_calls++;
     assert(*libssh2_session_abstract(s) != original);
     /* Deliberately not NUL-terminated. */
-    char prompt[] = {'P','a','S','s','W','o','R','d',':',' '};
+    unsigned char prompt[] = {'P','a','S','s','W','o','R','d',':',' '};
     LIBSSH2_USERAUTH_KBDINT_PROMPT prompts[2] = {
         { .text = prompt, .length = sizeof(prompt), .echo = 0 },
-        { .text = "OTP:", .length = 4, .echo = 0 }
+        { .text = (unsigned char*)"OTP:", .length = 4, .echo = 0 }
     };
     LIBSSH2_USERAUTH_KBDINT_RESPONSE responses[2] = {{0}, {0}};
     if (mode == 1) prompts[0].echo = 1;
-    if (mode == 2) { prompts[0].text = "Verification code:"; prompts[0].length = 18; }
-    if (mode == 5) { prompts[0].text = "password-reset:"; prompts[0].length = 15; }
+    if (mode == 2) { prompts[0].text = (unsigned char*)"Verification code:"; prompts[0].length = 18; }
+    if (mode == 5) { prompts[0].text = (unsigned char*)"password-reset:"; prompts[0].length = 15; }
     if (mode == 6) prompts[0].text = NULL;
     if (mode == 4) callback(NULL, 0, NULL, 0, 0, NULL, NULL, libssh2_session_abstract(s));
     callback(NULL, 0, NULL, 0, mode == 3 ? 2 : 1, prompts, responses,

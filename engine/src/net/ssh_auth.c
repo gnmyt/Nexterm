@@ -12,7 +12,7 @@ typedef struct {
 /* Only answer a password prompt, never an OTP, echoing question or multi-prompt
  * challenge. Prompt lengths come from the wire and need not be NUL-terminated. */
 static int is_password_prompt(const LIBSSH2_USERAUTH_KBDINT_PROMPT* prompt) {
-    const char* text = prompt->text;
+    const unsigned char* text = prompt->text;
     size_t len = prompt->length;
     if (prompt->echo || !text) return 0;
     while (len && isspace((unsigned char)*text)) { text++; len--; }
