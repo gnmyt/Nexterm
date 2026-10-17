@@ -1,0 +1,39 @@
+name: SSH Engine Tests
+
+on:
+  push:
+    branches: [fix/ssh-keyboard-interactive-password]
+  pull_request:
+    paths:
+      - 'engine/**'
+      - '.github/workflows/test-ssh-engine.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  authentication:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssh2-1-dev python3-paramiko
+      - name: Build and test real SSH authentication
+        run: |
+          cmake -S engine/tests -B engine/tests/build -DPython3_EXECUTABLE=/usr/bin/python3 -DCMAKE_BUILD_TYPE=Debug
+          cmake --build engine/tests/build --parallel
+          ctest --test-dir engine/tests/build --output-on-failure
+      - name: Check memory safety
+        run: |
+          cmake -S engine/tests -B engine/tests/build-asan -DPython3_EXECUTABLE=/usr/bin/python3 -DCMAKE_BUILD_TYPE=Debug '-DCMAKE_C_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer'
+          cmake --build engine/tests/build-asan --parallel
+          ctest --test-dir engine/tests/build-asan --output-on-failure
+  engine-build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build full engine with production dependencies
+        run: docker build --file Dockerfile.engine --target engine-builder --tag nexterm-engine-test .
