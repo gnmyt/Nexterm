@@ -45,6 +45,11 @@ Nexterm is an open-source server management software that allows you to:
 
 You can install Nexterm by clicking [here](https://docs.nexterm.dev/installation).
 
+## ⚡ One-Click Deploy
+
+<a href="https://repocloud.io/details/Nexterm/"><img src="https://d16t0pc4846x52.cloudfront.net/deploylobe.svg" alt="Deploy on RepoCloud" height="42"></a>
+<a href="https://railway.com/deploy/nexterm"><img src="https://railway.com/button.svg" alt="Deploy on Railway" height="42"></a>
+
 ## 💻 Development
 
 ### Prerequisites
