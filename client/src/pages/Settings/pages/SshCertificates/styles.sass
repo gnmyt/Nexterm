@@ -1,0 +1,88 @@
+@use "@/common/styles/colors"
+@use "@/common/styles/breakpoints"
+
+.ssh-ca-page
+  display: flex
+  flex-direction: column
+  gap: 1.5rem
+
+  h2
+    margin: 0
+    color: colors.$white
+    font-size: 1.3rem
+
+  .section-header
+    display: flex
+    justify-content: space-between
+    align-items: flex-start
+    gap: 1rem
+
+    p
+      margin: 0.35rem 0 0
+      color: colors.$subtext
+
+  .ca-list
+    display: flex
+    flex-direction: column
+    gap: 0.75rem
+
+  .ca-card
+    display: flex
+    justify-content: space-between
+    gap: 1rem
+    padding: 1rem
+    border: 1px solid colors.$dark-gray
+    border-radius: 0.75rem
+    background: colors.$lighter-background
+
+    h3
+      margin: 0
+
+    p
+      margin: 0.25rem 0 0
+      color: colors.$subtext
+
+  .ca-actions
+    display: flex
+    gap: 0.5rem
+
+    button
+      background: transparent
+      border: none
+      color: colors.$subtext
+      cursor: pointer
+
+  .ssh-ca-dialog
+    display: flex
+    flex-direction: column
+    gap: 1rem
+    width: min(36rem, 80vw)
+
+    textarea
+      min-height: 7rem
+      resize: vertical
+      border-radius: 0.5rem
+      border: 1px solid colors.$dark-gray
+      background: colors.$background
+      color: colors.$white
+      padding: 0.75rem
+      font-family: inherit
+
+    .form-group
+      display: flex
+      flex-direction: column
+      gap: 0.4rem
+
+      label
+        color: colors.$subtext
+        font-weight: 600
+
+    .dialog-actions
+      display: flex
+      justify-content: flex-end
+      gap: 0.75rem
+
+    .toggle-row
+      display: flex
+      align-items: center
+      justify-content: space-between

@@ -33,24 +33,45 @@ const upsertCredential = async (identityId, type, secret) => {
     existing ? (existing.secret = secret, await existing.save()) : await Credential.create({ identityId, type, secret });
 };
 
-const syncCredentials = async (identityId, type, password, sshKey, passphrase) => {
-    if (type === "password" && password) {
-        await upsertCredential(identityId, "password", password);
-        await Credential.destroy({ where: { identityId, type: { [Op.in]: ["ssh-key", "passphrase"] } } });
-    } else if (type === "password-only" && password) {
-        await upsertCredential(identityId, "password", password);
-        await Credential.destroy({ where: { identityId, type: { [Op.in]: ["ssh-key", "passphrase"] } } });
-    } else if (type === "both") {
-        if (password) await upsertCredential(identityId, "password", password);
-        if (sshKey) {
-            await upsertCredential(identityId, "ssh-key", sshKey);
-            passphrase ? await upsertCredential(identityId, "passphrase", passphrase) : await Credential.destroy({ where: { identityId, type: "passphrase" } });
-        }
-    } else if (type === "ssh" && sshKey) {
-        await upsertCredential(identityId, "ssh-key", sshKey);
-        passphrase ? await upsertCredential(identityId, "passphrase", passphrase) : await Credential.destroy({ where: { identityId, type: "passphrase" } });
-        await Credential.destroy({ where: { identityId, type: "password" } });
+const syncCertificate = async (identityId, sshCertificate) => {
+    if (sshCertificate === undefined || sshCertificate === null) return;
+    if (!String(sshCertificate).trim()) {
+        await Credential.destroy({ where: { identityId, type: "ssh-certificate" } });
+        return;
     }
+    const { normalizeCertificate } = require("../lib/ssh/openssh");
+    await upsertCredential(identityId, "ssh-certificate", normalizeCertificate(sshCertificate));
+};
+
+const removeCredentialTypes = (identityId, types) => Credential.destroy({ where: { identityId, type: { [Op.in]: types } } });
+
+const syncPassphrase = async (identityId, passphrase) => {
+    if (passphrase) await upsertCredential(identityId, "passphrase", passphrase);
+    else await Credential.destroy({ where: { identityId, type: "passphrase" } });
+};
+
+const syncPasswordIdentity = async (identityId, password) => {
+    if (!password) return;
+    await upsertCredential(identityId, "password", password);
+    await removeCredentialTypes(identityId, ["ssh-key", "passphrase", "ssh-certificate"]);
+};
+
+const syncKeyIdentity = async (identityId, type, password, sshKey, passphrase, sshCertificate) => {
+    if (type === "both" && password) await upsertCredential(identityId, "password", password);
+    if (sshKey) {
+        await upsertCredential(identityId, "ssh-key", sshKey);
+        await syncPassphrase(identityId, passphrase);
+    }
+    if (type === "ssh" && sshKey) await Credential.destroy({ where: { identityId, type: "password" } });
+    await syncCertificate(identityId, sshCertificate);
+};
+
+const syncCredentials = async (identityId, type, password, sshKey, passphrase, sshCertificate) => {
+    if (type === "password" || type === "password-only") {
+        await syncPasswordIdentity(identityId, password);
+        return;
+    }
+    if (type === "both" || type === "ssh") await syncKeyIdentity(identityId, type, password, sshKey, passphrase, sshCertificate);
 };
 
 module.exports.getIdentityCredentials = async (identityId) => {
@@ -64,7 +85,20 @@ module.exports.listIdentities = async (accountId) => {
     const orgIds = memberships.map(m => m.organizationId);
     const org = orgIds.length ? await Identity.findAll({ where: { organizationId: { [Op.in]: orgIds } } }) : [];
     
-    const format = (i, scope) => ({ id: i.id, name: i.name, type: i.type, username: i.username, organizationId: i.organizationId, accountId: i.accountId, scope });
+    const identities = [...personal, ...org];
+    const certificates = identities.length
+        ? await Credential.findAll({
+            where: { identityId: { [Op.in]: identities.map(identity => identity.id) }, type: "ssh-certificate" },
+            attributes: ["identityId"],
+            raw: true,
+        })
+        : [];
+    const certificateIds = new Set(certificates.map(certificate => certificate.identityId));
+    const format = (i, scope) => ({
+        id: i.id, name: i.name, type: i.type, username: i.username,
+        organizationId: i.organizationId, accountId: i.accountId, scope,
+        hasSshCertificate: certificateIds.has(i.id),
+    });
     return [...personal.map(i => format(i, 'personal')), ...org.map(i => format(i, 'organization'))];
 };
 
@@ -77,9 +111,14 @@ module.exports.createIdentity = async (accountId, config) => {
     }
     const identity = await Identity.create({
         ...config, accountId: config.organizationId ? null : accountId, organizationId: config.organizationId || null,
-        password: undefined, sshKey: undefined, passphrase: undefined,
+        password: undefined, sshKey: undefined, passphrase: undefined, sshCertificate: undefined,
     });
-    await syncCredentials(identity.id, config.type, config.password, config.sshKey, config.passphrase);
+    try {
+        await syncCredentials(identity.id, config.type, config.password, config.sshKey, config.passphrase, config.sshCertificate);
+    } catch (error) {
+        await Identity.destroy({ where: { id: identity.id } });
+        return { code: 400, message: error.message };
+    }
     logger.info("Identity created", { identityId: identity.id, name: identity.name, scope: config.organizationId ? 'organization' : 'personal' });
 
     stateBroadcaster.broadcast("IDENTITIES", { accountId, organizationId: config.organizationId });
@@ -107,11 +146,17 @@ module.exports.updateIdentity = async (accountId, identityId, config) => {
     const check = await validateManageAccess(accountId, identity);
     if (!check.valid) return check.error;
 
-    const { password, sshKey, passphrase, accountId: _, organizationId: __, ...updateConfig } = config;
+    const { password, sshKey, passphrase, sshCertificate, ...updateConfig } = config;
+    delete updateConfig.accountId;
+    delete updateConfig.organizationId;
     await Identity.update(updateConfig, { where: { id: identityId, ...(identity.organizationId ? { organizationId: identity.organizationId } : { accountId }) } });
 
     const effectiveType = config.type || identity.type;
-    await syncCredentials(identityId, effectiveType, password, sshKey, passphrase);
+    try {
+        await syncCredentials(identityId, effectiveType, password, sshKey, passphrase, sshCertificate);
+    } catch (error) {
+        return { code: 400, message: error.message };
+    }
     logger.info("Identity updated", { identityId, name: identity.name });
 
     stateBroadcaster.broadcast("IDENTITIES", { accountId, organizationId: identity.organizationId });

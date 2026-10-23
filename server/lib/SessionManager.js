@@ -423,6 +423,17 @@ module.exports.remove = (sessionId, options = {}) => {
         session.participants.clear();
 
         const { accountId, organizationId } = session;
+        if (session.sshCertificate && accountId) {
+            const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
+            createAuditLog({
+                accountId,
+                organizationId: organizationId || null,
+                action: AUDIT_ACTIONS.SSH_CERTIFICATE_SESSION_END,
+                resource: RESOURCE_TYPES.ENTRY,
+                resourceId: session.entryId || null,
+                details: { ...session.sshCertificate, endedAt: new Date().toISOString() },
+            }).catch((error) => logger.error("Failed to record SSH certificate session end", { sessionId, error: error.message }));
+        }
         if (sessions.get(sessionId) === session) sessions.delete(sessionId);
         logger.info("Session removed", { sessionId });
         if (broadcast) {

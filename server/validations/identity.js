@@ -5,6 +5,7 @@ module.exports.createIdentityValidation = Joi.object({
     type: Joi.string().valid("password", "ssh", "both", "password-only").required(),
     password: Joi.string().optional(),
     sshKey: Joi.string().optional(),
+    sshCertificate: Joi.string().allow("").optional(),
     passphrase: Joi.string().optional(),
     organizationId: Joi.number().integer().optional(),
 });
@@ -15,9 +16,10 @@ module.exports.updateIdentityValidation = Joi.object({
     type: Joi.string().valid("password", "ssh", "both", "password-only").optional(),
     password: Joi.string().optional(),
     sshKey: Joi.string().optional(),
+    sshCertificate: Joi.string().allow("").optional(),
     passphrase: Joi.string().optional(),
     organizationId: Joi.number().integer().optional(),
-}).or("name", "username", "type", "password", "sshKey", "passphrase", "organizationId");
+}).or("name", "username", "type", "password", "sshKey", "sshCertificate", "passphrase", "organizationId");
 
 module.exports.moveIdentityValidation = Joi.object({
     organizationId: Joi.number().integer().required(),
