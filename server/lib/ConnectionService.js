@@ -15,6 +15,8 @@ const controlPlane = require("./controlPlane/ControlPlaneServer");
 const { isRecordingEnabled } = require("../utils/recordingService");
 const EngineSftpClient = require("./EngineSftpClient");
 const { buildPveQemuParams, buildRdpParams, buildVncParams, buildWebParams, buildDemoParams } = require("./guacParamBuilders");
+const Account = require("../models/Account");
+const { buildSSHParams, prepareSshAuth } = require("./ssh/sessionAuth");
 
 const GUAC_PROTOCOLS = {
     rdp: { sessionType: SessionType.RDP, defaultPort: 3389 },
@@ -39,13 +41,7 @@ const resolveCredentials = async (identity) => {
         : await getIdentityCredentials(identity.id);
 };
 
-const buildSSHParams = (identity, credentials) => {
-    const params = { username: identity.username || credentials.username || "" };
-    if (credentials.password) params.password = credentials.password;
-    if (credentials.privateKey || credentials["ssh-key"]) params.privateKey = credentials.privateKey || credentials["ssh-key"];
-    if (credentials.passphrase) params.passphrase = credentials.passphrase;
-    return params;
-};
+const loadAccount = async (accountId) => (accountId ? Account.findByPk(accountId) : null);
 
 const extractIdentity = (identityResult) => {
     return identityResult?.identity === undefined ? identityResult : identityResult.identity;
@@ -62,31 +58,34 @@ const getHostPort = (entry, defaultPort = 22) => {
     return { host, port };
 };
 
-const resolveJumpHosts = async (entry) => {
-    const jumpHostIds = entry.config?.jumpHosts;
-    if (!jumpHostIds || jumpHostIds.length === 0) return [];
+const loadJumpHost = async (jumpHostId, account) => {
+    const jhEntry = await Entry.findByPk(jumpHostId);
+    if (!jhEntry) throw new Error(`Jump host entry ${jumpHostId} not found`);
 
-    const jumpHosts = [];
-    for (const jumpHostId of jumpHostIds) {
-        const jhEntry = await Entry.findByPk(jumpHostId);
-        if (!jhEntry) throw new Error(`Jump host entry ${jumpHostId} not found`);
+    const { host, port } = getHostPort(jhEntry);
+    const identity = extractIdentity(await resolveIdentity(jhEntry, null, null, null));
+    if (!identity) throw new Error(`No identity found for jump host ${jumpHostId}`);
 
-        const { host, port } = getHostPort(jhEntry);
-        const identityResult = await resolveIdentity(jhEntry, null, null, null);
-        const identity = extractIdentity(identityResult);
-        if (!identity) throw new Error(`No identity found for jump host ${jumpHostId}`);
+    const credentials = await resolveCredentials(identity);
+    const params = await prepareSshAuth({ entry: jhEntry, identity, credentials, account });
+    return {
+        host,
+        port,
+        username: params.username || "",
+        password: params.password || null,
+        privateKey: params.privateKey || null,
+        passphrase: params.passphrase || null,
+        certificate: params.certificate || null,
+    };
+};
 
-        const credentials = await resolveCredentials(identity);
-        jumpHosts.push({
-            host,
-            port,
-            username: identity.username || credentials.username || "",
-            password: credentials.password || null,
-            privateKey: credentials.privateKey || credentials["ssh-key"] || null,
-            passphrase: credentials.passphrase || null,
-        });
-    }
-    return jumpHosts;
+const resolveJumpHosts = async (entry, account = null) => {
+    const jumpHostIds = entry.config?.jumpHosts || [];
+    return jumpHostIds.reduce(async (previous, jumpHostId) => {
+        const jumpHosts = await previous;
+        jumpHosts.push(await loadJumpHost(jumpHostId, account));
+        return jumpHosts;
+    }, Promise.resolve([]));
 };
 
 const openEngineSessionWithResult = async (sessionId, sessionType, host, port, params, jumpHosts = [], engineId) => {
@@ -138,13 +137,14 @@ const createConnectionForSession = async (sessionId, accountId) => {
     }
 };
 
-const resolveFileTransferContext = async (entry, identityId, directIdentity, accountId) => {
+const resolveFileTransferContext = async (entry, identityId, directIdentity, accountId, session = null) => {
     const identityResult = await resolveIdentity(entry, identityId, directIdentity, accountId);
     const identity = extractIdentity(identityResult);
     const credentials = await resolveCredentials(identity);
     const protocol = getEntryProtocol(entry);
     const { host, port } = getHostPort(entry, FILE_TRANSFER_PORTS[protocol] ?? 22);
-    const params = buildSSHParams(identity, credentials);
+    const account = await loadAccount(accountId);
+    const params = await prepareSshAuth({ entry, identity, credentials, account, session });
     if (protocol) params.protocol = protocol;
     return { identity, credentials, host, port, params };
 };
@@ -157,8 +157,8 @@ const createSFTPConnectionForSession = async (sessionId, entry, accountId) => {
     session._connecting = (async () => {
         requireEngine();
         const { identityId, directIdentity } = session.configuration;
-        const { host, port, params } = await resolveFileTransferContext(entry, identityId, directIdentity, accountId);
-        const jumpHosts = await resolveJumpHosts(entry);
+        const { host, port, params } = await resolveFileTransferContext(entry, identityId, directIdentity, accountId, session);
+        const jumpHosts = await resolveJumpHosts(entry, await loadAccount(accountId));
 
         const dataSocket = await openEngineSession(
             sessionId, SessionType.SFTP, host, port, params, jumpHosts, entry.config?.engineId
@@ -203,7 +203,7 @@ const getAuxiliarySFTPClient = async (sessionId, entry, accountId, opts) => {
         requireEngine();
         const { identityId, directIdentity } = session.configuration;
         const { host, port, params } = await resolveFileTransferContext(entry, identityId, directIdentity, accountId);
-        const jumpHosts = await resolveJumpHosts(entry);
+        const jumpHosts = await resolveJumpHosts(entry, await loadAccount(accountId));
 
         conn._auxGeneration = (conn._auxGeneration || 0) + 1;
         const engineSessionId = `${sessionId}-${suffix}-${conn._auxGeneration}`;
@@ -247,8 +247,10 @@ const getSFTPAIClient = (sessionId, entry, accountId) =>
 const getSessionPassword = async (sessionId, entry, accountId) => {
     const session = requireSession(sessionId);
     const { identityId, directIdentity } = session.configuration;
-    const { params } = await resolveFileTransferContext(entry, identityId, directIdentity, accountId);
-    return params.password || null;
+    const identity = extractIdentity(await resolveIdentity(entry, identityId, directIdentity, accountId));
+    if (!identity) return null;
+    const credentials = await resolveCredentials(identity);
+    return credentials.password || null;
 };
 
 const createSSHConnectionForSession = async (sessionId, entry, identity, organizationId, script = null) => {
@@ -259,8 +261,9 @@ const createSSHConnectionForSession = async (sessionId, entry, identity, organiz
         requireEngine();
         const credentials = await resolveCredentials(identity);
         const { host, port } = getHostPort(entry);
-        const params = buildSSHParams(identity, credentials);
-        const jumpHosts = await resolveJumpHosts(entry);
+        const account = await loadAccount(session.accountId);
+        const params = await prepareSshAuth({ entry, identity, credentials, account, session });
+        const jumpHosts = await resolveJumpHosts(entry, account);
 
         const dataSocket = await openEngineSession(
             sessionId, SessionType.SSH, host, port, params, jumpHosts, entry.config?.engineId
@@ -423,8 +426,9 @@ const prepareWebSession = async (sessionId, entry, identity, organizationId) => 
 
     const credentials = await resolveCredentials(identity);
     const { host, port } = getHostPort(entry);
-    const params = buildSSHParams(identity, credentials);
-    const jumpHosts = await resolveJumpHosts(entry);
+    const account = await loadAccount(session.accountId);
+    const params = await prepareSshAuth({ entry, identity, credentials, account, session });
+    const jumpHosts = await resolveJumpHosts(entry, account);
 
     const { dataSocket, result } = await openEngineSessionWithResult(
         sessionId, SessionType.Web, host, port, params, jumpHosts, entry.config?.engineId
@@ -501,7 +505,7 @@ const prepareGuacamoleSession = async (sessionId, entry, identity, organizationI
     const { sessionType, defaultPort } = GUAC_PROTOCOLS[protocol] ?? GUAC_PROTOCOLS.vnc;
     const host = params.hostname || cfg.ip || "";
     const port = Number.parseInt(params.port || cfg.port || defaultPort, 10);
-    const jumpHosts = await resolveJumpHosts(entry);
+    const jumpHosts = await resolveJumpHosts(entry, await loadAccount(session.accountId));
 
     const dataSocket = await openEngineSession(
         sessionId, sessionType, host, port, params, jumpHosts, entry.config?.engineId
