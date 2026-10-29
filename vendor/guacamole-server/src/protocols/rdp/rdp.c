@@ -34,6 +34,7 @@
 #include "config.h"
 #include "error.h"
 #include "fs.h"
+#include "fs_client_relay.h"
 #include "gdi.h"
 #include "input.h"
 #include "keyboard.h"
@@ -876,6 +877,8 @@ void* guac_rdp_client_thread(void* data) {
         /* Expose filesystem to owner */
         guac_client_for_owner(client, guac_rdp_fs_expose,
                 rdp_client->filesystem);
+
+        guac_rdp_fs_client_relay_claim(rdp_client->filesystem);
 
     }
 
