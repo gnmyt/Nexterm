@@ -764,6 +764,8 @@ static void* relay_claim_callback(guac_user* user, void* arg) {
     return NULL;
 }
 
+/* Must not be called with data->lock held: the user list locks are taken
+ * first and relay_try_claim then takes data->lock. */
 static void relay_claim_any(relay_fs_data* data) {
 
     pthread_mutex_lock(&data->lock);
