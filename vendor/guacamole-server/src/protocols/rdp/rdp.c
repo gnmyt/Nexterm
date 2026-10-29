@@ -878,7 +878,6 @@ void* guac_rdp_client_thread(void* data) {
         guac_client_for_owner(client, guac_rdp_fs_expose,
                 rdp_client->filesystem);
 
-        /* Users may have joined before the filesystem existed */
         guac_rdp_fs_client_relay_claim(rdp_client->filesystem);
 
     }

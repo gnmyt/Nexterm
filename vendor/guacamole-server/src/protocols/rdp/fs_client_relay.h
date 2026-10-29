@@ -11,10 +11,6 @@
  */
 void guac_rdp_fs_client_relay_attach_owner(guac_rdp_fs* fs, guac_user* user);
 
-/**
- * Route relay-backed FS ops through the first eligible connected user if
- * none is serving yet. No-op on non-relay backends.
- */
 void guac_rdp_fs_client_relay_claim(guac_rdp_fs* fs);
 
 /**

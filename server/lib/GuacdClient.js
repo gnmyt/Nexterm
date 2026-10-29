@@ -108,7 +108,6 @@ class GuacdClient {
             if (i === 1) {
                 connectionOptions.push('VERSION_1_5_0');
             } else if (this.joinConnectionId) {
-                // Marks this joiner as allowed to serve the RDP drive from its browser
                 connectionOptions.push(this.serveFiles && name === 'enable-drive' ? 'true' : '');
             } else {
                 connectionOptions.push(conn[name] !== undefined ? conn[name] : '');

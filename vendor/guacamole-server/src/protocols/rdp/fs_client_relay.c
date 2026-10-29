@@ -103,8 +103,6 @@ static void relay_claim_any(relay_fs_data* data);
 static relay_pending* pending_alloc(relay_fs_data* data, relay_req_type type,
         int* out_req_id) {
 
-    /* The serving user may have joined before the filesystem existed, or the
-     * previous one may have left; pick up any eligible user before sending. */
     relay_claim_any(data);
 
     relay_pending* p = guac_mem_zalloc(sizeof(*p));
@@ -737,14 +735,11 @@ const guac_rdp_fs_backend guac_rdp_fs_backend_client_relay = {
     .get_info = relay_get_info,
 };
 
-/* Only non-owner users whose join args enabled the drive may serve files;
- * the server sets that for the session's own account, never for viewers. */
 static int relay_user_eligible(guac_user* user) {
     guac_rdp_settings* settings = (guac_rdp_settings*) user->data;
     return !user->owner && settings != NULL && settings->drive_enabled;
 }
 
-/* Returns non-zero if `user` is now the serving user. */
 static int relay_try_claim(relay_fs_data* data, guac_user* user) {
 
     if (!relay_user_eligible(user))
@@ -769,8 +764,6 @@ static void* relay_claim_callback(guac_user* user, void* arg) {
     return NULL;
 }
 
-/* Must not be called with data->lock held: the user list locks are taken
- * first and relay_try_claim then takes data->lock. */
 static void relay_claim_any(relay_fs_data* data) {
 
     pthread_mutex_lock(&data->lock);
@@ -887,6 +880,5 @@ void guac_rdp_fs_client_relay_detach_owner(guac_rdp_fs* fs, guac_user* user) {
     user->nfs_resp_handler = NULL;
     pending_abort_all(data);
 
-    /* Hand the drive to another connected user, if there is one. */
     relay_claim_any(data);
 }
