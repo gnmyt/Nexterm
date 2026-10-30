@@ -435,6 +435,24 @@ static void handle_exec_batch(nexterm_control_plane_t* cp,
     free(commands);
 }
 
+#define PORT_CHECK_BANNER_WAIT_MS 2000u
+#define PORT_CHECK_SSH_IDENT "SSH-2.0-Nexterm_StatusCheck\r\n"
+
+/* SSH servers log a probe that closes before sending its identification
+ * string as an error, so answer an SSH banner before closing. */
+static void close_port_probe(int fd, uint32_t timeout_ms) {
+    uint32_t wait_ms = timeout_ms < PORT_CHECK_BANNER_WAIT_MS ? timeout_ms : PORT_CHECK_BANNER_WAIT_MS;
+    struct pollfd pfd = { .fd = fd, .events = POLLIN };
+    char banner[8];
+
+    if (poll(&pfd, 1, (int)wait_ms) == 1
+        && recv(fd, banner, sizeof(banner), 0) >= 4
+        && memcmp(banner, "SSH-", 4) == 0)
+        send(fd, PORT_CHECK_SSH_IDENT, sizeof(PORT_CHECK_SSH_IDENT) - 1, MSG_NOSIGNAL);
+
+    close(fd);
+}
+
 static bool check_port_open(const char* host, uint16_t port, uint32_t timeout_ms) {
     struct addrinfo hints = {0};
     hints.ai_family = AF_UNSPEC;
@@ -462,7 +480,7 @@ static bool check_port_open(const char* host, uint16_t port, uint32_t timeout_ms
     freeaddrinfo(res);
 
     if (rc == 0) {
-        close(fd);
+        close_port_probe(fd, timeout_ms);
         return true;
     }
 
@@ -482,8 +500,13 @@ static bool check_port_open(const char* host, uint16_t port, uint32_t timeout_ms
     int err = 0;
     socklen_t len = sizeof(err);
     getsockopt(fd, SOL_SOCKET, SO_ERROR, &err, &len);
-    close(fd);
-    return err == 0;
+    if (err != 0) {
+        close(fd);
+        return false;
+    }
+
+    close_port_probe(fd, timeout_ms);
+    return true;
 }
 
 typedef struct {
