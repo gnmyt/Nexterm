@@ -14,6 +14,7 @@ const logger = require("../utils/logger");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const reconnectOperations = new Map();
 
+
 const ENTRY_TYPE_TO_AUDIT_ACTION = {
     'ssh': AUDIT_ACTIONS.SSH_CONNECT,
     'telnet': AUDIT_ACTIONS.SSH_CONNECT,
@@ -128,6 +129,7 @@ const createSession = async ({
     const configuration = {
         identityId: identity ? identity.id : null,
         type: type || null,
+        connectionReason: connectionReason || null,
         directIdentity: directIdentity || null,
         displayDpi,
         displayWidth,
@@ -387,7 +389,7 @@ const duplicateSession = async (accountId, sessionId, tabId = null, browserId = 
         accountId,
         entryId: session.entryId,
         identityId: config.identityId,
-        connectionReason: null,
+        connectionReason: config.connectionReason || null,
         type: config.type,
         directIdentity: config.directIdentity,
         tabId,
