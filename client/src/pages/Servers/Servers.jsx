@@ -339,6 +339,10 @@ export const Servers = () => {
             setActiveSessionId(session.sessionId);
             return true;
         } catch (error) {
+            if (reconnectSessionId && error?.code === "SESSION_CLOSED") {
+                disconnectFromServer(reconnectSessionId, { force: true });
+                return false;
+            }
             console.error("Failed to connect session", error);
             return false;
         }

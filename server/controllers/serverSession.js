@@ -13,7 +13,17 @@ const Organization = require('../models/Organization');
 const logger = require("../utils/logger");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const reconnectOperations = new Map();
+const closedSessions = new Map();
+const CLOSED_SESSION_TTL = 10 * 60 * 1000;
+const SESSION_CLOSED = { code: 410, message: "Session was closed", errorCode: "SESSION_CLOSED" };
 
+const wasClosed = (sessionId) => {
+    const now = Date.now();
+    for (const [id, closedAt] of closedSessions) {
+        if (now - closedAt > CLOSED_SESSION_TTL) closedSessions.delete(id);
+    }
+    return closedSessions.has(sessionId);
+};
 
 const ENTRY_TYPE_TO_AUDIT_ACTION = {
     'ssh': AUDIT_ACTIONS.SSH_CONNECT,
@@ -185,6 +195,7 @@ const reconnectSession = ({ accountId, sessionId, ...options }) => {
     const operation = (async () => {
         const expectedGeneration = options.connectionGeneration ?? 0;
         const existing = SessionManager.get(sessionId);
+        if (!existing && wasClosed(sessionId)) return SESSION_CLOSED;
         if (existing?.accountId !== undefined && existing.accountId !== accountId) {
             return { code: 403, message: "Access denied" };
         }
@@ -288,6 +299,7 @@ const resumeSession = (sessionId, tabId = null, browserId = null) => {
 const deleteSession = (sessionId) => {
     const success = SessionManager.remove(sessionId);
     if (success) {
+        closedSessions.set(sessionId, Date.now());
         return { message: "Session deleted" };
     }
     return { code: 404, message: "Session not found" };
