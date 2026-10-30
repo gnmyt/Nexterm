@@ -508,6 +508,27 @@ static void free_port_check_ctx(port_check_ctx_t* ctx) {
     free(ctx);
 }
 
+#define PORT_CHECK_MAX_WORKERS 32
+
+typedef struct {
+    port_check_ctx_t* ctx;
+    bool* results;
+    pthread_mutex_t lock;
+    size_t next;
+} port_check_work_t;
+
+static void* port_check_worker(void* arg) {
+    port_check_work_t* work = (port_check_work_t*)arg;
+    for (;;) {
+        pthread_mutex_lock(&work->lock);
+        size_t i = work->next++;
+        pthread_mutex_unlock(&work->lock);
+        if (i >= work->ctx->count) return NULL;
+        work->results[i] = check_port_open(work->ctx->hosts[i], work->ctx->ports[i],
+                                           work->ctx->timeout_ms);
+    }
+}
+
 static void* port_check_thread(void* arg) {
     port_check_ctx_t* ctx = (port_check_ctx_t*)arg;
     bool* results = calloc(ctx->count, sizeof(bool));
@@ -516,8 +537,19 @@ static void* port_check_thread(void* arg) {
         return NULL;
     }
 
-    for (size_t i = 0; i < ctx->count; i++)
-        results[i] = check_port_open(ctx->hosts[i], ctx->ports[i], ctx->timeout_ms);
+    port_check_work_t work = { .ctx = ctx, .results = results, .next = 0 };
+    pthread_mutex_init(&work.lock, NULL);
+
+    size_t worker_count = ctx->count < PORT_CHECK_MAX_WORKERS ? ctx->count : PORT_CHECK_MAX_WORKERS;
+    pthread_t workers[PORT_CHECK_MAX_WORKERS];
+    size_t started = 0;
+    while (started < worker_count
+           && pthread_create(&workers[started], NULL, port_check_worker, &work) == 0)
+        started++;
+
+    if (started == 0) port_check_worker(&work);
+    for (size_t i = 0; i < started; i++) pthread_join(workers[i], NULL);
+    pthread_mutex_destroy(&work.lock);
 
     nexterm_cp_send_port_check_result(ctx->cp, ctx->request_id,
                                       (const char**)ctx->ids, results, ctx->count);
