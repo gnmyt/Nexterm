@@ -35,6 +35,8 @@ const ZOOM_MIN = 1;
 const ZOOM_MAX = 4;
 
 const ZOOM_STEP = 0.25;
+
+const NATIVE_SNAP_TOLERANCE = 1.02;
 const REMOTE_CLIPBOARD_TIMEOUT = 1000;
 
 
@@ -149,7 +151,7 @@ const GuacamoleRenderer = ({
         return () => registerGuacamoleRef?.(session.id, null);
     }, [session.id, registerGuacamoleRef, clientRef.current]);
 
-    const samplingFor = (scale) => Math.abs(scale - 1) < 0.001 ? "pixelated" : "auto";
+    const samplingFor = (scale) => Math.abs(scale * (window.devicePixelRatio || 1) - 1) < 0.001 ? "pixelated" : "auto";
 
     const applyDisplayStyles = (el, x, y, scale, width, height) => Object.assign(el.style, {
         position: "absolute", width: width + "px", height: height + "px",
@@ -184,7 +186,10 @@ const GuacamoleRenderer = ({
         const mh = monitor?.height || display.getHeight();
         if (!mw || !mh) return;
 
-        const scale = Math.min(cw / mw, ch / mh) * zoomRef.current;
+        const density = window.devicePixelRatio || 1;
+        const fit = Math.min(cw / mw, ch / mh);
+        const fitsNatively = mw / density <= cw && mh / density <= ch && fit * density < NATIVE_SNAP_TOLERANCE;
+        const scale = (fitsNatively ? 1 / density : fit) * zoomRef.current;
         scaleRef.current = scale;
 
         panRef.current = {
