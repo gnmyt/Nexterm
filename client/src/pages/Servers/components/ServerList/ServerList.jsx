@@ -381,7 +381,7 @@ export const ServerList = ({
             setCurrentOrganizationId(parseInt(contextClickedId.toString().split("-")[1]));
         } else {
             setCurrentFolderId(contextClickedId);
-            setCurrentOrganizationId(null);
+            setCurrentOrganizationId(contextFolder?.organizationId || null);
         }
     };
 
@@ -576,11 +576,9 @@ export const ServerList = ({
                 <div className="server-list-inner" ref={dropRef}>
                     <div className="search-container">
                         <ServerSearch search={search} setSearch={setSearch} />
-                        <div
-                            ref={tagButtonRef}
+                        <div ref={tagButtonRef}
                             className={`tag-filter-button ${selectedTags.length > 0 ? "active" : ""}`}
-                            onClick={() => setShowTagFilter(!showTagFilter)}
-                            title={t("servers.tags.filterByTags")}>
+                            onClick={() => setShowTagFilter(!showTagFilter)}>
                             <Icon path={mdiTag} />
                             {selectedTags.length > 0 && (
                                 <span className="tag-count">{selectedTags.length}</span>

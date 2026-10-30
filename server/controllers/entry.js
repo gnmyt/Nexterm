@@ -375,6 +375,7 @@ module.exports.listEntries = async (accountId) => {
                 wakeOnLanEnabled: config?.wakeOnLanEnabled,
                 notes: config?.notes || "",
                 showNoteInList: Boolean(config?.showNoteInList),
+                displayScale: config?.displayScale,
             };
         }
 

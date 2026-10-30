@@ -113,7 +113,7 @@ int guac_rdp_user_size_handler(guac_user* user, int width, int height,
 
     /* Send display update */
     guac_rdp_disp_set_size(rdp_client->disp, settings, rdp_inst, width, height,
-            x_position, top_offset);
+            x_position, top_offset, user->info.requested_scale);
 
     return 0;
 

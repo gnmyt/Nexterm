@@ -1,9 +1,10 @@
 import "./styles.sass";
-import {faDocker} from "@fortawesome/free-brands-svg-icons";
+import {faDocker, faDiscord, faGithub} from "@fortawesome/free-brands-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCheck, faCopy, faRefresh, faServer, faGears, faCubes, faTerminal, faFileCode, faDatabase, faFolder, faNetworkWired, faBridge} from "@fortawesome/free-solid-svg-icons";
+import {faCheck, faCopy, faRefresh, faServer, faGears, faCubes, faTerminal, faFileCode, faDatabase, faFolder, faNetworkWired, faBridge, faBookOpen, faLifeRing, faMobileScreenButton, faArrowRight, faArrowUpRightFromSquare} from "@fortawesome/free-solid-svg-icons";
 import {useState, useEffect} from "react";
-import {DOCUMENTATION_BASE} from "@/main.jsx";
+import {Link} from "react-router-dom";
+import {DOCUMENTATION_BASE, GITHUB_LINK, DISCORD_LINK} from "@/main.jsx";
 import Footer from "@/pages/Home/components/Footer";
 
 const generateEncryptionKey = () => {
@@ -291,10 +292,61 @@ ${volLine}${volSection}`;
                     )}
                 </div>
 
-                <div className="help-links">
-                    <a href={DOCUMENTATION_BASE + "/reverse-proxy"} target="_blank" rel="noopener noreferrer">Reverse Proxy</a>
-                    <a href={DOCUMENTATION_BASE + "/ssl"} target="_blank" rel="noopener noreferrer">SSL Setup</a>
-                    <a href={DOCUMENTATION_BASE + "/"} target="_blank" rel="noopener noreferrer">Full Documentation</a>
+                <div className="install-resource-grid">
+                    <section className="install-resource-card">
+                        <div className="resource-card-heading">
+                            <FontAwesomeIcon icon={faBookOpen} />
+                            <h3>Documentation</h3>
+                        </div>
+                        <div className="resource-card-links">
+                            <a href={`${DOCUMENTATION_BASE}/installation`} target="_blank" rel="noopener noreferrer">
+                                Full installation guide
+                                <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+                            </a>
+                            <a href={`${DOCUMENTATION_BASE}/reverse-proxy`} target="_blank" rel="noopener noreferrer">
+                                Reverse proxy
+                                <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+                            </a>
+                            <a href={`${DOCUMENTATION_BASE}/ssl`} target="_blank" rel="noopener noreferrer">
+                                SSL setup
+                                <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+                            </a>
+                            <a href={`${DOCUMENTATION_BASE}/`} target="_blank" rel="noopener noreferrer">
+                                Full documentation
+                                <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+                            </a>
+                        </div>
+                    </section>
+
+                    <section className="install-resource-card">
+                        <div className="resource-card-heading">
+                            <FontAwesomeIcon icon={faLifeRing} />
+                            <h3>Need help?</h3>
+                        </div>
+                        <p>Talk with the community or ask a question.</p>
+                        <div className="resource-card-links">
+                            <a href={DISCORD_LINK} target="_blank" rel="noopener noreferrer">
+                                <span><FontAwesomeIcon icon={faDiscord} />Discord</span>
+                                <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+                            </a>
+                            <a href={`${GITHUB_LINK}/discussions`} target="_blank" rel="noopener noreferrer">
+                                <span><FontAwesomeIcon icon={faGithub} />GitHub Discussions</span>
+                                <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+                            </a>
+                        </div>
+                    </section>
+
+                    <section className="install-resource-card apps-resource-card">
+                        <div className="resource-card-heading">
+                            <FontAwesomeIcon icon={faMobileScreenButton} />
+                            <h3>Desktop &amp; mobile apps</h3>
+                        </div>
+                        <p>Find Nexterm for Windows, macOS, Linux, Android, and iOS.</p>
+                        <Link to="/downloads" className="resource-card-action">
+                            Browse downloads
+                            <FontAwesomeIcon icon={faArrowRight} />
+                        </Link>
+                    </section>
                 </div>
             </div>
             <Footer/>

@@ -4,6 +4,7 @@ import "./styles.sass";
 import Icon from "@mdi/react";
 import { mdiChevronDown, mdiMagnify, mdiClose } from "@mdi/js";
 import { useTranslation } from "react-i18next";
+import Tooltip from "@/common/components/Tooltip";
 
 export const SelectBox = ({ options, selected, setSelected, id, disabled = false, searchable = false, multiple = false, placeholder }) => {
     const { t } = useTranslation();
@@ -252,26 +253,33 @@ export const SelectBox = ({ options, selected, setSelected, id, disabled = false
                         </div>
                     )}
                     <div className="select-box__options-scroll">
-                        {filteredOptions.length > 0 ? filteredOptions.map((option, index) => (
-                            <div 
-                                key={index} 
-                                ref={(el) => (optionRefs.current[index] = el)}
-                                className={`select-box__option ${!option.icon && !multiple ? 'icon-only' : ''} ${isOptionSelected(option.value) ? "selected" : ""} ${highlightedIndex === index ? "highlighted" : ""}`}
-                                onClick={() => handleOptionClick(option.value)}
-                                onMouseEnter={() => setHighlightedIndex(index)}
-                                role="menuitem"
-                                tabIndex={-1}
-                                title={option.tooltip}
-                            >
-                                {multiple && (
-                                    <div className={`select-box__checkbox ${isOptionSelected(option.value) ? 'checked' : ''}`}>
-                                        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" /></svg>
-                                    </div>
-                                )}
-                                {option.icon && <Icon className="select-box__option-icon" path={option.icon} />}
-                                <span className="select-box__option-label">{option.label}</span>
-                            </div>
-                        )) : (
+                        {filteredOptions.length > 0 ? filteredOptions.map((option, index) => {
+                            const optionElement = (
+                                <div
+                                    key={option.value}
+                                    ref={(el) => (optionRefs.current[index] = el)}
+                                    className={`select-box__option ${!option.icon && !multiple ? 'icon-only' : ''} ${isOptionSelected(option.value) ? "selected" : ""} ${highlightedIndex === index ? "highlighted" : ""}`}
+                                    onClick={() => handleOptionClick(option.value)}
+                                    onMouseEnter={() => setHighlightedIndex(index)}
+                                    role="menuitem"
+                                    tabIndex={-1}
+                                >
+                                    {multiple && (
+                                        <div className={`select-box__checkbox ${isOptionSelected(option.value) ? 'checked' : ''}`}>
+                                            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" /></svg>
+                                        </div>
+                                    )}
+                                    {option.icon && <Icon className="select-box__option-icon" path={option.icon} />}
+                                    <span className="select-box__option-label">{option.label}</span>
+                                </div>
+                            );
+
+                            return option.tooltip ? (
+                                <Tooltip key={option.value} text={option.tooltip} delay={500}>
+                                    {optionElement}
+                                </Tooltip>
+                            ) : optionElement;
+                        }) : (
                             <div className="select-box__no-results">{t('common.selectBox.noResults')}</div>
                         )}
                     </div>

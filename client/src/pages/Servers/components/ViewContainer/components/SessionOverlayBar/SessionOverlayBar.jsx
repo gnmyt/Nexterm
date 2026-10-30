@@ -32,13 +32,13 @@ export const SessionOverlayBar = ({ session, controls, fullscreenEnabled, onFull
                 {controls && <RemoteSessionStrip controls={controls} />}
                 <div className="session-overlay-bar__actions">
                     <button type="button" className="session-overlay-bar__button"
-                            title={fullscreenEnabled ? t("servers.terminalActions.exitFullScreen") : t("servers.terminalActions.fullScreen")}
+                            aria-label={fullscreenEnabled ? t("servers.terminalActions.exitFullScreen") : t("servers.terminalActions.fullScreen")}
                             onClick={onFullscreenToggle}>
                         <Icon path={fullscreenEnabled ? mdiFullscreenExit : mdiFullscreen} />
                     </button>
                     {controls && (
                         <button type="button" className={`session-overlay-bar__button${menu.isOpen ? " active" : ""}`}
-                                title={t("servers.terminalActions.menuTitle")} onClick={openMenu}>
+                                aria-label={t("servers.terminalActions.menuTitle")} onClick={openMenu}>
                             <Icon path={mdiMenu} />
                         </button>
                     )}

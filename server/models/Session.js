@@ -23,4 +23,20 @@ module.exports = db.define("sessions", {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW,
     },
+    oidcProviderId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+    },
+    oidcIdTokenEncrypted: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+    },
+    oidcIdTokenIV: {
+        type: Sequelize.STRING,
+        allowNull: true,
+    },
+    oidcIdTokenAuthTag: {
+        type: Sequelize.STRING,
+        allowNull: true,
+    },
 }, { freezeTableName: true, createdAt: false, updatedAt: false });

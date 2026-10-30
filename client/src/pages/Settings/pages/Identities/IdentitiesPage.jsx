@@ -34,10 +34,10 @@ export const IdentityCard = ({ identity, onEdit, onDelete }) => {
                 </div>
             </div>
             <div className="identity-actions">
-                <button className="action-btn edit-btn" onClick={() => onEdit(identity)} title={t("settings.identities.editIdentity")}>
+                <button className="action-btn edit-btn" onClick={() => onEdit(identity)} aria-label={t("settings.identities.editIdentity")}>
                     <Icon path={mdiPencil} size={0.8} />
                 </button>
-                <button className="action-btn delete-btn" onClick={() => onDelete(identity)} title={t("settings.identities.deleteIdentity")}>
+                <button className="action-btn delete-btn" onClick={() => onDelete(identity)} aria-label={t("settings.identities.deleteIdentity")}>
                     <Icon path={mdiTrashCan} size={0.8} />
                 </button>
             </div>

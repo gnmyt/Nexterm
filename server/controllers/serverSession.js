@@ -6,7 +6,7 @@ const Account = require("../models/Account");
 const MonitoringSnapshot = require("../models/MonitoringSnapshot");
 const { validateEntryAccess } = require("./entry");
 const { getIdentityCredentials, getIdentity } = require("./identity");
-const { getOrganizationAuditSettingsInternal, createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
+const { getOrganizationAuditSettingsInternal, createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES, CONNECTION_REASON_REQUIRED } = require("./audit");
 const { resolveIdentity } = require("../utils/identityResolver");
 const { Permission } = require("../permissions/registry");
 const Organization = require('../models/Organization');
@@ -14,6 +14,17 @@ const logger = require("../utils/logger");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const { getEffectiveEntryConfig } = require("../utils/folderInheritance");
 const reconnectOperations = new Map();
+const closedSessions = new Map();
+const CLOSED_SESSION_TTL = 10 * 60 * 1000;
+const SESSION_CLOSED = { code: 410, message: "Session was closed", errorCode: "SESSION_CLOSED" };
+
+const wasClosed = (sessionId) => {
+    const now = Date.now();
+    for (const [id, closedAt] of closedSessions) {
+        if (now - closedAt > CLOSED_SESSION_TTL) closedSessions.delete(id);
+    }
+    return closedSessions.has(sessionId);
+};
 
 const ENTRY_TYPE_TO_AUDIT_ACTION = {
     'ssh': AUDIT_ACTIONS.SSH_CONNECT,
@@ -70,6 +81,8 @@ const createSession = async ({
     tabId = null,
     browserId = null,
     displayDpi = 96,
+    displayWidth = null,
+    displayHeight = null,
     scriptId = null,
     startPath = null,
     ipAddress = null,
@@ -97,7 +110,7 @@ const createSession = async ({
     if (entry.organizationId) {
         const auditSettings = await getOrganizationAuditSettingsInternal(entry.organizationId);
         if (auditSettings?.requireConnectionReason && !connectionReason) {
-            return { code: 400, message: "Connection reason required" };
+            return CONNECTION_REASON_REQUIRED;
         }
     }
 
@@ -128,8 +141,11 @@ const createSession = async ({
     const configuration = {
         identityId: identity ? identity.id : null,
         type: type || null,
+        connectionReason: connectionReason || null,
         directIdentity: directIdentity || null,
         displayDpi,
+        displayWidth,
+        displayHeight,
         scriptId: scriptId || null,
         startPath: startPath || null,
         renderer,
@@ -181,6 +197,7 @@ const reconnectSession = ({ accountId, sessionId, ...options }) => {
     const operation = (async () => {
         const expectedGeneration = options.connectionGeneration ?? 0;
         const existing = SessionManager.get(sessionId);
+        if (!existing && wasClosed(sessionId)) return SESSION_CLOSED;
         if (existing?.accountId !== undefined && existing.accountId !== accountId) {
             return { code: 403, message: "Access denied" };
         }
@@ -265,7 +282,9 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
     });
 };
 
-const hibernateSession = (sessionId) => {
+const hibernateSession = (accountId, sessionId) => {
+    const { error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
     const success = SessionManager.hibernate(sessionId);
     if (success) {
         return { message: "Session hibernated" };
@@ -273,7 +292,9 @@ const hibernateSession = (sessionId) => {
     return { code: 404, message: "Session not found" };
 };
 
-const resumeSession = (sessionId, tabId = null, browserId = null) => {
+const resumeSession = (accountId, sessionId, tabId = null, browserId = null) => {
+    const { error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
     const success = SessionManager.resume(sessionId, tabId, browserId);
     if (success) {
         return { message: "Session resumed" };
@@ -281,9 +302,12 @@ const resumeSession = (sessionId, tabId = null, browserId = null) => {
     return { code: 404, message: "Session not found" };
 };
 
-const deleteSession = (sessionId) => {
+const deleteSession = (accountId, sessionId) => {
+    const { error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
     const success = SessionManager.remove(sessionId);
     if (success) {
+        closedSessions.set(sessionId, Date.now());
         return { message: "Session deleted" };
     }
     return { code: 404, message: "Session not found" };
@@ -385,12 +409,14 @@ const duplicateSession = async (accountId, sessionId, tabId = null, browserId = 
         accountId,
         entryId: session.entryId,
         identityId: config.identityId,
-        connectionReason: null,
+        connectionReason: config.connectionReason || null,
         type: config.type,
         directIdentity: config.directIdentity,
         tabId,
         browserId,
         displayDpi: config.displayDpi,
+        displayWidth: config.displayWidth,
+        displayHeight: config.displayHeight,
         scriptId: config.scriptId,
         startPath: config.startPath || null,
         ipAddress,

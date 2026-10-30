@@ -266,15 +266,16 @@ export const Account = () => {
                         <div className="avatar-edit">
                             <button type="button" id="avatar" className="avatar-button"
                                     onClick={() => avatarInputRef.current?.click()}
-                                    disabled={avatarUploading} title={t("settings.account.avatar.upload")}>
+                                    disabled={avatarUploading} aria-label={t("settings.account.avatar.upload")}>
                                 <LetterAvatar user={user} size="lg" showTooltip={false} />
                                 <span className="avatar-overlay"><Icon path={mdiCameraOutline} size={0.9} /></span>
                             </button>
-                            {user?.avatarHash && <button type="button" className="avatar-remove" onClick={removeAvatar}
-                                                         disabled={avatarUploading}
-                                                         title={t("settings.account.avatar.remove")}>
+                            {user?.avatarHash && (
+                            <button type="button" className="avatar-remove" onClick={removeAvatar}
+                                    disabled={avatarUploading} aria-label={t("settings.account.avatar.remove")}>
                                 <Icon path={mdiClose} size={0.6} />
-                            </button>}
+                            </button>
+                            )}
                             <input type="file" ref={avatarInputRef} accept="image/png,image/jpeg,image/webp,image/gif"
                                    style={{ display: "none" }} onChange={uploadAvatar} />
                         </div>
@@ -410,10 +411,10 @@ export const Account = () => {
                                     </div>
                                 </div>
                                 <div className="item-actions">
-                                    <button className="action-btn edit-btn" onClick={() => startEditPasskey(passkey)} title={t("settings.account.passkeys.rename")}>
+                                    <button className="action-btn edit-btn" onClick={() => startEditPasskey(passkey)} aria-label={t("settings.account.passkeys.rename")}>
                                         <Icon path={mdiPencil} size={0.8} />
                                     </button>
-                                    <button className="action-btn delete-btn" onClick={() => confirmDeletePasskey(passkey)} title={t("settings.account.passkeys.delete")}>
+                                    <button className="action-btn delete-btn" onClick={() => confirmDeletePasskey(passkey)} aria-label={t("settings.account.passkeys.delete")}>
                                         <Icon path={mdiTrashCan} size={0.8} />
                                     </button>
                                 </div>
@@ -457,7 +458,7 @@ export const Account = () => {
                                     </div>
                                 </div>
                                 <div className="item-actions">
-                                    <button className="action-btn delete-btn" onClick={() => confirmDeleteApiKey(apiKey)} title={t("settings.account.apiKeys.delete")}>
+                                    <button className="action-btn delete-btn" onClick={() => confirmDeleteApiKey(apiKey)} aria-label={t("settings.account.apiKeys.delete")}>
                                         <Icon path={mdiTrashCan} size={0.8} />
                                     </button>
                                 </div>

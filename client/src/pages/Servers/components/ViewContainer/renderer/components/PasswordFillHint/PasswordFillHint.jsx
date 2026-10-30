@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import Icon from "@mdi/react";
 import { mdiKeyboardTab, mdiUnfoldMoreHorizontal } from "@mdi/js";
 import { useTranslation } from "react-i18next";
+import Tooltip from "@/common/components/Tooltip";
 import "./styles.sass";
 
 export const PasswordFillHint = ({ anchor, items, selectedIndex, onFill, onCycle, foreground, fontFamily, fontSize }) => {
@@ -41,11 +42,13 @@ export const PasswordFillHint = ({ anchor, items, selectedIndex, onFill, onCycle
                 </span>
             </button>
             {items.length > 1 && (
-                <button type="button" className="password-fill-hint__cycle" onClick={() => onCycle(1)}
-                        title={t("servers.passwordHint.cycle")} aria-label={t("servers.passwordHint.cycle")}>
-                    <Icon path={mdiUnfoldMoreHorizontal} className="password-fill-hint__cycle-icon" />
-                    <span className="password-fill-hint__counter">{selectedIndex + 1}/{items.length}</span>
-                </button>
+                <Tooltip text={t("servers.passwordHint.cycle")} delay={500} asChild>
+                    <button type="button" className="password-fill-hint__cycle" onClick={() => onCycle(1)}
+                            aria-label={t("servers.passwordHint.cycle")}>
+                        <Icon path={mdiUnfoldMoreHorizontal} className="password-fill-hint__cycle-icon" />
+                        <span className="password-fill-hint__counter">{selectedIndex + 1}/{items.length}</span>
+                    </button>
+                </Tooltip>
             )}
         </div>
     );

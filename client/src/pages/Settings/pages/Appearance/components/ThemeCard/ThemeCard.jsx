@@ -2,6 +2,7 @@ import "./styles.sass";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
 import { mdiCloudDownload, mdiPencil, mdiTrashCan } from "@mdi/js";
+import Tooltip from "@/common/components/Tooltip";
 
 export const ThemeCard = ({ theme, isActive, onToggle, onEdit, onDelete, canEdit }) => {
     const { t } = useTranslation();
@@ -17,21 +18,23 @@ export const ThemeCard = ({ theme, isActive, onToggle, onEdit, onDelete, canEdit
                 </div>
                 <div className="css-theme-card-badges">
                     {theme.sourceId && (
-                        <span className="source-badge" title={t("settings.account.customThemes.fromSource")}>
-                            <Icon path={mdiCloudDownload} size={0.5} />
-                        </span>
+                        <Tooltip text={t("settings.account.customThemes.fromSource")} delay={500} asChild>
+                            <span className="source-badge">
+                                <Icon path={mdiCloudDownload} size={0.5} />
+                            </span>
+                        </Tooltip>
                     )}
                 </div>
             </div>
             {canEdit && (
                 <div className="css-theme-card-actions" onClick={(e) => e.stopPropagation()}>
                     {onEdit && (
-                        <button className="action-btn" onClick={onEdit} title={t("settings.account.customThemes.edit")}>
+                        <button className="action-btn" onClick={onEdit} aria-label={t("settings.account.customThemes.edit")}>
                             <Icon path={mdiPencil} size={0.55} />
                         </button>
                     )}
                     {onDelete && (
-                        <button className="action-btn delete-btn" onClick={onDelete} title={t("settings.account.customThemes.delete")}>
+                        <button className="action-btn delete-btn" onClick={onDelete} aria-label={t("settings.account.customThemes.delete")}>
                             <Icon path={mdiTrashCan} size={0.55} />
                         </button>
                     )}

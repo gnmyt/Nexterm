@@ -34,6 +34,7 @@
 #include "config.h"
 #include "error.h"
 #include "fs.h"
+#include "fs_client_relay.h"
 #include "gdi.h"
 #include "input.h"
 #include "keyboard.h"
@@ -162,14 +163,11 @@ static BOOL rdp_freerdp_load_channels(freerdp* instance) {
  *     settings for the session.
  *
  * @return
- *     Returns TRUE if the pre-connection process completes successfully.
- *     Returns FALSE if an error occurs during the initialization of the
- *     FreeRDP GDI system.
+ *     Always TRUE.
  */
 static BOOL rdp_freerdp_pre_connect(freerdp* instance) {
 
     rdpContext* context = GUAC_RDP_CONTEXT(instance);
-    rdpGraphics* graphics = context->graphics;
 
     guac_client* client = ((rdp_freerdp_context*) context)->client;
     guac_rdp_client* rdp_client = (guac_rdp_client*) client->data;
@@ -194,6 +192,33 @@ static BOOL rdp_freerdp_pre_connect(freerdp* instance) {
         } while (*(++current) != NULL);
 
     }
+
+    /*
+     * If the freerdp instance does not have a LoadChannels callback for
+     * loading plugins we use the PreConnect callback to load plugins instead.
+     */
+    #ifndef RDP_INST_HAS_LOAD_CHANNELS
+        rdp_freerdp_load_channels(instance);
+    #endif
+
+    return TRUE;
+}
+
+/**
+ * Callback invoked by FreeRDP once the connection has been established, but
+ * before any channels are connected. The FreeRDP GDI is initialized here, as
+ * FreeRDP 3 does not allocate the codecs it requires until after
+ * PreConnect.
+ *
+ * @param instance
+ *     The FreeRDP instance that has connected.
+ *
+ * @return
+ *     TRUE if the GDI was initialized successfully, FALSE otherwise.
+ */
+static BOOL rdp_freerdp_post_connect(freerdp* instance) {
+
+    rdpGraphics* graphics = GUAC_RDP_CONTEXT(instance)->graphics;
 
     /* Init FreeRDP internal GDI implementation */
     if (!gdi_init(instance, guac_rdp_get_native_pixel_format(FALSE)))
@@ -222,14 +247,6 @@ static BOOL rdp_freerdp_pre_connect(freerdp* instance) {
 
     GUAC_RDP_CONTEXT(instance)->update->SurfaceFrameMarker = guac_rdp_gdi_surface_frame_marker;
     GUAC_RDP_CONTEXT(instance)->update->altsec->FrameMarker = guac_rdp_gdi_frame_marker;
-
-    /*
-     * If the freerdp instance does not have a LoadChannels callback for
-     * loading plugins we use the PreConnect callback to load plugins instead.
-     */
-    #ifndef RDP_INST_HAS_LOAD_CHANNELS
-        rdp_freerdp_load_channels(instance);
-    #endif
 
     return TRUE;
 }
@@ -556,6 +573,7 @@ static int guac_rdp_handle_connection(guac_client* client) {
         rdp_inst->LoadChannels = rdp_freerdp_load_channels;
     #endif
     rdp_inst->PreConnect = rdp_freerdp_pre_connect;
+    rdp_inst->PostConnect = rdp_freerdp_post_connect;
     rdp_inst->Authenticate = rdp_freerdp_authenticate;
 
 #ifdef HAVE_FREERDP_VERIFYCERTIFICATEEX
@@ -677,10 +695,9 @@ static int guac_rdp_handle_connection(guac_client* client) {
         if (connection_closing)
             guac_rdp_client_abort(client, rdp_inst);
 
-        /* If a low-level connection error occurred, fail */
+        /* Preserve FreeRDP's disconnect reason for low-level failures. */
         else if (wait_result < 0)
-            guac_client_abort(client, GUAC_PROTOCOL_STATUS_UPSTREAM_UNAVAILABLE,
-                    "Connection closed.");
+            guac_rdp_client_abort(client, rdp_inst);
 
     }
 
@@ -877,6 +894,8 @@ void* guac_rdp_client_thread(void* data) {
         /* Expose filesystem to owner */
         guac_client_for_owner(client, guac_rdp_fs_expose,
                 rdp_client->filesystem);
+
+        guac_rdp_fs_client_relay_claim(rdp_client->filesystem);
 
     }
 

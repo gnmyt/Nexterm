@@ -113,6 +113,19 @@ body.tauri-mode
     box-shadow: none
     pointer-events: auto
 
+    &.collapsed,
+    &.collapsed.open
+      .left-pane-slot
+        position: static
+        left: auto
+        top: auto
+        visibility: visible
+        opacity: 1
+        pointer-events: auto
+        transform: none
+        transition: none
+        box-shadow: none
+
 ::-webkit-scrollbar
   width: 13px
 

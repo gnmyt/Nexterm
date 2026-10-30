@@ -5,8 +5,9 @@ const { buildSSHParams, resolveJumpHosts } = require("../lib/ConnectionService")
 const { validateEntryAccess } = require("./entry");
 const controlPlane = require("../lib/controlPlane/ControlPlaneServer");
 const { applyEffectiveEntryConfig } = require("../utils/folderInheritance");
+const { isConnectionReasonRequired, createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES, CONNECTION_REASON_REQUIRED } = require("./audit");
 
-const execCommand = async (accountId, entryId, identityId, command) => {
+const execCommand = async (accountId, entryId, identityId, command, { connectionReason = null, ipAddress = null, userAgent = null } = {}) => {
     const entry = await Entry.findByPk(entryId);
     if (!entry) {
         return { code: 404, message: "Entry not found" };
@@ -20,6 +21,10 @@ const execCommand = async (accountId, entryId, identityId, command) => {
     const effectiveConfig = await applyEffectiveEntryConfig(entry);
     if (effectiveConfig.protocol !== "ssh") {
         return { code: 400, message: "Command execution is only supported for SSH entries" };
+    }
+
+    if (!connectionReason && await isConnectionReasonRequired(entry.organizationId)) {
+        return CONNECTION_REASON_REQUIRED;
     }
 
     if (!controlPlane.hasEngine()) {
@@ -45,6 +50,17 @@ const execCommand = async (accountId, entryId, identityId, command) => {
     if (!host) {
         return { code: 400, message: "Missing host configuration" };
     }
+
+    await createAuditLog({
+        accountId,
+        organizationId: entry.organizationId,
+        action: AUDIT_ACTIONS.SSH_CONNECT,
+        resource: RESOURCE_TYPES.ENTRY,
+        resourceId: entry.id,
+        details: { connectionReason },
+        ipAddress,
+        userAgent,
+    });
 
     const jumpHosts = await resolveJumpHosts(entry, accountId);
     const execResult = await controlPlane.execCommand(host, port, params, command, jumpHosts);

@@ -72,8 +72,12 @@ const AppContent = () => {
             setIsLeftPaneHovering(current => current === hovering ? current : hovering);
         };
 
-        document.addEventListener("mousemove", handleMouseMove);
-        return () => document.removeEventListener("mousemove", handleMouseMove);
+        document.addEventListener("mousemove", handleMouseMove, true);
+        document.addEventListener("mousedown", handleMouseMove, true);
+        return () => {
+            document.removeEventListener("mousemove", handleMouseMove, true);
+            document.removeEventListener("mousedown", handleMouseMove, true);
+        };
     }, [isLeftPaneCollapsed, isLeftPaneHovering]);
     if (!tauriReady) {
         return (
@@ -100,7 +104,7 @@ const AppContent = () => {
                                             <TagProvider>
                                             <SessionProvider>
                                                 <QuickActionProvider>
-                                                    <div className="app-wrapper">
+                                                    <div className="app-wrapper" onMouseLeave={() => setIsLeftPaneHovering(false)}>
                                                         <TitleBar showTabs />
                                                         <ConnectionErrorBanner />
                                                         <div className="content-wrapper">

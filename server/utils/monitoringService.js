@@ -9,6 +9,7 @@ const { getMonitoringSettingsInternal } = require("../controllers/monitoring");
 const controlPlane = require("../lib/controlPlane/ControlPlaneServer");
 const { buildSSHParams, resolveJumpHosts } = require("../lib/ConnectionService");
 const { getEffectiveEntryConfig, getEntryIdentityIds } = require("./folderInheritance");
+const { parseCPUUsage } = require("./cpuUsage");
 
 let monitoringInterval = null;
 let isRunning = false;
@@ -83,7 +84,7 @@ const IFACE_DETAIL_CMD =
     '"$(cat "$d/statistics/tx_bytes" 2>/dev/null)"; done';
 
 const COMMANDS = {
-    cpu: "grep 'cpu ' /proc/stat",
+    cpu: "grep 'cpu ' /proc/stat; sleep 1; grep 'cpu ' /proc/stat",
     memory: "free -b",
     uptime: "cat /proc/uptime",
     loadAverage: "cat /proc/loadavg",
@@ -148,13 +149,6 @@ const collectServerData = async (entry, identity, credentials) => {
         logger.error("Error during monitoring data collection", { error: error.message, host });
         return { status: "offline", timestamp: new Date(), errorMessage: error.message };
     }
-};
-
-const parseCPUUsage = (output) => {
-    try {
-        const vals = output.split(" ").filter(Boolean).slice(1).map(Number);
-        return Math.round(((vals.reduce((a, b) => a + b, 0) - vals[3]) / vals.reduce((a, b) => a + b, 0)) * 100);
-    } catch { return null; }
 };
 
 const parseMemoryUsage = (output) => {

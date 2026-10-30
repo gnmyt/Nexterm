@@ -1,18 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { shouldAttemptAutoReconnect } from "@/common/utils/ReconnectPolicy.js";
 
 const BACKOFFS = [5, 10, 30, 60, 120];
 const MAX_ATTEMPTS = BACKOFFS.length;
 const RECONNECT_COOLDOWN_MS = 3000;
 const STABLE_CONNECTION_MS = 10000;
-const isEligible = (session) => {
-    if (!session) return false;
-    if (session.type === "notes" || session.isJoined) return false;
-    if (session.scriptId) return false;
-    if (session.type === "sftp") return false;
-    return true;
-};
 
-export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionError, enabled, serverConnected }) => {
+export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionErrorInfo, enabled, serverConnected }) => {
     const [reconnectStates, setReconnectStates] = useState({});
 
     const connectedByKey = useRef(new Map());
@@ -26,12 +20,12 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
     const activeSessionsRef = useRef(activeSessions);
     const enabledRef = useRef(enabled);
     const reconnectSessionRef = useRef(reconnectSession);
-    const getSessionErrorRef = useRef(getSessionError);
+    const getSessionErrorInfoRef = useRef(getSessionErrorInfo);
     useEffect(() => {
         activeSessionsRef.current = activeSessions;
         enabledRef.current = enabled;
         reconnectSessionRef.current = reconnectSession;
-        getSessionErrorRef.current = getSessionError;
+        getSessionErrorInfoRef.current = getSessionErrorInfo;
     });
 
     const keyForSession = useCallback((sessionId) =>
@@ -65,11 +59,11 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
         });
     }, []);
 
-    const doReconnect = useCallback((sessionId, key) => {
+    const doReconnect = useCallback((sessionId, key, { bypassCooldown = false } = {}) => {
         const reconnecting = reconnectsByKey.current.get(key);
         if (reconnecting) return reconnecting;
         const now = Date.now();
-        if (now - (lastReconnectByKey.current.get(key) || 0) < RECONNECT_COOLDOWN_MS) return Promise.resolve(null);
+        if (!bypassCooldown && now - (lastReconnectByKey.current.get(key) || 0) < RECONNECT_COOLDOWN_MS) return Promise.resolve(null);
         lastReconnectByKey.current.set(key, now);
         const reconnect = Promise.resolve(reconnectSessionRef.current?.(sessionId))
             .then(result => result?.deferred ? null : result?.connected === true)
@@ -81,6 +75,17 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
 
     const schedule = useCallback((key) => {
         if (timersByKey.current.has(key)) return;
+        const session = sessionForKey(key);
+        const errorInfo = session ? getSessionErrorInfoRef.current?.(session.id) : null;
+        if (!shouldAttemptAutoReconnect({
+            enabled: enabledRef.current,
+            session,
+            errorInfo,
+            wasConnected: connectedByKey.current.get(key),
+        })) {
+            clearState(key);
+            return;
+        }
         const attempts = attemptsByKey.current.get(key) || 0;
         if (attempts >= MAX_ATTEMPTS) {
             clearState(key);
@@ -93,7 +98,16 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
             timersByKey.current.delete(key);
             attemptsByKey.current.set(key, (attemptsByKey.current.get(key) || 0) + 1);
             const session = sessionForKey(key);
-            if (!session || !getSessionErrorRef.current?.(session.id)) return;
+            const errorInfo = session ? getSessionErrorInfoRef.current?.(session.id) : null;
+            if (!shouldAttemptAutoReconnect({
+                enabled: enabledRef.current,
+                session,
+                errorInfo,
+                wasConnected: connectedByKey.current.get(key),
+            })) {
+                clearState(key);
+                return;
+            }
             const reconnected = await doReconnect(session.id, key);
             if (reconnected === false) scheduleRef.current?.(key);
         }, delay * 1000));
@@ -116,12 +130,16 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
     }, [keyForSession, clearTimer, clearState, clearConnectionTimer]);
 
     const handleSessionErrored = useCallback((sessionId) => {
-        if (!enabledRef.current) return;
         const session = activeSessionsRef.current.find(s => s.id === sessionId);
-        if (!isEligible(session) || !session.reconnectKey) return;
-        if (!connectedByKey.current.get(session.reconnectKey)) return;
-        clearConnectionTimer(session.reconnectKey);
-        schedule(session.reconnectKey);
+        const key = session?.reconnectKey;
+        if (!key || !shouldAttemptAutoReconnect({
+            enabled: enabledRef.current,
+            session,
+            errorInfo: getSessionErrorInfoRef.current?.(sessionId),
+            wasConnected: connectedByKey.current.get(key),
+        })) return;
+        clearConnectionTimer(key);
+        schedule(key);
     }, [schedule, clearConnectionTimer]);
 
     const reconnectNow = useCallback((sessionId) => {
@@ -129,21 +147,24 @@ export const useAutoReconnect = ({ activeSessions, reconnectSession, getSessionE
         if (key) {
             clearTimer(key);
             clearState(key);
-            void doReconnect(sessionId, key).then((reconnected) => {
-                if (reconnected === false) schedule(key);
-            });
-        } else {
-            void reconnectSessionRef.current?.(sessionId);
+            attemptsByKey.current.set(key, 0);
+            return doReconnect(sessionId, key, { bypassCooldown: true });
         }
-    }, [keyForSession, clearTimer, clearState, doReconnect, schedule]);
+        return Promise.resolve(reconnectSessionRef.current?.(sessionId));
+    }, [keyForSession, clearTimer, clearState, doReconnect]);
 
     const retryOnReachable = useCallback(() => {
-        if (!enabledRef.current) return;
         for (const session of activeSessionsRef.current) {
             const key = session.reconnectKey;
-            if (!key || !isEligible(session)) continue;
-            if (!connectedByKey.current.get(key)) continue;
-            if (!getSessionErrorRef.current?.(session.id)) continue;
+            if (!key || !shouldAttemptAutoReconnect({
+                enabled: enabledRef.current,
+                session,
+                errorInfo: getSessionErrorInfoRef.current?.(session.id),
+                wasConnected: connectedByKey.current.get(key),
+            })) continue;
+            if (Date.now() - (lastReconnectByKey.current.get(key) || 0) < RECONNECT_COOLDOWN_MS) {
+                continue;
+            }
             clearTimer(key);
             clearState(key);
             void doReconnect(session.id, key).then((reconnected) => {

@@ -347,7 +347,11 @@ export const ViewContainer = ({
     }, [activeSessions.length, activeSessionId, focusSessionElement]);
 
     const renderRenderer = (session) => {
-        const rendererKey = `${session.id}-${session.connectionVersion || 0}`;
+        const connectionVersion = session.connectionVersion ?? 0;
+        const rendererKey = `${session.id}-${connectionVersion}`;
+        const scopedDisconnect = (sessionId, options = {}) => disconnectFromServer(sessionId, { ...options, connectionVersion });
+        const scopedError = (sessionId, message, options = {}) => markSessionErrored(sessionId, message, { ...options, connectionVersion });
+        const scopedConnected = (sessionId) => markSessionConnected(sessionId, connectionVersion);
         if (session.type === "notes") {
             return <NotesRenderer key={rendererKey} session={session} />;
         }
@@ -356,9 +360,9 @@ export const ViewContainer = ({
             return <ScriptRenderer
                 key={rendererKey}
                 session={session}
-                disconnectFromServer={disconnectFromServer}
+                disconnectFromServer={scopedDisconnect}
                 reconnectSession={reconnectSession}
-                markSessionErrored={markSessionErrored}
+                markSessionErrored={scopedError}
                 getSessionError={getSessionError}
                 updateProgress={updateSessionProgress}
                 savedState={getScriptState(session.id)}
@@ -369,41 +373,41 @@ export const ViewContainer = ({
 
         switch (renderer) {
             case "guac":
-                return <GuacamoleRenderer key={rendererKey} session={session} disconnectFromServer={disconnectFromServer}
+                return <GuacamoleRenderer key={rendererKey} session={session} disconnectFromServer={scopedDisconnect}
                                           reconnectSession={reconnectSession}
                                           reconnectNow={reconnectNow}
-                                          markSessionConnected={markSessionConnected}
+                                          markSessionConnected={scopedConnected}
                                           reconnectInfo={reconnectStates?.[session.reconnectKey]}
-                                          markSessionErrored={markSessionErrored}
+                                          markSessionErrored={scopedError}
                                           getSessionError={getSessionError}
                                           registerGuacamoleRef={registerGuacamoleRef}
                                           onControlsChange={(controls) => registerSessionControls(session.id, controls)}
                                           isShared={!!session.isJoined}
                                           onFullscreenToggle={toggleFullscreenMode} />;
             case "web":
-                return <BrowserRenderer key={rendererKey} session={session} disconnectFromServer={disconnectFromServer}
+                return <BrowserRenderer key={rendererKey} session={session} disconnectFromServer={scopedDisconnect}
                                         onPageInfo={(info) => updatePageInfo(session.id, info)}
-                                        markSessionErrored={markSessionErrored}
+                                        markSessionErrored={scopedError}
                                         getSessionError={getSessionError}
                                         registerGuacamoleRef={registerGuacamoleRef}
                                         isShared={!!session.isJoined}
                                         fullscreenEnabled={fullscreenMode}
                                         onFullscreenToggle={toggleFullscreenMode} />;
             case "terminal":
-                return <XtermRenderer key={rendererKey} session={session} disconnectFromServer={disconnectFromServer}
+                return <XtermRenderer key={rendererKey} session={session} disconnectFromServer={scopedDisconnect}
                                       reconnectSession={reconnectSession}
                                       reconnectNow={reconnectNow}
-                                      markSessionConnected={markSessionConnected}
+                                      markSessionConnected={scopedConnected}
                                       reconnectInfo={reconnectStates?.[session.reconnectKey]}
                                       isShared={!!session.isJoined}
-                                      markSessionErrored={markSessionErrored}
+                                      markSessionErrored={scopedError}
                                       getSessionError={getSessionError}
                                       registerTerminalRef={registerTerminalRef} broadcastMode={broadcastMode}
                                       terminalRefs={terminalRefs} updateProgress={updateSessionProgress}
                                       layoutMode={layoutMode} onBroadcastToggle={toggleBroadcastMode}
                                       onFullscreenToggle={toggleFullscreenMode} />;
             case "sftp":
-                return <FileRenderer key={rendererKey} session={session} disconnectFromServer={disconnectFromServer}
+                return <FileRenderer key={rendererKey} session={session} disconnectFromServer={scopedDisconnect}
                                      setOpenFileEditors={setOpenFileEditors} isActive={session.id === activeSessionId}
                                      onOpenTerminal={(path) => openTerminalFromFileManager?.(session.id, path)} />;
             default:
@@ -471,7 +475,7 @@ export const ViewContainer = ({
     const serverTabs = (
         <ServerTabs activeSessions={activeSessions} setActiveSessionId={focusSession}
                     activeSessionId={activeSessionId}
-                    closeSession={closeSession} reconnectSession={reconnectSession}
+                    closeSession={closeSession} reconnectSession={reconnectNow || reconnectSession}
                     layoutMode={layoutMode} onToggleSplit={toggleSplitMode}
                     onSplitSession={splitActiveWith}
                     orderRef={tabOrderRef} onBroadcastToggle={toggleBroadcastMode}

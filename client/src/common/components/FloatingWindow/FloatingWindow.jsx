@@ -6,8 +6,9 @@ import { useWindowControls } from "@/common/hooks/useWindowControls.js";
 import ResizeHandle from "@/common/components/ResizeHandle";
 import "./styles.sass";
 
-export const FloatingWindowAction = ({ className = "", ...props }) => (
-    <button type="button" className={`floating-window__action${className ? " " + className : ""}`} {...props} />
+export const FloatingWindowAction = ({ className = "", title, ...props }) => (
+    <button type="button" className={`floating-window__action${className ? " " + className : ""}`}
+            {...props} aria-label={props["aria-label"] || title} />
 );
 
 export const FloatingWindow = ({
@@ -32,14 +33,14 @@ export const FloatingWindow = ({
                 </div>
                 <div className="floating-window__actions">
                     {actions}
-                    <button type="button" className="floating-window__action" onClick={toggleMaximize}
+                    <FloatingWindowAction onClick={toggleMaximize}
                             title={isMaximized ? t("common.restore") : t("common.maximize")}>
                         <Icon path={isMaximized ? mdiWindowRestore : mdiWindowMaximize} />
-                    </button>
-                    <button type="button" className="floating-window__action floating-window__action--close"
+                    </FloatingWindowAction>
+                    <FloatingWindowAction className="floating-window__action--close"
                             onClick={onClose} title={t("common.close")}>
                         <Icon path={mdiClose} />
-                    </button>
+                    </FloatingWindowAction>
                 </div>
             </div>
 

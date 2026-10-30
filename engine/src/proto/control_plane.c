@@ -435,6 +435,24 @@ static void handle_exec_batch(nexterm_control_plane_t* cp,
     free(commands);
 }
 
+#define PORT_CHECK_BANNER_WAIT_MS 2000u
+#define PORT_CHECK_SSH_IDENT "SSH-2.0-Nexterm_StatusCheck\r\n"
+
+/* SSH servers log a probe that closes before sending its identification
+ * string as an error, so answer an SSH banner before closing. */
+static void close_port_probe(int fd, uint32_t timeout_ms) {
+    uint32_t wait_ms = timeout_ms < PORT_CHECK_BANNER_WAIT_MS ? timeout_ms : PORT_CHECK_BANNER_WAIT_MS;
+    struct pollfd pfd = { .fd = fd, .events = POLLIN };
+    char banner[8];
+
+    if (poll(&pfd, 1, (int)wait_ms) == 1
+        && recv(fd, banner, sizeof(banner), 0) >= 4
+        && memcmp(banner, "SSH-", 4) == 0)
+        send(fd, PORT_CHECK_SSH_IDENT, sizeof(PORT_CHECK_SSH_IDENT) - 1, MSG_NOSIGNAL);
+
+    close(fd);
+}
+
 static bool check_port_open(const char* host, uint16_t port, uint32_t timeout_ms) {
     struct addrinfo hints = {0};
     hints.ai_family = AF_UNSPEC;
@@ -462,7 +480,7 @@ static bool check_port_open(const char* host, uint16_t port, uint32_t timeout_ms
     freeaddrinfo(res);
 
     if (rc == 0) {
-        close(fd);
+        close_port_probe(fd, timeout_ms);
         return true;
     }
 
@@ -482,8 +500,13 @@ static bool check_port_open(const char* host, uint16_t port, uint32_t timeout_ms
     int err = 0;
     socklen_t len = sizeof(err);
     getsockopt(fd, SOL_SOCKET, SO_ERROR, &err, &len);
-    close(fd);
-    return err == 0;
+    if (err != 0) {
+        close(fd);
+        return false;
+    }
+
+    close_port_probe(fd, timeout_ms);
+    return true;
 }
 
 typedef struct {
@@ -508,6 +531,27 @@ static void free_port_check_ctx(port_check_ctx_t* ctx) {
     free(ctx);
 }
 
+#define PORT_CHECK_MAX_WORKERS 32
+
+typedef struct {
+    port_check_ctx_t* ctx;
+    bool* results;
+    pthread_mutex_t lock;
+    size_t next;
+} port_check_work_t;
+
+static void* port_check_worker(void* arg) {
+    port_check_work_t* work = (port_check_work_t*)arg;
+    for (;;) {
+        pthread_mutex_lock(&work->lock);
+        size_t i = work->next++;
+        pthread_mutex_unlock(&work->lock);
+        if (i >= work->ctx->count) return NULL;
+        work->results[i] = check_port_open(work->ctx->hosts[i], work->ctx->ports[i],
+                                           work->ctx->timeout_ms);
+    }
+}
+
 static void* port_check_thread(void* arg) {
     port_check_ctx_t* ctx = (port_check_ctx_t*)arg;
     bool* results = calloc(ctx->count, sizeof(bool));
@@ -516,8 +560,19 @@ static void* port_check_thread(void* arg) {
         return NULL;
     }
 
-    for (size_t i = 0; i < ctx->count; i++)
-        results[i] = check_port_open(ctx->hosts[i], ctx->ports[i], ctx->timeout_ms);
+    port_check_work_t work = { .ctx = ctx, .results = results, .next = 0 };
+    pthread_mutex_init(&work.lock, NULL);
+
+    size_t worker_count = ctx->count < PORT_CHECK_MAX_WORKERS ? ctx->count : PORT_CHECK_MAX_WORKERS;
+    pthread_t workers[PORT_CHECK_MAX_WORKERS];
+    size_t started = 0;
+    while (started < worker_count
+           && pthread_create(&workers[started], NULL, port_check_worker, &work) == 0)
+        started++;
+
+    if (started == 0) port_check_worker(&work);
+    for (size_t i = 0; i < started; i++) pthread_join(workers[i], NULL);
+    pthread_mutex_destroy(&work.lock);
 
     nexterm_cp_send_port_check_result(ctx->cp, ctx->request_id,
                                       (const char**)ctx->ids, results, ctx->count);

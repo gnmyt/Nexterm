@@ -6,8 +6,11 @@ const { validateSchema } = require("../utils/schema");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 
 const app = Router();
+
+const sendError = (res, result) =>
+    res.status(result.code).json({ error: result.message, ...(result.errorCode && { code: result.errorCode }) });
 const getSessionOptions = (req) => {
-    const { entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, displayDpi, scriptId, startPath, connectionGeneration } = req.body;
+    const { entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, displayDpi, displayWidth, displayHeight, scriptId, startPath, connectionGeneration } = req.body;
     return {
         accountId: req.user.id,
         entryId,
@@ -18,6 +21,8 @@ const getSessionOptions = (req) => {
         tabId,
         browserId,
         displayDpi,
+        displayWidth,
+        displayHeight,
         scriptId,
         startPath,
         connectionGeneration,
@@ -43,7 +48,7 @@ app.post("/", async (req, res) => {
         const result = await createSession(getSessionOptions(req));
         
         if (result?.code) {
-            return res.status(result.code).json({ error: result.message });
+            return sendError(res, result);
         }
 
         res.status(201).json(result);
@@ -63,7 +68,7 @@ app.post("/:id/reconnect", async (req, res) => {
             sessionId: req.params.id,
         });
         if (result?.code) {
-            return res.status(result.code).json({ error: result.message });
+            return sendError(res, result);
         }
         res.json(result);
     } catch (error) {
@@ -119,7 +124,7 @@ app.get("/:id", async (req, res) => {
 app.post("/:id/hibernate", async (req, res) => {
     if (validateSchema(res, sessionIdValidation, req.params)) return;
     
-    const result = await hibernateSession(req.params.id);
+    const result = await hibernateSession(req.user.id, req.params.id);
     if (result?.code) {
         return res.status(result.code).json({ error: result.message });
     }
@@ -142,7 +147,7 @@ app.post("/:id/resume", async (req, res) => {
     if (validateSchema(res, resumeSessionValidation, req.body)) return;
     
     const { tabId, browserId } = req.body;
-    const result = await resumeSession(req.params.id, tabId, browserId);
+    const result = await resumeSession(req.user.id, req.params.id, tabId, browserId);
     if (result?.code) {
         return res.status(result.code).json({ error: result.message });
     }
@@ -163,7 +168,7 @@ app.post("/:id/resume", async (req, res) => {
 app.delete("/:id", async (req, res) => {
     if (validateSchema(res, sessionIdValidation, req.params)) return;
     
-    const result = await deleteSession(req.params.id);
+    const result = await deleteSession(req.user.id, req.params.id);
     if (result?.code) {
         return res.status(result.code).json({ error: result.message });
     }
@@ -296,16 +301,23 @@ app.post("/:entryId/exec", async (req, res) => {
         const entryId = parseInt(req.params.entryId, 10);
         if (isNaN(entryId)) return res.status(400).json({ error: "Invalid entry ID" });
 
-        const { command } = req.body;
+        const { command, connectionReason } = req.body;
         if (!command || typeof command !== "string") {
             return res.status(400).json({ error: "Command is required" });
         }
+        if (connectionReason != null && typeof connectionReason !== "string") {
+            return res.status(400).json({ error: "Connection reason must be a string" });
+        }
 
         const identityId = req.query.identityId ? parseInt(req.query.identityId, 10) : null;
-        const result = await execCommand(req.user.id, entryId, identityId, command);
+        const result = await execCommand(req.user.id, entryId, identityId, command, {
+            connectionReason: connectionReason?.trim() || null,
+            ipAddress: req.ip || req.socket?.remoteAddress || 'unknown',
+            userAgent: req.headers['user-agent'] || 'unknown',
+        });
 
         if (result?.code) {
-            return res.status(result.code).json({ error: result.message });
+            return sendError(res, result);
         }
 
         res.json(result);

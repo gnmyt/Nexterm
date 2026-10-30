@@ -7,6 +7,8 @@ const { authenticateUser: ldapAuth, getEnabledProvider: getLdapProvider } = requ
 const logger = require("../utils/logger");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const sessionManager = require("../lib/SessionManager");
+const { createLogoutUrlForSession } = require("./oidc");
+const { logoutWithDependencies } = require("../utils/sessionLogout");
 
 module.exports.login = async (configuration, user) => {
     const internalProvider = await OIDCProvider.findOne({ where: { isInternal: true, enabled: true } });
@@ -60,15 +62,15 @@ module.exports.login = async (configuration, user) => {
     return { token: session.token, totpRequired: account.totpEnabled };
 };
 
-module.exports.logout = async token => {
-    const session = await Session.findOne({ where: { token } });
-
-    if (session === null)
-        return { code: 204, message: "Your session token is invalid" };
-
-    logger.system(`User logged out`, { accountId: session.accountId });
-
-    await Session.destroy({ where: { token } });
-    sessionManager.removeAllByAccountId(session.accountId);
-    stateBroadcaster.forceLogoutSession(session.id);
-};
+module.exports.logout = async token => logoutWithDependencies(token, {
+    logLogout: accountId => logger.system(`User logged out`, { accountId }),
+    findSession: value => Session.findOne({ where: { token: value } }),
+    destroySession: value => Session.destroy({ where: { token: value } }),
+    removeAccountSessions: accountId => sessionManager.removeAllByAccountId(accountId),
+    broadcastLogout: sessionId => stateBroadcaster.forceLogoutSession(sessionId),
+    createOIDCLogoutUrl: session => createLogoutUrlForSession(session),
+    warnOIDCLogout: providerId => logger.warn(
+        "OIDC provider logout could not be initiated; local logout completed",
+        { providerId },
+    ),
+});

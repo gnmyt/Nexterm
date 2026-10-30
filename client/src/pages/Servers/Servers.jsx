@@ -22,12 +22,15 @@ import { StateStreamContext, STATE_TYPES } from "@/common/contexts/StateStreamCo
 import { isTauri } from "@/common/utils/TauriUtil.js";
 import { getTabId, getBrowserId, requiresIdentity, canConnectWithoutPrompt } from "@/common/utils/ConnectionUtil.js";
 import { postRequest, deleteRequest } from "@/common/utils/RequestUtil";
+import { getExpectedDisplaySize, resolveScale, resolveScaleSetting, scaleToDpi } from "@/common/utils/displayScale.js";
 
 const makeReconnectKey = () => {
     const values = new Uint32Array(4);
     crypto.getRandomValues(values);
     return `rk-${Array.from(values, value => value.toString(36)).join("-")}`;
 };
+
+const getConnectionVersion = (session) => session?.connectionVersion ?? 0;
 
 const upsertSession = (sessions, session) => {
     const index = sessions.findIndex(current => current.id === session.id);
@@ -60,7 +63,11 @@ export const Servers = () => {
     const { liveSessions } = useLiveSessions();
     const { getServerById, servers } = useContext(ServerContext);
     const { registerHandler, isConnected } = useContext(StateStreamContext);
-    const { autoReconnect } = usePreferences();
+    const { autoReconnect, defaultDisplayScale } = usePreferences();
+    const defaultDisplayScaleRef = useRef(defaultDisplayScale);
+    useEffect(() => {
+        defaultDisplayScaleRef.current = defaultDisplayScale;
+    }, [defaultDisplayScale]);
     const sessionLayout = useSessionLayout();
     const location = useLocation();
     const navigate = useNavigate();
@@ -70,19 +77,43 @@ export const Servers = () => {
     const erroredSessionsRef = useRef(new Map());
     const autoReconnectRef = useRef(null);
     const activeSessionsRef = useRef(activeSessions);
-    const reconnectingKeysRef = useRef(new Set());
+    const reconnectingKeysRef = useRef(new Map());
 
     useEffect(() => {
         activeSessionsRef.current = activeSessions;
+        for (const session of activeSessions) {
+            const targetVersion = reconnectingKeysRef.current.get(session.reconnectKey);
+            if (targetVersion !== undefined && getConnectionVersion(session) >= targetVersion) {
+                reconnectingKeysRef.current.delete(session.reconnectKey);
+            }
+        }
     }, [activeSessions]);
 
-    const markSessionErrored = useCallback((sessionId, message) => {
+    const markSessionErrored = useCallback((sessionId, message, {
+        autoReconnect: shouldAutoReconnect = true,
+        connectionVersion = null,
+    } = {}) => {
+        const session = activeSessionsRef.current.find(current => current.id === sessionId);
+        if (!session) return;
+        const currentVersion = getConnectionVersion(session);
+        const reportedVersion = connectionVersion ?? currentVersion;
+        const targetVersion = reconnectingKeysRef.current.get(session.reconnectKey);
+        if (targetVersion !== undefined && reportedVersion < targetVersion) return;
+        if (reportedVersion !== currentVersion) return;
+        if (targetVersion !== undefined) reconnectingKeysRef.current.delete(session.reconnectKey);
         if (erroredSessionsRef.current.has(sessionId)) return;
-        erroredSessionsRef.current.set(sessionId, message);
-        autoReconnectRef.current?.handleSessionErrored(sessionId);
+        erroredSessionsRef.current.set(sessionId, {
+            message,
+            autoReconnect: shouldAutoReconnect,
+        });
+        if (shouldAutoReconnect) autoReconnectRef.current?.handleSessionErrored(sessionId);
     }, []);
 
     const getSessionError = useCallback((sessionId) => {
+        return erroredSessionsRef.current.get(sessionId)?.message || null;
+    }, []);
+
+    const getSessionErrorInfo = useCallback((sessionId) => {
         return erroredSessionsRef.current.get(sessionId) || null;
     }, []);
 
@@ -108,6 +139,7 @@ export const Servers = () => {
                 connectionGeneration: session.connectionGeneration ?? 0,
                 server,
                 identity: session.configuration.identityId,
+                connectionReason: session.configuration.connectionReason || null,
                 isHibernated: session.isHibernated,
                 lastActivity: session.lastActivity,
                 type: session.configuration.type || undefined,
@@ -256,9 +288,10 @@ export const Servers = () => {
     };
 
     const performConnection = async (options, connectionReason = null) => {
-        const { server, identity = null, type = null, directIdentity = null, scriptId = null, scriptName = null, placement = null, reconnectSessionId = null, reconnectKey: existingReconnectKey = null } = options;
+        const { server, identity = null, type = null, directIdentity = null, scriptId = null, scriptName = null, placement = null, reconnectSessionId = null, reconnectKey: existingReconnectKey = null, connectionGeneration = null } = options;
         try {
             const existingSession = activeSessionsRef.current.find(s => s.id === reconnectSessionId);
+            const displaySize = getExpectedDisplaySize();
             const payload = {
                 entryId: server.id,
                 identityId: identity?.id,
@@ -266,8 +299,9 @@ export const Servers = () => {
                 type,
                 tabId: getTabId(),
                 browserId: getBrowserId(),
-                displayDpi: Math.round((window.devicePixelRatio || 1) * 96),
-                ...(reconnectSessionId && { connectionGeneration: existingSession?.connectionGeneration ?? 0 }),
+                displayDpi: scaleToDpi(resolveScale(resolveScaleSetting(server.id, server.displayScale, defaultDisplayScaleRef.current))),
+                ...(displaySize && { displayWidth: displaySize.width, displayHeight: displaySize.height }),
+                ...(reconnectSessionId && { connectionGeneration: connectionGeneration ?? existingSession?.connectionGeneration ?? 0 }),
             };
 
             if (directIdentity) payload.directIdentity = directIdentity;
@@ -283,6 +317,7 @@ export const Servers = () => {
             const sessionData = {
                 server,
                 identity: identity?.id,
+                connectionReason: connectionReason || null,
                 id: session.sessionId,
                 type: type || undefined,
                 organizationId: organizationId,
@@ -304,6 +339,10 @@ export const Servers = () => {
             setActiveSessionId(session.sessionId);
             return true;
         } catch (error) {
+            if (reconnectSessionId && error?.code === "SESSION_CLOSED") {
+                disconnectFromServer(reconnectSessionId, { force: true });
+                return false;
+            }
             console.error("Failed to connect session", error);
             return false;
         }
@@ -313,13 +352,13 @@ export const Servers = () => {
         if (!options.server) return { connected: false, deferred: true };
 
         const requiresReason = checkConnectionReasonRequired(options.server.id, servers);
-        if (requiresReason) {
+        if (requiresReason && !options.connectionReason) {
             setPendingConnection(options);
             setConnectionReasonDialogOpen(true);
             return { connected: false, deferred: true };
         }
 
-        const connected = await performConnection(options);
+        const connected = await performConnection(options, options.connectionReason ?? null);
         return { connected, deferred: false };
     };
 
@@ -347,18 +386,36 @@ export const Servers = () => {
 
     const handleConnectionReasonProvided = (reason) => {
         if (pendingConnection) {
-            void performConnection(pendingConnection, reason);
+            const connection = pendingConnection;
+            void performConnection(connection, reason).then((connected) => {
+                if (!connected && connection.reconnectKey) {
+                    reconnectingKeysRef.current.delete(connection.reconnectKey);
+                }
+            });
             setPendingConnection(null);
         }
         setConnectionReasonDialogOpen(false);
     };
 
     const handleConnectionReasonCanceled = () => {
+        if (pendingConnection?.reconnectKey) {
+            reconnectingKeysRef.current.delete(pendingConnection.reconnectKey);
+        }
         setPendingConnection(null);
         setConnectionReasonDialogOpen(false);
     };
 
-    const disconnectFromServer = useCallback((sessionId) => {
+    const disconnectFromServer = useCallback((sessionId, { force = false, connectionVersion = null } = {}) => {
+        const session = activeSessionsRef.current.find(current => current.id === sessionId);
+        if (!force && session) {
+            const currentVersion = getConnectionVersion(session);
+            const reportedVersion = connectionVersion ?? currentVersion;
+            const targetVersion = reconnectingKeysRef.current.get(session.reconnectKey);
+            if (targetVersion !== undefined && reportedVersion < targetVersion) return;
+            if (reportedVersion !== currentVersion) return;
+            if (targetVersion !== undefined) reconnectingKeysRef.current.delete(session.reconnectKey);
+        }
+
         erroredSessionsRef.current.delete(sessionId);
         setActiveSessions(prev => {
             const newSessions = prev.filter(session => session.id !== sessionId);
@@ -379,7 +436,7 @@ export const Servers = () => {
                 console.debug("Session deletion request failed:", error);
             });
         }
-        disconnectFromServer(sessionId);
+        disconnectFromServer(sessionId, { force: true });
     };
 
     const reconnectSession = async (sessionId) => {
@@ -388,26 +445,41 @@ export const Servers = () => {
             return { connected: false, deferred: true };
         }
 
-        reconnectingKeysRef.current.add(session.reconnectKey);
-        try {
-            return await initiateConnection({
-                server: session.server,
-                identity: session.identity ? { id: session.identity } : null,
-                type: session.type ?? null,
-                scriptId: session.scriptId ?? null,
-                scriptName: session.scriptName ?? null,
-                reconnectSessionId: sessionId,
-                reconnectKey: session.reconnectKey,
-            });
-        } finally {
+        reconnectingKeysRef.current.set(session.reconnectKey, getConnectionVersion(session) + 1);
+        const result = await initiateConnection({
+            server: session.server,
+            identity: session.identity ? { id: session.identity } : null,
+            type: session.type ?? null,
+            scriptId: session.scriptId ?? null,
+            scriptName: session.scriptName ?? null,
+            reconnectSessionId: sessionId,
+            reconnectKey: session.reconnectKey,
+            connectionReason: session.connectionReason,
+            connectionGeneration: session.connectionGeneration ?? 0,
+        });
+        if (!result.connected && !result.deferred) {
             reconnectingKeysRef.current.delete(session.reconnectKey);
         }
+        return result;
     };
+
+    const markSessionConnected = useCallback((sessionId, connectionVersion = null) => {
+        const session = activeSessionsRef.current.find(current => current.id === sessionId);
+        if (!session) return;
+        const currentVersion = getConnectionVersion(session);
+        const reportedVersion = connectionVersion ?? currentVersion;
+        if (reportedVersion !== currentVersion) return;
+        const targetVersion = reconnectingKeysRef.current.get(session.reconnectKey);
+        if (targetVersion !== undefined && reportedVersion >= targetVersion) {
+            reconnectingKeysRef.current.delete(session.reconnectKey);
+        }
+        autoReconnectRef.current?.markSessionConnected(sessionId);
+    }, []);
 
     const autoReconnectApi = useAutoReconnect({
         activeSessions,
         reconnectSession,
-        getSessionError,
+        getSessionErrorInfo,
         enabled: autoReconnect,
         serverConnected: isConnected,
     });
@@ -642,7 +714,7 @@ export const Servers = () => {
                                openNotes={openNotes}
                                markSessionErrored={markSessionErrored}
                                getSessionError={getSessionError}
-                               markSessionConnected={autoReconnectApi.markSessionConnected}
+                               markSessionConnected={markSessionConnected}
                                reconnectNow={autoReconnectApi.reconnectNow}
                                reconnectStates={autoReconnectApi.reconnectStates}
                                setOpenFileEditors={setOpenFileEditors}

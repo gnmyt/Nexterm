@@ -60,7 +60,7 @@ export const Sidebar = ({ onToggleCollapse }) => {
                 }} />}
             <div className="sidebar-top">
                 <Tooltip text={t('common.sidebar.collapseTitle')}>
-                    <div className="sidebar-logo nexterm-logo" onClick={onToggleCollapse} title={t('common.sidebar.collapseTitle')}><NextermLogo size={48 * uiScale} /></div>
+                    <div className="sidebar-logo nexterm-logo" onClick={onToggleCollapse}><NextermLogo size={48 * uiScale} /></div>
                 </Tooltip>
                 <nav>
                     {navigation.map((item, i) => (

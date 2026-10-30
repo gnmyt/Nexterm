@@ -170,7 +170,7 @@ export const ConnectorSetup = ({ open, isAddMode = false, onCancelAdd }) => {
                         <p className="linking-description">{t("common.connectorSetup.enterCodeDescription")}</p>
                         <div className="code-display" onClick={copyCode}>
                             <span className="code-value">{deviceCode || "----"}</span>
-                            <button className="code-copy" type="button" title={t("common.connectorSetup.copyCode")}>
+                            <button className="code-copy" type="button" aria-label={t("common.connectorSetup.copyCode")}>
                                 <Icon path={mdiContentCopy} size={0.8} />
                             </button>
                         </div>

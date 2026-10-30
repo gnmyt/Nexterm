@@ -200,7 +200,10 @@
         "closedUnexpectedly": "Connection closed unexpectedly",
         "error": "Connection error occurred",
         "scriptClosedUnexpectedly": "Script connection closed unexpectedly",
-        "scriptError": "Script connection error occurred"
+        "scriptError": "Script connection error occurred",
+        "rdpSessionConflict": "The session was disconnected by the server because another connection was opened.",
+        "rdpSessionTimeout": "The RDP session was disconnected because its session time limit was reached.",
+        "rdpSessionClosed": "The RDP session was ended by the remote server or an administrator."
       }
     },
     "messages": {
@@ -732,7 +735,13 @@
         "neverUsed": "Never used",
         "expires": "Expires {{date}}",
         "delete": "Delete"
-      }
+      },
+      "remoteDesktop": "Remote Desktop",
+      "remoteDesktopDescription": "Default display scale for remote desktop sessions. Connections can override it, and a scale picked during a session is remembered on that device.",
+      "remoteDesktopScale": "Display Scale",
+      "remoteDesktopScaleAuto": "Automatic (match device)",
+      "remoteDesktopSyncEnabled": "Remote desktop settings will now sync across devices",
+      "remoteDesktopSyncDisabled": "Remote desktop settings are now saved on this device only"
     },
     "passwordChange": {
       "title": "Change password",
@@ -1068,6 +1077,8 @@
           "clientSecretPlaceholderEdit": "Leave blank to keep existing",
           "redirectUri": "Redirect URI",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
+          "endSessionEndpoint": "End Session Endpoint (Optional)",
+          "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
           "scope": "Scope",
           "scopePlaceholder": "openid profile",
           "usernameAttribute": "Username Attribute",
@@ -1087,6 +1098,21 @@
         },
         "messages": {
           "saveFailed": "Failed to save provider"
+        },
+        "groupSync": {
+          "title": "Group Sync",
+          "hint": "Automatically add users to organizations and control access based on group claims from your identity provider.",
+          "groupsAttribute": "Groups Claim",
+          "groupsAttributePlaceholder": "groups",
+          "requiredGroup": "Required Group",
+          "requiredGroupPlaceholder": "nexterm-users",
+          "requiredGroupHint": "If set, only users whose groups claim contains this value are allowed to log in.",
+          "mappings": "Organization Mappings",
+          "mappingsHint": "Map a group claim value to an organization. Membership is kept in sync on every login.",
+          "mappingValuePlaceholder": "Group value",
+          "roleMember": "Member",
+          "roleOwner": "Owner",
+          "addMapping": "Add Mapping"
         }
       },
       "ldapDialog": {
@@ -1655,7 +1681,10 @@
         "splitDown": "Split Down",
         "sendShortcut": "Send Shortcut…",
         "zoom": "Zoom ({{zoom}}%)",
-        "zoomReset": "Reset Zoom"
+        "zoomReset": "Reset Zoom",
+        "displayScale": "Display Scale ({{scale}}%)",
+        "displayScaleAuto": "Automatic ({{scale}}%)",
+        "displayScaleReset": "Use Default"
       },
       "enableSplitView": "Enable Split View",
       "disableSplitView": "Disable Split View",
@@ -1739,9 +1768,12 @@
         },
         "display": {
           "title": "Display Settings",
-          "description": "Configure color depth and resize behavior for the remote display",
+          "description": "Configure color depth, resize behavior and scaling for the remote display",
           "colorDepth": "Color Depth",
-          "resizeMethod": "Resize Method"
+          "resizeMethod": "Resize Method",
+          "displayScale": "Display Scale",
+          "displayScaleAuto": "Automatic (match this device)",
+          "displayScaleAccount": "Account default"
         },
         "performance": {
           "title": "Performance Settings",
@@ -2131,6 +2163,10 @@
     "discord": {
       "title": "Join Discord",
       "description": "Chat with the community and get help."
+    },
+    "docs": {
+      "title": "View Documentation",
+      "description": "Read the documentation and learn how to use Nexterm."
     },
     "github": {
       "title": "View on GitHub",

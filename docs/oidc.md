@@ -16,6 +16,7 @@ Go to **Settings** → **Authentication** → **Add Provider**.
 | Client Secret | From your IdP            |
 | Redirect URI  | Copy this to your IdP    |
 | Scope         | Usually `openid profile` |
+| End Session Endpoint | Optional logout URL override when discovery does not advertise one |
 
 ## Provider Setup
 
@@ -68,6 +69,20 @@ identity_providers:
 
 Issuer URL: `https://auth.yourdomain.com`
 
+## Logout Setup
+
+Register this post-logout redirect URI with your identity provider in addition to the login redirect URI:
+
+```text
+https://<nexterm-host>/api/auth/oidc/logout/callback
+```
+
+Nexterm uses the provider's discovered `end_session_endpoint` by default. If the provider does not advertise one, set **End Session Endpoint** in the provider's **Advanced Settings**. The configured override takes precedence over discovery.
+
+Sessions created before upgrading do not have an ID-token hint and therefore use local-only logout until the user signs in again. Providers without a logout endpoint also continue to log out locally.
+
+For Authentik, add both the login callback and post-logout callback to the provider's allowed redirect URIs.
+
 ## Attribute Mapping
 
 Defaults in **Advanced Settings**:
@@ -77,6 +92,27 @@ Defaults in **Advanced Settings**:
 | Username   | `preferred_username` |
 | First Name | `given_name`         |
 | Last Name  | `family_name`        |
+
+## Group Sync
+
+In **Advanced Settings**, under **Group Sync**, you can map group claims from your identity provider to Nexterm organizations and
+restrict access to specific users.
+
+| Field                | Description                                                                                             |
+|----------------------|-----------------------------------------------------------------------------------------------------------|
+| Groups Claim          | The claim in the userinfo/ID token response that contains the user's groups, e.g. `groups`. Accepts a JSON array or a space/comma separated string. Leave empty to disable group sync. |
+| Required Group        | If set, only users whose groups claim contains this value are allowed to log in. Useful when your identity provider has many users who shouldn't have access to Nexterm. |
+| Organization Mappings | A list of `group value → organization (+ role)` mappings. On every login, Nexterm adds the user as a member (or owner) of every mapped organization whose group value is present in their claim, and removes them from any organization that was previously granted this way but is no longer matched. |
+
+Memberships created through group sync are tracked separately from manually invited members, so removing a group mapping — or a
+user losing a group in your IdP — never touches memberships that were added by hand. Organization owners added by manual
+invitation are never removed by sync.
+
+### Keycloak Example
+
+1. In your realm, create a **Client Scope** (e.g. `groups`) with a **Group Membership** mapper, add it to your client.
+2. Set **Groups Claim** to `groups`.
+3. Add mappings such as `/devops → DevOps Team` or set **Required Group** to `/nexterm-users` to gate access.
 
 ## Troubleshooting
 

@@ -4,6 +4,7 @@ import * as mdi from "@mdi/js";
 import Icon from "@mdi/react";
 import { mdiMagnify, mdiClose, mdiChevronDown } from "@mdi/js";
 import { useTranslation } from "react-i18next";
+import Tooltip from "@/common/components/Tooltip";
 import "./styles.sass";
 
 const getAllIcons = () => {
@@ -159,14 +160,14 @@ export const IconChooser = ({ selected, setSelected }) => {
                     <div className="icon-chooser__grid">
                         {filteredIcons.length > 0 ? (
                             filteredIcons.map((icon) => (
-                                <div
-                                    key={icon.name}
-                                    className={`icon-chooser__item ${selectedIcon?.name === icon.name ? "selected" : ""}`}
-                                    onClick={() => handleIconSelect(icon)}
-                                    title={icon.displayName}
-                                >
-                                    <Icon path={icon.path} size={1} />
-                                </div>
+                                <Tooltip key={icon.name} text={icon.displayName} delay={500} asChild>
+                                    <div
+                                        className={`icon-chooser__item ${selectedIcon?.name === icon.name ? "selected" : ""}`}
+                                        onClick={() => handleIconSelect(icon)}
+                                    >
+                                        <Icon path={icon.path} size={1} />
+                                    </div>
+                                </Tooltip>
                             ))
                         ) : (
                             <div className="icon-chooser__empty">
