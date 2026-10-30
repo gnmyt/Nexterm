@@ -8,6 +8,8 @@ module.exports.createSessionValidation = Joi.object({
     tabId: Joi.string().allow(null).optional(),
     browserId: Joi.string().allow(null).optional(),
     displayDpi: Joi.number().integer().min(96).max(384).optional(),
+    displayWidth: Joi.number().integer().min(200).max(8192).optional(),
+    displayHeight: Joi.number().integer().min(200).max(8192).optional(),
     scriptId: Joi.number().allow(null).optional(),
     startPath: Joi.string().allow(null).optional(),
     directIdentity: Joi.object({
