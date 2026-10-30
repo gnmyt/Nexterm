@@ -193,6 +193,11 @@ module.exports.setActiveWs = (sessionId, ws) => {
     if (session) session.activeWs = ws;
 };
 
+module.exports.claimActiveWs = (sessionId, ws) => {
+    const session = module.exports.get(sessionId);
+    if (session && !session.activeWs) session.activeWs = ws;
+};
+
 module.exports.isActiveWs = (sessionId, ws) => module.exports.get(sessionId)?.activeWs === ws;
 
 module.exports.pinMonitor = (sessionId, ws, monitor) => {

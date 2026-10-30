@@ -81,7 +81,7 @@ const handleGuacJoin = async (ws, sessionId, ctx, pinnedMonitor = null) => {
     SessionManager.addWebSocket(sessionId, ws, isShared, buildParticipant(ctx));
 
     if (pinnedMonitor !== null) SessionManager.pinMonitor(sessionId, ws, pinnedMonitor);
-    else if (!isShared || canWrite()) SessionManager.setActiveWs(sessionId, ws);
+    else if (!isShared || canWrite()) SessionManager.claimActiveWs(sessionId, ws);
 
     const pingInterval = setInterval(() => {
         if (ws.readyState === ws.OPEN) ws.ping();
@@ -102,6 +102,7 @@ const handleGuacJoin = async (ws, sessionId, ctx, pinnedMonitor = null) => {
                 || msgStr.match(MOUSE_BUTTONS)?.[2] > 0
                 || sizedMonitor > 0;
             if (isInteraction) SessionManager.setActiveWs(sessionId, ws);
+            else if (sizedMonitor !== null) SessionManager.claimActiveWs(sessionId, ws);
 
             if (sizedMonitor !== null && (!SessionManager.isActiveWs(sessionId, ws)
                 || SessionManager.isMonitorPinnedByOther(sessionId, ws, sizedMonitor))) return;
