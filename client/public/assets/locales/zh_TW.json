@@ -735,7 +735,13 @@
         "neverUsed": "從未使用過",
         "expires": "有效期至 {{date}}",
         "delete": "刪除"
-      }
+      },
+      "remoteDesktop": "Remote Desktop",
+      "remoteDesktopDescription": "Default display scale for remote desktop sessions. Connections can override it, and a scale picked during a session is remembered on that device.",
+      "remoteDesktopScale": "Display Scale",
+      "remoteDesktopScaleAuto": "Automatic (match device)",
+      "remoteDesktopSyncEnabled": "Remote desktop settings will now sync across devices",
+      "remoteDesktopSyncDisabled": "Remote desktop settings are now saved on this device only"
     },
     "passwordChange": {
       "title": "變更密碼",
@@ -1655,7 +1661,10 @@
         "splitDown": "Split Down",
         "sendShortcut": "Send Shortcut…",
         "zoom": "Zoom ({{zoom}}%)",
-        "zoomReset": "Reset Zoom"
+        "zoomReset": "Reset Zoom",
+        "displayScale": "Display Scale ({{scale}}%)",
+        "displayScaleAuto": "Automatic ({{scale}}%)",
+        "displayScaleReset": "Use Default"
       },
       "enableSplitView": "Enable Split View",
       "disableSplitView": "Disable Split View",
@@ -1738,9 +1747,12 @@
         },
         "display": {
           "title": "顯示器設定",
-          "description": "設定遠端顯示器的色彩深度和調整大小行為",
+          "description": "Configure color depth, resize behavior and scaling for the remote display",
           "colorDepth": "色彩深度",
-          "resizeMethod": "調整大小方法"
+          "resizeMethod": "調整大小方法",
+          "displayScale": "Display Scale",
+          "displayScaleAuto": "Automatic (match this device)",
+          "displayScaleAccount": "Account default"
         },
         "performance": {
           "title": "效能設定",
@@ -2130,6 +2142,10 @@
     "discord": {
       "title": "加入討論區",
       "description": "與社群聊天並獲得協助。"
+    },
+    "docs": {
+      "title": "View Documentation",
+      "description": "Read the documentation and learn how to use Nexterm."
     },
     "github": {
       "title": "在 GitHub 上檢視",
