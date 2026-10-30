@@ -5,6 +5,7 @@ import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import Icon from "@mdi/react";
 import { mdiServerNetwork, mdiClose, mdiPlus, mdiChartLine, mdiMonitor, mdiPalette, mdiVolumeHigh, mdiPowerPlug, mdiKeyboardOutline, mdiShieldLock } from "@mdi/js";
 import { useTranslation } from "react-i18next";
+import { AUTO_SCALE, SCALE_STEPS } from "@/common/utils/displayScale.js";
 
 const COLOR_DEPTHS = [
     { label: "Auto", value: "" },
@@ -19,6 +20,8 @@ const RESIZE_METHODS = [
     { label: "Reconnect", value: "reconnect" },
     { label: "None", value: "none" },
 ];
+
+const DISPLAY_SCALES = SCALE_STEPS.map(scale => ({ label: `${scale}%`, value: String(scale) }));
 
 const BACKSPACE_MODES = [
     { label: "DEL", value: "del" },
@@ -75,6 +78,7 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
 
     const [colorDepth, setColorDepth] = useState(config?.colorDepth || "");
     const [resizeMethod, setResizeMethod] = useState(config?.resizeMethod || "display-update");
+    const [displayScale, setDisplayScale] = useState(config?.displayScale || "");
     const [enableAudio, setEnableAudio] = useState(config?.enableAudio !== false);
     const [enableWallpaper, setEnableWallpaper] = useState(config?.enableWallpaper !== false);
     const [enableTheming, setEnableTheming] = useState(config?.enableTheming !== false);
@@ -105,6 +109,7 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
 
         if (config?.colorDepth !== undefined) setColorDepth(config.colorDepth);
         if (config?.resizeMethod !== undefined) setResizeMethod(config.resizeMethod);
+        if (config?.displayScale !== undefined) setDisplayScale(config.displayScale);
         if (config?.enableAudio !== undefined) setEnableAudio(config.enableAudio);
         if (config?.enableWallpaper !== undefined) setEnableWallpaper(config.enableWallpaper);
         if (config?.enableTheming !== undefined) setEnableTheming(config.enableTheming);
@@ -375,6 +380,21 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
                             setSelected={(val) => handleDisplaySettingChange('resizeMethod', val, setResizeMethod)} 
                         />
                     </div>
+
+                    {fieldConfig.showDisplayScale && (
+                        <div className="form-group">
+                            <label>{t('servers.dialog.settings.display.displayScale')}</label>
+                            <SelectBox
+                                options={[
+                                    { label: t('servers.dialog.settings.display.displayScaleAccount'), value: "" },
+                                    { label: t('servers.dialog.settings.display.displayScaleAuto'), value: AUTO_SCALE },
+                                    ...DISPLAY_SCALES,
+                                ]}
+                                selected={displayScale}
+                                setSelected={(val) => handleDisplaySettingChange('displayScale', val, setDisplayScale)}
+                            />
+                        </div>
+                    )}
                 </div>
             )}
 
