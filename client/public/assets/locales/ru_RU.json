@@ -735,7 +735,13 @@
         "neverUsed": "Никогда не пользовался",
         "expires": "Срок действия истекает {{date}}",
         "delete": "Удалить"
-      }
+      },
+      "remoteDesktop": "Remote Desktop",
+      "remoteDesktopDescription": "Default display scale for remote desktop sessions. Connections can override it, and a scale picked during a session is remembered on that device.",
+      "remoteDesktopScale": "Display Scale",
+      "remoteDesktopScaleAuto": "Automatic (match device)",
+      "remoteDesktopSyncEnabled": "Remote desktop settings will now sync across devices",
+      "remoteDesktopSyncDisabled": "Remote desktop settings are now saved on this device only"
     },
     "passwordChange": {
       "title": "Изменить пароль",
@@ -1655,7 +1661,10 @@
         "splitDown": "Split Down",
         "sendShortcut": "Send Shortcut…",
         "zoom": "Zoom ({{zoom}}%)",
-        "zoomReset": "Reset Zoom"
+        "zoomReset": "Reset Zoom",
+        "displayScale": "Display Scale ({{scale}}%)",
+        "displayScaleAuto": "Automatic ({{scale}}%)",
+        "displayScaleReset": "Use Default"
       },
       "enableSplitView": "Enable Split View",
       "disableSplitView": "Disable Split View",
@@ -1738,9 +1747,12 @@
         },
         "display": {
           "title": "Настройки дисплея",
-          "description": "Настрой глубину цвета и поведение изменения размера для удаленного дисплея",
+          "description": "Configure color depth, resize behavior and scaling for the remote display",
           "colorDepth": "Глубина цвета",
-          "resizeMethod": "Метод изменения размера"
+          "resizeMethod": "Метод изменения размера",
+          "displayScale": "Display Scale",
+          "displayScaleAuto": "Automatic (match this device)",
+          "displayScaleAccount": "Account default"
         },
         "performance": {
           "title": "Настройки производительности",
@@ -2130,6 +2142,10 @@
     "discord": {
       "title": "Присоединяйся к Discord",
       "description": "Общайся с сообществом и получай помощь."
+    },
+    "docs": {
+      "title": "View Documentation",
+      "description": "Read the documentation and learn how to use Nexterm."
     },
     "github": {
       "title": "Посмотреть на GitHub",
