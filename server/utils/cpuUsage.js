@@ -1,12 +1,12 @@
+const STAT_FIELDS_WITHOUT_GUEST = 8;
+
 const parseCPUStatLine = (line) => {
-    const vals = line.trim().split(/\s+/).slice(1).map(Number);
+    const vals = line.trim().split(/\s+/).slice(1, STAT_FIELDS_WITHOUT_GUEST + 1).map(Number);
     if (vals.length < 4 || vals.some(v => !Number.isFinite(v))) return null;
-    return { total: vals.reduce((a, b) => a + b, 0), idle: vals[3] };
+    const [, , , idle, iowait = 0] = vals;
+    return { total: vals.reduce((a, b) => a + b, 0), idle: idle + iowait };
 };
 
-// Expects two (or more) aggregate "cpu ..." lines from /proc/stat taken a short time apart.
-// The counters are cumulative since boot, so only the difference between two samples
-// reflects the current usage. A single sample cannot be turned into a percentage.
 const parseCPUUsage = (output) => {
     try {
         const samples = String(output ?? "")
