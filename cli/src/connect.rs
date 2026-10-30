@@ -1,7 +1,8 @@
 use anyhow::Result;
 use console::style;
 use dialoguer::{Input, Select};
-use crate::api::{ApiClient, flatten_entries};
+use std::future::Future;
+use crate::api::{ApiClient, ApiError, flatten_entries};
 use crate::entries::resolve_entry;
 use crate::terminal;
 
@@ -26,26 +27,36 @@ pub fn prompt_reason() -> Result<String> {
     Ok(trimmed)
 }
 
+async fn with_reason<T, F, Fut>(reason: Option<String>, request: F) -> Result<T>
+where
+    F: Fn(Option<String>) -> Fut,
+    Fut: Future<Output = Result<T>>,
+{
+    let reason = reason.map(|r| r.trim().to_string()).filter(|r| !r.is_empty());
+    match request(reason.clone()).await {
+        Err(e) if reason.is_none() && ApiError::is_reason_required(&e) => request(Some(prompt_reason()?)).await,
+        result => result,
+    }
+}
+
 pub async fn interactive(target: &str, reason: Option<String>) -> Result<()> {
     let (client, entry_id, identity_id, name) = setup(target).await?;
     println!("Connecting to {} ...", style(&name).bold().green());
-    let mut reason = reason.map(|r| r.trim().to_string()).filter(|r| !r.is_empty());
-    let conn = match client.create_connection(entry_id, identity_id, reason.as_deref()).await {
-        Ok(conn) => conn,
-        Err(e) if reason.is_none() && e.to_string().contains("Connection reason required") => {
-            reason = Some(prompt_reason()?);
-            client.create_connection(entry_id, identity_id, reason.as_deref()).await?
-        }
-        Err(e) => return Err(e),
-    };
+    let client = &client;
+    let conn = with_reason(reason, |r| async move {
+        client.create_connection(entry_id, identity_id, r.as_deref()).await
+    }).await?;
     terminal::run_session(&client.ws_url(&conn.session_id)?).await?;
     println!("Connection closed.");
     Ok(())
 }
 
-pub async fn exec(target: &str, command: &str) -> Result<()> {
+pub async fn exec(target: &str, command: &str, reason: Option<String>) -> Result<()> {
     let (client, entry_id, identity_id, _) = setup(target).await?;
-    let resp = client.exec_command(entry_id, identity_id, command).await?;
+    let client = &client;
+    let resp = with_reason(reason, |r| async move {
+        client.exec_command(entry_id, identity_id, command, r.as_deref()).await
+    }).await?;
     if let Some(stdout) = &resp.stdout { if !stdout.is_empty() { print!("{stdout}"); } }
     if let Some(stderr) = &resp.stderr { if !stderr.is_empty() { eprint!("{stderr}"); } }
     let exit_code = resp.exit_code.unwrap_or(if resp.success { 0 } else { 1 });

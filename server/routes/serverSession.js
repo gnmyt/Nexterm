@@ -6,6 +6,9 @@ const { validateSchema } = require("../utils/schema");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 
 const app = Router();
+
+const sendError = (res, result) =>
+    res.status(result.code).json({ error: result.message, ...(result.errorCode && { code: result.errorCode }) });
 const getSessionOptions = (req) => {
     const { entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, displayDpi, scriptId, startPath, connectionGeneration } = req.body;
     return {
@@ -43,7 +46,7 @@ app.post("/", async (req, res) => {
         const result = await createSession(getSessionOptions(req));
         
         if (result?.code) {
-            return res.status(result.code).json({ error: result.message });
+            return sendError(res, result);
         }
 
         res.status(201).json(result);
@@ -63,7 +66,7 @@ app.post("/:id/reconnect", async (req, res) => {
             sessionId: req.params.id,
         });
         if (result?.code) {
-            return res.status(result.code).json({ error: result.message });
+            return sendError(res, result);
         }
         res.json(result);
     } catch (error) {
@@ -296,16 +299,23 @@ app.post("/:entryId/exec", async (req, res) => {
         const entryId = parseInt(req.params.entryId, 10);
         if (isNaN(entryId)) return res.status(400).json({ error: "Invalid entry ID" });
 
-        const { command } = req.body;
+        const { command, connectionReason } = req.body;
         if (!command || typeof command !== "string") {
             return res.status(400).json({ error: "Command is required" });
         }
+        if (connectionReason != null && typeof connectionReason !== "string") {
+            return res.status(400).json({ error: "Connection reason must be a string" });
+        }
 
         const identityId = req.query.identityId ? parseInt(req.query.identityId, 10) : null;
-        const result = await execCommand(req.user.id, entryId, identityId, command);
+        const result = await execCommand(req.user.id, entryId, identityId, command, {
+            connectionReason: connectionReason?.trim() || null,
+            ipAddress: req.ip || req.socket?.remoteAddress || 'unknown',
+            userAgent: req.headers['user-agent'] || 'unknown',
+        });
 
         if (result?.code) {
-            return res.status(result.code).json({ error: result.message });
+            return sendError(res, result);
         }
 
         res.json(result);

@@ -3,6 +3,33 @@ use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use crate::config::Config;
 
+const REASON_REQUIRED_CODE: &str = "CONNECTION_REASON_REQUIRED";
+const REASON_REQUIRED_MESSAGE: &str = "Connection reason required";
+
+#[derive(Debug)]
+pub struct ApiError {
+    prefix: String,
+    detail: String,
+    code: Option<String>,
+}
+
+impl std::fmt::Display for ApiError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}: {}", self.prefix, self.detail)
+    }
+}
+
+impl std::error::Error for ApiError {}
+
+impl ApiError {
+    pub fn is_reason_required(err: &anyhow::Error) -> bool {
+        err.downcast_ref::<ApiError>().is_some_and(|e| match e.code.as_deref() {
+            Some(code) => code == REASON_REQUIRED_CODE,
+            None => e.detail == REASON_REQUIRED_MESSAGE,
+        })
+    }
+}
+
 pub struct ApiClient {
     client: Client,
     base_url: String,
@@ -194,18 +221,20 @@ impl ApiClient {
     pub async fn list_entries(&self) -> Result<Vec<Entry>> { self.get_authed("/entries/list").await }
     pub async fn list_identities(&self) -> Result<Vec<Identity>> { self.get_authed("/identities/list").await }
 
-    async fn response_error(resp: reqwest::Response, prefix: &str) -> String {
+    async fn response_error(resp: reqwest::Response, prefix: &str) -> ApiError {
         let status = resp.status();
         let body = resp.text().await.unwrap_or_default();
-        let detail = serde_json::from_str::<serde_json::Value>(&body)
-            .ok()
+        let json = serde_json::from_str::<serde_json::Value>(&body).ok();
+        let code = json.as_ref()
+            .and_then(|v| v.get("code")).and_then(|c| c.as_str()).map(|s| s.to_string());
+        let detail = json.as_ref()
             .and_then(|v| v.get("error").or_else(|| v.get("message")).and_then(|e| e.as_str()).map(|s| s.to_string()))
             .filter(|s| !s.is_empty())
             .unwrap_or_else(|| {
                 let trimmed = body.trim();
                 if trimmed.is_empty() { status.to_string() } else { format!("{trimmed} ({status})") }
             });
-        format!("{prefix}: {detail}")
+        ApiError { prefix: prefix.to_string(), detail, code }
     }
 
     pub async fn create_connection(&self, entry_id: u64, identity_id: Option<u64>, reason: Option<&str>) -> Result<CreateConnectionResponse> {
@@ -213,18 +242,18 @@ impl ApiClient {
             .header("Authorization", self.auth()?)
             .json(&serde_json::json!({"entryId": entry_id, "identityId": identity_id, "connectionReason": reason}))
             .send().await?;
-        if !resp.status().is_success() { bail!("{}", Self::response_error(resp, "Failed to create connection").await); }
+        if !resp.status().is_success() { return Err(Self::response_error(resp, "Failed to create connection").await.into()); }
         Ok(resp.json().await?)
     }
 
-    pub async fn exec_command(&self, entry_id: u64, identity_id: Option<u64>, command: &str) -> Result<ExecResponse> {
+    pub async fn exec_command(&self, entry_id: u64, identity_id: Option<u64>, command: &str, reason: Option<&str>) -> Result<ExecResponse> {
         let mut url = format!("/connections/{}/exec", entry_id);
         if let Some(iid) = identity_id { url = format!("{url}?identityId={iid}"); }
         let resp = self.client.post(self.url(&url))
             .header("Authorization", self.auth()?)
-            .json(&serde_json::json!({"command": command}))
+            .json(&serde_json::json!({"command": command, "connectionReason": reason}))
             .send().await?;
-        if !resp.status().is_success() { bail!("{}", Self::response_error(resp, "Exec failed").await); }
+        if !resp.status().is_success() { return Err(Self::response_error(resp, "Exec failed").await.into()); }
         Ok(resp.json().await?)
     }
 

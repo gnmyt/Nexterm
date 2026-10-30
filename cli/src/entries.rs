@@ -104,7 +104,7 @@ pub async fn search(query: &str, command: Option<&str>, reason: Option<String>) 
 
     let id = entry.id_num().ok_or_else(|| anyhow::anyhow!("Invalid entry"))?.to_string();
     match command {
-        Some(cmd) => connect::exec(&id, cmd).await,
+        Some(cmd) => connect::exec(&id, cmd, reason).await,
         None => connect::interactive(&id, reason).await,
     }
 }

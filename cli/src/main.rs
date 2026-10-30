@@ -80,14 +80,10 @@ async fn main() -> anyhow::Result<()> {
         Commands::Ls { folder, tag, json } => entries::list(folder, tag, json).await,
         Commands::Connect { target, reason, command } => {
             if command.is_empty() { connect::interactive(&target, reason).await }
-            else {
-                if reason.is_some() { eprintln!("{} --reason is ignored for command execution.", console::style("!").yellow().bold()); }
-                connect::exec(&target, &command.join(" ")).await
-            }
+            else { connect::exec(&target, &command.join(" "), reason).await }
         }
         Commands::Search { query, reason, command } => {
             let cmd = if command.is_empty() { None } else { Some(command.join(" ")) };
-            if reason.is_some() && cmd.is_some() { eprintln!("{} --reason is ignored for command execution.", console::style("!").yellow().bold()); }
             entries::search(&query, cmd.as_deref(), reason).await
         }
         Commands::Recent => entries::recent().await,
