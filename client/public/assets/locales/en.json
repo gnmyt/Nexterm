@@ -591,12 +591,68 @@
       "organizations": "Organizations",
       "users": "Users",
       "authentication": "Authentication",
+      "sshCertificates": "SSH Certificates",
       "sources": "Sources",
       "ai": "AI",
       "monitoring": "Monitoring",
       "backup": "Storage",
       "engines": "Engines",
       "permissions": "Roles & Permissions"
+    },
+    "sshCertificates": {
+      "title": "SSH certificate authorities",
+      "description": "Issue a short-lived OpenSSH user certificate when a server is configured to use one of these authorities.",
+      "add": "Add authority",
+      "edit": "Edit authority",
+      "delete": "Delete authority",
+      "save": "Save",
+      "cancel": "Cancel",
+      "empty": "No certificate authorities yet.",
+      "created": "Certificate authority saved",
+      "updated": "Certificate authority updated",
+      "loadFailed": "Could not load certificate authorities",
+      "saveFailed": "Could not save the certificate authority",
+      "deleteConfirm": "Delete {{name}}? Servers using it will no longer receive certificates.",
+      "mappingInvalid": "Group mappings must look like group=principal,principal",
+      "disabled": "disabled",
+      "backends": {
+        "local": "Local CA key",
+        "vault": "Vault SSH",
+        "step": "step-ca",
+        "webhook": "Webhook"
+      },
+      "tokenModes": {
+        "ott": "One-time token",
+        "bearer": "Bearer token",
+        "provisioner": "Provisioner key"
+      },
+      "fields": {
+        "name": "Name",
+        "organization": "Organization",
+        "allOrganizations": "Every server",
+        "backend": "Backend",
+        "ttl": "Certificate lifetime (seconds)",
+        "sourceAddress": "Source address",
+        "sourceAddressPlaceholder": "Engine address, for example 10.0.0.8/32",
+        "extraPrincipals": "Extra principals",
+        "groupMappings": "Group to principal mappings",
+        "selectorGroups": "Limit to groups",
+        "domains": "Limit to domains",
+        "environments": "Limit to environments",
+        "ttlByGroup": "Lifetime by group",
+        "ttlByEnvironment": "Lifetime by environment",
+        "keyId": "Key ID template",
+        "provisioner": "Provisioner name",
+        "address": "Vault address",
+        "mount": "Mount",
+        "role": "Role",
+        "url": "URL",
+        "tokenMode": "Token type",
+        "caKey": "CA private key",
+        "token": "Token",
+        "secretKeep": "Leave blank to keep the current secret",
+        "enabled": "Enabled"
+      }
     },
     "account": {
       "title": "Account",
@@ -1308,6 +1364,7 @@
           "passwordPlaceholder": "Enter password",
           "passwordPlaceholderEdit": "Leave blank to keep current password",
           "sshKey": "SSH Private Key",
+          "sshCertificate": "SSH certificate (optional)",
           "passphrase": "Passphrase (optional)",
           "passphrasePlaceholder": "Enter passphrase (optional)",
           "passphrasePlaceholderEdit": "Leave blank to keep current passphrase"
@@ -1321,7 +1378,8 @@
         "actions": {
           "cancel": "Cancel",
           "create": "Create Identity",
-          "update": "Update Identity"
+          "update": "Update Identity",
+          "removeCertificate": "Remove stored certificate"
         },
         "messages": {
           "nameRequired": "Identity name is required",
@@ -1781,6 +1839,14 @@
           "delete": "Delete",
           "functionKeys": "Function Keys"
         },
+        "sshCertificate": {
+          "authority": "SSH certificate authority",
+          "none": "Choose automatically",
+          "description": "Leave this empty to use an authority that matches the account group, domain, or environment. A selected authority is used for every connection to this server.",
+          "domain": "Directory domain",
+          "environment": "Environment",
+          "ttl": "Certificate lifetime override (seconds)"
+        },
         "noSettings": "No additional settings available for this entry type."
       },
       "identities": {
@@ -1797,6 +1863,8 @@
         "sshKey": "SSH Key",
         "both": "Key+Pass",
         "sshPrivateKey": "SSH Private Key",
+        "sshCertificate": "SSH certificate (optional)",
+        "removeCertificate": "Remove stored certificate",
         "passphrase": "Passphrase (optional)",
         "new": "New",
         "removeIdentity": "Remove identity",

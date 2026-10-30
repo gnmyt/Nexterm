@@ -1,9 +1,11 @@
 import { useContext, useEffect, useState } from "react";
+import { getRequest } from "@/common/utils/RequestUtil.js";
 import SelectBox from "@/common/components/SelectBox";
+import Input from "@/common/components/IconInput";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import Icon from "@mdi/react";
-import { mdiServerNetwork, mdiClose, mdiPlus, mdiChartLine, mdiMonitor, mdiPalette, mdiVolumeHigh, mdiPowerPlug, mdiKeyboardOutline, mdiShieldLock } from "@mdi/js";
+import { mdiServerNetwork, mdiClose, mdiPlus, mdiChartLine, mdiMonitor, mdiPalette, mdiVolumeHigh, mdiPowerPlug, mdiKeyboardOutline, mdiShieldLock, mdiFormTextbox, mdiTimerOutline } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import { AUTO_SCALE, SCALE_STEPS } from "@/common/utils/displayScale.js";
 
@@ -69,11 +71,12 @@ const KEYBOARD_LAYOUTS = [
     { label: "Turkish (Qwerty)", value: "tr-tr-qwerty" }
 ];
 
-const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabled, fieldConfig, editServerId }) => {
+const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabled, fieldConfig, editServerId, organizationId }) => {
     const { t } = useTranslation();
     const { servers } = useContext(ServerContext);
     const [keyboardLayout, setKeyboardLayout] = useState(config?.keyboardLayout || "en-us-qwerty");
     const [jumpHosts, setJumpHosts] = useState(config?.jumpHosts || []);
+    const [certificateAuthorities, setCertificateAuthorities] = useState([]);
     const [availableJumpHosts, setAvailableJumpHosts] = useState([]);
 
     const [colorDepth, setColorDepth] = useState(config?.colorDepth || "");
@@ -176,13 +179,56 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
     };
 
     const showJumpHosts = config?.protocol === 'ssh';
+    const showSshCertificate = config?.protocol === "ssh" || config?.protocol === "sftp";
 
-    if (!fieldConfig.showMonitoring && !fieldConfig.showKeyboardLayout && !fieldConfig.showDisplaySettings && !fieldConfig.showAudioSettings && !fieldConfig.showWakeOnLan && !fieldConfig.showTerminalSettings && !showJumpHosts) {
+    useEffect(() => {
+        if (!showSshCertificate) return;
+        getRequest("ssh-cas").then((authorities) => {
+            const visible = (authorities || []).filter((authority) => authority.enabled !== false && (
+                !authority.organizationId || Number(authority.organizationId) === Number(organizationId)
+            ));
+            setCertificateAuthorities(visible);
+        }).catch(() => setCertificateAuthorities([]));
+    }, [showSshCertificate, organizationId]);
+
+    if (!fieldConfig.showMonitoring && !fieldConfig.showKeyboardLayout && !fieldConfig.showDisplaySettings && !fieldConfig.showAudioSettings && !fieldConfig.showWakeOnLan && !fieldConfig.showTerminalSettings && !showJumpHosts && !showSshCertificate) {
         return <p className="text-center">{t('servers.dialog.settings.noSettings')}</p>;
     }
 
     return (
         <>
+            {showSshCertificate && (
+                <div className="form-group">
+                    <label>{t("servers.dialog.settings.sshCertificate.authority")}</label>
+                    <SelectBox
+                        selected={config?.sshCaId ? String(config.sshCaId) : ""}
+                        setSelected={(value) => setConfig((prev) => ({ ...prev, sshCaId: value ? Number(value) : null }))}
+                        options={[
+                            { label: t("servers.dialog.settings.sshCertificate.none"), value: "" },
+                            ...certificateAuthorities.map((authority) => ({ label: authority.name, value: String(authority.id) })),
+                        ]}
+                    />
+                    <span className="jump-hosts-description">{t("servers.dialog.settings.sshCertificate.description")}</span>
+                </div>
+            )}
+            {showSshCertificate && (
+                <div className="form-group">
+                    <label htmlFor="ssh-domain">{t("servers.dialog.settings.sshCertificate.domain")}</label>
+                    <Input id="ssh-domain" icon={mdiFormTextbox} value={config?.domain || ""} setValue={(value) => setConfig((prev) => ({ ...prev, domain: value }))} />
+                </div>
+            )}
+            {showSshCertificate && (
+                <div className="form-group">
+                    <label htmlFor="ssh-environment">{t("servers.dialog.settings.sshCertificate.environment")}</label>
+                    <Input id="ssh-environment" icon={mdiFormTextbox} value={config?.environment || ""} setValue={(value) => setConfig((prev) => ({ ...prev, environment: value }))} />
+                </div>
+            )}
+            {showSshCertificate && (
+                <div className="form-group">
+                    <label htmlFor="ssh-ttl">{t("servers.dialog.settings.sshCertificate.ttl")}</label>
+                    <Input id="ssh-ttl" icon={mdiTimerOutline} value={config?.sshCertTtl ? String(config.sshCertTtl) : ""} setValue={(value) => setConfig((prev) => ({ ...prev, sshCertTtl: value ? Number(value) : null }))} />
+                </div>
+            )}
             {showJumpHosts && (
                 <div className="jump-hosts-section">
                     <div className="jump-hosts-header">

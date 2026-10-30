@@ -17,6 +17,7 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
     const [authType, setAuthType] = useState(identity.authType || identity.type || (allowedAuthTypes?.[0] || "password"));
     const [password, setPassword] = useState(identity.password || "");
     const [sshKey, setSshKey] = useState(identity.sshKey || null);
+    const [sshCertificate, setSshCertificate] = useState(undefined);
     const [passphrase, setPassphrase] = useState(identity.passphrase || "");
     const [pwTouched, setPwTouched] = useState(false);
     const [ppTouched, setPpTouched] = useState(false);
@@ -32,10 +33,10 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
         ? allAuthOptions.filter(opt => allowedAuthTypes.includes(opt.value))
         : allAuthOptions.filter(opt => ["password", "ssh", "both"].includes(opt.value));
 
-    const readFile = (e) => {
-        const reader = new FileReader();
-        reader.onload = (ev) => setSshKey(ev.target.result);
-        reader.readAsText(e.target.files[0]);
+    const readTextFile = (setter) => (event) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        file.text().then(setter).catch(() => {});
     };
 
     useEffect(() => {
@@ -44,10 +45,10 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
             ...(authType === "password" || authType === "password-only"
                 ? { password, passwordTouched: pwTouched || isNew || password !== "" }
                 : authType === "both"
-                ? { password, passwordTouched: pwTouched || isNew || password !== "", sshKey, passphrase, passphraseTouched: ppTouched || passphrase !== "" }
-                : { sshKey, passphrase, passphraseTouched: ppTouched || passphrase !== "" }),
+                ? { password, passwordTouched: pwTouched || isNew || password !== "", sshKey, ...(sshCertificate !== undefined ? { sshCertificate } : {}), passphrase, passphraseTouched: ppTouched || passphrase !== "" }
+                : { sshKey, ...(sshCertificate !== undefined ? { sshCertificate } : {}), passphrase, passphraseTouched: ppTouched || passphrase !== "" }),
         });
-    }, [name, username, authType, password, sshKey, passphrase, identity.id, pwTouched, ppTouched, isNew]);
+    }, [name, username, authType, password, sshKey, sshCertificate, passphrase, identity.id, pwTouched, ppTouched, isNew]);
 
     const showUsername = authType !== "password-only";
 
@@ -95,7 +96,14 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
                     <>
                         <div className="form-group">
                             <label>{t("servers.dialog.identities.sshPrivateKey")}</label>
-                            <Input icon={mdiFileUploadOutline} type="file" autoComplete="off" onChange={readFile} />
+                            <Input icon={mdiFileUploadOutline} type="file" autoComplete="off" onChange={readTextFile(setSshKey)} />
+                        </div>
+                        <div className="form-group">
+                            <label>{t("servers.dialog.identities.sshCertificate")}</label>
+                            <Input icon={mdiFileUploadOutline} type="file" autoComplete="off" onChange={readTextFile(setSshCertificate)} />
+                            {identity.hasSshCertificate && sshCertificate === undefined && (
+                                <button type="button" onClick={() => setSshCertificate("")}>{t("servers.dialog.identities.removeCertificate")}</button>
+                            )}
                         </div>
                         <div className="form-group">
                             <label>{t("servers.dialog.identities.passphrase")}</label>
