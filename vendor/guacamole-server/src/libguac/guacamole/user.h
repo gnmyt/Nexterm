@@ -90,6 +90,12 @@ struct guac_user_info {
     int optimal_resolution;
 
     /**
+     * The desktop scale, as a percentage, requested by the most recent "size"
+     * instruction, or 0 if that instruction did not specify one.
+     */
+    int requested_scale;
+
+    /**
      * The timezone of the remote system.  If the client does not provide
      * a specific timezone then this will be NULL.  The format of the timezone
      * is the standard tzdata naming convention.

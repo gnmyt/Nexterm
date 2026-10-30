@@ -26,6 +26,13 @@ const filesSchema = Joi.object({
     dragDropAction: Joi.string().valid('ask', 'copy', 'move'),
 }).unknown(false);
 
+const remoteDesktopSchema = Joi.object({
+    displayScale: Joi.alternatives().try(
+        Joi.string().valid('auto'),
+        Joi.number().valid(100, 125, 150, 175, 200, 225, 250, 300),
+    ),
+}).unknown(false);
+
 const generalSchema = Joi.object({
     language: Joi.string().max(10),
     sidebarCollapsed: Joi.boolean(),
@@ -35,5 +42,6 @@ module.exports.preferencesValidation = Joi.object({
     terminal: terminalSchema,
     theme: themeSchema,
     files: filesSchema,
+    remoteDesktop: remoteDesktopSchema,
     general: generalSchema,
 }).unknown(false);

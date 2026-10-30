@@ -5,6 +5,7 @@ import { mdiCloudUpload } from "@mdi/js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useKeymaps, matchesKeybind, isMac } from "@/common/contexts/KeymapContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
 import ConnectionError from "./components/ConnectionError";
@@ -13,6 +14,10 @@ import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 import { openPopout, onPopoutClosed } from "@/common/utils/PopoutUtil.js";
 import { createHostFsProvider } from "@/common/utils/HostFsProvider.js";
 import { createBrowserFsProvider } from "@/common/utils/BrowserFsProvider.js";
+import {
+    AUTO_SCALE, getDeviceScale, getDeviceScaleOverride, rememberViewInset, resolveScale, resolveScaleSetting,
+    setDeviceScaleOverride, toDisplayHeight, toDisplayWidth, watchDeviceScale,
+} from "@/common/utils/displayScale.js";
 import "./styles/guacamole.sass";
 
 const SIZE_RESEND_INTERVAL = 5000;
@@ -30,6 +35,8 @@ const ZOOM_MIN = 1;
 const ZOOM_MAX = 4;
 
 const ZOOM_STEP = 0.25;
+
+const NATIVE_SNAP_TOLERANCE = 1.02;
 const REMOTE_CLIPBOARD_TIMEOUT = 1000;
 
 
@@ -86,6 +93,13 @@ const GuacamoleRenderer = ({
     const heldModifiersRef = useRef(heldModifiers);
 
     const [zoom, setZoom] = useState(ZOOM_MIN);
+    const entryId = session.server?.id;
+    const isRdp = (session.server?.config?.protocol || session.server?.protocol || session.server?.type) === "rdp";
+    const { defaultDisplayScale } = usePreferences();
+    const [scaleSetting, setScaleSetting] = useState(() =>
+        resolveScaleSetting(entryId, session.server?.displayScale, defaultDisplayScale));
+    const scaleSettingRef = useRef(scaleSetting);
+    const [deviceScale, setDeviceScale] = useState(getDeviceScale);
     const zoomRef = useRef(ZOOM_MIN);
     const panRef = useRef({ x: 0, y: 0 });
     const panDragRef = useRef(null);
@@ -94,7 +108,7 @@ const GuacamoleRenderer = ({
     const activeMonitorRef = useRef(initialMonitor);
     const maxMonitorsRef = useRef(1);
     const layoutRef = useRef(null);
-    const lastSentRef = useRef({ w: 0, h: 0, monitor: -1, at: 0 });
+    const lastSentRef = useRef({ w: 0, h: 0, monitor: -1, scale: 0, at: 0 });
     const confirmAttemptsRef = useRef(0);
     const { getParsedKeybind } = useKeymaps();
     const { sendToast } = useToast();
@@ -137,7 +151,7 @@ const GuacamoleRenderer = ({
         return () => registerGuacamoleRef?.(session.id, null);
     }, [session.id, registerGuacamoleRef, clientRef.current]);
 
-    const samplingFor = (scale) => Math.abs(scale - 1) < 0.001 ? "pixelated" : "auto";
+    const samplingFor = (scale) => Math.abs(scale * (window.devicePixelRatio || 1) - 1) < 0.001 ? "pixelated" : "auto";
 
     const applyDisplayStyles = (el, x, y, scale, width, height) => Object.assign(el.style, {
         position: "absolute", width: width + "px", height: height + "px",
@@ -172,7 +186,10 @@ const GuacamoleRenderer = ({
         const mh = monitor?.height || display.getHeight();
         if (!mw || !mh) return;
 
-        const scale = Math.min(cw / mw, ch / mh) * zoomRef.current;
+        const density = window.devicePixelRatio || 1;
+        const fit = Math.min(cw / mw, ch / mh);
+        const fitsNatively = mw / density <= cw && mh / density <= ch && fit * density < NATIVE_SNAP_TOLERANCE;
+        const scale = (fitsNatively ? 1 / density : fit) * zoomRef.current;
         scaleRef.current = scale;
 
         panRef.current = {
@@ -212,12 +229,13 @@ const GuacamoleRenderer = ({
 
         if (cw > 0 && ch > 0) {
             const density = window.devicePixelRatio || 1;
-            const dw = Math.round(cw * density);
-            const dh = Math.round(ch * density);
+            const dw = toDisplayWidth(Math.round(cw * density));
+            const dh = toDisplayHeight(Math.round(ch * density));
 
             const monitor = activeMonitorRef.current;
+            const scale = resolveScale(scaleSettingRef.current);
             const last = lastSentRef.current;
-            const changed = last.w !== dw || last.h !== dh || last.monitor !== monitor;
+            const changed = last.w !== dw || last.h !== dh || last.monitor !== monitor || last.scale !== scale;
 
             const display = clientRef.current.getDisplay();
             const applied = display.getWidth() === dw && display.getHeight() === dh;
@@ -225,13 +243,24 @@ const GuacamoleRenderer = ({
             const elapsed = Date.now() - last.at;
 
             if (changed || elapsed >= (retrying ? SIZE_CONFIRM_INTERVAL : SIZE_RESEND_INTERVAL)) {
-                clientRef.current.sendSize(dw, dh, monitor, 0);
-                lastSentRef.current = { w: dw, h: dh, monitor, at: Date.now() };
+                clientRef.current.sendSize(dw, dh, monitor, 0, scale);
+                lastSentRef.current = { w: dw, h: dh, monitor, scale, at: Date.now() };
                 confirmAttemptsRef.current = changed ? 0 : confirmAttemptsRef.current + 1;
             }
         }
 
         applyViewport();
+    };
+
+    const changeDisplayScale = (setting) => {
+        setDeviceScaleOverride(entryId, setting);
+        applyScaleSetting(resolveScaleSetting(entryId, session.server?.displayScale, defaultDisplayScale));
+    };
+
+    const applyScaleSetting = (next) => {
+        scaleSettingRef.current = next;
+        setScaleSetting(next);
+        resizeHandler();
     };
 
     const toggleModifier = (keysym) => {
@@ -878,9 +907,10 @@ const GuacamoleRenderer = ({
         client.onstatechange = (st) => {
             if (isCleaningUp) return;
             if (st === Guacamole.Client.State.CONNECTED) {
-                lastSentRef.current = { w: 0, h: 0, monitor: -1, at: 0 };
+                lastSentRef.current = { w: 0, h: 0, monitor: -1, scale: 0, at: 0 };
                 confirmAttemptsRef.current = 0;
                 resizeHandler();
+                rememberViewInset();
                 markSessionConnected?.(session.id);
             }
             if (st === Guacamole.Client.State.DISCONNECTED || st === Guacamole.Client.State.ERROR) {
@@ -940,7 +970,7 @@ const GuacamoleRenderer = ({
             clientRef.current = null;
 
             layoutRef.current = null;
-            lastSentRef.current = { w: 0, h: 0, monitor: -1, at: 0 };
+            lastSentRef.current = { w: 0, h: 0, monitor: -1, scale: 0, at: 0 };
             confirmAttemptsRef.current = 0;
             monitorCountRef.current = 1;
             activeMonitorRef.current = initialMonitor;
@@ -1004,9 +1034,26 @@ const GuacamoleRenderer = ({
             zoomIn,
             zoomOut,
             resetZoom,
+            displayScale: isRdp && !isShared ? {
+                setting: scaleSetting,
+                deviceScale,
+                effective: scaleSetting === AUTO_SCALE ? deviceScale : scaleSetting,
+                overridden: getDeviceScaleOverride(entryId) !== null,
+                set: changeDisplayScale,
+            } : null,
             focus: () => ref.current?.focus(),
         } : null);
-    }, [ready, monitorCount, activeMonitor, maxMonitors, heldModifiers, poppedOutMonitors, zoom, isShared, pinnedMonitor]);
+    }, [ready, monitorCount, activeMonitor, maxMonitors, heldModifiers, poppedOutMonitors, zoom, isShared, pinnedMonitor, scaleSetting, deviceScale]);
+
+    useEffect(() => {
+        const next = resolveScaleSetting(entryId, session.server?.displayScale, defaultDisplayScale);
+        if (next !== scaleSettingRef.current) applyScaleSetting(next);
+    }, [defaultDisplayScale, session.server?.displayScale]);
+
+    useEffect(() => watchDeviceScale((scale) => {
+        setDeviceScale(scale);
+        resizeHandler();
+    }), []);
 
     useEffect(() => () => onControlsChange?.(null), []);
 

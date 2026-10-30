@@ -7,7 +7,7 @@ const stateBroadcaster = require("../lib/StateBroadcaster");
 
 const app = Router();
 const getSessionOptions = (req) => {
-    const { entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, displayDpi, scriptId, startPath, connectionGeneration } = req.body;
+    const { entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, displayDpi, displayWidth, displayHeight, scriptId, startPath, connectionGeneration } = req.body;
     return {
         accountId: req.user.id,
         entryId,
@@ -18,6 +18,8 @@ const getSessionOptions = (req) => {
         tabId,
         browserId,
         displayDpi,
+        displayWidth,
+        displayHeight,
         scriptId,
         startPath,
         connectionGeneration,

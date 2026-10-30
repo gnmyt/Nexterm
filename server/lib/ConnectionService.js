@@ -516,7 +516,13 @@ const prepareGuacamoleSession = async (sessionId, entry, identity, organizationI
     const masterClient = new GuacdClient({
         sessionId,
         connectionSettings: {
-            connection: { type: protocol, width: 1024, height: 768, dpi: session.configuration.displayDpi || 96, ...params },
+            connection: {
+                type: protocol,
+                width: session.configuration.displayWidth || 1024,
+                height: session.configuration.displayHeight || 768,
+                dpi: session.configuration.displayDpi || 96,
+                ...params,
+            },
             enableAudio: entry.config?.enableAudio !== false,
         },
         recordingEnabled,

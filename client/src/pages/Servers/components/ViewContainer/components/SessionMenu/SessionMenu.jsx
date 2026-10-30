@@ -13,10 +13,12 @@ import {
     mdiMagnifyMinusOutline,
     mdiMagnifyPlusOutline,
     mdiMagnifyScan,
+    mdiMonitor,
     mdiNoteEditOutline,
     mdiOpenInNew,
     mdiPencil,
     mdiRefresh,
+    mdiRestore,
     mdiShareVariant,
     mdiSleep,
     mdiViewSplitHorizontal,
@@ -25,6 +27,7 @@ import {
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator } from "@/common/components/ContextMenu";
 import { postRequest, deleteRequest, patchRequest } from "@/common/utils/RequestUtil";
 import { getBaseUrl } from "@/common/utils/ConnectionUtil.js";
+import { AUTO_SCALE, SCALE_STEPS } from "@/common/utils/displayScale.js";
 
 export const RemoteDesktopMenuItems = ({ controls, onOpenShortcuts }) => {
     const { t } = useTranslation();
@@ -40,6 +43,20 @@ export const RemoteDesktopMenuItems = ({ controls, onOpenShortcuts }) => {
                 <ContextMenuItem icon={mdiMagnifyScan} label={t("servers.tabs.contextMenu.zoomReset")}
                                  disabled={controls.zoom <= controls.minZoom} onClick={controls.resetZoom} />
             </ContextMenuItem>
+            {controls.displayScale && (
+                <ContextMenuItem icon={mdiMonitor} label={t("servers.tabs.contextMenu.displayScale", { scale: controls.displayScale.effective })}>
+                    <ContextMenuItem label={t("servers.tabs.contextMenu.displayScaleAuto", { scale: controls.displayScale.deviceScale })}
+                                     checked={controls.displayScale.setting === AUTO_SCALE}
+                                     onClick={() => controls.displayScale.set(AUTO_SCALE)} />
+                    {SCALE_STEPS.map(step => (
+                        <ContextMenuItem key={step} label={`${step}%`} checked={controls.displayScale.setting === step}
+                                         onClick={() => controls.displayScale.set(step)} />
+                    ))}
+                    <ContextMenuSeparator />
+                    <ContextMenuItem icon={mdiRestore} label={t("servers.tabs.contextMenu.displayScaleReset")}
+                                     disabled={!controls.displayScale.overridden} onClick={() => controls.displayScale.set(null)} />
+                </ContextMenuItem>
+            )}
         </>
     );
 };
