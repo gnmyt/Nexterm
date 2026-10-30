@@ -214,6 +214,12 @@ typedef struct guac_rdp_settings {
     int resolution;
 
     /**
+     * The desktop scale, as a percentage, most recently requested by the
+     * client, or 0 to derive it from the resolution.
+     */
+    int desktop_scale;
+
+    /**
      * Whether all graphical updates for this connection should use lossless
      * compression only.
      */
@@ -729,6 +735,18 @@ void guac_rdp_settings_free(guac_rdp_settings* settings);
  * NULL-terminated array of accepted client args.
  */
 extern const char* GUAC_RDP_CLIENT_ARGS[];
+
+/**
+ * Returns the desktop scale, as a percentage, to request from the RDP server.
+ *
+ * @param settings
+ *     The settings of the RDP session.
+ *
+ * @return
+ *     The most recently requested desktop scale, or the scale implied by the
+ *     configured resolution if none has been requested.
+ */
+int guac_rdp_settings_desktop_scale(guac_rdp_settings* settings);
 
 /**
  * Save all given settings to the given freerdp instance.

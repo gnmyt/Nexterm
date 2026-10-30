@@ -370,6 +370,7 @@ int __guac_handle_clipboard(guac_user* user, int argc, char** argv) {
 }
 
 int __guac_handle_size(guac_user* user, int argc, char** argv) {
+    user->info.requested_scale = (argc >= 5 ? atoi(argv[4]) : 0);
     if (user->size_handler)
         return user->size_handler(
             user,
