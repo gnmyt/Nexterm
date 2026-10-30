@@ -280,7 +280,9 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
     });
 };
 
-const hibernateSession = (sessionId) => {
+const hibernateSession = (accountId, sessionId) => {
+    const { error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
     const success = SessionManager.hibernate(sessionId);
     if (success) {
         return { message: "Session hibernated" };
@@ -288,7 +290,9 @@ const hibernateSession = (sessionId) => {
     return { code: 404, message: "Session not found" };
 };
 
-const resumeSession = (sessionId, tabId = null, browserId = null) => {
+const resumeSession = (accountId, sessionId, tabId = null, browserId = null) => {
+    const { error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
     const success = SessionManager.resume(sessionId, tabId, browserId);
     if (success) {
         return { message: "Session resumed" };
@@ -296,7 +300,9 @@ const resumeSession = (sessionId, tabId = null, browserId = null) => {
     return { code: 404, message: "Session not found" };
 };
 
-const deleteSession = (sessionId) => {
+const deleteSession = (accountId, sessionId) => {
+    const { error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
     const success = SessionManager.remove(sessionId);
     if (success) {
         closedSessions.set(sessionId, Date.now());
