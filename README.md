@@ -43,7 +43,9 @@ Nexterm is an open-source server management software that allows you to:
 
 ## 🚀 Install
 
-You can install Nexterm by clicking [here](https://docs.nexterm.dev/installation).
+- **Quick start with Docker:** [Install Nexterm](https://nexterm.dev/install)
+- **Full installation guide:** [Read the documentation](https://docs.nexterm.dev/installation)
+- **Desktop and mobile apps:** [Browse downloads](https://nexterm.dev/downloads)
 
 ## 💻 Development
 
