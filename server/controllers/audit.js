@@ -392,6 +392,11 @@ module.exports.getRecording = async (accountId, auditLogId) => {
 };
 
 module.exports.createAuditLog = createAuditLog;
+module.exports.CONNECTION_REASON_REQUIRED = {
+    code: 400,
+    message: "Connection reason required",
+    errorCode: "CONNECTION_REASON_REQUIRED",
+};
 module.exports.isConnectionReasonRequired = async (organizationId) => {
     if (!organizationId) return false;
     const settings = await getOrgAuditSettings(organizationId);
