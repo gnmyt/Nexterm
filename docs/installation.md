@@ -144,3 +144,54 @@ services:
 +  nexterm-net:
 +    enable_ipv6: true
 ```
+
+## ❄️ NixOS
+
+Nexterm ships a flake with a NixOS module that runs the server and a bundled local engine as systemd services.
+
+Add it to your system flake:
+
+```nix
+{
+  inputs.nexterm.url = "github:gnmyt/Nexterm";
+
+  outputs = { nixpkgs, nexterm, ... }: {
+    nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        nexterm.nixosModules.default
+        {
+          services.nexterm = {
+            enable = true;
+            openFirewall = true;
+            environmentFile = "/etc/nexterm.env"; # must define ENCRYPTION_KEY
+          };
+        }
+      ];
+    };
+  };
+}
+```
+
+Create the environment file (kept out of the Nix store) with your generated key:
+
+```sh
+echo "ENCRYPTION_KEY=$(openssl rand -hex 32)" | sudo tee /etc/nexterm.env >/dev/null
+sudo chmod 600 /etc/nexterm.env
+```
+
+Then run `sudo nixos-rebuild switch`. The web UI is served on port 6989 (`services.nexterm.port`), and state is stored in `/var/lib/nexterm`, which persists across service restarts and rebuilds.
+
+> [!NOTE]
+> Two systemd units are created: `nexterm` (server) and `nexterm-engine` (connection backend). Manage them together with `systemctl status/restart/stop nexterm nexterm-engine`, and follow logs via `journalctl -u nexterm -u nexterm-engine -f`. The module generates a loopback token so the bundled engine registers automatically. To run an engine on a separate host, deploy `packages.engine` there and point its `config.yaml` at your server instead.
+
+### Updating
+
+Bump the pinned input and rebuild:
+
+```sh
+nix flake update nexterm
+sudo nixos-rebuild switch
+```
+
+Your data in `/var/lib/nexterm` is preserved and database migrations run automatically on start. To pin a fixed release instead of tracking the latest, use a tagged input such as `github:gnmyt/Nexterm/v1.2.2-BETA`. If an update misbehaves, roll back with `sudo nixos-rebuild switch --rollback` or by selecting the previous generation at boot.
