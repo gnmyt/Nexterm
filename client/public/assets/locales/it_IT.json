@@ -1574,6 +1574,25 @@
   "servers": {
     "addServerNote": "Clicca con il tasto destro del mouse per aggiungere un nuovo server",
     "searchPlaceholder": "Ricerca",
+    "inheritancePolicy": {
+      "title": "Apply inheritance",
+      "description": "Choose how existing objects should handle these inherited settings.",
+      "impact": "{{count}} existing objects are affected.",
+      "retain": {
+        "title": "Retain existing",
+        "description": "Keep current values as local overrides."
+      },
+      "adopt": {
+        "title": "Adopt folder settings",
+        "description": "Replace current values with the inherited folder settings."
+      },
+      "moveTitle": "Apply destination inheritance?",
+      "moveDescription": "Choose whether moved objects adopt the destination folder settings or retain their current values.",
+      "moveFailed": "Unable to move object",
+      "identitiesRemoved": "Some identities were removed because they are unavailable in the destination.",
+      "enableTitle": "Enable inheritance?",
+      "enableDescription": "Choose what existing objects should do when these folder settings are saved."
+    },
     "time": {
       "justNow": "Solo ora",
       "minuteAgo": "{{count}} min fa",
@@ -1598,6 +1617,7 @@
       "createFolder": "Crea cartella",
       "deleteFolder": "Elimina cartella",
       "renameFolder": "Rinomina cartella",
+      "folderSettings": "Folder Settings",
       "new": "Nuovo",
       "sshServer": "Server SSH",
       "telnetServer": "Server Telnet",
@@ -1678,6 +1698,7 @@
       "fillRequiredFields": "Compila tutti i campi obbligatori",
       "serverCreated": "Il server è stato creato con successo",
       "serverUpdated": "Il server è stato aggiornato con successo",
+      "folderUpdated": "Folder updated successfully",
       "createFailed": "Impossibile creare un server",
       "updateFailed": "Non è riuscito ad aggiornare il server",
       "createIdentityFailed": "Impossibile creare un'identità",
