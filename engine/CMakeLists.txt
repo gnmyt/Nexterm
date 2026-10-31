@@ -74,6 +74,7 @@ set(ENGINE_SOURCES
     src/net/connection.c
     src/net/ssh.c
     src/net/ssh_common.c
+    src/net/ssh_auth.c
     src/net/sftp.c
     src/net/ftp.c
     src/net/file_proto.c
