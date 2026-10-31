@@ -27,13 +27,13 @@
     "@ai-sdk/provider" "4.0.21"
     "@ai-sdk/provider-utils" "5.0.53"
 
-"@ai-sdk/openai@^4.0.80":
-  version "4.0.80"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/openai/-/openai-4.0.80.tgz#3b38cf431a7855ed7dabbf4c2620c154e0e28f91"
-  integrity sha512-rd3IiSqiniCSB+3E6FryRb3VfNgBErRqklp50zUqA90EovtumFglzHZfRRjBnUfw49aArKvpWwMe5/1RGZDaKg==
+"@ai-sdk/openai@^4.0.104":
+  version "4.0.104"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/openai/-/openai-4.0.104.tgz#a9c3d04eae2aa5d3bff2abc95610ce45d178f494"
+  integrity sha512-8oPwGh/zAdFrgyeGjTHlJMRm+DBwby3GkdGzN3vcNv4OwVtc1767mcM+7B2+gOxtloasZH+03gl+HPngQyQTMg==
   dependencies:
-    "@ai-sdk/provider" "4.0.19"
-    "@ai-sdk/provider-utils" "5.0.51"
+    "@ai-sdk/provider" "4.0.34"
+    "@ai-sdk/provider-utils" "5.0.70"
 
 "@ai-sdk/provider-utils@5.0.51":
   version "5.0.51"
@@ -57,6 +57,17 @@
     eventsource-parser "^3.0.8"
     undici "^7.29.0"
 
+"@ai-sdk/provider-utils@5.0.70":
+  version "5.0.70"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.70.tgz#7ab0f76303975c45e6996f99902df5500923d963"
+  integrity sha512-nU213UNVHWDoEKIZ5Hm3uGPmfW7EBHC2GkIJJEDKh4HLQWgh/eizrW2jmY4efxWf7Tf/yTzKD0t6sd4kVUKlyQ==
+  dependencies:
+    "@ai-sdk/provider" "4.0.34"
+    "@standard-schema/spec" "^1.1.0"
+    "@workflow/serde" "4.1.0"
+    eventsource-parser "^3.0.8"
+    undici "^7.29.0"
+
 "@ai-sdk/provider@4.0.19":
   version "4.0.19"
   resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-4.0.19.tgz#1e5843f080c1e0f535cdc50ee99ea150b9dedac1"
@@ -68,6 +79,13 @@
   version "4.0.21"
   resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-4.0.21.tgz#cc3f93146513bc7bb5e4965a010bc712b59be354"
   integrity sha512-UpbC9C1oht8dhfKPbVXSLRZS3DI8uk8n5v2uMjBPNIYGsC2kL045ywq7D8Hh9KgnH9rP5W/GxQdYtWScRouqlA==
+  dependencies:
+    json-schema "^0.4.0"
+
+"@ai-sdk/provider@4.0.34":
+  version "4.0.34"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-4.0.34.tgz#28b2212835b46f18416dfd2506b92a4dd7a5ee03"
+  integrity sha512-Ip7ZQBq/FiGpM1mmOVseTtX9PBjnzo0bLC41WTgBSBBRUBz6LhNFGbYaNUzI6hPm6ll1oNSPOAZc/q/z+3QZEQ==
   dependencies:
     json-schema "^0.4.0"
 
