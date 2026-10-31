@@ -1574,6 +1574,25 @@
   "servers": {
     "addServerNote": "Щелкни правой кнопкой мыши, чтобы добавить новый сервер",
     "searchPlaceholder": "Поиск",
+    "inheritancePolicy": {
+      "title": "Apply inheritance",
+      "description": "Choose how existing objects should handle these inherited settings.",
+      "impact": "{{count}} existing objects are affected.",
+      "retain": {
+        "title": "Retain existing",
+        "description": "Keep current values as local overrides."
+      },
+      "adopt": {
+        "title": "Adopt folder settings",
+        "description": "Replace current values with the inherited folder settings."
+      },
+      "moveTitle": "Apply destination inheritance?",
+      "moveDescription": "Choose whether moved objects adopt the destination folder settings or retain their current values.",
+      "moveFailed": "Unable to move object",
+      "identitiesRemoved": "Some identities were removed because they are unavailable in the destination.",
+      "enableTitle": "Enable inheritance?",
+      "enableDescription": "Choose what existing objects should do when these folder settings are saved."
+    },
     "time": {
       "justNow": "Только что",
       "minuteAgo": "{{count}} мин назад",
@@ -1598,6 +1617,7 @@
       "createFolder": "Создать папку",
       "deleteFolder": "Удалить папку",
       "renameFolder": "Переименовать папку",
+      "folderSettings": "Folder Settings",
       "new": "Новый",
       "sshServer": "SSH-сервер",
       "telnetServer": "Telnet-сервер",
@@ -1678,6 +1698,7 @@
       "fillRequiredFields": "Пожалуйста, заполните все обязательные поля",
       "serverCreated": "Сервер успешно создан",
       "serverUpdated": "Сервер успешно обновлён",
+      "folderUpdated": "Folder updated successfully",
       "createFailed": "Не удалось создать сервер",
       "updateFailed": "Не удалось обновить сервер",
       "createIdentityFailed": "Не удалось создать учётные данные",
