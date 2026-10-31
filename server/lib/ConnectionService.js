@@ -77,7 +77,10 @@ const resolveJumpHosts = async (entry, accountId = null, options = {}) => {
         }
         const [entryScope, jumpHostScope] = await Promise.all([getEntryScope(entry), getEntryScope(jhEntry)]);
         const sameScope = isSameSecurityScope(entryScope, jumpHostScope);
-        if (!sameScope) throw new Error("Jump host " + jumpHostId + " is outside the resource security scope");
+        if (!sameScope) {
+            throw new Error("Jump host " + jumpHostId + " (" + jhEntry.name + ") is in a different organization or personal space than this server. "
+                + "Edit the server's jump hosts and pick one from the same space.");
+        }
         await applyEffectiveEntryConfig(jhEntry, options);
         if (jhEntry.type !== "server" || jhEntry.config.protocol !== "ssh") {
             throw new Error("Jump host " + jumpHostId + " is not an SSH server");
@@ -151,6 +154,7 @@ const createConnectionForSession = async (sessionId, accountId) => {
 };
 
 const resolveFileTransferContext = async (entry, identityId, directIdentity, accountId) => {
+    if (!entry.inheritedConfigFields) await applyEffectiveEntryConfig(entry);
     const identityResult = await resolveIdentity(entry, identityId, directIdentity, accountId);
     const identity = extractIdentity(identityResult);
     const credentials = await resolveCredentials(identity);

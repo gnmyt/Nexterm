@@ -19,7 +19,7 @@ const SessionManager = require("../lib/SessionManager");
 const { changesProtocol, omitsProtocol, withoutInheritance, getFolderInheritance, getEffectiveEntryConfig, getEntryIdentityIds } = require("../utils/folderInheritance");
 const { applyMovePolicy, getMoveImpact, snapshotEntry } = require("../utils/inheritanceLifecycle");
 const sequelize = require("../utils/database");
-const { getEntryScope, isIdentityAllowedForScope, validateIdentityIds, validateJumpHostIds } = require("../utils/resourceValidation");
+const { getEntryScope, isIdentityAllowedForScope, isSameSecurityScope, validateIdentityIds, validateJumpHostIds } = require("../utils/resourceValidation");
 
 const PROTOCOL_RENDERERS = {
     ssh: "terminal",
@@ -35,11 +35,7 @@ const PROTOCOL_RENDERERS = {
 const validateEntryAccess = async (accountId, entry, errorMessage = "You don't have permission to access this entry", requiredPermission = null) => {
     if (!entry) return { code: 401, message: "Entry does not exist" };
 
-    let { organizationId, accountId: ownerAccountId } = entry;
-    if (entry.folderId) {
-        const folder = await Folder.findByPk(entry.folderId);
-        if (folder) ({ organizationId, accountId: ownerAccountId } = folder);
-    }
+    const { organizationId, accountId: ownerAccountId } = await getEntryScope(entry);
 
     if (organizationId) {
         const allowed = requiredPermission
@@ -211,7 +207,11 @@ module.exports.editEntry = async (accountId, entryId, configuration) => {
 
     if (configuration.config?.jumpHosts !== undefined) {
         const scope = await getEntryScope(entry);
-        const validationResult = await validateJumpHostIds(accountId, configuration.config.jumpHosts || [], {
+        // Only validate newly added jump hosts, so servers with legacy jump hosts stay editable
+        const existingJumpHosts = new Set(withoutInheritance(entry.config).jumpHosts || []);
+        const jumpHosts = configuration.config.jumpHosts;
+        const addedJumpHosts = Array.isArray(jumpHosts) ? jumpHosts.filter((jumpHostId) => !existingJumpHosts.has(jumpHostId)) : jumpHosts;
+        const validationResult = await validateJumpHostIds(accountId, addedJumpHosts || [], {
             enforceScope: true,
             organizationId: scope.organizationId,
             ownerAccountId: scope.accountId || accountId,
@@ -576,12 +576,16 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
         }
     }
 
-    const localJumpHostValidation = await validateJumpHostIds(accountId, withoutInheritance(entry.config).jumpHosts, {
-        enforceScope: true,
-        organizationId: targetOrganizationId,
-        ownerAccountId: targetAccountId,
-    });
-    if (!localJumpHostValidation.valid) return localJumpHostValidation.error;
+    const changesScope = !isSameSecurityScope(await getEntryScope(entry), { organizationId: targetOrganizationId, accountId: targetAccountId });
+    if (changesScope) {
+        const localJumpHostValidation = await validateJumpHostIds(accountId, withoutInheritance(entry.config).jumpHosts, {
+            enforceScope: true,
+            skipMissing: true,
+            organizationId: targetOrganizationId,
+            ownerAccountId: targetAccountId,
+        });
+        if (!localJumpHostValidation.valid) return localJumpHostValidation.error;
+    }
 
     const oldOrganizationId = entry.organizationId;
     const changesFolder = targetFolderId !== entry.folderId;
@@ -669,14 +673,14 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
     await createAuditLog({
         action: AUDIT_ACTIONS.ENTRY_UPDATE,
         accountId,
-        organizationId: entry.organizationId,
+        organizationId: oldOrganizationId,
         resource: RESOURCE_TYPES.ENTRY,
         resourceId: entryIdNum,
         details: { action: 'reposition', targetId, placement, folderId: targetFolderId, inheritancePolicy, ...moveResult }
     });
 
-    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: entry.organizationId });
-    if (targetOrganizationId && targetOrganizationId !== entry.organizationId) {
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: oldOrganizationId });
+    if (targetOrganizationId && targetOrganizationId !== oldOrganizationId) {
         stateBroadcaster.broadcast("ENTRIES", { organizationId: targetOrganizationId });
     }
 

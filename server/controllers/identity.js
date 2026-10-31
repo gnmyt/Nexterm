@@ -53,7 +53,8 @@ const syncCredentials = async (identityId, type, password, sshKey, passphrase, t
     }
 
     if (sshKey) await upsertCredential(identityId, "ssh-key", sshKey, transaction);
-    if (passphrase !== undefined) {
+    // A replacement key without a passphrase must not keep the old key's passphrase
+    if (passphrase !== undefined || sshKey) {
         if (passphrase) await upsertCredential(identityId, "passphrase", passphrase, transaction);
         else await Credential.destroy({ where: { identityId, type: "passphrase" }, transaction });
     }

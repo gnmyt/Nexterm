@@ -18,23 +18,20 @@ const validateIdentityIds = async (accountId, identityIds, organizationId = null
     return { valid: true };
 };
 
-const canAccessEntry = async (accountId, entry) => {
-    if (!entry) return false;
-    let { organizationId, accountId: ownerAccountId } = entry;
-    if (entry.folderId) {
-        const folder = await Folder.findByPk(entry.folderId);
-        if (folder) ({ organizationId, accountId: ownerAccountId } = folder);
-    }
-    if (organizationId) return hasOrganizationAccess(accountId, organizationId);
-    return !ownerAccountId || ownerAccountId === accountId;
-};
-
+// Shared with validateEntryAccess in controllers/entry.js, so both resolve an entry's scope the same way
 const getEntryScope = async (entry) => {
     if (entry.folderId) {
         const folder = await Folder.findByPk(entry.folderId);
         if (folder) return { organizationId: folder.organizationId || null, accountId: folder.accountId || null };
     }
     return { organizationId: entry.organizationId || null, accountId: entry.accountId || null };
+};
+
+const canAccessEntry = async (accountId, entry) => {
+    if (!entry) return false;
+    const { organizationId, accountId: ownerAccountId } = await getEntryScope(entry);
+    if (organizationId) return hasOrganizationAccess(accountId, organizationId);
+    return !ownerAccountId || ownerAccountId === accountId;
 };
 
 const isSameSecurityScope = (left, right) => left.organizationId
@@ -59,7 +56,10 @@ const validateJumpHostIds = async (accountId, jumpHostIds, options = {}) => {
     if (!jumpHostIds.length) return { valid: true };
     for (const jumpHostId of jumpHostIds) {
         const jumpHost = await Entry.findByPk(jumpHostId);
-        if (!jumpHost) return { valid: false, error: { code: 404, message: `Jump host with ID ${jumpHostId} does not exist` } };
+        if (!jumpHost) {
+            if (options.skipMissing) continue;
+            return { valid: false, error: { code: 404, message: `Jump host with ID ${jumpHostId} does not exist` } };
+        }
         if (jumpHost.type !== "server" || jumpHost.config?.protocol !== "ssh") {
             return { valid: false, error: { code: 400, message: `Jump host ${jumpHostId} is not an SSH server` } };
         }

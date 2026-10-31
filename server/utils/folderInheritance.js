@@ -131,15 +131,26 @@ const getLocalSectionState = (inheritance, protocol, section) => {
     return Object.keys(pickSectionConfig(profile, section)).length ? "enabled" : "transparent";
 };
 
-const getFolderLineage = async (folderId, { transaction } = {}) => {
-    const lineage = [];
-    let currentFolderId = folderId;
+const FOLDER_MAP_CACHE_KEY = "__folders";
 
-    while (currentFolderId) {
-        const folder = await Folder.findByPk(currentFolderId, { transaction });
-        if (!folder) break;
+const loadFolderMap = async ({ transaction, cache } = {}) => {
+    const load = async () => new Map((await Folder.findAll({ transaction })).map((folder) => [folder.id, folder]));
+    if (!cache) return load();
+    if (!cache.has(FOLDER_MAP_CACHE_KEY)) cache.set(FOLDER_MAP_CACHE_KEY, load());
+    return cache.get(FOLDER_MAP_CACHE_KEY);
+};
+
+const getFolderLineage = async (folderId, options = {}) => {
+    if (!folderId) return [];
+    const folders = await loadFolderMap(options);
+    const lineage = [];
+    const visited = new Set();
+    let folder = folders.get(Number(folderId));
+
+    while (folder && !visited.has(folder.id)) {
+        visited.add(folder.id);
         lineage.unshift(folder);
-        currentFolderId = folder.parentId;
+        folder = folder.parentId ? folders.get(folder.parentId) : null;
     }
 
     return lineage;
@@ -206,7 +217,7 @@ const resolveProtocol = (lineage, protocol, identityRowsByFolder = new Map()) =>
     };
 };
 
-const getFolderInheritance = async (folderId, protocol = null, options = {}) => {
+const loadFolderInheritance = async (folderId, protocol, options) => {
     const lineage = await getFolderLineage(folderId, options);
     const folderIds = lineage.map((folder) => folder.id);
     const where = { folderId: { [Op.in]: folderIds } };
@@ -241,8 +252,15 @@ const getFolderInheritance = async (folderId, protocol = null, options = {}) => 
     }
 
     if (!protocol) return { config: {}, identities: [], profiles, identityProfiles, sectionSources };
-    const resolved = resolveProtocol(lineage, protocol, identityRowsByFolder);
-    return { config: resolved.config, identities: resolved.identities, profiles, identityProfiles, sectionSources: resolved.sectionSources };
+    return { config: profiles[protocol], identities: identityProfiles[protocol], profiles, identityProfiles, sectionSources: sectionSources[protocol] };
+};
+
+// Bulk callers pass options.cache (a Map) to resolve each folder lineage once per pass
+const getFolderInheritance = async (folderId, protocol = null, options = {}) => {
+    if (!options.cache) return loadFolderInheritance(folderId, protocol, options);
+    const key = JSON.stringify([folderId, protocol, options.accountId, options.sharedOnly, options.organizationId, options.ownerAccountId]);
+    if (!options.cache.has(key)) options.cache.set(key, loadFolderInheritance(folderId, protocol, options));
+    return options.cache.get(key);
 };
 
 const getParentFolderInheritance = async (folderId, options = {}) => {
@@ -283,15 +301,7 @@ const getEntryIdentityIds = async (entry, options = {}) => {
     if (!entry.folderId) return directIds;
 
     const inheritedIds = (await getFolderInheritance(entry.folderId, withoutInheritance(entry.config).protocol, options)).identities;
-    let result = [...directIds, ...inheritedIds.filter((identityId) => !directIds.includes(identityId))];
-    if (options.sharedOnly) {
-        const identityModels = result.length ? await Identity.findAll({ where: { id: result }, transaction: options.transaction }) : [];
-        const allowedIds = new Set(identityModels.filter((identity) => entry.organizationId
-            ? identity.organizationId === entry.organizationId
-            : identity.accountId === entry.accountId).map((identity) => identity.id));
-        result = result.filter((identityId) => allowedIds.has(identityId));
-    }
-    return result;
+    return [...directIds, ...inheritedIds.filter((identityId) => !directIds.includes(identityId))];
 };
 
 module.exports = {

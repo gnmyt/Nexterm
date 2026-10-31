@@ -62,9 +62,10 @@ const listAllServers = async () => {
             attributes: ["id", "type", "name", "config", "folderId", "integrationId", "status"],
         });
 
+        const cache = new Map();
         await Promise.all(entries
             .filter((entry) => entry.type === "server")
-            .map((entry) => applyEffectiveEntryConfig(entry)));
+            .map((entry) => applyEffectiveEntryConfig(entry, { cache })));
         return entries;
     } catch (error) {
         logger.error(`Error fetching entries for status check`, { error: error.message });

@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const database = require("../utils/database");
 const {
     changesProtocol,
+    getFolderInheritance,
     getInheritanceShapeError,
     getLocalProfiles,
     getLocalSectionState,
@@ -16,6 +17,7 @@ const {
     configMoveRequiresChoice,
     isIdentityAllowedForMove,
     shouldTraverseChild,
+    snapshotEntry,
     toPlain,
     validateTransitions,
 } = require("../utils/inheritanceLifecycle");
@@ -23,6 +25,9 @@ const { isIdentityAllowedForScope, isSameSecurityScope } = require("../utils/res
 const { folderEditValidation } = require("../validations/folder");
 const { createServerValidation, repositionServerValidation, updateServerValidation } = require("../validations/server");
 const Credential = require("../models/Credential");
+const EntryIdentity = require("../models/EntryIdentity");
+const Folder = require("../models/Folder");
+const FolderIdentityProfile = require("../models/FolderIdentityProfile");
 const { syncCredentials } = require("../controllers/identity");
 
 const inheritanceConfig = (inheritance) => ({ __nextermInheritance: inheritance });
@@ -314,4 +319,52 @@ test("identity authentication changes remove incompatible credentials", async ()
         { [require("sequelize").Op.in]: ["ssh-key", "passphrase"] },
         "passphrase",
     ]);
+});
+
+test("a replacement SSH key without a passphrase clears the old passphrase", async () => {
+    const originals = { destroy: Credential.destroy, findOne: Credential.findOne, create: Credential.create };
+    const destroyedTypes = [];
+    Credential.destroy = async ({ where }) => destroyedTypes.push(where.type);
+    Credential.findOne = async () => null;
+    Credential.create = async () => ({});
+
+    try {
+        await syncCredentials(9, "ssh", undefined, "new-key", undefined);
+    } finally {
+        Object.assign(Credential, originals);
+    }
+
+    assert.ok(destroyedTypes.includes("passphrase"));
+});
+
+test("entry snapshots do not alias the live entry", async () => {
+    const originalFindAll = EntryIdentity.findAll;
+    EntryIdentity.findAll = async () => [];
+    const entry = { id: 1, folderId: null, organizationId: 5, config: { protocol: "ssh" } };
+
+    try {
+        const snapshot = await snapshotEntry(entry);
+        snapshot.entry.organizationId = 7;
+    } finally {
+        EntryIdentity.findAll = originalFindAll;
+    }
+
+    assert.equal(entry.organizationId, 5);
+});
+
+test("a shared cache resolves each folder lineage once", async () => {
+    const originals = { findAll: Folder.findAll, profileFindAll: FolderIdentityProfile.findAll };
+    let folderLookups = 0;
+    Folder.findAll = async () => (folderLookups++, [{ id: 3, parentId: null, config: {} }, { id: 4, parentId: 3, config: {} }]);
+    FolderIdentityProfile.findAll = async () => [];
+
+    try {
+        const cache = new Map();
+        await Promise.all([getFolderInheritance(3, "ssh", { cache }), getFolderInheritance(4, "rdp", { cache })]);
+    } finally {
+        Folder.findAll = originals.findAll;
+        FolderIdentityProfile.findAll = originals.profileFindAll;
+    }
+
+    assert.equal(folderLookups, 1);
 });

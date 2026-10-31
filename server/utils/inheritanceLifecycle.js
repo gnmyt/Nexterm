@@ -55,10 +55,19 @@ const filterIdentitiesForOrganization = async (identityIds, organizationId, allo
     return { identityIds: filtered, removed: identityIds.length - filtered.length };
 };
 
+// Personal folder identity rows belong to individual members: only the owner's rows apply in a personal scope, none in an organization scope
+const identityRowOptions = async (entry, transaction) => {
+    const folder = entry.folderId ? await Folder.findByPk(entry.folderId, { transaction }) : null;
+    const organizationId = folder ? folder.organizationId : entry.organizationId;
+    const ownerAccountId = folder ? folder.accountId : entry.accountId;
+    return { accountId: organizationId ? null : (ownerAccountId ?? null) };
+};
+
 const snapshotEntry = async (entry, transaction) => {
     const protocol = getProtocol(entry);
+    const rowOptions = await identityRowOptions(entry, transaction);
     const inheritance = entry.folderId
-        ? await getFolderInheritance(entry.folderId, protocol, { transaction })
+        ? await getFolderInheritance(entry.folderId, protocol, { ...rowOptions, transaction })
         : { config: {}, identities: [], sectionSources: {} };
     const localConfig = withoutInheritance(entry.config);
     const localIdentities = await EntryIdentity.findAll({
@@ -67,12 +76,12 @@ const snapshotEntry = async (entry, transaction) => {
         transaction,
     });
     return {
-        entry,
+        entry: toPlain(entry),
         organizationId: entry.organizationId,
         protocol,
         localConfig,
         effectiveConfig: { ...inheritance.config, ...localConfig },
-        effectiveIdentities: await getEntryIdentityIds(entry, { transaction }),
+        effectiveIdentities: await getEntryIdentityIds(entry, { ...rowOptions, transaction }),
         localIdentityIds: localIdentities.map((identity) => identity.identityId),
         inheritance,
     };
@@ -269,7 +278,7 @@ const getMoveImpact = async (snapshots, transaction) => {
     let entryCount = 0;
     for (const snapshot of snapshots) {
         const nextInheritance = snapshot.entry.folderId
-            ? await getFolderInheritance(snapshot.entry.folderId, snapshot.protocol, { transaction })
+            ? await getFolderInheritance(snapshot.entry.folderId, snapshot.protocol, { ...(await identityRowOptions(snapshot.entry, transaction)), transaction })
             : { config: {}, identities: [], sectionSources: {} };
         let impacted = false;
         for (const section of CONFIG_SECTIONS) {
@@ -308,7 +317,7 @@ const applyMovePolicy = async (snapshots, policy, targetOrganizationId, accountI
     let removedIdentityCount = 0;
     for (const snapshot of snapshots) {
         const nextInheritance = snapshot.entry.folderId
-            ? await getFolderInheritance(snapshot.entry.folderId, snapshot.protocol, { transaction })
+            ? await getFolderInheritance(snapshot.entry.folderId, snapshot.protocol, { ...(await identityRowOptions(snapshot.entry, transaction)), transaction })
             : { config: {}, identities: [], sectionSources: {} };
         let nextLocalConfig = { ...snapshot.localConfig };
 

@@ -15,6 +15,7 @@ import { getAvailableTabs, validateRequiredFields, getFieldConfig } from "./util
 import Icon from "@mdi/react";
 import * as mdiIcons from "@mdi/js";
 
+const PROTOCOL_DEFAULT_PORTS = { ssh: "22", telnet: "23", rdp: "3389", vnc: "5900", sftp: "22", ftp: "21", ftps: "21" };
 const PROTOCOL_DEFAULT_ICONS = { ssh: "mdiConsole", telnet: "mdiConsole", rdp: "mdiMicrosoftWindows", vnc: "mdiMonitor", sftp: "mdiFolderNetwork", ftp: "mdiFolderNetwork", ftps: "mdiFolderNetwork", demo: "mdiFlaskOutline" };
 
 export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizationId, editServerId, initialProtocol }) => {
@@ -240,9 +241,11 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
 
     useEffect(() => {
         if (!open) return;
+        let cancelled = false;
 
         if (editServerId) {
             getRequest("entries/" + editServerId).then((server) => {
+                if (cancelled) return;
                 setName(server.name);
                 const savedOverrideKeys = Object.keys(server.localConfig || {}).filter((key) => key !== "protocol");
                 setLocalOverrideKeys(savedOverrideKeys);
@@ -274,11 +277,9 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             setInheritedIdentities([]);
             
             if (initialProtocol) {
-                const portMap = { ssh: "22", telnet: "23", rdp: "3389", vnc: "5900", sftp: "22", ftp: "21", ftps: "21" };
-
                 let initialConfig = { protocol: initialProtocol };
                 if (getFieldConfig("server", initialProtocol).showIpPort) {
-                    initialConfig.port = portMap[initialProtocol] || "";
+                    initialConfig.port = PROTOCOL_DEFAULT_PORTS[initialProtocol] || "";
                 }
 
                 setConfig(initialConfig);
@@ -300,9 +301,13 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
 
             if (currentFolderId) {
                 getRequest("folders/" + currentFolderId + "?protocol=" + (initialProtocol || "")).then((folder) => {
+                    if (cancelled) return;
                     const inherited = folder.config || {};
                     setConfig((current) => {
-                        const next = { ...inherited, ...current };
+                        const base = { ...current };
+                        // An untouched protocol default must not override the folder's inherited port
+                        if (inherited.port !== undefined && String(base.port) === PROTOCOL_DEFAULT_PORTS[base.protocol]) delete base.port;
+                        const next = { ...inherited, ...base };
                         initialValues.current = {
                             ...initialValues.current,
                             config: JSON.stringify(next),
@@ -319,6 +324,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
 
         setIdentityUpdates({});
         setActiveTab(0);
+        return () => { cancelled = true; };
     }, [open, editServerId, initialProtocol, currentFolderId, fieldConfig.showIpPort]);
 
     useEffect(() => {
@@ -339,7 +345,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
 
     const refreshIdentities = () => {
         if (!editServerId) return;
-        getRequest("servers/" + editServerId).then((server) => setIdentities(server.identities));
+        getRequest("entries/" + editServerId).then((server) => setIdentities(server.localIdentities || []));
     };
 
     const isDirty = name !== initialValues.current.name || 

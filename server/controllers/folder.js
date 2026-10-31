@@ -15,7 +15,7 @@ const { applyFolderTransitions, applyMovePolicy, collectSubtreeEntries, getInher
 const sequelize = require("../utils/database");
 const FolderIdentityProfile = require("../models/FolderIdentityProfile");
 const { createIdentityInTransaction, listIdentities, updateIdentityInTransaction } = require("./identity");
-const { isIdentityAllowedForScope, validateJumpHostIds } = require("../utils/resourceValidation");
+const { isIdentityAllowedForScope, isSameSecurityScope, validateJumpHostIds } = require("../utils/resourceValidation");
 
 const filterFolderIdentityProfiles = async (folder, organizationId, allowedPersonalAccountIds, transaction) => {
     const rows = await FolderIdentityProfile.findAll({ where: { folderId: folder.id }, transaction });
@@ -169,10 +169,15 @@ const moveFolderWithLifecycle = async (accountId, folder, configuration) => {
     const profileValidation = await validateFolderSubtreeProfiles(accountId, folder, targetOrganizationId, targetAccountId);
     if (profileValidation.code) return profileValidation;
 
-    const subtreeEntries = await collectSubtreeEntries(folder.id);
+    const changesScope = !isSameSecurityScope(
+        { organizationId: folder.organizationId || null, accountId: folder.accountId || null },
+        { organizationId: targetOrganizationId, accountId: targetAccountId }
+    );
+    const subtreeEntries = changesScope ? await collectSubtreeEntries(folder.id) : [];
     for (const entry of subtreeEntries) {
         const jumpHostValidation = await validateJumpHostIds(accountId, entry.config?.jumpHosts, {
             enforceScope: true,
+            skipMissing: true,
             organizationId: targetOrganizationId,
             ownerAccountId: targetAccountId,
             movingFolderId: folder.id,
@@ -360,85 +365,6 @@ module.exports.editFolder = async (accountId, folderId, configuration) => {
         && (configuration.organizationId ?? null) !== (folder.organizationId ?? null);
     if (changesParent || changesRootContext) {
         return moveFolderWithLifecycle(accountId, folder, configuration);
-    }
-
-    if (configuration.parentId !== undefined) {
-        if (configuration.parentId === null) {
-            if (configuration.organizationId !== undefined) {
-                const targetOrgId = configuration.organizationId;
-                if (targetOrgId !== null) {
-                    const hasAccess = await hasOrganizationPermission(accountId, targetOrgId, Permission.RESOURCES_MANAGE);
-                    if (!hasAccess) {
-                        return { code: 403, message: "You don't have permission to manage resources in the target organization" };
-                    }
-                }
-                
-                const newOrganizationId = targetOrgId;
-                const newAccountId = targetOrgId ? null : accountId;
-                
-                if (folder.organizationId !== newOrganizationId) {
-                    await updateFolderContext(parseInt(folderId), newOrganizationId, newAccountId, folder.organizationId);
-                }
-            } else {
-                const newOrganizationId = null;
-                const newAccountId = accountId;
-                
-                if (folder.organizationId !== newOrganizationId) {
-                    await updateFolderContext(parseInt(folderId), newOrganizationId, newAccountId, folder.organizationId);
-                }
-            }
-        } else {
-            let targetFolder = await Folder.findByPk(configuration.parentId);
-            if (!targetFolder) {
-                return { code: 302, message: "Target parent folder does not exist" };
-            }
-
-            if (folder.organizationId && !targetFolder.organizationId) {
-                const hasOrgAccess = await hasOrganizationPermission(accountId, folder.organizationId, Permission.RESOURCES_MANAGE);
-                if (!hasOrgAccess) {
-                    return { code: 403, message: "You don't have permission to manage resources in this organization" };
-                }
-            }
-
-            if (targetFolder.organizationId && !folder.organizationId) {
-                const hasOrgAccess = await hasOrganizationPermission(accountId, targetFolder.organizationId, Permission.RESOURCES_MANAGE);
-                if (!hasOrgAccess) {
-                    return { code: 403, message: "You don't have permission to manage resources in the target organization" };
-                }
-            }
-
-            if (folder.organizationId && targetFolder.organizationId && targetFolder.organizationId !== folder.organizationId) {
-                const hasSourceAccess = await hasOrganizationPermission(accountId, folder.organizationId, Permission.RESOURCES_MANAGE);
-                const hasTargetAccess = await hasOrganizationPermission(accountId, targetFolder.organizationId, Permission.RESOURCES_MANAGE);
-                if (!hasSourceAccess || !hasTargetAccess) {
-                    return { code: 403, message: "You don't have permission to manage resources in one or both organizations" };
-                }
-            } else if (!folder.organizationId && !targetFolder.organizationId) {
-                if (targetFolder.accountId !== accountId) {
-                    return { code: 403, message: "You don't have access to the target parent folder" };
-                }
-            }
-
-            let currentFolder = targetFolder;
-            while (currentFolder) {
-                if (currentFolder.id === parseInt(folderId)) {
-                    return { code: 303, message: "Cannot move folder to its own subfolder" };
-                }
-
-                if (currentFolder.parentId === null) {
-                    break;
-                }
-
-                currentFolder = await Folder.findByPk(currentFolder.parentId);
-            }
-
-            const newOrganizationId = targetFolder.organizationId || null;
-            const newAccountId = targetFolder.organizationId ? null : accountId;
-            
-            if (folder.organizationId !== newOrganizationId) {
-                await updateFolderContext(parseInt(folderId), newOrganizationId, newAccountId, folder.organizationId);
-            }
-        }
     }
 
     const identityProfiles = configuration.identityProfiles;

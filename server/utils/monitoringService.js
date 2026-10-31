@@ -44,17 +44,19 @@ const runMonitoring = async () => {
         }
 
         const entries = await Entry.findAll({ where: { type: "server" } });
-        const toMonitor = await Promise.all(entries.map(async (entry) => ({ entry, config: await getEffectiveEntryConfig(entry) })));
+        const cache = new Map();
+        const toMonitor = await Promise.all(entries.map(async (entry) => ({ entry, config: await getEffectiveEntryConfig(entry, { cache }) })));
         const configuredEntries = toMonitor.filter(({ config }) => config.protocol === "ssh" && config.monitoringEnabled);
-        if (configuredEntries.length) await Promise.allSettled(configuredEntries.map(({ entry, config }) => monitorEntry(entry, config)));
+        if (configuredEntries.length) await Promise.allSettled(configuredEntries.map(({ entry, config }) => monitorEntry(entry, config, cache)));
     } catch (error) {
         logger.error("Error running monitoring", { error: error.message });
     }
 };
 
-const monitorEntry = async (entry, config) => {
+const monitorEntry = async (entry, config, cache) => {
     try {
         const identityIds = await getEntryIdentityIds(entry, {
+            cache,
             sharedOnly: true,
             organizationId: entry.organizationId,
             ownerAccountId: entry.accountId,

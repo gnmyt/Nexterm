@@ -1,13 +1,12 @@
 const Identity = require('../models/Identity');
 const { listIdentities } = require("../controllers/identity");
-const { getEffectiveEntryConfig, getEntryIdentityIds } = require("./folderInheritance");
+const { getEntryIdentityIds, withoutInheritance } = require("./folderInheritance");
 const { getEntryScope, isIdentityAllowedForScope } = require("./resourceValidation");
 
 const CREDENTIALLESS_PROTOCOLS = ['telnet', 'demo'];
 
 const resolveIdentity = async (entry, identityId, directIdentity = null, accountId = null, options = {}) => {
-    const config = await getEffectiveEntryConfig(entry, options);
-    const protocol = entry.type === "server" ? config.protocol : entry.type;
+    const protocol = entry.type === "server" ? withoutInheritance(entry.config).protocol : entry.type;
     const requiresIdentity = !entry.type?.startsWith('pve-') && !CREDENTIALLESS_PROTOCOLS.includes(protocol);
 
     if (directIdentity) {
