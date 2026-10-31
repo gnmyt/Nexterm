@@ -1574,6 +1574,25 @@
   "servers": {
     "addServerNote": "右键单击添加新服务器",
     "searchPlaceholder": "搜索",
+    "inheritancePolicy": {
+      "title": "Apply inheritance",
+      "description": "Choose how existing objects should handle these inherited settings.",
+      "impact": "{{count}} existing objects are affected.",
+      "retain": {
+        "title": "Retain existing",
+        "description": "Keep current values as local overrides."
+      },
+      "adopt": {
+        "title": "Adopt folder settings",
+        "description": "Replace current values with the inherited folder settings."
+      },
+      "moveTitle": "Apply destination inheritance?",
+      "moveDescription": "Choose whether moved objects adopt the destination folder settings or retain their current values.",
+      "moveFailed": "Unable to move object",
+      "identitiesRemoved": "Some identities were removed because they are unavailable in the destination.",
+      "enableTitle": "Enable inheritance?",
+      "enableDescription": "Choose what existing objects should do when these folder settings are saved."
+    },
     "time": {
       "justNow": "刚刚",
       "minuteAgo": "{{count}} 分钟前",
@@ -1598,6 +1617,7 @@
       "createFolder": "创建文件夹",
       "deleteFolder": "删除文件夹",
       "renameFolder": "重命名文件夹",
+      "folderSettings": "Folder Settings",
       "new": "新建",
       "sshServer": "SSH 服务器",
       "telnetServer": "Telnet 服务器",
@@ -1678,6 +1698,7 @@
       "fillRequiredFields": "请填写所有必填字段",
       "serverCreated": "服务器创建成功",
       "serverUpdated": "服务器更新成功",
+      "folderUpdated": "Folder updated successfully",
       "createFailed": "创建服务器失败",
       "updateFailed": "更新服务器失败",
       "createIdentityFailed": "创建身份标识失败",
