@@ -1574,6 +1574,25 @@
   "servers": {
     "addServerNote": "Kliknutím pravým tlačítkem myši přidáte nový server",
     "searchPlaceholder": "Vyhledávání",
+    "inheritancePolicy": {
+      "title": "Apply inheritance",
+      "description": "Choose how existing objects should handle these inherited settings.",
+      "impact": "{{count}} existing objects are affected.",
+      "retain": {
+        "title": "Retain existing",
+        "description": "Keep current values as local overrides."
+      },
+      "adopt": {
+        "title": "Adopt folder settings",
+        "description": "Replace current values with the inherited folder settings."
+      },
+      "moveTitle": "Apply destination inheritance?",
+      "moveDescription": "Choose whether moved objects adopt the destination folder settings or retain their current values.",
+      "moveFailed": "Unable to move object",
+      "identitiesRemoved": "Some identities were removed because they are unavailable in the destination.",
+      "enableTitle": "Enable inheritance?",
+      "enableDescription": "Choose what existing objects should do when these folder settings are saved."
+    },
     "time": {
       "justNow": "Právě teď",
       "minuteAgo": "před {{count}} min",
@@ -1598,6 +1617,7 @@
       "createFolder": "Vytvořit složku",
       "deleteFolder": "Smazat složku",
       "renameFolder": "Přejmenovat složku",
+      "folderSettings": "Folder Settings",
       "new": "Nový",
       "sshServer": "SSH server",
       "telnetServer": "Telnet server",
@@ -1678,6 +1698,7 @@
       "fillRequiredFields": "Prosím vyplňte všechna povinná pole",
       "serverCreated": "Server úspěšně vytvořen",
       "serverUpdated": "Server úspěšně aktualizován",
+      "folderUpdated": "Folder updated successfully",
       "createFailed": "Nepodařilo se vytvořit server",
       "updateFailed": "Nepodařilo se aktualizovat server",
       "createIdentityFailed": "Nepodařilo se vytvořit identitu",
