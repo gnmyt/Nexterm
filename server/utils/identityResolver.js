@@ -1,11 +1,12 @@
 const Identity = require('../models/Identity');
-const EntryIdentity = require('../models/EntryIdentity');
-const { listIdentities } = require('../controllers/identity');
+const { listIdentities } = require("../controllers/identity");
+const { getEntryIdentityIds, withoutInheritance } = require("./folderInheritance");
+const { getEntryScope, isIdentityAllowedForScope } = require("./resourceValidation");
 
 const CREDENTIALLESS_PROTOCOLS = ['telnet', 'demo'];
 
-const resolveIdentity = async (entry, identityId, directIdentity = null, accountId = null) => {
-    const protocol = entry.type === 'server' ? entry.config?.protocol : entry.type;
+const resolveIdentity = async (entry, identityId, directIdentity = null, accountId = null, options = {}) => {
+    const protocol = entry.type === "server" ? withoutInheritance(entry.config).protocol : entry.type;
     const requiresIdentity = !entry.type?.startsWith('pve-') && !CREDENTIALLESS_PROTOCOLS.includes(protocol);
 
     if (directIdentity) {
@@ -24,25 +25,24 @@ const resolveIdentity = async (entry, identityId, directIdentity = null, account
     }
 
     const accessibleIds = accountId ? new Set((await listIdentities(accountId)).map(i => i.id)) : null;
+    const scope = accountId ? await getEntryScope(entry) : null;
 
     if (identityId) {
         const identity = await Identity.findByPk(identityId);
         if (!identity) return { identity: null, requiresIdentity };
-        if (accessibleIds && !accessibleIds.has(identity.id)) {
+        if (accessibleIds && (!accessibleIds.has(identity.id)
+            || !isIdentityAllowedForScope(identity, scope.organizationId, accountId))) {
             return { identity: null, requiresIdentity, accessDenied: true };
         }
         return identity;
     }
 
-    const entryIdentities = await EntryIdentity.findAll({
-        where: { entryId: entry.id },
-        order: [['isDefault', 'DESC']]
-    });
+    const entryIdentityIds = await getEntryIdentityIds(entry, { ...options, ...(accountId ? { accountId } : {}) });
 
-    for (const ei of entryIdentities) {
-        if (accessibleIds && !accessibleIds.has(ei.identityId)) continue;
-        const identity = await Identity.findByPk(ei.identityId);
-        if (identity) return identity;
+    for (const entryIdentityId of entryIdentityIds) {
+        if (accessibleIds && !accessibleIds.has(entryIdentityId)) continue;
+        const identity = await Identity.findByPk(entryIdentityId);
+        if (identity && (!scope || isIdentityAllowedForScope(identity, scope.organizationId, accountId))) return identity;
     }
 
     return { identity: null, requiresIdentity };

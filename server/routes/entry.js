@@ -163,7 +163,7 @@ app.patch("/:entryId/reposition", async (req, res) => {
     const result = await repositionEntry(req.user.id, req.params.entryId, req.body);
     if (result?.code) return res.json(result);
 
-    res.json({ message: "Entry successfully repositioned" });
+    res.json({ message: "Entry successfully repositioned", ...result });
 });
 
 /**

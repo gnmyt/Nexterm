@@ -16,6 +16,10 @@ const logger = require("../utils/logger");
 const { sendWakeOnLan } = require("../utils/wol");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const SessionManager = require("../lib/SessionManager");
+const { changesProtocol, omitsProtocol, withoutInheritance, getFolderInheritance, getEffectiveEntryConfig, getEntryIdentityIds } = require("../utils/folderInheritance");
+const { applyMovePolicy, getMoveImpact, snapshotEntry } = require("../utils/inheritanceLifecycle");
+const sequelize = require("../utils/database");
+const { getEntryScope, isIdentityAllowedForScope, isSameSecurityScope, validateIdentityIds, validateJumpHostIds } = require("../utils/resourceValidation");
 
 const PROTOCOL_RENDERERS = {
     ssh: "terminal",
@@ -31,11 +35,7 @@ const PROTOCOL_RENDERERS = {
 const validateEntryAccess = async (accountId, entry, errorMessage = "You don't have permission to access this entry", requiredPermission = null) => {
     if (!entry) return { code: 401, message: "Entry does not exist" };
 
-    let { organizationId, accountId: ownerAccountId } = entry;
-    if (entry.folderId) {
-        const folder = await Folder.findByPk(entry.folderId);
-        if (folder) ({ organizationId, accountId: ownerAccountId } = folder);
-    }
+    const { organizationId, accountId: ownerAccountId } = await getEntryScope(entry);
 
     if (organizationId) {
         const allowed = requiredPermission
@@ -50,59 +50,6 @@ const validateEntryAccess = async (accountId, entry, errorMessage = "You don't h
     return { valid: true, entry };
 };
 
-const validateIdentities = async (accountId, identities, organizationId) => {
-    if (!identities || identities.length === 0) return { valid: true };
-
-    const allAccessibleIdentities = await listIdentities(accountId);
-    const accessibleIdentityIds = allAccessibleIdentities.map(identity => identity.id);
-
-    const invalidIdentities = identities.filter(id => !accessibleIdentityIds.includes(id));
-
-    if (invalidIdentities.length > 0) {
-        return {
-            valid: false,
-            error: { code: 501, message: "One or more identities do not exist or you don't have access to them" },
-        };
-    }
-
-    if (organizationId) {
-        const hasAccess = await hasOrganizationAccess(accountId, organizationId);
-        if (!hasAccess) {
-            return { valid: false, error: { code: 403, message: "You don't have access to this organization" } };
-        }
-    }
-
-    return { valid: true };
-};
-
-const validateJumpHosts = async (accountId, jumpHosts) => {
-    if (!jumpHosts || jumpHosts.length === 0) return { valid: true };
-
-    for (const jumpHostId of jumpHosts) {
-        const jumpHostEntry = await Entry.findByPk(jumpHostId);
-        
-        if (!jumpHostEntry) {
-            return {
-                valid: false,
-                error: { code: 404, message: `Jump host with ID ${jumpHostId} does not exist` }
-            };
-        }
-
-        if (jumpHostEntry.config?.protocol !== 'ssh') {
-            return {
-                valid: false,
-                error: { code: 400, message: `Jump host ${jumpHostId} is not an SSH server` }
-            };
-        }
-
-        const accessCheck = await validateEntryAccess(accountId, jumpHostEntry, "You don't have permission to use this jump host");
-        if (!accessCheck.valid) {
-            return { valid: false, error: accessCheck };
-        }
-    }
-
-    return { valid: true };
-};
 
 module.exports.createEntry = async (accountId, configuration) => {
     let folder = null;
@@ -111,25 +58,32 @@ module.exports.createEntry = async (accountId, configuration) => {
         if (!folder.valid) return folder.error;
     }
 
+    const organizationId = folder?.folder?.organizationId || configuration.organizationId || null;
+
     if (!configuration.icon) {
         configuration.icon = "server";
     }
 
-    if (!configuration.renderer && configuration.config?.protocol) {
-        configuration.renderer = PROTOCOL_RENDERERS[configuration.config.protocol] ?? configuration.renderer;
+    const inheritedConfig = configuration.folderId ? await getFolderInheritance(configuration.folderId, configuration.config?.protocol, { accountId }) : { config: {} };
+    const effectiveConfig = { ...inheritedConfig.config, ...withoutInheritance(configuration.config) };
+
+    if (!configuration.renderer && effectiveConfig.protocol) {
+        configuration.renderer = PROTOCOL_RENDERERS[effectiveConfig.protocol] ?? configuration.renderer;
     }
 
     if (configuration.identities && configuration.identities.length > 0) {
-        const validationResult = await validateIdentities(accountId, configuration.identities, configuration.organizationId);
+        const validationResult = await validateIdentityIds(accountId, configuration.identities, organizationId);
         if (!validationResult.valid) return validationResult.error;
     }
 
-    if (configuration.config?.jumpHosts && configuration.config.jumpHosts.length > 0) {
-        const validationResult = await validateJumpHosts(accountId, configuration.config.jumpHosts);
+    if (configuration.config?.jumpHosts !== undefined) {
+        const validationResult = await validateJumpHostIds(accountId, configuration.config.jumpHosts, {
+            enforceScope: true,
+            organizationId,
+            ownerAccountId: organizationId ? null : accountId,
+        });
         if (!validationResult.valid) return validationResult.error;
     }
-
-    const organizationId = folder?.folder?.organizationId || configuration.organizationId || null;
 
     if (organizationId && organizationId !== folder?.folder?.organizationId
         && !(await hasOrganizationPermission(accountId, organizationId, Permission.RESOURCES_MANAGE))) {
@@ -208,9 +162,14 @@ module.exports.editEntry = async (accountId, entryId, configuration) => {
 
     if (!accessCheck.valid) return accessCheck;
 
-    if (configuration.folderId !== undefined && configuration.folderId !== null) {
-        const folderCheck = await validateFolderAccess(accountId, configuration.folderId, Permission.RESOURCES_MANAGE);
-        if (!folderCheck.valid) return folderCheck.error;
+    if (configuration.folderId !== undefined || configuration.organizationId !== undefined)
+        return { code: 400, message: "Move the server with the reposition endpoint" };
+
+    if (entry.type === "server" && omitsProtocol(configuration.config)) {
+        return { code: 400, message: "Server configuration updates must include the existing protocol" };
+    }
+    if (entry.type === "server" && changesProtocol(entry.config, configuration.config)) {
+        return { code: 400, message: "Server protocol cannot be changed after creation" };
     }
 
     if (configuration.config?.protocol) {
@@ -218,7 +177,8 @@ module.exports.editEntry = async (accountId, entryId, configuration) => {
     }
 
     if (configuration.identities) {
-        const validationResult = await validateIdentities(accountId, configuration.identities, entry.organizationId);
+        const scope = await getEntryScope(entry);
+        const validationResult = await validateIdentityIds(accountId, configuration.identities, scope.organizationId);
         if (!validationResult.valid) return validationResult.error;
 
         const accessibleIdentities = await listIdentities(accountId);
@@ -246,7 +206,16 @@ module.exports.editEntry = async (accountId, entryId, configuration) => {
     }
 
     if (configuration.config?.jumpHosts !== undefined) {
-        const validationResult = await validateJumpHosts(accountId, configuration.config.jumpHosts || []);
+        const scope = await getEntryScope(entry);
+        // Only validate newly added jump hosts, so servers with legacy jump hosts stay editable
+        const existingJumpHosts = new Set(withoutInheritance(entry.config).jumpHosts || []);
+        const jumpHosts = configuration.config.jumpHosts;
+        const addedJumpHosts = Array.isArray(jumpHosts) ? jumpHosts.filter((jumpHostId) => !existingJumpHosts.has(jumpHostId)) : jumpHosts;
+        const validationResult = await validateJumpHostIds(accountId, addedJumpHosts || [], {
+            enforceScope: true,
+            organizationId: scope.organizationId,
+            ownerAccountId: scope.accountId || accountId,
+        });
         if (!validationResult.valid) return validationResult.error;
     }
 
@@ -274,17 +243,31 @@ module.exports.getEntry = async (accountId, entryId) => {
 
     if (!accessCheck.valid) return accessCheck;
 
-    const identities = await EntryIdentity.findAll({ where: { entryId }, order: [['isDefault', 'DESC']] });
-
     const accessibleIdentities = await listIdentities(accountId);
-    const accessibleIdentityIds = new Set(accessibleIdentities.map(i => i.id));
-    const filteredIdentityIds = identities
-        .map(ei => ei.identityId)
-        .filter(id => accessibleIdentityIds.has(id));
+    const accessibleIdentitiesById = new Map(accessibleIdentities.map((identity) => [identity.id, identity]));
+    const scope = await getEntryScope(entry);
+    const isAllowedIdentity = (identityId) => isIdentityAllowedForScope(
+        accessibleIdentitiesById.get(identityId), scope.organizationId, accountId
+    );
+    const directIdentities = await EntryIdentity.findAll({
+        where: { entryId },
+        order: [["isDefault", "DESC"]],
+    });
+    const directIdentityIds = directIdentities.map((identity) => identity.identityId);
+    const identityIds = await getEntryIdentityIds(entry, { accountId });
+    const filteredIdentityIds = identityIds.filter(isAllowedIdentity);
+    const inherited = entry.folderId
+        ? await getFolderInheritance(entry.folderId, withoutInheritance(entry.config).protocol, { accountId })
+        : { config: {}, identities: [] };
 
     return {
         ...entry,
-        identities: filteredIdentityIds
+        config: await getEffectiveEntryConfig(entry),
+        localConfig: withoutInheritance(entry.config),
+        inheritedConfig: inherited.config,
+        identities: filteredIdentityIds,
+        localIdentities: directIdentityIds.filter(isAllowedIdentity),
+        inheritedIdentities: inherited.identities.filter(isAllowedIdentity),
     };
 };
 
@@ -314,11 +297,14 @@ module.exports.listEntries = async (accountId) => {
     });
 
     const entryIds = entries.map(e => e.id);
-    const allEntryIdentities = await EntryIdentity.findAll({
+    const allEntryIdentities = entryIds.length ? await EntryIdentity.findAll({
         where: { entryId: { [Op.in]: entryIds } },
-        order: [['isDefault', 'DESC']]
+        order: [["isDefault", "DESC"], ["createdAt", "ASC"]],
+    }) : [];
+    const directIdentityMap = new Map();
+    allEntryIdentities.forEach((row) => {
+        directIdentityMap.set(row.entryId, [...(directIdentityMap.get(row.entryId) || []), row.identityId]);
     });
-
     const allEntryTags = await EntryTag.findAll({
         where: { entryId: { [Op.in]: entryIds } }
     });
@@ -328,17 +314,15 @@ module.exports.listEntries = async (accountId) => {
     });
 
     const accessibleIdentities = await listIdentities(accountId);
-    const accessibleIdentityIds = new Set(accessibleIdentities.map(i => i.id));
-
-    const identitiesMap = new Map();
-    allEntryIdentities.forEach(ei => {
-        if (!accessibleIdentityIds.has(ei.identityId)) return;
-        
-        if (!identitiesMap.has(ei.entryId)) {
-            identitiesMap.set(ei.entryId, []);
-        }
-        identitiesMap.get(ei.entryId).push(ei.identityId);
-    });
+    const accessibleIdentitiesById = new Map(accessibleIdentities.map((identity) => [identity.id, identity]));
+    const inheritanceCache = new Map();
+    const getCachedInheritance = async (entry) => {
+        if (!entry.folderId) return { config: {}, identities: [] };
+        const protocol = withoutInheritance(entry.config).protocol;
+        const key = `${entry.folderId}:${protocol}`;
+        if (!inheritanceCache.has(key)) inheritanceCache.set(key, await getFolderInheritance(entry.folderId, protocol, { accountId }));
+        return inheritanceCache.get(key);
+    };
 
     const tagsMap = new Map();
     allEntryTags.forEach(et => {
@@ -367,7 +351,7 @@ module.exports.listEntries = async (accountId) => {
     };
     rebuildFolderMap(folders);
 
-    const buildEntryObject = (entry, identities, tags) => {
+    const buildEntryObject = (entry, config, identities, tags) => {
         const obj = {
             type: entry.type,
             id: entry.id,
@@ -376,6 +360,8 @@ module.exports.listEntries = async (accountId) => {
             status: entry.status,
             position: entry.position,
             renderer: entry.renderer,
+            folderId: entry.folderId || null,
+            organizationId: entry.organizationId || null,
             tags: tags || [],
         };
 
@@ -383,13 +369,13 @@ module.exports.listEntries = async (accountId) => {
             return {
                 ...obj,
                 identities: identities,
-                protocol: entry.config?.protocol,
-                ip: entry.config?.ip,
-                macAddress: entry.config?.macAddress,
-                wakeOnLanEnabled: entry.config?.wakeOnLanEnabled,
-                notes: entry.config?.notes || "",
-                showNoteInList: Boolean(entry.config?.showNoteInList),
-                displayScale: entry.config?.displayScale,
+                protocol: config?.protocol,
+                ip: config?.ip,
+                macAddress: config?.macAddress,
+                wakeOnLanEnabled: config?.wakeOnLanEnabled,
+                notes: config?.notes || "",
+                showNoteInList: Boolean(config?.showNoteInList),
+                displayScale: config?.displayScale,
             };
         }
 
@@ -401,9 +387,15 @@ module.exports.listEntries = async (accountId) => {
     };
 
     for (const entry of entries) {
-        const identities = identitiesMap.get(entry.id) || [];
+        const inheritance = entry.type === "server"
+            ? await getCachedInheritance(entry)
+            : { config: {}, identities: [] };
+        const localConfig = withoutInheritance(entry.config);
+        const directIdentityIds = directIdentityMap.get(entry.id) || [];
+        const identities = [...directIdentityIds, ...inheritance.identities.filter((id) => !directIdentityIds.includes(id))]
+            .filter((id) => isIdentityAllowedForScope(accessibleIdentitiesById.get(id), entry.organizationId || null, accountId));
         const tags = tagsMap.get(entry.id) || [];
-        const entryObject = buildEntryObject(entry, identities, tags);
+        const entryObject = buildEntryObject(entry, { ...inheritance.config, ...localConfig }, identities, tags);
 
         if (!entryObject) continue;
 
@@ -541,7 +533,7 @@ module.exports.importSSHConfig = async (accountId, configuration) => {
     };
 };
 
-module.exports.repositionEntry = async (accountId, entryId, { targetId, placement, folderId, organizationId }) => {
+module.exports.repositionEntry = async (accountId, entryId, { targetId, placement, folderId, organizationId, inheritancePolicy }) => {
     const entryIdNum = parseInt(entryId);
 
     const entry = await Entry.findByPk(entryIdNum);
@@ -576,90 +568,123 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
             }
             targetAccountId = null;
         } else {
+            if (!(await hasAccountPermission(accountId, Permission.RESOURCES_MANAGE))) {
+                return { code: 403, message: "You don't have permission to manage resources in the target location" };
+            }
             targetOrganizationId = null;
             targetAccountId = accountId;
         }
     }
 
-    const entries = await Entry.findAll({
-        where: {
-            folderId: targetFolderId,
+    const changesScope = !isSameSecurityScope(await getEntryScope(entry), { organizationId: targetOrganizationId, accountId: targetAccountId });
+    if (changesScope) {
+        const localJumpHostValidation = await validateJumpHostIds(accountId, withoutInheritance(entry.config).jumpHosts, {
+            enforceScope: true,
+            skipMissing: true,
             organizationId: targetOrganizationId,
-            accountId: targetAccountId,
-        },
-        order: [["position", "ASC"]],
-    });
-
-    const normalizedEntries = entries.filter(e => e.id !== entryIdNum);
-
-    let targetIndex;
-    if (targetId === null || targetId === undefined) {
-        targetIndex = normalizedEntries.length;
-    } else {
-        targetIndex = normalizedEntries.findIndex(e => e.id === parseInt(targetId));
-        if (targetIndex === -1) return { code: 404, message: "Target entry not found" };
-
-        if (placement === 'after') {
-            targetIndex += 1;
-        }
-    }
-
-    normalizedEntries.splice(targetIndex, 0, entry);
-
-    for (let i = 0; i < normalizedEntries.length; i++) {
-        const updateData = { position: i, folderId: targetFolderId };
-
-        if (normalizedEntries[i].id === entryIdNum) {
-            updateData.organizationId = targetOrganizationId;
-            updateData.accountId = targetAccountId;
-        }
-
-        await Entry.update(updateData, { where: { id: normalizedEntries[i].id } });
+            ownerAccountId: targetAccountId,
+        });
+        if (!localJumpHostValidation.valid) return localJumpHostValidation.error;
     }
 
     const oldOrganizationId = entry.organizationId;
-    if (oldOrganizationId !== targetOrganizationId) {
-        const entryIdentities = await EntryIdentity.findAll({ where: { entryId: entryIdNum } });
-        const identityIds = entryIdentities.map(ei => ei.identityId);
-        
-        if (identityIds.length > 0) {
-            const oldOrgIdentities = await Identity.findAll({
-                where: {
-                    id: { [Op.in]: identityIds },
-                    organizationId: oldOrganizationId,
-                }
-            });
-            
-            const oldOrgIdentityIds = oldOrgIdentities.map(i => i.id);
-            if (oldOrgIdentityIds.length > 0) {
-                await EntryIdentity.destroy({
-                    where: {
-                        entryId: entryIdNum,
-                        identityId: { [Op.in]: oldOrgIdentityIds }
-                    }
-                });
-                logger.info(`Removed ${oldOrgIdentityIds.length} organization identities from entry after move`, { entryId: entryIdNum, oldOrganizationId, targetOrganizationId });
-            }
-        }
+    const changesFolder = targetFolderId !== entry.folderId;
+    let moveResult = { impact: { entryCount: 0, sections: [], warnings: [] }, removedIdentityCount: 0 };
 
-        await SessionManager.removeAllByEntryId(entryIdNum);
+    try {
+        await sequelize.transaction(async (transaction) => {
+            const snapshot = changesFolder ? await snapshotEntry(entry, transaction) : null;
+            const entries = await Entry.findAll({
+                where: {
+                    folderId: targetFolderId,
+                    organizationId: targetOrganizationId,
+                    accountId: targetAccountId,
+                },
+                order: [["position", "ASC"]],
+                transaction,
+            });
+            const normalizedEntries = entries.filter(e => e.id !== entryIdNum);
+
+            let targetIndex;
+            if (targetId === null || targetId === undefined) {
+                targetIndex = normalizedEntries.length;
+            } else {
+                targetIndex = normalizedEntries.findIndex(e => e.id === parseInt(targetId));
+                if (targetIndex === -1) {
+                    const error = new Error("Target entry not found");
+                    error.lifecycleError = { code: 404, message: error.message };
+                    throw error;
+                }
+                if (placement === "after") targetIndex += 1;
+            }
+
+            normalizedEntries.splice(targetIndex, 0, entry);
+            for (let i = 0; i < normalizedEntries.length; i++) {
+                const updateData = { position: i, folderId: targetFolderId };
+                if (normalizedEntries[i].id === entryIdNum) {
+                    updateData.organizationId = targetOrganizationId;
+                    updateData.accountId = targetAccountId;
+                }
+                await Entry.update(updateData, { where: { id: normalizedEntries[i].id }, transaction });
+            }
+
+            if (snapshot) {
+                snapshot.entry.folderId = targetFolderId;
+                snapshot.entry.organizationId = targetOrganizationId;
+                const impact = await getMoveImpact([snapshot], transaction);
+                moveResult.impact = impact;
+                if (impact.entryCount > 0 && !inheritancePolicy) {
+                    const error = new Error("Choose how moved objects should handle destination inheritance");
+                    error.lifecycleError = { code: 409, reason: "inheritance_policy_required", message: error.message, impact };
+                    throw error;
+                }
+                const applied = await applyMovePolicy([snapshot], inheritancePolicy || "adopt", targetOrganizationId, accountId, transaction);
+                moveResult.removedIdentityCount = applied.removedIdentityCount;
+            }
+
+            if (oldOrganizationId !== targetOrganizationId) {
+                const entryIdentities = await EntryIdentity.findAll({ where: { entryId: entryIdNum }, transaction });
+                const identityIds = entryIdentities.map(ei => ei.identityId);
+                if (identityIds.length > 0) {
+                    const linkedIdentities = await Identity.findAll({
+                        where: { id: { [Op.in]: identityIds } },
+                        transaction,
+                    });
+                    const unavailableIdentityIds = linkedIdentities
+                        .filter((identity) => identity.organizationId !== null && identity.organizationId !== targetOrganizationId)
+                        .map((identity) => identity.id);
+                    if (unavailableIdentityIds.length > 0) {
+                        await EntryIdentity.destroy({
+                            where: { entryId: entryIdNum, identityId: { [Op.in]: unavailableIdentityIds } },
+                            transaction,
+                        });
+                        moveResult.removedIdentityCount += unavailableIdentityIds.length;
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        if (error.lifecycleError) return error.lifecycleError;
+        throw error;
     }
+
+    if (oldOrganizationId !== targetOrganizationId) await SessionManager.removeAllByEntryId(entryIdNum);
 
     await createAuditLog({
         action: AUDIT_ACTIONS.ENTRY_UPDATE,
         accountId,
-        organizationId: entry.organizationId,
+        organizationId: oldOrganizationId,
         resource: RESOURCE_TYPES.ENTRY,
         resourceId: entryIdNum,
-        details: { action: 'reposition', targetId, placement, folderId: targetFolderId }
+        details: { action: 'reposition', targetId, placement, folderId: targetFolderId, inheritancePolicy, ...moveResult }
     });
 
-    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: entry.organizationId });
-    if (targetOrganizationId && targetOrganizationId !== entry.organizationId) {
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: oldOrganizationId });
+    if (targetOrganizationId && targetOrganizationId !== oldOrganizationId) {
         stateBroadcaster.broadcast("ENTRIES", { organizationId: targetOrganizationId });
     }
 
-    return { success: true };
+    return { success: true, ...moveResult };
 };
 
 module.exports.wakeEntry = async (accountId, entryId) => {
@@ -671,7 +696,7 @@ module.exports.wakeEntry = async (accountId, entryId) => {
         return { code: 400, message: "Wake-On-LAN is only supported for server entries" };
     }
 
-    const config = entry.config || {};
+    const config = await getEffectiveEntryConfig(entry);
     const macAddress = config.macAddress;
 
     if (!macAddress) {

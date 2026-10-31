@@ -6,8 +6,9 @@ const SessionManager = require("../lib/SessionManager");
 const { validateEntryAccess } = require("../controllers/entry");
 const { getOrganizationAuditSettingsInternal } = require("../controllers/audit");
 const { resolveIdentity } = require("../utils/identityResolver");
+const { applyEffectiveEntryConfig } = require("../utils/folderInheritance");
 
-const SHARED_ENTRY_ATTRIBUTES = ["id", "type", "config", "integrationId"];
+const SHARED_ENTRY_ATTRIBUTES = ["id", "type", "config", "folderId", "organizationId", "accountId", "integrationId"];
 
 const authenticateToken = async (ws, sessionToken) => {
     if (!sessionToken) return ws.close(4001, "You need to provide the token in the 'sessionToken' parameter"), null;
@@ -47,6 +48,7 @@ const authenticateSharedSession = async (ws, query) => {
 
     const entry = await Entry.findByPk(session.entryId, { attributes: SHARED_ENTRY_ATTRIBUTES });
     if (!entry) return ws.close(4005, "Entry not found"), null;
+    await applyEffectiveEntryConfig(entry);
 
     return buildSharedContext(query, session, entry, { shareWritable: session.shareWritable });
 };
@@ -63,6 +65,7 @@ const authenticateOrganizationJoin = async (ws, query) => {
 
     const entry = await Entry.findByPk(access.session.entryId, { attributes: SHARED_ENTRY_ATTRIBUTES });
     if (!entry) return ws.close(4005, "Entry not found"), null;
+    await applyEffectiveEntryConfig(entry);
 
     SessionManager.updateActivity(joinSessionId);
 
@@ -163,6 +166,8 @@ module.exports = async (ws, req) => {
         ws.close(4006, "Identity not found");
         return null;
     }
+
+    await applyEffectiveEntryConfig(entry);
 
     return {
         entry,

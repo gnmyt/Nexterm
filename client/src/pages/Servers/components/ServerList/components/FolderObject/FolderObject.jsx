@@ -6,11 +6,13 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { patchRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { useDrag, useDrop } from "react-dnd";
+import { useInheritancePolicyMove } from "@/pages/Servers/components/InheritancePolicyDialog/useInheritancePolicyMove.jsx";
 
 export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen, renameState, setRenameStateId, organizationId, folderType }) => {
     const inputRef = useRef();
 
     const { loadServers } = useContext(ServerContext);
+    const { runMove, policyDialog } = useInheritancePolicyMove();
     const [nameState, setNameState] = useState(name || "");
 
     useEffect(() => {
@@ -39,22 +41,23 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
             if (item.id === id || !acceptsDrop(item)) return { id };
             try {
                 if (item.type === "server") {
-                    await patchRequest(`entries/${item.id}/reposition`, { 
+                    await runMove((inheritancePolicy) => patchRequest(`entries/${item.id}/reposition`, {
                         targetId: null,
                         placement: 'after',
                         folderId: id,
-                        organizationId: organizationId
-                    });
-                    loadServers();
+                        organizationId: organizationId,
+                        ...(inheritancePolicy ? { inheritancePolicy } : {}),
+                    }), loadServers);
                     return { id };
                 }
 
-                await patchRequest(`folders/${item.id}`, { parentId: item.id !== id ? id : undefined });
+                await runMove((inheritancePolicy) => patchRequest(`folders/${item.id}`, {
+                    parentId: item.id !== id ? id : undefined,
+                    ...(inheritancePolicy ? { inheritancePolicy } : {}),
+                }), loadServers);
             } catch (error) {
                 console.error("Failed to drop item", error.message);
             }
-
-            loadServers();
 
             return { id };
         },
@@ -87,7 +90,7 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
             return () => document.removeEventListener("keydown", handleEnter);
         }
     }, [renameState]);
-    return (
+    return <>
         <div className={"folder-object" + (isOver ? " folder-is-over" : "")} data-id={id}
              ref={(node) => dragRef(dropRef(node))} onClick={renameState ? (e) => e.stopPropagation() : onClick}
              style={{ paddingLeft: `${10 + (nestedLevel * 15)}px`, opacity }}>
@@ -100,5 +103,6 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
             {renameState && <input type="text" ref={inputRef} value={nameState} onBlur={changeName}
                                    onChange={(e) => setNameState(e.target.value)} />}
         </div>
-    );
+        {policyDialog}
+    </>;
 };

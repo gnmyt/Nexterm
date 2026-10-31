@@ -67,7 +67,7 @@ module.exports = async (ws, req) => {
             remotePort: String(remotePort),
         };
 
-        const jumpHosts = await resolveJumpHosts(entry);
+        const jumpHosts = await resolveJumpHosts(entry, user.id);
 
         const dataSocketPromise = controlPlane.waitForDataConnection(sessionId);
         await controlPlane.openSession(sessionId, SessionType.Tunnel, host, port, params, jumpHosts);

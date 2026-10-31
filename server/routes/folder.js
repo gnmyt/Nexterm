@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const { folderCreationValidation, folderEditValidation } = require("../validations/folder");
-const { createFolder, deleteFolder, listFolders, editFolder } = require("../controllers/folder");
+const { createFolder, deleteFolder, listFolders, getFolderById, editFolder } = require("../controllers/folder");
 const { validateSchema } = require("../utils/schema");
 
 const app = Router();
@@ -16,6 +16,13 @@ const app = Router();
  */
 app.get("/list", async (req, res) => {
     res.json(await listFolders(req.user.id));
+});
+
+app.get("/:folderId", async (req, res) => {
+    const folder = await getFolderById(req.user.id, req.params.folderId, req.query.protocol || null);
+    if (folder?.code) return res.json(folder);
+
+    res.json(folder);
 });
 
 /**

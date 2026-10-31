@@ -49,10 +49,11 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
                 }
                 return;
             }
+
+            if (event.target.closest("[data-dialog-action]")) return;
             
             const isInsideDialog = ref.current?.contains(event.target);
-            const isInsidePortal = !!document.getElementById('select-box-portal')?.contains(event.target)
-                || !!event.target.closest('.icon-chooser__dropdown');
+            const isInsidePortal = !!event.target.closest('.select-box__options, .icon-chooser__dropdown');
             
             if (!isInsideDialog && !isInsidePortal) {
                 tryClose();

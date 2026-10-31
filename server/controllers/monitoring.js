@@ -7,6 +7,7 @@ const Integration = require("../models/Integration");
 const { Op } = require("sequelize");
 const { validateEntryAccess } = require("./entry");
 const { validateIntegrationAccess } = require("./integration");
+const { getEffectiveEntryConfig } = require("../utils/folderInheritance");
 
 const TIME_RANGES = { "1h": { ms: 3600000, points: 60 }, "6h": { ms: 21600000, points: 360 }, "24h": { ms: 86400000, points: 720 } };
 
@@ -56,9 +57,10 @@ module.exports.getServerMonitoring = async (accountId, entryId, timeRange = "1h"
         const entry = await Entry.findByPk(entryId);
         const access = await validateEntryAccess(accountId, entry);
         if (!access.valid) return access;
+        const config = await getEffectiveEntryConfig(entry);
         const { data, latest } = await fetchMonitoringData({ entryId }, timeRange);
         return {
-            server: { id: entry.id, name: entry.name, ip: entry.config?.ip, port: entry.config?.port, status: entry.status, monitoringEnabled: entry.config?.monitoringEnabled },
+            server: { id: entry.id, name: entry.name, ip: config.ip, port: config.port, status: entry.status, monitoringEnabled: config.monitoringEnabled },
             data, timeRange, latest,
         };
     } catch (error) {
@@ -77,8 +79,12 @@ const buildMonitoringResult = (items, idField, tsMap, snapMap, transform) => ite
 module.exports.getAllServersMonitoring = async (accountId) => {
     try {
         const entries = await Entry.findAll({ where: { type: "server" } });
-        const accessChecks = await Promise.all(entries.map(e => validateEntryAccess(accountId, e).then(r => ({ item: e, valid: r.valid }))));
-        const accessibleEntries = accessChecks.filter(({ item, valid }) => valid && item.config?.monitoringEnabled && item.config?.protocol === "ssh").map(({ item }) => item);
+        const cache = new Map();
+        const accessChecks = await Promise.all(entries.map(async (entry) => {
+            const valid = (await validateEntryAccess(accountId, entry)).valid;
+            return { item: entry, valid, config: valid ? await getEffectiveEntryConfig(entry, { cache }) : null };
+        }));
+        const accessibleEntries = accessChecks.filter(({ valid, config }) => valid && config.monitoringEnabled && config.protocol === "ssh").map(({ item, config }) => ({ ...toJson(item), config }));
 
         const integrations = await Integration.findAll({ where: { type: "proxmox" } });
         const intAccessChecks = await Promise.all(integrations.map(i => validateIntegrationAccess(accountId, i).then(r => ({ item: i, valid: r.valid }))));

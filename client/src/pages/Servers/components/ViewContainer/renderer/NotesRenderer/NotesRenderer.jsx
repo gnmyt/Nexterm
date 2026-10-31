@@ -61,7 +61,7 @@ export const NotesRenderer = ({ session }) => {
     const persist = useCallback(async (patch) => {
         if (!entryId) return;
         if (inFlightRef.current) {
-            pendingPatchRef.current = { ...(pendingPatchRef.current || {}), ...patch };
+            pendingPatchRef.current = { ...pendingPatchRef.current, ...patch };
             return;
         }
 
@@ -84,16 +84,18 @@ export const NotesRenderer = ({ session }) => {
         inFlightRef.current = true;
         setStatus(STATUS.SAVING);
 
-        const nextConfig = { ...(entry.config || {}), ...patch };
+        // Save only the entry's own values, so inherited folder settings are not frozen in as overrides
+        const localConfig = entry.localConfig ?? entry.config;
+        const nextConfig = { ...localConfig, ...patch };
 
         try {
             await patchRequest("entries/" + entryId, {
                 name: entry.name,
                 icon: entry.icon,
                 config: nextConfig,
-                identities: entry.identities || [],
+                identities: entry.localIdentities ?? entry.identities ?? [],
             });
-            entrySnapshotRef.current = { ...entry, config: nextConfig };
+            entrySnapshotRef.current = { ...entry, config: { ...entry.config, ...patch }, localConfig: nextConfig };
             if ("notes" in patch) lastSavedRef.current.notes = patch.notes;
             if ("showNoteInList" in patch) lastSavedRef.current.showNoteInList = patch.showNoteInList;
             setStatus(STATUS.SAVED);

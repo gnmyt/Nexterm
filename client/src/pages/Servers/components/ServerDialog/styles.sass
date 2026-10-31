@@ -612,3 +612,17 @@
       color: colors.$subtext
       font-size: 0.875rem
       margin: 0
+.inheritance-override
+    background: none
+    border: 0
+    color: colors.$primary
+    cursor: pointer
+    margin-left: 0.35rem
+    padding: 0
+    vertical-align: middle
+
+.form-group:has(.inherited-setting-marker),
+.settings-toggle:has(.inherited-setting-marker),
+.jump-hosts-section:has(.inherited-setting-marker),
+.keyboard-layout-card:has(.inherited-setting-marker)
+    opacity: 0.58

@@ -1,14 +1,14 @@
-import { mdiAccountCircleOutline, mdiFileUploadOutline, mdiLockOutline, mdiPlus, mdiTrashCan, mdiLinkOff, mdiLink, mdiAccountGroup, mdiAccount, mdiArrowRight } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiFileUploadOutline, mdiLockOutline, mdiPlus, mdiTrashCan, mdiLinkOff, mdiLink, mdiAccountGroup, mdiAccount, mdiArrowRight, mdiContentDuplicate } from "@mdi/js";
 import Input from "@/common/components/IconInput";
 import SelectBox from "@/common/components/SelectBox";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import Icon from "@mdi/react";
 import Button from "@/common/components/Button";
 import Tooltip from "@/common/components/Tooltip";
 import { useTranslation } from "react-i18next";
 
-const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, orgId, allowedAuthTypes }) => {
+const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, orgId, allowedAuthTypes, canUnlink }) => {
     const { t } = useTranslation();
     const isNew = !identity.id || String(identity.id).startsWith("new-");
     const isOrg = identity.scope === 'organization';
@@ -20,6 +20,7 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
     const [passphrase, setPassphrase] = useState(identity.passphrase || "");
     const [pwTouched, setPwTouched] = useState(false);
     const [ppTouched, setPpTouched] = useState(false);
+    const edited = useRef(false);
 
     const allAuthOptions = [
         { label: t("servers.dialog.identities.passwordOnly"), value: "password-only" },
@@ -34,11 +35,15 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
 
     const readFile = (e) => {
         const reader = new FileReader();
-        reader.onload = (ev) => setSshKey(ev.target.result);
+        reader.onload = (ev) => {
+            edited.current = true;
+            setSshKey(ev.target.result);
+        };
         reader.readAsText(e.target.files[0]);
     };
 
     useEffect(() => {
+        if (!edited.current) return;
         onUpdate({
             id: identity.id, name, username, authType, scope: identity.scope, organizationId: identity.organizationId,
             ...(authType === "password" || authType === "password-only"
@@ -58,37 +63,37 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
                     <Icon path={isOrg ? mdiAccountGroup : mdiAccount} size={0.8} />
                 </div>
                 <div className="identity-name-input">
-                    <Input icon={mdiAccountCircleOutline} value={name} setValue={setName} placeholder={t("servers.dialog.identities.identityName")} />
+                    <Input icon={mdiAccountCircleOutline} value={name} setValue={(value) => { edited.current = true; setName(value); }} placeholder={t("servers.dialog.identities.identityName")} />
                 </div>
                 {isNew && <span className="new-badge">NEW</span>}
-                {!isOrg && !isNew && isOrgContext && orgId && (
+                {!isOrg && !isNew && isOrgContext && orgId && onMoveToOrg && (
                     <Tooltip text={t("servers.dialog.identities.moveToOrg")} delay={500} asChild>
                         <button className="move-to-org-btn" onClick={() => onMoveToOrg(identity.id, orgId)} aria-label={t("servers.dialog.identities.moveToOrg")} type="button">
                             <Icon path={mdiArrowRight} size={0.8} /><Icon path={mdiAccountGroup} size={0.8} />
                         </button>
                     </Tooltip>
                 )}
-                <button className="unlink-identity-btn" onClick={() => onDelete(identity.id)} aria-label={t(isNew ? "servers.dialog.identities.removeIdentity" : "servers.dialog.identities.unlinkIdentity")} type="button">
+                {canUnlink && <button className="unlink-identity-btn" onClick={() => onDelete(identity.id)} aria-label={t(isNew ? "servers.dialog.identities.removeIdentity" : "servers.dialog.identities.unlinkIdentity")} type="button">
                     <Icon path={isNew ? mdiTrashCan : mdiLinkOff} size={1} />
-                </button>
+                </button>}
             </div>
             <div className="identity-fields">
                 <div className={`identity-row ${!showUsername ? 'single-column' : ''}`}>
                     {showUsername && (
                         <div className="form-group">
                             <label>{t("servers.dialog.identities.username")}</label>
-                            <Input icon={mdiAccountCircleOutline} type="text" placeholder={t("servers.dialog.identities.username")} autoComplete="off" value={username} setValue={setUsername} />
+                            <Input icon={mdiAccountCircleOutline} type="text" placeholder={t("servers.dialog.identities.username")} autoComplete="off" value={username} setValue={(value) => { edited.current = true; setUsername(value); }} />
                         </div>
                     )}
                     <div className="form-group">
                         <label>{t("servers.dialog.identities.authentication")}</label>
-                        <SelectBox options={authOptions} selected={authType} setSelected={setAuthType} />
+                        <SelectBox options={authOptions} selected={authType} setSelected={(value) => { edited.current = true; setAuthType(value); }} />
                     </div>
                 </div>
                 {(authType === "password" || authType === "password-only" || authType === "both") && (
                     <div className="form-group">
                         <label>{t("servers.dialog.identities.passwordField")}</label>
-                        <Input icon={mdiLockOutline} type="password" id={`identity-password-${identity.id}`} name="password" placeholder={t("servers.dialog.identities.passwordField")} autoComplete="new-password" value={password} setValue={(v) => { setPassword(v); setPwTouched(true); }} />
+                        <Input icon={mdiLockOutline} type="password" id={`identity-password-${identity.id}`} name="password" placeholder={t("servers.dialog.identities.passwordField")} autoComplete="new-password" value={password} setValue={(v) => { edited.current = true; setPassword(v); setPwTouched(true); }} />
                     </div>
                 )}
                 {(authType === "ssh" || authType === "both") && (
@@ -99,7 +104,7 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
                         </div>
                         <div className="form-group">
                             <label>{t("servers.dialog.identities.passphrase")}</label>
-                            <Input icon={mdiLockOutline} type="password" id={`identity-passphrase-${identity.id}`} name="passphrase" placeholder={t("servers.dialog.identities.passphrase")} autoComplete="new-password" value={passphrase} setValue={(v) => { setPassphrase(v); setPpTouched(true); }} />
+                            <Input icon={mdiLockOutline} type="password" id={`identity-passphrase-${identity.id}`} name="passphrase" placeholder={t("servers.dialog.identities.passphrase")} autoComplete="new-password" value={passphrase} setValue={(v) => { edited.current = true; setPassphrase(v); setPpTouched(true); }} />
                         </div>
                     </>
                 )}
@@ -117,7 +122,7 @@ const getAuthTypeLabel = (type, t) => {
     }
 };
 
-const IdentitySection = ({ title, icon, description, identities, available, onUpdate, onDelete, onMoveToOrg, onLink, onAdd, isOrgContext, orgId, emptyText, t, allowedAuthTypes }) => (
+const IdentitySection = ({ title, icon, description, identities, available, onUpdate, onDelete, onMoveToOrg, onLink, onAdd, isOrgContext, orgId, emptyText, t, allowedAuthTypes, specificIdentities }) => (
     <div className="identities-section">
         <div className="identities-header">
             <div className="section-title"><Icon path={icon} size={0.9} /><h3>{title}</h3></div>
@@ -125,7 +130,7 @@ const IdentitySection = ({ title, icon, description, identities, available, onUp
         </div>
         {(identities.length > 0 || available.length === 0) && <p className="section-description">{description}</p>}
         <div className="identities-list">
-            {identities.map((i) => <Identity key={i.id} identity={i} onUpdate={onUpdate} onDelete={onDelete} onMoveToOrg={onMoveToOrg} isOrgContext={isOrgContext} orgId={orgId} allowedAuthTypes={allowedAuthTypes} />)}
+            {identities.map((i) => <Identity key={i.id} identity={i} onUpdate={onUpdate} onDelete={onDelete} onMoveToOrg={onMoveToOrg} isOrgContext={isOrgContext} orgId={orgId} allowedAuthTypes={allowedAuthTypes} canUnlink={!i.id || String(i.id).startsWith("new-") || specificIdentities.includes(i.id)} />)}
             {available.length > 0 && (
                 <div className={`available-identities-section ${identities.length === 0 ? 'no-border' : ''}`}>
                     <div className="available-identities-header">
@@ -150,14 +155,18 @@ const IdentitySection = ({ title, icon, description, identities, available, onUp
     </div>
 );
 
-const IdentityPage = ({ serverIdentities, setIdentityUpdates, identityUpdates, setIdentities, currentOrganizationId, allowedAuthTypes, serverName }) => {
+const IdentityPage = ({ serverIdentities, setIdentityUpdates, identityUpdates, setIdentities, currentOrganizationId, allowedAuthTypes, serverName, inheritedIdentities = [], identityOverride, onEnableInheritance, canEnableInheritance = false, specificIdentities = serverIdentities, onAddIdentity, allowIdentityMoves = true, visibleNewIdentityIds = null }) => {
     const { t } = useTranslation();
     const { identities, personalIdentities, getOrganizationIdentities, moveIdentityToOrganization } = useContext(IdentityContext);
 
     const orgIdentities = currentOrganizationId ? getOrganizationIdentities(currentOrganizationId) : [];
+    const linkedIds = new Set(serverIdentities.map(String));
+    const visibleNewIds = visibleNewIdentityIds ? new Set(visibleNewIdentityIds.map(String)) : null;
     const working = [
         ...serverIdentities.map(id => ({ ...(identities?.find(i => i.id === id) || { id }), ...(identityUpdates[id] || {}) })),
-        ...Object.keys(identityUpdates).filter(k => k.startsWith("new-")).map(k => ({ id: k, ...identityUpdates[k] })),
+        ...Object.keys(identityUpdates)
+            .filter((id) => id.startsWith("new-") && !linkedIds.has(id) && (!visibleNewIds || visibleNewIds.has(id)))
+            .map((id) => ({ id, ...identityUpdates[id] })),
     ];
     const linkedOrg = working.filter(i => i.scope === 'organization');
     const linkedPersonal = working.filter(i => i.scope === 'personal');
@@ -173,6 +182,7 @@ const IdentityPage = ({ serverIdentities, setIdentityUpdates, identityUpdates, s
     const handleUpdate = (u) => setIdentityUpdates(prev => ({ ...prev, [u.id]: u }));
     const handleDelete = (id) => {
         if (String(id).startsWith("new-")) {
+            setIdentities(prev => prev.filter(identityId => identityId !== id));
             setIdentityUpdates(prev => { const n = { ...prev }; delete n[id]; return n; });
         } else {
             setIdentities(prev => prev.filter(i => i !== id));
@@ -187,20 +197,25 @@ const IdentityPage = ({ serverIdentities, setIdentityUpdates, identityUpdates, s
         }
     };
     const defaultAuthType = allowedAuthTypes?.[0] || "password";
-    const addNew = (forOrg) => setIdentityUpdates(prev => ({
-        ...prev, [`new-${Date.now()}`]: { name: serverName || "", username: "", authType: defaultAuthType, password: "", scope: forOrg ? 'organization' : 'personal', organizationId: forOrg ? currentOrganizationId : null }
-    }));
+    const addNew = (forOrg) => {
+        const temporaryId = "new-" + crypto.randomUUID();
+        onAddIdentity?.(temporaryId);
+        setIdentityUpdates(prev => ({
+            ...prev, [temporaryId]: { name: serverName || "", username: "", authType: defaultAuthType, password: "", scope: forOrg ? 'organization' : 'personal', organizationId: forOrg ? currentOrganizationId : null }
+        }));
+    };
 
     return (
         <div className="identities">
+            {canEnableInheritance && identityOverride && inheritedIdentities.length > 0 && <Button text={t("servers.dialog.identities.enableInheritance", "Enable inheritance")} icon={mdiContentDuplicate} onClick={onEnableInheritance} buttonType="button" />}
             {currentOrganizationId && (
                 <IdentitySection title={t("servers.dialog.identities.organizationIdentities")} icon={mdiAccountGroup} description={t("servers.dialog.identities.orgDescription")}
-                    identities={linkedOrg} available={availableOrg} onUpdate={handleUpdate} onDelete={handleDelete} onMoveToOrg={handleMove} onLink={handleLink} onAdd={() => addNew(true)}
-                    isOrgContext={true} orgId={currentOrganizationId} emptyText={t("servers.dialog.identities.noOrgIdentities")} t={t} allowedAuthTypes={allowedAuthTypes} />
+                    identities={linkedOrg} available={availableOrg} onUpdate={handleUpdate} onDelete={handleDelete} onMoveToOrg={allowIdentityMoves ? handleMove : null} onLink={handleLink} onAdd={() => addNew(true)}
+                    isOrgContext={true} orgId={currentOrganizationId} emptyText={t("servers.dialog.identities.noOrgIdentities")} t={t} allowedAuthTypes={allowedAuthTypes} specificIdentities={specificIdentities} />
             )}
             <IdentitySection title={t("servers.dialog.identities.personalIdentities")} icon={mdiAccount} description={t("servers.dialog.identities.personalDescription")}
-                identities={linkedPersonal} available={availablePersonal} onUpdate={handleUpdate} onDelete={handleDelete} onMoveToOrg={handleMove} onLink={handleLink} onAdd={() => addNew(false)}
-                isOrgContext={!!currentOrganizationId} orgId={currentOrganizationId} emptyText={t("servers.dialog.identities.noPersonalIdentities")} t={t} allowedAuthTypes={allowedAuthTypes} />
+                identities={linkedPersonal} available={availablePersonal} onUpdate={handleUpdate} onDelete={handleDelete} onMoveToOrg={allowIdentityMoves ? handleMove : null} onLink={handleLink} onAdd={() => addNew(false)}
+                isOrgContext={!!currentOrganizationId} orgId={currentOrganizationId} emptyText={t("servers.dialog.identities.noPersonalIdentities")} t={t} allowedAuthTypes={allowedAuthTypes} specificIdentities={specificIdentities} />
         </div>
     );
 };

@@ -23,17 +23,17 @@ module.exports.createServerValidation = Joi.object({
     type: Joi.string().valid("server").optional().default("server"),
     renderer: Joi.string().optional(),
     identities: Joi.array().items(Joi.number()).optional(),
-    config: configValidation.required()
+    identityOverride: Joi.boolean().optional(),
+    config: configValidation.fork(["protocol"], (schema) => schema.required()).required()
 });
 
 module.exports.updateServerValidation = Joi.object({
     name: Joi.string().optional(),
-    folderId: Joi.number().allow(null).optional(),
-    organizationId: Joi.number().allow(null).optional(),
     icon: Joi.string().optional(),
     type: Joi.string().valid("server", "pve-shell", "pve-lxc", "pve-qemu").optional(),
     renderer: Joi.string().optional(),
     identities: Joi.array().items(Joi.number()).optional(),
+    identityOverride: Joi.boolean().optional(),
     config: configValidation
 });
 
@@ -41,5 +41,6 @@ module.exports.repositionServerValidation = Joi.object({
     targetId: Joi.number().allow(null).optional(),
     placement: Joi.string().valid('before', 'after').required(),
     folderId: Joi.number().allow(null).optional(),
-    organizationId: Joi.number().allow(null).optional()
+    organizationId: Joi.number().allow(null).optional(),
+    inheritancePolicy: Joi.string().valid("retain", "adopt").optional()
 });

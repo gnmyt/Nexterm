@@ -3,6 +3,7 @@ const { checkServerStatusBatch } = require("../hooks/status/portHook");
 const { checkPVEStatus } = require("../hooks/status/pveHook");
 const { getMonitoringSettingsInternal } = require("../controllers/monitoring");
 const logger = require("./logger");
+const { applyEffectiveEntryConfig } = require("./folderInheritance");
 
 let statusCheckInterval = null;
 let isRunning = false;
@@ -58,9 +59,13 @@ const listAllServers = async () => {
             where: {
                 type: ["server", "pve-qemu", "pve-lxc", "pve-shell"],
             },
-            attributes: ["id", "type", "name", "config", "integrationId", "status"],
+            attributes: ["id", "type", "name", "config", "folderId", "integrationId", "status"],
         });
 
+        const cache = new Map();
+        await Promise.all(entries
+            .filter((entry) => entry.type === "server")
+            .map((entry) => applyEffectiveEntryConfig(entry, { cache })));
         return entries;
     } catch (error) {
         logger.error(`Error fetching entries for status check`, { error: error.message });
