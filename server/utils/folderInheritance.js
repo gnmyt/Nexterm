@@ -75,7 +75,8 @@ const getTemporaryIdentityReferenceError = (identityProfiles, identityCreates = 
 };
 
 const withoutInheritance = (config) => {
-    const { [INHERITANCE_KEY]: inheritance, ...settings } = config || {};
+    const settings = { ...config };
+    delete settings[INHERITANCE_KEY];
     return settings;
 };
 
@@ -90,23 +91,23 @@ const pickSectionConfig = (config, section) => Object.fromEntries(
 );
 
 const replaceSectionConfig = (config, section, values) => {
-    const next = { ...(config || {}) };
+    const next = { ...config };
     for (const key of Object.keys(next)) {
         if (key !== "protocol" && getConfigSection(key) === section) delete next[key];
     }
-    return { ...next, ...(values || {}) };
+    return { ...next, ...values };
 };
 
 const getLocalProfiles = (inheritance) => {
     const profiles = Object.fromEntries(Object.entries(inheritance?.profiles || {}).map(
-        ([protocol, profile]) => [protocol, { ...(profile || {}) }]
+        ([protocol, profile]) => [protocol, { ...profile }]
     ));
     if (!inheritance?.config || typeof inheritance.config !== "object" || Array.isArray(inheritance.config)) return profiles;
 
     const { protocol, ...legacyProfile } = inheritance.config;
     const protocols = protocol ? [protocol] : SUPPORTED_PROTOCOLS;
     for (const profileProtocol of protocols) {
-        profiles[profileProtocol] = { ...legacyProfile, ...(profiles[profileProtocol] || {}) };
+        profiles[profileProtocol] = { ...legacyProfile, ...profiles[profileProtocol] };
     }
     return profiles;
 };
@@ -275,7 +276,7 @@ const getEffectiveEntryConfig = async (entry, options = {}) => {
 };
 
 const mergeConfigWithProvenance = (inheritedConfig, localConfig) => ({
-    config: { ...(inheritedConfig || {}), ...(localConfig || {}) },
+    config: { ...inheritedConfig, ...localConfig },
     inheritedFields: new Set(
         Object.keys(inheritedConfig || {}).filter((key) => !Object.hasOwn(localConfig || {}, key))
     ),

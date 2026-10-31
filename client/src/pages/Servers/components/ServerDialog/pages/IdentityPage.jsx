@@ -198,7 +198,7 @@ const IdentityPage = ({ serverIdentities, setIdentityUpdates, identityUpdates, s
     };
     const defaultAuthType = allowedAuthTypes?.[0] || "password";
     const addNew = (forOrg) => {
-        const temporaryId = "new-" + (globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+        const temporaryId = "new-" + crypto.randomUUID();
         onAddIdentity?.(temporaryId);
         setIdentityUpdates(prev => ({
             ...prev, [temporaryId]: { name: serverName || "", username: "", authType: defaultAuthType, password: "", scope: forOrg ? 'organization' : 'personal', organizationId: forOrg ? currentOrganizationId : null }

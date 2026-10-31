@@ -58,7 +58,7 @@ const buildProfileSettings = (profiles, monitoringUpdates) => {
     const settings = {};
     const protocols = new Set([...Object.keys(profiles), ...Object.keys(monitoringUpdates)]);
     for (const profileProtocol of protocols) {
-        const profile = { ...(profiles[profileProtocol] || {}) };
+        const profile = { ...profiles[profileProtocol] };
         if (Object.hasOwn(monitoringUpdates, profileProtocol)) {
             profile.monitoringEnabled = monitoringUpdates[profileProtocol];
         }
@@ -184,11 +184,9 @@ const FolderInheritanceDialog = ({ open, onClose, folderId, organizationId }) =>
         ? monitoringUpdates[protocol]
         : Boolean(config.monitoringEnabled ?? inheritedConfig.monitoringEnabled);
     const identityLocalState = localSectionState(protocol, "identities");
-    const identities = identityLocalState === "enabled"
-        ? identityProfiles[protocol] || []
-        : identityLocalState === "disabled"
-            ? identityProfiles[protocol] || []
-            : inheritedIdentityProfiles[protocol] || [];
+    const identities = identityLocalState === "transparent"
+        ? inheritedIdentityProfiles[protocol] || []
+        : identityProfiles[protocol] || [];
     const inheritedIdentities = inheritedIdentityProfiles[protocol] || [];
     const fieldConfig = { ...getFieldConfig("server", protocol), showProtocol: false };
     const overrides = useMemo(() => hasParent ? Object.keys(localProfile) : [], [hasParent, localProfile]);
@@ -230,7 +228,7 @@ const FolderInheritanceDialog = ({ open, onClose, folderId, organizationId }) =>
         } else if (state === "enabled") {
             setProfiles((current) => {
                 const local = current[targetProtocol] || {};
-                const effective = { ...(inheritedProfiles[targetProtocol] || {}), ...local };
+                const effective = { ...inheritedProfiles[targetProtocol], ...local };
                 const nextProfile = Object.fromEntries(Object.entries(local).filter(([key]) =>
                     section === "details" ? !DETAIL_FIELDS.has(key) : DETAIL_FIELDS.has(key)
                 ));
@@ -440,7 +438,7 @@ const FolderInheritanceDialog = ({ open, onClose, folderId, organizationId }) =>
         setIsSaving(true);
         try {
             const { __nextermInheritance, ...preservedConfig } = rawConfig;
-            const inheritance = { ...(__nextermInheritance || {}) };
+            const inheritance = { ...__nextermInheritance };
             const profileSettings = pendingProfileSettings;
 
             const profileIdentities = Object.fromEntries(Object.entries(identityProfiles).map(([profileProtocol, ids]) => [

@@ -20,7 +20,7 @@ const {
 } = require("./folderInheritance");
 
 const equal = (left, right) => JSON.stringify(left) === JSON.stringify(right);
-const toPlain = (value) => value?.toJSON ? value.toJSON() : { ...(value || {}) };
+const toPlain = (value) => value?.toJSON ? value.toJSON() : { ...value };
 const sourceKey = (source) => `${source?.state || "transparent"}:${source?.folderId || ""}`;
 
 const shouldTraverseChild = (section, state) => {
@@ -168,7 +168,7 @@ const validateTransitions = (currentInheritance, nextInheritance, transitions = 
     const supplied = new Map(transitions.map((transition) => [`${transition.protocol}:${transition.section}`, transition]));
     for (const change of changes) {
         const transition = supplied.get(`${change.protocol}:${change.section}`);
-        if (!transition || transition.from !== change.from || transition.to !== change.to) {
+        if (transition?.from !== change.from || transition?.to !== change.to) {
             return { code: 409, message: "Folder inheritance changed while it was being edited" };
         }
         if (transition.policy !== undefined && !["retain", "adopt"].includes(transition.policy)) {
@@ -298,7 +298,7 @@ const getMoveImpact = async (snapshots, transaction) => {
         }
         if (impacted) entryCount += 1;
     }
-    return { entryCount, sections: [...impactedSections].sort(), warnings: [] };
+    return { entryCount, sections: [...impactedSections].sort((a, b) => a.localeCompare(b)), warnings: [] };
 };
 
 const applyMovePolicy = async (snapshots, policy, targetOrganizationId, accountId, transaction) => {
@@ -342,9 +342,8 @@ const applyMovePolicy = async (snapshots, policy, targetOrganizationId, accountI
         const identitySourceChanged = sourceKey(oldIdentitySource) !== sourceKey(nextIdentitySource);
         if (identitySourceChanged || snapshot.organizationId !== targetOrganizationId) {
             const adopt = identitySourceChanged && policy === "adopt" && nextIdentitySource?.state === "enabled";
-            const desiredIds = identitySourceChanged
-                ? (adopt ? [] : snapshot.effectiveIdentities)
-                : snapshot.localIdentityIds;
+            let desiredIds = snapshot.localIdentityIds;
+            if (identitySourceChanged) desiredIds = adopt ? [] : snapshot.effectiveIdentities;
             const filtered = await filterIdentitiesForOrganization(desiredIds, targetOrganizationId, await getAllowedPersonalAccountIds(), transaction);
             removedIdentityCount += filtered.removed;
             await replaceEntryIdentities(snapshot.entry.id, filtered.identityIds, transaction);

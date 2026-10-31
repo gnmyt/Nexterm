@@ -30,7 +30,7 @@ const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, c
                         targetId: null,
                         placement: 'after',
                         folderId: null,
-                        organizationId: parseInt(orgId),
+                        organizationId: Number.parseInt(orgId),
                         ...(inheritancePolicy ? { inheritancePolicy } : {}),
                     }), loadServers);
                     return { id: orgId };
@@ -39,7 +39,7 @@ const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, c
                 if (item.type === "folder") {
                     await runMove((inheritancePolicy) => patchRequest(`folders/${item.id}`, {
                         parentId: null,
-                        organizationId: parseInt(orgId),
+                        organizationId: Number.parseInt(orgId),
                         ...(inheritancePolicy ? { inheritancePolicy } : {}),
                     }), loadServers);
                     return { id: orgId };

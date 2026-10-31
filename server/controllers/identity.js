@@ -34,9 +34,12 @@ const validateManageAccess = async (accountId, identity) => {
 
 const upsertCredential = async (identityId, type, secret, transaction = null) => {
     const existing = await Credential.findOne({ where: { identityId, type }, raw: false, transaction });
-    existing
-        ? (existing.secret = secret, await existing.save({ transaction }))
-        : await Credential.create({ identityId, type, secret }, { transaction });
+    if (existing) {
+        existing.secret = secret;
+        await existing.save({ transaction });
+    } else {
+        await Credential.create({ identityId, type, secret }, { transaction });
+    }
 };
 
 const syncCredentials = async (identityId, type, password, sshKey, passphrase, transaction = null) => {
@@ -190,9 +193,9 @@ module.exports.moveIdentityToOrganization = async (accountId, identityId, organi
         }).map((entry) => entry.id);
 
         await Identity.update({ accountId: null, organizationId }, { where: { id: identityId }, transaction });
-        const targetFolderIds = organizationFolders.map((folder) => folder.id);
+        const targetFolderIds = new Set(organizationFolders.map((folder) => folder.id));
         const invalidProfileRowIds = profileRows
-            .filter((row) => !targetFolderIds.includes(row.folderId))
+            .filter((row) => !targetFolderIds.has(row.folderId))
             .map((row) => row.id);
         if (invalidProfileRowIds.length) {
             await FolderIdentityProfile.destroy({ where: { id: { [Op.in]: invalidProfileRowIds } }, transaction });

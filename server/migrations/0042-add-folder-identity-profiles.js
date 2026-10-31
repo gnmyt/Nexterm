@@ -10,12 +10,12 @@ const parseConfig = (value) => {
 
 const normalizeLegacyProfiles = (inheritance) => {
     const profiles = Object.fromEntries(Object.entries(inheritance.profiles || {}).map(
-        ([protocol, profile]) => [protocol, { ...(profile || {}) }]
+        ([protocol, profile]) => [protocol, { ...profile }]
     ));
     if (!inheritance.config || typeof inheritance.config !== "object" || Array.isArray(inheritance.config)) return profiles;
     const { protocol, ...legacyProfile } = inheritance.config;
     for (const profileProtocol of protocol ? [protocol] : SUPPORTED_PROTOCOLS) {
-        profiles[profileProtocol] = { ...legacyProfile, ...(profiles[profileProtocol] || {}) };
+        profiles[profileProtocol] = { ...legacyProfile, ...profiles[profileProtocol] };
     }
     return profiles;
 };
@@ -52,7 +52,7 @@ module.exports = {
                 const config = parseConfig(folder.config);
                 const inheritance = config[INHERITANCE_KEY];
                 if (!inheritance) continue;
-                const identityProfiles = { ...(inheritance.identityProfiles || {}) };
+                const identityProfiles = { ...inheritance.identityProfiles };
                 if (Object.hasOwn(inheritance, "identities")) {
                     const legacyProtocols = inheritance.config?.protocol
                         ? [inheritance.config.protocol]
@@ -69,12 +69,11 @@ module.exports = {
                         if (!identity) return;
                         let accountId = null;
                         if (folder.organizationId) {
-                            if (Number(identity.organizationId) === Number(folder.organizationId)) {
-                                accountId = null;
-                            } else if (!identity.organizationId && identity.accountId
-                                && activeMemberships.has(`${Number(folder.organizationId)}:${Number(identity.accountId)}`)) {
+                            if (Number(identity.organizationId) !== Number(folder.organizationId)) {
+                                if (identity.organizationId || !identity.accountId
+                                    || !activeMemberships.has(`${Number(folder.organizationId)}:${Number(identity.accountId)}`)) return;
                                 accountId = Number(identity.accountId);
-                            } else return;
+                            }
                         } else {
                             if (identity.organizationId || Number(identity.accountId) !== Number(folder.accountId)) return;
                             accountId = Number(folder.accountId);
@@ -86,9 +85,9 @@ module.exports = {
                 }
 
                 const nextInheritance = { ...inheritance, profiles: normalizeLegacyProfiles(inheritance) };
-                nextInheritance.sectionEnabled = { ...(nextInheritance.sectionEnabled || {}) };
+                nextInheritance.sectionEnabled = { ...nextInheritance.sectionEnabled };
                 for (const protocol of Object.keys(identityProfiles)) {
-                    const protocolSections = { ...(nextInheritance.sectionEnabled[protocol] || {}) };
+                    const protocolSections = { ...nextInheritance.sectionEnabled[protocol] };
                     if (!Object.hasOwn(protocolSections, "identities")) protocolSections.identities = true;
                     nextInheritance.sectionEnabled[protocol] = protocolSections;
                 }

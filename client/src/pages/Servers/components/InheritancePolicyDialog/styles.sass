@@ -12,6 +12,12 @@
   backdrop-filter: blur(0.2rem)
 
 .inheritance-policy-dialog
+  // reset the native <dialog> UA styles; the overlay handles positioning
+  position: static
+  margin: 0
+  max-width: none
+  max-height: none
+  color: inherit
   width: min(92vw, 30rem)
   padding: 1.25rem
   border: 1px solid colors.$dark-gray

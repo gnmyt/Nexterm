@@ -20,8 +20,8 @@ const InheritancePolicyDialog = ({ open, title, description, impact, onConfirm, 
     };
 
     return createPortal(
-        <div className="inheritance-policy-overlay" data-dialog-action role="presentation">
-            <div className="inheritance-policy-dialog" role="dialog" aria-modal="true" aria-labelledby="inheritance-policy-title">
+        <div className="inheritance-policy-overlay" data-dialog-action>
+            <dialog open className="inheritance-policy-dialog" aria-modal="true" aria-labelledby="inheritance-policy-title">
                 <h3 id="inheritance-policy-title">{title || t("servers.inheritancePolicy.title", "Apply inheritance")}</h3>
                 <p>{description || t("servers.inheritancePolicy.description", "Choose how existing objects should handle these inherited settings.")}</p>
                 {impact?.entryCount > 0 && <p className="inheritance-policy-impact">
@@ -42,7 +42,7 @@ const InheritancePolicyDialog = ({ open, title, description, impact, onConfirm, 
                     <Button type="secondary" text={t("common.actions.cancel")} onClick={cancel} />
                     <Button type="primary" text={t("common.actions.confirm")} onClick={confirm} />
                 </div>
-            </div>
+            </dialog>
         </div>,
         document.body
     );
