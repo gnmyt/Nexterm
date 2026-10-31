@@ -2,6 +2,7 @@ import { DialogProvider } from "@/common/components/Dialog";
 import Button from "@/common/components/Button";
 import Input from "@/common/components/IconInput";
 import TabSwitcher from "@/common/components/TabSwitcher";
+import ToggleSwitch from "@/common/components/ToggleSwitch";
 import DetailsPage from "@/pages/Servers/components/ServerDialog/pages/DetailsPage.jsx";
 import IdentityPage from "@/pages/Servers/components/ServerDialog/pages/IdentityPage.jsx";
 import SettingsPage from "@/pages/Servers/components/ServerDialog/pages/SettingsPage.jsx";
@@ -504,26 +505,24 @@ const FolderInheritanceDialog = ({ open, onClose, folderId, organizationId }) =>
                 <div className="server-dialog-header">
                     <div className="dialog-icon"><Icon path={mdiFolderCog} size={1} /></div>
                     <div className="server-dialog-title"><h2>{t("servers.contextMenu.folderSettings", "Folder Settings")}</h2></div>
+                    {activeSection && <div className="folder-inheritance-controls">
+                        {hasParent && localSectionState(protocol, activeSection) !== "transparent" && <button type="button" className="folder-inheritance-use-parent" data-dialog-action onClick={useParentSettings}>
+                            {t("servers.folderSettings.useParent", "Use parent settings")}
+                        </button>}
+                        <div className="folder-inheritance-toggle" data-dialog-action>
+                            <label htmlFor="folder-inheritance-toggle">{t("servers.folderSettings.inherit", "Inherit")}</label>
+                            <ToggleSwitch id="folder-inheritance-toggle" checked={isSectionEnabled(activeSection)} onChange={() => toggleSection(activeSection)} />
+                        </div>
+                        <div className="folder-inheritance-profile" data-dialog-action>
+                            <ProfilePicker key={open ? "open" : "closed"} value={protocol} onChange={setProtocol} dialogOpen={open} />
+                        </div>
+                    </div>}
                 </div>
                 <div className="folder-inheritance-navigation">
                     <div className="server-dialog-tabs">
                         <TabSwitcher tabs={tabs.map((tab, index) => ({ ...tab, key: String(index) }))} activeTab={String(activeTab)} onTabChange={(tab) => setActiveTab(Number(tab))} variant="dialog" />
                     </div>
                 </div>
-                {activeSection && <div className="folder-inheritance-toolbar">
-                    <div className="folder-inheritance-controls">
-                        {hasParent && localSectionState(protocol, activeSection) !== "transparent" && <button type="button" className="folder-inheritance-use-parent" data-dialog-action onClick={useParentSettings}>
-                            {t("servers.folderSettings.useParent", "Use parent settings")}
-                        </button>}
-                        <div className="folder-inheritance-profile" data-dialog-action>
-                            <ProfilePicker key={open ? "open" : "closed"} value={protocol} onChange={setProtocol} dialogOpen={open} />
-                        </div>
-                        <button type="button" className="folder-inheritance-checkbox" data-dialog-action role="checkbox" aria-checked={isSectionEnabled(activeSection)} onClick={() => toggleSection(activeSection)}>
-                            <span className={"folder-inheritance-checkbox-indicator" + (isSectionEnabled(activeSection) ? " checked" : "")} aria-hidden="true">{isSectionEnabled(activeSection) && "✓"}</span>
-                            <span>{t("servers.folderSettings.inherit", "Inherit")}</span>
-                        </button>
-                    </div>
-                </div>}
                 <form className="server-dialog-content" onSubmit={(event) => event.preventDefault()}>
                     {activeTab === 0 && <div className="folder-settings-general">
                         <div className="form-group"><label htmlFor="folder-name">{t("servers.folderSettings.fields.name", "Folder name")}</label><Input icon={mdiFormTextbox} id="folder-name" value={name} setValue={setName} placeholder={t("servers.folderSettings.placeholders.name", "Folder name")} /></div>
