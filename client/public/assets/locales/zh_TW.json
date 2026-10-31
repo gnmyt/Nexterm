@@ -1574,6 +1574,25 @@
   "servers": {
     "addServerNote": "按滑鼠右鍵新增伺服器",
     "searchPlaceholder": "搜尋",
+    "inheritancePolicy": {
+      "title": "Apply inheritance",
+      "description": "Choose how existing objects should handle these inherited settings.",
+      "impact": "{{count}} existing objects are affected.",
+      "retain": {
+        "title": "Retain existing",
+        "description": "Keep current values as local overrides."
+      },
+      "adopt": {
+        "title": "Adopt folder settings",
+        "description": "Replace current values with the inherited folder settings."
+      },
+      "moveTitle": "Apply destination inheritance?",
+      "moveDescription": "Choose whether moved objects adopt the destination folder settings or retain their current values.",
+      "moveFailed": "Unable to move object",
+      "identitiesRemoved": "Some identities were removed because they are unavailable in the destination.",
+      "enableTitle": "Enable inheritance?",
+      "enableDescription": "Choose what existing objects should do when these folder settings are saved."
+    },
     "time": {
       "justNow": "現在",
       "minuteAgo": "{{count}} 分鐘前",
@@ -1598,6 +1617,7 @@
       "createFolder": "建立資料夾",
       "deleteFolder": "刪除資料夾",
       "renameFolder": "重新命名資料夾",
+      "folderSettings": "Folder Settings",
       "new": "新款",
       "sshServer": "SSH 伺服器",
       "telnetServer": "Telnet 伺服器",
@@ -1678,6 +1698,7 @@
       "fillRequiredFields": "請填寫所有必填欄位",
       "serverCreated": "伺服器建立成功",
       "serverUpdated": "伺服器更新成功",
+      "folderUpdated": "Folder updated successfully",
       "createFailed": "建立伺服器失敗",
       "updateFailed": "更新伺服器失敗",
       "createIdentityFailed": "建立身分失敗",
