@@ -15,7 +15,7 @@
     "@ai-sdk/anthropic": "^4.0.71",
     "@ai-sdk/openai": "^4.0.104",
     "@ai-sdk/openai-compatible": "^3.0.62",
-    "@inquirer/password": "^5.2.2",
+    "@inquirer/password": "^5.2.5",
     "@simplewebauthn/server": "^14.0.3",
     "ai": "^7.0.122",
     "archiver": "^8.0.0",
