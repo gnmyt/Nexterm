@@ -14,7 +14,7 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.71",
     "@ai-sdk/openai": "^4.0.104",
-    "@ai-sdk/openai-compatible": "^3.0.62",
+    "@ai-sdk/openai-compatible": "^3.0.81",
     "@inquirer/password": "^5.2.5",
     "@simplewebauthn/server": "^14.0.3",
     "ai": "^7.0.122",
