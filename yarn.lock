@@ -10,13 +10,13 @@
     "@ai-sdk/provider" "4.0.21"
     "@ai-sdk/provider-utils" "5.0.53"
 
-"@ai-sdk/gateway@4.0.100":
-  version "4.0.100"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-4.0.100.tgz#fa272f0bd939a1d3475e796f133c9bd01a2ae74e"
-  integrity sha512-diJXVW2D1/NUW2JSg99b8yTpN8eW9AK5ntXSW4B7NrsW5STqwcGJAAOFlfOrQBzYHJlWReyy11WefWetdx4Qsw==
+"@ai-sdk/gateway@4.0.132":
+  version "4.0.132"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-4.0.132.tgz#52b6c8963a5ac48085099d5f5087dc4afcf7d2e3"
+  integrity sha512-ppStDEz96g+JEuxGiVTP29OKBjPyYZXRxs38wnq3427U2QbZtxe6TukrgSAAq0n4yaHvSvVAWJY9kBlW8XudYg==
   dependencies:
-    "@ai-sdk/provider" "4.0.19"
-    "@ai-sdk/provider-utils" "5.0.51"
+    "@ai-sdk/provider" "4.0.35"
+    "@ai-sdk/provider-utils" "5.0.72"
     "@vercel/oidc" "3.2.0"
 
 "@ai-sdk/openai-compatible@^3.0.81":
@@ -34,17 +34,6 @@
   dependencies:
     "@ai-sdk/provider" "4.0.34"
     "@ai-sdk/provider-utils" "5.0.70"
-
-"@ai-sdk/provider-utils@5.0.51":
-  version "5.0.51"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.51.tgz#74bae566e227863523a75687825e5aa56b0fc2a5"
-  integrity sha512-z0IsEsDx+dxlZqyCtDjMbBj16NGmxFVTgQcP3+n3EFm9ttNU6wjOgL/kgvaPwtmZM6F7JbtRuLyzr6WOfo5DMw==
-  dependencies:
-    "@ai-sdk/provider" "4.0.19"
-    "@standard-schema/spec" "^1.1.0"
-    "@workflow/serde" "4.1.0"
-    eventsource-parser "^3.0.8"
-    undici "^7.29.0"
 
 "@ai-sdk/provider-utils@5.0.53":
   version "5.0.53"
@@ -79,12 +68,16 @@
     eventsource-parser "^3.0.8"
     undici "^7.29.0"
 
-"@ai-sdk/provider@4.0.19":
-  version "4.0.19"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-4.0.19.tgz#1e5843f080c1e0f535cdc50ee99ea150b9dedac1"
-  integrity sha512-ryVZSSfmpEsr4bM8rbt9cSBWal+KGYRrm57C+k/hiPQHMiMahaqg2bPF0MpxSUWY8mGpt7s/ajM6PAqNTMKqPQ==
+"@ai-sdk/provider-utils@5.0.72":
+  version "5.0.72"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.72.tgz#f99689626b495dfcef5593b5e22396cb8fb66f7f"
+  integrity sha512-M6QAztI84jWumQSvKcGOL91DxhChsWxn3D3gYtV0/7E1TPQg9BmLdIerOolUC/jghQbMlQrHyzp0hqdIhUZ2Rw==
   dependencies:
-    json-schema "^0.4.0"
+    "@ai-sdk/provider" "4.0.35"
+    "@standard-schema/spec" "^1.1.0"
+    "@workflow/serde" "4.1.0"
+    eventsource-parser "^3.0.8"
+    undici "^7.29.0"
 
 "@ai-sdk/provider@4.0.21":
   version "4.0.21"
@@ -97,6 +90,13 @@
   version "4.0.34"
   resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-4.0.34.tgz#28b2212835b46f18416dfd2506b92a4dd7a5ee03"
   integrity sha512-Ip7ZQBq/FiGpM1mmOVseTtX9PBjnzo0bLC41WTgBSBBRUBz6LhNFGbYaNUzI6hPm6ll1oNSPOAZc/q/z+3QZEQ==
+  dependencies:
+    json-schema "^0.4.0"
+
+"@ai-sdk/provider@4.0.35":
+  version "4.0.35"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-4.0.35.tgz#8c9a0add5e5ff6269e9c4a56e6de3dde6c7ad388"
+  integrity sha512-yBz6fmLS8MSCIzy7NiHEUAq56ZLD4ZA1GR6bpXBxgbwUacP1La7LuwAr/xy9jSzthem4F8Xu2OrhvU/JrE9fYA==
   dependencies:
     json-schema "^0.4.0"
 
@@ -1521,14 +1521,14 @@ agent-base@^7.1.0, agent-base@^7.1.2:
   resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-7.1.4.tgz#e3cd76d4c548ee895d3c3fd8dc1f6c5b9032e7a8"
   integrity sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==
 
-ai@^7.0.122:
-  version "7.0.122"
-  resolved "https://registry.yarnpkg.com/ai/-/ai-7.0.122.tgz#bed4ff0de98035c07d8106719e3436439b52ecde"
-  integrity sha512-Un4yVROG+BMd6Q62xUxb9yV+wlTrUGeXhRtg5ltEFDV0p3lOYQaQHK9ozB6rdPdqlH3LyaszfbFdUkZ1p00nIQ==
+ai@^7.0.159:
+  version "7.0.159"
+  resolved "https://registry.yarnpkg.com/ai/-/ai-7.0.159.tgz#371c69b2f33d1c115c6e288bbe715c385b7fd036"
+  integrity sha512-4e/BwDoKJlMNYZaqERcTbGte+4TwroN9qKnCprog/XVfD9InzVPlhCviDhN452JIRrRsYg9BT0WsQ2C3Ds2mVQ==
   dependencies:
-    "@ai-sdk/gateway" "4.0.100"
-    "@ai-sdk/provider" "4.0.19"
-    "@ai-sdk/provider-utils" "5.0.51"
+    "@ai-sdk/gateway" "4.0.132"
+    "@ai-sdk/provider" "4.0.35"
+    "@ai-sdk/provider-utils" "5.0.72"
 
 algoliasearch@^5.14.2:
   version "5.46.2"
