@@ -2,13 +2,13 @@
 # yarn lockfile v1
 
 
-"@ai-sdk/anthropic@^4.0.71":
-  version "4.0.71"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/anthropic/-/anthropic-4.0.71.tgz#29bdafc9bcdf445cbc97fd49eba4ed8ba25f0f64"
-  integrity sha512-wiv3jhUH0RrvGzSolJMZfZ2cI9As45LhwYmcAoWvNivXjC7wzJ4W/Udq9/u7EGnGsT8lpmFKEKBrMXVeUO97Dg==
+"@ai-sdk/anthropic@^4.0.94":
+  version "4.0.94"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/anthropic/-/anthropic-4.0.94.tgz#edb045f20e44b32450ab52e1dcfb50d5811b0505"
+  integrity sha512-gD0KmsUZTRuhiYleM2SdMrY0c7m+VeRckLX2VVPnEAlQmaKqSw8+noHiK5ED+SHy4tuDf9VQqcHxlGeObzMNyw==
   dependencies:
-    "@ai-sdk/provider" "4.0.21"
-    "@ai-sdk/provider-utils" "5.0.53"
+    "@ai-sdk/provider" "4.0.35"
+    "@ai-sdk/provider-utils" "5.0.72"
 
 "@ai-sdk/gateway@4.0.132":
   version "4.0.132"
@@ -35,17 +35,6 @@
     "@ai-sdk/provider" "4.0.35"
     "@ai-sdk/provider-utils" "5.0.72"
 
-"@ai-sdk/provider-utils@5.0.53":
-  version "5.0.53"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.53.tgz#145d4d3b39f5aceeb7ab7a6e1e85b0371ba29952"
-  integrity sha512-VVe6UDd0y0/B4TfauuKKzcppqvhTmSluwwUVT4WG2/8h7gFbyFm7PM4UGM+ZXe3/RI6bv+Vl1cw/7aiBoQqdxg==
-  dependencies:
-    "@ai-sdk/provider" "4.0.21"
-    "@standard-schema/spec" "^1.1.0"
-    "@workflow/serde" "4.1.0"
-    eventsource-parser "^3.0.8"
-    undici "^7.29.0"
-
 "@ai-sdk/provider-utils@5.0.71":
   version "5.0.71"
   resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.71.tgz#c17cf77c7c9502fc7562a8560abf6e1d844448a2"
@@ -67,24 +56,6 @@
     "@workflow/serde" "4.1.0"
     eventsource-parser "^3.0.8"
     undici "^7.29.0"
-
-"@ai-sdk/provider-utils@5.0.72":
-  version "5.0.72"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.72.tgz#f99689626b495dfcef5593b5e22396cb8fb66f7f"
-  integrity sha512-M6QAztI84jWumQSvKcGOL91DxhChsWxn3D3gYtV0/7E1TPQg9BmLdIerOolUC/jghQbMlQrHyzp0hqdIhUZ2Rw==
-  dependencies:
-    "@ai-sdk/provider" "4.0.35"
-    "@standard-schema/spec" "^1.1.0"
-    "@workflow/serde" "4.1.0"
-    eventsource-parser "^3.0.8"
-    undici "^7.29.0"
-
-"@ai-sdk/provider@4.0.21":
-  version "4.0.21"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-4.0.21.tgz#cc3f93146513bc7bb5e4965a010bc712b59be354"
-  integrity sha512-UpbC9C1oht8dhfKPbVXSLRZS3DI8uk8n5v2uMjBPNIYGsC2kL045ywq7D8Hh9KgnH9rP5W/GxQdYtWScRouqlA==
-  dependencies:
-    json-schema "^0.4.0"
 
 "@ai-sdk/provider@4.0.34":
   version "4.0.34"
