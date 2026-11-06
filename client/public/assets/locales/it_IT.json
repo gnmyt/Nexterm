@@ -186,6 +186,11 @@
       "connection": {
         "title": "Connessione fallita",
         "close": "Chiudi la scheda",
+        "reconnect": "Reconnect",
+        "reconnectNow": "Reconnect",
+        "reconnecting": "Reconnecting…",
+        "reconnectingIn": "Reconnecting in {{seconds}}s",
+        "reconnectAttempt": "attempt {{count}} of {{max}}",
         "hostUnreachable": "Host remoto non raggiungibile",
         "refused": "Connessione rifiutata dall'host remoto",
         "timeout": "Connessione interrotta",
@@ -195,7 +200,10 @@
         "closedUnexpectedly": "La connessione si è chiusa inaspettatamente",
         "error": "Si è verificato un errore di connessione",
         "scriptClosedUnexpectedly": "La connessione allo script è stata chiusa inaspettatamente",
-        "scriptError": "Si è verificato un errore di connessione allo script"
+        "scriptError": "Si è verificato un errore di connessione allo script",
+        "rdpSessionConflict": "The session was disconnected by the server because another connection was opened.",
+        "rdpSessionTimeout": "The RDP session was disconnected because its session time limit was reached.",
+        "rdpSessionClosed": "The RDP session was ended by the remote server or an administrator."
       }
     },
     "messages": {
@@ -727,7 +735,13 @@
         "neverUsed": "Mai usato",
         "expires": "Scade {{date}}",
         "delete": "Elimina"
-      }
+      },
+      "remoteDesktop": "Remote Desktop",
+      "remoteDesktopDescription": "Default display scale for remote desktop sessions. Connections can override it, and a scale picked during a session is remembered on that device.",
+      "remoteDesktopScale": "Display Scale",
+      "remoteDesktopScaleAuto": "Automatic (match device)",
+      "remoteDesktopSyncEnabled": "Remote desktop settings will now sync across devices",
+      "remoteDesktopSyncDisabled": "Remote desktop settings are now saved on this device only"
     },
     "passwordChange": {
       "title": "Cambia la password",
@@ -903,7 +917,11 @@
         },
         "copy": {
           "title": "Copia",
-          "description": "Copia il testo selezionato negli appunti"
+          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+        },
+        "paste": {
+          "title": "Paste",
+          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
         },
         "fullscreen": {
           "title": "Schermo intero",
@@ -918,6 +936,7 @@
         "pressKeys": "Premi i tasti...",
         "save": "Risparmia",
         "cancel": "Annullamento",
+        "disabled": "Disabled",
         "reset": "Azzeramento"
       },
       "messages": {
@@ -953,8 +972,19 @@
       "input": {
         "title": "Input",
         "description": "Controlla come funzionano le scorciatoie da tastiera all’interno del terminale.",
-        "smartCopyPaste": "Ctrl+C intelligente",
+        "copyPasteBehavior": "Copy/Paste Behavior",
+        "copyPasteBehaviorNone": "None",
+        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
+        "copyPasteBehaviorSmart": "Smart Ctrl+C",
+        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
+        "copyPasteBehaviorKeyboard": "Keyboard",
+        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
+        "copyPasteBehaviorMouse": "Mouse",
+        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
+        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
+        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
         "passwordPromptDetection": "Rilevamento dell'inserimento della password",
+        "autoReconnect": "Auto-reconnect",
         "enabled": "Attivato",
         "disabled": "Disabile",
         "syncEnabled": "Le impostazioni di input ora verranno sincronizzate con il tuo account",
@@ -1047,6 +1077,8 @@
           "clientSecretPlaceholderEdit": "Lascia in bianco per mantenere l'esistente",
           "redirectUri": "Reindirizzamento URI",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
+          "endSessionEndpoint": "End Session Endpoint (Optional)",
+          "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
           "scope": "Ambito di applicazione",
           "scopePlaceholder": "profilo openid",
           "usernameAttribute": "Attributo Nome utente",
@@ -1066,6 +1098,21 @@
         },
         "messages": {
           "saveFailed": "Impossibile salvare il provider"
+        },
+        "groupSync": {
+          "title": "Group Sync",
+          "hint": "Automatically add users to organizations and control access based on group claims from your identity provider.",
+          "groupsAttribute": "Groups Claim",
+          "groupsAttributePlaceholder": "groups",
+          "requiredGroup": "Required Group",
+          "requiredGroupPlaceholder": "nexterm-users",
+          "requiredGroupHint": "If set, only users whose groups claim contains this value are allowed to log in.",
+          "mappings": "Organization Mappings",
+          "mappingsHint": "Map a group claim value to an organization. Membership is kept in sync on every login.",
+          "mappingValuePlaceholder": "Group value",
+          "roleMember": "Member",
+          "roleOwner": "Owner",
+          "addMapping": "Add Mapping"
         }
       },
       "ldapDialog": {
@@ -1527,6 +1574,25 @@
   "servers": {
     "addServerNote": "Clicca con il tasto destro del mouse per aggiungere un nuovo server",
     "searchPlaceholder": "Ricerca",
+    "inheritancePolicy": {
+      "title": "Apply inheritance",
+      "description": "Choose how existing objects should handle these inherited settings.",
+      "impact": "{{count}} existing objects are affected.",
+      "retain": {
+        "title": "Retain existing",
+        "description": "Keep current values as local overrides."
+      },
+      "adopt": {
+        "title": "Adopt folder settings",
+        "description": "Replace current values with the inherited folder settings."
+      },
+      "moveTitle": "Apply destination inheritance?",
+      "moveDescription": "Choose whether moved objects adopt the destination folder settings or retain their current values.",
+      "moveFailed": "Unable to move object",
+      "identitiesRemoved": "Some identities were removed because they are unavailable in the destination.",
+      "enableTitle": "Enable inheritance?",
+      "enableDescription": "Choose what existing objects should do when these folder settings are saved."
+    },
     "time": {
       "justNow": "Solo ora",
       "minuteAgo": "{{count}} min fa",
@@ -1551,6 +1617,7 @@
       "createFolder": "Crea cartella",
       "deleteFolder": "Elimina cartella",
       "renameFolder": "Rinomina cartella",
+      "folderSettings": "Folder Settings",
       "new": "Nuovo",
       "sshServer": "Server SSH",
       "telnetServer": "Server Telnet",
@@ -1571,6 +1638,7 @@
       "connect": "Collegati",
       "quickConnect": "Collegamento rapido",
       "openSFTP": "Aprire SFTP",
+      "openBrowser": "Open Browser",
       "forwardPort": "Porta di inoltro",
       "runScript": "Esegui lo script",
       "openNotes": "Note aperte",
@@ -1607,8 +1675,20 @@
         "duplicate": "Duplicato",
         "openNotes": "Note aperte",
         "hibernateSession": "Ibernazione",
-        "closeSession": "Disconnettiti"
-      }
+        "reconnect": "Reconnect",
+        "closeSession": "Disconnettiti",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom",
+        "displayScale": "Display Scale ({{scale}}%)",
+        "displayScaleAuto": "Automatic ({{scale}}%)",
+        "displayScaleReset": "Use Default"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "Pacchetto magico inviato a {{name}}",
@@ -1618,6 +1698,7 @@
       "fillRequiredFields": "Compila tutti i campi obbligatori",
       "serverCreated": "Il server è stato creato con successo",
       "serverUpdated": "Il server è stato aggiornato con successo",
+      "folderUpdated": "Folder updated successfully",
       "createFailed": "Impossibile creare un server",
       "updateFailed": "Non è riuscito ad aggiornare il server",
       "createIdentityFailed": "Impossibile creare un'identità",
@@ -1687,9 +1768,12 @@
         },
         "display": {
           "title": "Impostazioni del display",
-          "description": "Configura la profondità di colore e il comportamento di ridimensionamento del display remoto",
+          "description": "Configure color depth, resize behavior and scaling for the remote display",
           "colorDepth": "Profondità del colore",
-          "resizeMethod": "Metodo di ridimensionamento"
+          "resizeMethod": "Metodo di ridimensionamento",
+          "displayScale": "Display Scale",
+          "displayScaleAuto": "Automatic (match this device)",
+          "displayScaleAccount": "Account default"
         },
         "performance": {
           "title": "Impostazioni delle prestazioni",
@@ -1961,6 +2045,14 @@
         "error": "Si è verificato un errore"
       }
     },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
+    },
     "remoteDesktop": {
       "dropOverlay": "Trascina i file da caricare sul server remoto",
       "toast": {
@@ -2025,7 +2117,7 @@
       "holdModifier": "Attendi {{key}}",
       "zoomIn": "Ingrandisci",
       "zoomOut": "Riduci la visualizzazione",
-      "zoomReset": "Ripristina lo zoom per adattare l'immagine (trascina con il tasto centrale del mouse per spostarti)"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "Monitor {{number}}",
@@ -2071,6 +2163,10 @@
     "discord": {
       "title": "Iscriviti a Discord",
       "description": "Chatta con la comunità e fatti aiutare."
+    },
+    "docs": {
+      "title": "View Documentation",
+      "description": "Read the documentation and learn how to use Nexterm."
     },
     "github": {
       "title": "Visualizza su GitHub",
