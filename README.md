@@ -46,6 +46,10 @@ Nexterm is an open-source server management software that allows you to:
 - **Quick start with Docker:** [Install Nexterm](https://nexterm.dev/install)
 - **Full installation guide:** [Read the documentation](https://docs.nexterm.dev/installation)
 - **Desktop and mobile apps:** [Browse downloads](https://nexterm.dev/downloads)
+- **One-click deploy with Easypanel:** [![Deploy on Easypanel][easypanel-btn]][easypanel-deploy]
+
+[easypanel-btn]: https://easypanel.io/img/deploy-on-easypanel-40.svg
+[easypanel-deploy]: https://easypanel.io/templates/nexterm
 
 ## 💻 Development
 
