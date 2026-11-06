@@ -1,0 +1,48 @@
+name: Update Nix hashes
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "yarn.lock"
+      - "client/yarn.lock"
+  schedule:
+    - cron: "0 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nix-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    name: "Refresh yarn hashes & flake.lock"
+    runs-on: ubuntu-latest
+    if: github.repository == 'gnmyt/Nexterm'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
+
+      - name: Regenerate yarn hashes
+        run: |
+          root=$(nix run nixpkgs#prefetch-yarn-deps -- yarn.lock)
+          client=$(nix run nixpkgs#prefetch-yarn-deps -- client/yarn.lock)
+          jq -n --arg root "$root" --arg client "$client" \
+            '{root: $root, client: $client}' > nix/yarn-hashes.json
+
+      - name: Update flake.lock
+        run: nix flake update
+
+      - name: Verify the flake builds
+        run: nix build .#nexterm .#engine
+
+      - name: Commit & push
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add nix/yarn-hashes.json flake.lock
+          git diff --cached --quiet || (git commit -m "chore: refresh nix flake hashes" && git push origin HEAD:main)
