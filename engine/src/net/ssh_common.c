@@ -272,24 +272,6 @@ int nexterm_ssh_setup_with_jumphosts(const char* target_host, uint16_t target_po
     return 0;
 }
 
-int nexterm_ssh_auth(LIBSSH2_SESSION* session, const char* username,
-                     const char* password, const char* private_key,
-                     const char* passphrase) {
-    if (private_key && private_key[0] != '\0') {
-        const char* pp = (passphrase && passphrase[0] != '\0') ? passphrase : NULL;
-        if (libssh2_userauth_publickey_frommemory(
-                session, username, strlen(username),
-                NULL, 0, private_key, strlen(private_key), pp) == 0)
-            return 0;
-    }
-
-    if (password && password[0] != '\0'
-            && libssh2_userauth_password(session, username, password) == 0)
-        return 0;
-
-    return -1;
-}
-
 void nexterm_ssh_teardown(LIBSSH2_SESSION* session, LIBSSH2_CHANNEL* channel,
                           int sock, const char* reason) {
     if (channel) {
