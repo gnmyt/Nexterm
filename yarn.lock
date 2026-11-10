@@ -35,17 +35,6 @@
     "@ai-sdk/provider" "4.0.36"
     "@ai-sdk/provider-utils" "5.0.75"
 
-"@ai-sdk/provider-utils@5.0.74":
-  version "5.0.74"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.74.tgz#ceada2be078f528f9d8194ef5ddc1152c0dd62d7"
-  integrity sha512-42R/bzs520oy3PMj8FI1KGegjLEjaUsNcaEltb6yxN0KnmhihWvlgMb19pEF8CKKqv6Bq6+qMVji8mtyrMubSQ==
-  dependencies:
-    "@ai-sdk/provider" "4.0.35"
-    "@standard-schema/spec" "^1.1.0"
-    "@workflow/serde" "4.1.0"
-    eventsource-parser "^3.0.8"
-    undici "^7.29.1"
-
 "@ai-sdk/provider-utils@5.0.75":
   version "5.0.75"
   resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.75.tgz#5fe251be8100d6998ed49902ee0983e6d6e62ef8"
@@ -56,13 +45,6 @@
     "@workflow/serde" "4.1.0"
     eventsource-parser "^3.0.8"
     undici "^7.29.1"
-
-"@ai-sdk/provider@4.0.35":
-  version "4.0.35"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-4.0.35.tgz#8c9a0add5e5ff6269e9c4a56e6de3dde6c7ad388"
-  integrity sha512-yBz6fmLS8MSCIzy7NiHEUAq56ZLD4ZA1GR6bpXBxgbwUacP1La7LuwAr/xy9jSzthem4F8Xu2OrhvU/JrE9fYA==
-  dependencies:
-    json-schema "^0.4.0"
 
 "@ai-sdk/provider@4.0.36":
   version "4.0.36"
@@ -1153,10 +1135,10 @@
   resolved "https://registry.yarnpkg.com/@shikijs/vscode-textmate/-/vscode-textmate-10.0.2.tgz#a90ab31d0cc1dfb54c66a69e515bf624fa7b2224"
   integrity sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==
 
-"@simplewebauthn/server@^14.0.3":
-  version "14.0.3"
-  resolved "https://registry.yarnpkg.com/@simplewebauthn/server/-/server-14.0.3.tgz#5bc2c4caac265bf48c80572f2df3202e484429d2"
-  integrity sha512-D39/0fiDiYmGV+nraY9s63D1Ho2AX/waMLy22/9gUadTUuvbAnstfb4bpbHYbwZuV5ZLDYN1SmzDKuiHzKAA4Q==
+"@simplewebauthn/server@^14.1.0":
+  version "14.1.0"
+  resolved "https://registry.yarnpkg.com/@simplewebauthn/server/-/server-14.1.0.tgz#780b386188ba1300584d539b0851abb41eaa51ed"
+  integrity sha512-HPRRBR4Vzr45+RVvbmf6JuCfGdYYcSs4Pnnnp9YSY2IABa4JKnG+wxybczoB7rmdLCOMS/mbBa2ZL/Bcz58UlA==
   dependencies:
     "@hexagon/base64" "^1.1.27"
     "@levischuck/tiny-cbor" "^0.2.2"
