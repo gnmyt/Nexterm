@@ -20,7 +20,7 @@
     "ai": "^7.0.163",
     "archiver": "^8.0.0",
     "bcrypt": "^6.0.0",
-    "commander": "^15.0.0",
+    "commander": "^15.1.0",
     "decompress": "^4.2.1",
     "express": "^5.3.0",
     "express-jsdoc-swagger": "^1.8.0",
