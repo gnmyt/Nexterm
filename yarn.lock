@@ -27,10 +27,10 @@
     "@ai-sdk/provider" "4.0.36"
     "@ai-sdk/provider-utils" "5.0.75"
 
-"@ai-sdk/openai@^4.0.109":
-  version "4.0.109"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/openai/-/openai-4.0.109.tgz#cc89aa63d8651a80f94c59fedca17c76f1f034a2"
-  integrity sha512-N20L44ztSicqEWpB0LfV54Ee1iq6IjGfOFTcRfeTD/bRH0v/VDI1uHve7RFOhP2oi1eAluliBhgmurplaOBuVw==
+"@ai-sdk/openai@^4.0.110":
+  version "4.0.110"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/openai/-/openai-4.0.110.tgz#32676eb7752b4c73cd0dec4a2075baf0b1c14beb"
+  integrity sha512-NIehl+lMI21kTFYM692tBMUiWVhwMZc/pVttnrRYkwc4Y8J9l4aN67F8Ld3exY8Uwa3o+lTb0zCu9KhLdAzDHg==
   dependencies:
     "@ai-sdk/provider" "4.0.36"
     "@ai-sdk/provider-utils" "5.0.75"
