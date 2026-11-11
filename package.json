@@ -48,7 +48,7 @@
     "esbuild": "^0.28.2",
     "nodemon": "^3.1.11",
     "vitepress": "^1.6.4",
-    "vitepress-openapi": "^0.2.8"
+    "vitepress-openapi": "^0.2.9"
   },
   "scripts": {
     "test": "node --test --test-force-exit server/tests/*.test.js",
