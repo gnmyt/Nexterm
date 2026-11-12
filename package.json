@@ -43,7 +43,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
-    "concurrently": "^10.0.6",
+    "concurrently": "^10.0.7",
     "dotenv": "^18.0.10",
     "esbuild": "^0.28.2",
     "nodemon": "^3.1.11",
