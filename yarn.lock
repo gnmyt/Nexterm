@@ -2228,10 +2228,10 @@ doctrine@^3.0.0:
   dependencies:
     esutils "^2.0.2"
 
-dotenv@^18.0.9:
-  version "18.0.9"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-18.0.9.tgz#5c565760ce7e6fb69f9477ebcd1a3b64c766f9c8"
-  integrity sha512-3fVOW4cB02R066PUSwn8O4TJyz9NckQl7F81blIbaq9jKBm2tSmOKky7ZHIXzGvkVPXCSn6jkpziBPZdGFs8Tw==
+dotenv@^18.0.10:
+  version "18.0.10"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-18.0.10.tgz#4171e67ba539a3d1513d7cbc51b8124e60714d28"
+  integrity sha512-89FAA1xchzK2mxVWdr5F/0rldwiueXs6zJM86rO66EzekR1iBdiXRthyG+m5GvkJaFH3C2LESzamTkgndmLT2A==
 
 dottie@^2.0.6:
   version "2.0.6"
