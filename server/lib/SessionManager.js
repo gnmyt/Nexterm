@@ -113,6 +113,12 @@ module.exports.waitForGuacReady = (sessionId, timeoutMs = 30000) => {
 
 module.exports.getConnection = (sessionId) => module.exports.get(sessionId)?.masterConnection || null;
 
+module.exports.hasAttachedClients = (sessionId) => {
+    const session = module.exports.get(sessionId);
+    if (!session?.masterConnection) return false;
+    return session.connectedWs.size + session.sharedWs.size > 0;
+};
+
 module.exports.updateConnectionId = (sessionId, connectionId) => {
     const session = module.exports.get(sessionId);
     if (session?.masterConnection) {

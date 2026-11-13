@@ -210,6 +210,10 @@ const reconnectSession = ({ accountId, sessionId, ...options }) => {
         if (existing && existing.entryId !== options.entryId) {
             return { code: 400, message: "Session entry cannot be changed" };
         }
+        // Other clients are still on this session, so the caller rejoins it instead of tearing it down for everyone
+        if (existing && SessionManager.hasAttachedClients(sessionId)) {
+            return { sessionId, connectionGeneration: existing.connectionGeneration };
+        }
 
         if (existing) await SessionManager.remove(sessionId, { broadcast: false });
         SessionManager.clearFailedReason(sessionId);
