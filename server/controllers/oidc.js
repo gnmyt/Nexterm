@@ -8,7 +8,7 @@ const { genSalt, hash } = require("bcrypt");
 const crypto = require("crypto");
 const { Op } = require("sequelize");
 const logger = require("../utils/logger");
-const { decrypt } = require("../utils/encryption");
+const { encrypt, decrypt } = require("../utils/encryption");
 const { createOIDCSessionContext } = require("../utils/oidcSession");
 const { buildOIDCLogoutUrl, normalizeProviderData } = require("../utils/oidcLogout");
 const {
@@ -117,6 +117,19 @@ module.exports.updateProvider = async (providerId, data) => {
         if (data.enabled === true) {
             await LDAPProvider.update({ enabled: false }, { where: {} });
         }
+    }
+
+    // OIDCProvider.update() is a bulk operation that bypasses the beforeUpdate
+    // instance hook, so clientSecret would be stored plain-text. Handle it here.
+    if (!data.clientSecret || data.clientSecret === "********") {
+        delete data.clientSecret;
+        delete data.clientSecretIV;
+        delete data.clientSecretAuthTag;
+    } else {
+        const { encrypted, iv, authTag } = encrypt(data.clientSecret);
+        data.clientSecret = encrypted;
+        data.clientSecretIV = iv;
+        data.clientSecretAuthTag = authTag;
     }
 
     await OIDCProvider.update(data, { where: { id: providerId } });
