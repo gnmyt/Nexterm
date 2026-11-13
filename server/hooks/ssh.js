@@ -4,6 +4,7 @@ const { parseResizeMessage } = require("../utils/sshEventHandlers");
 const { translateKeys } = require("../utils/keyTranslation");
 const controlPlane = require("../lib/controlPlane/ControlPlaneServer");
 const { SCRIPT_MAGIC } = require("../lib/ScriptLayer");
+const { createQueryFilter } = require("../lib/CursorReporter");
 const { buildParticipant, createWriteGuard } = require("../utils/sessionParticipant");
 
 const bindHandlers = (ws, conn, sessionId, config, isShared, canWrite) => {
@@ -19,6 +20,7 @@ const bindHandlers = (ws, conn, sessionId, config, isShared, canWrite) => {
         if (resize) {
             if (SessionManager.isActiveWs(sessionId, ws)) {
                 controlPlane.sendSessionResize(conn.sessionId, resize.width, resize.height);
+                conn.cursorReporter?.resize(resize.width, resize.height);
                 SessionManager.recordResize(sessionId, resize.width, resize.height);
             }
             return;
@@ -29,9 +31,14 @@ const bindHandlers = (ws, conn, sessionId, config, isShared, canWrite) => {
     };
     ws.on("message", msgHandler);
 
+    // The server answers cursor position queries itself (CursorReporter), so browsers must not answer them again
+    const forward = conn.cursorReporter
+        ? createQueryFilter((text) => ws.readyState === ws.OPEN && ws.send(text))
+        : (text) => ws.readyState === ws.OPEN && ws.send(text);
+
     const dataHandler = (data) => {
         if (scriptLayer?.suppressOutput) return;
-        ws.readyState === ws.OPEN && ws.send(data.toString());
+        forward(data.toString());
     };
     dataSocket.on("data", dataHandler);
 
@@ -68,6 +75,7 @@ const handleSession = (ws, ctx, isShared) => {
             const r = parseResizeMessage(data);
             if (r) {
                 controlPlane.sendSessionResize(conn.sessionId, r.width, r.height);
+                conn.cursorReporter?.resize(r.width, r.height);
                 ws.removeListener("message", onResize);
             }
         };
