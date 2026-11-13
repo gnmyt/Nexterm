@@ -10,6 +10,7 @@ const { resolveIdentity } = require("../utils/identityResolver");
 const { getScript } = require("../controllers/script");
 const OrganizationMember = require("../models/OrganizationMember");
 const { ScriptLayer } = require("./ScriptLayer");
+const { CursorReporter, createQueryFilter } = require("./CursorReporter");
 const { SessionType } = require("./generated/control_plane_generated");
 const controlPlane = require("./controlPlane/ControlPlaneServer");
 const { isRecordingEnabled } = require("../utils/recordingService");
@@ -284,7 +285,12 @@ const createSSHConnectionForSession = async (sessionId, entry, identity, organiz
 
         await SessionManager.initRecording(sessionId, organizationId);
 
-        dataSocket.on("data", (data) => SessionManager.appendLog(sessionId, data.toString()));
+        const cursorReporter = new CursorReporter((reply) => dataSocket.write(reply));
+        const appendLog = createQueryFilter((text) => SessionManager.appendLog(sessionId, text));
+        dataSocket.on("data", (data) => {
+            cursorReporter.feed(data);
+            appendLog(data.toString());
+        });
         dataSocket.on("close", () => {
             logger.info("SSH data connection closed", { sessionId });
             if (!SessionManager.get(sessionId)?._removing) {
@@ -310,6 +316,7 @@ const createSSHConnectionForSession = async (sessionId, entry, identity, organiz
             type: "ssh",
             auditLogId: session.auditLogId,
             scriptLayer,
+            cursorReporter,
         });
 
         if (!script && session.configuration.startPath) {

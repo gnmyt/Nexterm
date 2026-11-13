@@ -401,6 +401,7 @@ const cleanupConnection = async (conn, sessionId) => {
         try { s.destroy(); } catch {}
     }
     if (conn.keepAliveTimer) clearInterval(conn.keepAliveTimer);
+    try { conn.cursorReporter?.dispose(); } catch {}
     try { conn.guacdClient?.close(); } catch {}
     try { conn.sftpClient?.close(); } catch {}
     try { conn.transferClient?.close(); } catch {}
