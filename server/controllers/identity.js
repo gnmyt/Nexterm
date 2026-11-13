@@ -42,10 +42,28 @@ const upsertCredential = async (identityId, type, secret, transaction = null) =>
     }
 };
 
-const syncCredentials = async (identityId, type, password, sshKey, passphrase, transaction = null) => {
+// Returns undefined (leave as is), "" (remove) or the normalized certificate; throws on invalid input
+const prepareCertificate = (sshCertificate) => {
+    if (sshCertificate === undefined || sshCertificate === null) return undefined;
+    if (!String(sshCertificate).trim()) return "";
+    const { normalizeCertificate } = require("../lib/ssh/openssh");
+    return normalizeCertificate(sshCertificate);
+};
+
+const syncCertificate = async (identityId, sshCertificate, transaction = null) => {
+    const certificate = prepareCertificate(sshCertificate);
+    if (certificate === undefined) return;
+    if (!certificate) {
+        await Credential.destroy({ where: { identityId, type: "ssh-certificate" }, transaction });
+        return;
+    }
+    await upsertCredential(identityId, "ssh-certificate", certificate, transaction);
+};
+
+const syncCredentials = async (identityId, type, password, sshKey, passphrase, transaction = null, sshCertificate = undefined) => {
     if (type === "password" || type === "password-only") {
         if (password) await upsertCredential(identityId, "password", password, transaction);
-        await Credential.destroy({ where: { identityId, type: { [Op.in]: ["ssh-key", "passphrase"] } }, transaction });
+        await Credential.destroy({ where: { identityId, type: { [Op.in]: ["ssh-key", "passphrase", "ssh-certificate"] } }, transaction });
         return;
     }
 
@@ -61,6 +79,7 @@ const syncCredentials = async (identityId, type, password, sshKey, passphrase, t
         if (passphrase) await upsertCredential(identityId, "passphrase", passphrase, transaction);
         else await Credential.destroy({ where: { identityId, type: "passphrase" }, transaction });
     }
+    await syncCertificate(identityId, sshCertificate, transaction);
 };
 
 module.exports.syncCredentials = syncCredentials;
@@ -84,8 +103,12 @@ module.exports.listIdentities = async (accountId, { transaction = null, withUsag
         const [entryLinks, folderLinks] = await Promise.all([EntryIdentity.findAll(options), FolderIdentityProfile.findAll(options)]);
         [...entryLinks, ...folderLinks].forEach(row => usedIds.add(row.identityId));
     }
+    const certificates = ids.length
+        ? await Credential.findAll({ where: { identityId: { [Op.in]: ids }, type: "ssh-certificate" }, attributes: ["identityId"], raw: true, transaction })
+        : [];
+    const certificateIds = new Set(certificates.map(certificate => certificate.identityId));
 
-    const format = (i, scope) => ({ id: i.id, name: i.name, type: i.type, username: i.username, organizationId: i.organizationId, accountId: i.accountId, entryId: i.entryId || null, ...(withUsage ? { inUse: usedIds.has(i.id) } : {}), scope });
+    const format = (i, scope) => ({ id: i.id, name: i.name, type: i.type, username: i.username, organizationId: i.organizationId, accountId: i.accountId, entryId: i.entryId || null, ...(withUsage ? { inUse: usedIds.has(i.id) } : {}), hasSshCertificate: certificateIds.has(i.id), scope });
     return [...personal.map(i => format(i, 'personal')), ...org.map(i => format(i, 'organization'))];
 };
 
@@ -96,12 +119,18 @@ const createIdentityData = async (accountId, config, transaction = null, entryId
     } else if (!(await hasAccountPermission(accountId, Permission.IDENTITIES_MANAGE))) {
         return { code: 403, message: "You don't have permission to manage identities" };
     }
+    let sshCertificate;
+    try {
+        sshCertificate = prepareCertificate(config.sshCertificate);
+    } catch (error) {
+        return { code: 400, message: error.message };
+    }
     const identity = await Identity.create({
         ...config, accountId: config.organizationId ? null : accountId, organizationId: config.organizationId || null,
         entryId,
-        password: undefined, sshKey: undefined, passphrase: undefined,
+        password: undefined, sshKey: undefined, passphrase: undefined, sshCertificate: undefined,
     }, { transaction });
-    await syncCredentials(identity.id, config.type, config.password, config.sshKey, config.passphrase, transaction);
+    await syncCredentials(identity.id, config.type, config.password, config.sshKey, config.passphrase, transaction, sshCertificate);
     return identity;
 };
 
@@ -136,14 +165,20 @@ const updateIdentityData = async (accountId, identityId, config, transaction = n
     const check = await validateManageAccess(accountId, identity);
     if (!check.valid) return check.error;
 
-    const { password, sshKey, passphrase, accountId: _, organizationId: __, ...updateConfig } = config;
+    const { password, sshKey, passphrase, sshCertificate, accountId: _, organizationId: __, ...updateConfig } = config;
+    let certificate;
+    try {
+        certificate = prepareCertificate(sshCertificate);
+    } catch (error) {
+        return { code: 400, message: error.message };
+    }
     await Identity.update(updateConfig, {
         where: { id: identityId, ...(identity.organizationId ? { organizationId: identity.organizationId } : { accountId }) },
         transaction,
     });
 
     const effectiveType = config.type || identity.type;
-    await syncCredentials(identityId, effectiveType, password, sshKey, passphrase, transaction);
+    await syncCredentials(identityId, effectiveType, password, sshKey, passphrase, transaction, certificate);
     return { success: true, identity };
 };
 

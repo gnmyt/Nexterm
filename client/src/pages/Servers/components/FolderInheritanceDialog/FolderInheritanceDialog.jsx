@@ -12,7 +12,7 @@ import { getFieldConfig, getSections } from "@/pages/Servers/components/ServerDi
 import SectionedDialog, { SectionBlock } from "@/common/components/SectionedDialog";
 import Field from "@/common/components/Field";
 import { EngineField } from "@/pages/Servers/components/ServerDialog/sections/GeneralSection.jsx";
-import { PortField, JumpHosts, PROTOCOL_OPTIONS } from "@/pages/Servers/components/ServerDialog/sections/ConnectionSection.jsx";
+import { PortField, JumpHosts, PROTOCOL_OPTIONS, SshCertificateFields, usesSshCertificates } from "@/pages/Servers/components/ServerDialog/sections/ConnectionSection.jsx";
 import IdentitiesSection, { buildIdentityPayload } from "@/pages/Servers/components/ServerDialog/sections/IdentitiesSection.jsx";
 import TerminalSection from "@/pages/Servers/components/ServerDialog/sections/TerminalSection.jsx";
 import DisplaySection from "@/pages/Servers/components/ServerDialog/sections/DisplaySection.jsx";
@@ -173,6 +173,7 @@ const FolderInheritanceDialog = ({ open, onClose, folderId }) => {
                 <PortField config={config} setConfig={setConfig} />
                 <EngineField config={config} setConfig={setConfig} />
                 {protocol === "ssh" && <JumpHosts config={config} setConfig={setConfig} isAllowed={isAllowedJumpHost} />}
+                {usesSshCertificates(protocol) && <SshCertificateFields config={config} setConfig={setConfig} organizationId={organizationId} />}
             </SectionBlock>
 
             {has("identities") && (

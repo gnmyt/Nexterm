@@ -76,6 +76,7 @@ export default defineConfig({
                         items: [
                             { text: "OIDC / SSO", link: "/oidc" },
                             { text: "LDAP", link: "/ldap" },
+                            { text: "SSH Certificates", link: "/ssh-certificates" },
                         ],
                     },
                     {

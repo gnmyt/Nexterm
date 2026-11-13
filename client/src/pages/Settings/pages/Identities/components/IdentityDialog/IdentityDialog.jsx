@@ -26,11 +26,12 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
     const [authType, setAuthType] = useState("password");
     const [password, setPassword] = useState("");
     const [sshKey, setSshKey] = useState(null);
+    const [sshCertificate, setSshCertificate] = useState(undefined);
     const [passphrase, setPassphrase] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     
-    const draft = useMemo(() => ({ name, username, authType, password, sshKey, passphrase }),
-        [name, username, authType, password, sshKey, passphrase]);
+    const draft = useMemo(() => ({ name, username, authType, password, sshKey, sshCertificate, passphrase }),
+        [name, username, authType, password, sshKey, sshCertificate, passphrase]);
     const { isDirty, markClean } = useUnsavedChanges(draft);
 
     useEffect(() => {
@@ -41,6 +42,7 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                 setAuthType(identity.type || "password");
                 setPassword("********");
                 setSshKey(identity.sshKey || null);
+                setSshCertificate(undefined);
                 setPassphrase("********");
                 markClean({
                     name: identity.name || "",
@@ -48,6 +50,7 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                     authType: identity.type || "password",
                     password: "********",
                     sshKey: identity.sshKey || null,
+                    sshCertificate: undefined,
                     passphrase: "********",
                 });
             } else {
@@ -62,18 +65,16 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
         setAuthType("password");
         setPassword("");
         setSshKey(null);
+        setSshCertificate(undefined);
         setPassphrase("");
-        markClean({ name: "", username: "", authType: "password", password: "", sshKey: null, passphrase: "" });
+        markClean({ name: "", username: "", authType: "password", password: "", sshKey: null, sshCertificate: undefined, passphrase: "" });
     };
 
-    const readFile = (event) => {
+    const readTextFile = (setter) => (event) => {
         const file = event.target.files[0];
         if (!file) return;
-
         const reader = new FileReader();
-        reader.onload = (e) => {
-            setSshKey(e.target.result);
-        };
+        reader.onload = (e) => setter(e.target.result);
         reader.readAsText(file);
     };
 
@@ -108,10 +109,12 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                         ? {
                             password: password === "********" ? undefined : password,
                             sshKey: sshKey || undefined,
+                            ...(sshCertificate !== undefined ? { sshCertificate } : {}),
                             ...(passphrase && passphrase !== "********" ? { passphrase } : {}),
                         }
                         : {
                             sshKey: sshKey || undefined,
+                            ...(sshCertificate !== undefined ? { sshCertificate } : {}),
                             ...(passphrase && passphrase !== "********" ? { passphrase } : {}),
                         }
                 ),
@@ -186,8 +189,16 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                             <>
                                 <div className="form-group">
                                     <label htmlFor="sshKey">{t('settings.identities.dialog.fields.sshKey')}</label>
-                                    <IconInput icon={mdiFileUploadOutline} type="file" onChange={readFile} id="sshKey"
+                                    <IconInput icon={mdiFileUploadOutline} type="file" onChange={readTextFile(setSshKey)} id="sshKey"
                                                required={!isEditing} />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="sshCertificate">{t('settings.identities.dialog.fields.sshCertificate')}</label>
+                                    <IconInput icon={mdiFileUploadOutline} type="file" onChange={readTextFile(setSshCertificate)} id="sshCertificate" />
+                                    {isEditing && identity.hasSshCertificate && sshCertificate === undefined && (
+                                        <button type="button" onClick={() => setSshCertificate("")}>{t('settings.identities.dialog.actions.removeCertificate')}</button>
+                                    )}
                                 </div>
 
                                 <div className="form-group">
