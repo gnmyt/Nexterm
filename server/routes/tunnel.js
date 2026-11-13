@@ -4,7 +4,8 @@ const { v4: uuidv4 } = require("uuid");
 const { getIdentityCredentials } = require("../controllers/identity");
 const { SessionType } = require("../lib/generated/control_plane_generated");
 const controlPlane = require("../lib/controlPlane/ControlPlaneServer");
-const { buildSSHParams, resolveJumpHosts } = require("../lib/ConnectionService");
+const { prepareSshAuth } = require("../lib/ssh/sessionAuth");
+const { resolveJumpHosts } = require("../lib/ConnectionService");
 const { hasResourcePermission } = require("../utils/permission");
 const { Permission } = require("../permissions/registry");
 
@@ -62,7 +63,7 @@ module.exports = async (ws, req) => {
         }
 
         const params = {
-            ...buildSSHParams(identity, credentials),
+            ...(await prepareSshAuth({ entry, identity, credentials, account: user })),
             remoteHost,
             remotePort: String(remotePort),
         };

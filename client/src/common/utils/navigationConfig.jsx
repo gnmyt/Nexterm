@@ -9,6 +9,7 @@ import Sessions from "@/pages/Settings/pages/Sessions";
 import Organizations from "@/pages/Settings/pages/Organizations";
 import Users from "@/pages/Settings/pages/Users";
 import Authentication from "@/pages/Settings/pages/Authentication";
+import SshCertificates from "@/pages/Settings/pages/SshCertificates";
 import Sources from "@/pages/Settings/pages/Sources";
 import Monitoring from "@/pages/Settings/pages/Monitoring";
 import Backup from "@/pages/Settings/pages/Backup";
@@ -39,6 +40,7 @@ export const getSettingsAdminPages = t => [
     { title: t("settings.pages.users"), key: "users", icon: mdiAccountGroup, permission: Permission.USERS_VIEW, content: <Users /> },
     { title: t("settings.pages.permissions"), key: "permissions", icon: mdiShieldKeyOutline, permission: Permission.PERMISSIONS_MANAGE, content: <Permissions /> },
     { title: t("settings.pages.authentication"), key: "authentication", icon: mdiShieldAccountOutline, permission: Permission.SETTINGS_AUTH_PROVIDERS, content: <Authentication /> },
+    { title: t("settings.pages.sshCertificates"), key: "ssh-certificates", icon: mdiShieldKeyOutline, permission: Permission.SETTINGS_AUTH_PROVIDERS, content: <SshCertificates /> },
     { title: t("settings.pages.sources"), key: "sources", icon: mdiCloudDownloadOutline, permission: Permission.SETTINGS_SOURCES, content: <Sources /> },
     { title: t("settings.pages.monitoring"), key: "monitoring", icon: mdiChartLine, permission: Permission.SETTINGS_MONITORING, content: <Monitoring /> },
     { title: t("settings.pages.engines"), key: "engines", icon: mdiEngine, permission: Permission.SETTINGS_ENGINES, content: <Engines /> },

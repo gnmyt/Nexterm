@@ -89,6 +89,7 @@ app.use("/api/monitoring", authenticate, require("./routes/monitoring"));
 app.use("/api/integrations", authenticate, require("./routes/integration"));
 app.use("/api/audit", authenticate, require("./routes/audit"));
 app.use("/api/identities", authenticate, require("./routes/identity"));
+app.use("/api/ssh-cas", authenticate, require("./routes/sshCertificateAuthority"));
 app.use("/api/snippets", authenticate, require("./routes/snippet"));
 app.use("/api/organizations", authenticate, require("./routes/organization"));
 app.use("/api/tags", authenticate, require("./routes/tag"));

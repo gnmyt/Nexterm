@@ -83,6 +83,7 @@ table JumpHost {
     password: string;
     private_key: string;
     passphrase: string;
+    certificate: string;
 }
 
 table SessionOpen {

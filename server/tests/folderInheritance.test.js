@@ -316,7 +316,7 @@ test("identity authentication changes remove incompatible credentials", async ()
 
     assert.deepEqual(destroyedTypes, [
         "password",
-        { [require("sequelize").Op.in]: ["ssh-key", "passphrase"] },
+        { [require("sequelize").Op.in]: ["ssh-key", "passphrase", "ssh-certificate"] },
         "passphrase",
     ]);
 });

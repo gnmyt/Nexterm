@@ -532,7 +532,7 @@ const FolderInheritanceDialog = ({ open, onClose, folderId, organizationId }) =>
                     {activeTab === 3 && <div className={isSectionEnabled("settings") ? "folder-inheritance-section-content" : "folder-inheritance-section-content disabled"} aria-disabled={!isSectionEnabled("settings")}><SettingsPage config={{ ...config, protocol }} setConfig={setProfileConfig} monitoringEnabled={monitoringEnabled} setMonitoringEnabled={(value) => {
                         if (localSectionState(protocol, "settings") !== "enabled") setSectionState(protocol, "settings", "enabled");
                         setMonitoringUpdates((current) => ({ ...current, [protocol]: value }));
-                    }} fieldConfig={fieldConfig} editServerId={null} overrides={overrides} onReset={resetOverride} inheritedConfig={inheritedConfig} restrictJumpHostsToScope jumpHostOrganizationId={folderOrganizationId} excludedJumpHostIds={excludedJumpHostIds} /></div>}
+                    }} fieldConfig={fieldConfig} editServerId={null} overrides={overrides} onReset={resetOverride} inheritedConfig={inheritedConfig} restrictJumpHostsToScope jumpHostOrganizationId={folderOrganizationId} excludedJumpHostIds={excludedJumpHostIds} organizationId={folderOrganizationId} /></div>}
                 </form>
                 <Button className="server-dialog-button" onClick={save} disabled={isLoading || isSaving} text={t("servers.dialog.actions.save")} />
             </div>
