@@ -64,7 +64,14 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
         if (!identity.passphraseTouched && normalized.passphrase === "") normalized.passphrase = undefined;
         
         if (normalized.sshKey === null) normalized.sshKey = undefined;
+        if (normalized.sshCertificate === null) normalized.sshCertificate = undefined;
         return normalized;
+    };
+
+    const assignKeyMaterial = (payload, identity) => {
+        payload.sshKey = identity.sshKey;
+        if (identity.sshCertificate !== undefined) payload.sshCertificate = identity.sshCertificate;
+        if (typeof identity.passphrase === "string" && identity.passphrase.length > 0) payload.passphrase = identity.passphrase;
     };
 
     const buildIdentityPayload = (identity) => {
@@ -73,32 +80,14 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             username: identity.authType === 'password-only' ? undefined : identity.username,
             type: identity.authType,
         };
-
-        if (identity.organizationId) {
-            payload.organizationId = identity.organizationId;
+        if (identity.organizationId) payload.organizationId = identity.organizationId;
+        const passwordAuth = identity.authType === 'password' || identity.authType === 'password-only';
+        if (passwordAuth) {
+            if (identity.passwordTouched || identity.password) payload.password = identity.password;
+            return payload;
         }
-        
-        const hasPassphrase = typeof identity.passphrase === "string" && identity.passphrase.length > 0;
-
-        if (identity.authType === 'password' || identity.authType === 'password-only') {
-            if (identity.passwordTouched || identity.password) {
-                payload.password = identity.password;
-            }
-        } else if (identity.authType === 'both') {
-            if (identity.passwordTouched || identity.password) {
-                payload.password = identity.password;
-            }
-            payload.sshKey = identity.sshKey;
-            if (hasPassphrase) {
-                payload.passphrase = identity.passphrase;
-            }
-        } else {
-            payload.sshKey = identity.sshKey;
-            if (hasPassphrase) {
-                payload.passphrase = identity.passphrase;
-            }
-        }
-        
+        if (identity.authType === 'both' && (identity.passwordTouched || identity.password)) payload.password = identity.password;
+        assignKeyMaterial(payload, identity);
         return payload;
     };
 
@@ -415,7 +404,8 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                     {tabs.find((tab, idx) => idx === activeTab && tab.key === "settings") && 
                         <SettingsPage config={config} setConfig={setConfig}
                                       monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled}
-                                      fieldConfig={fieldConfig} editServerId={editServerId} overrides={overrides} onReset={resetOverride} inheritedConfig={inheritedConfig} />}
+                                      fieldConfig={fieldConfig} editServerId={editServerId} overrides={overrides} onReset={resetOverride} inheritedConfig={inheritedConfig}
+                                      organizationId={currentOrganizationId} />}
                 </form>
 
                 <Button className="server-dialog-button" onClick={handleSubmit}
