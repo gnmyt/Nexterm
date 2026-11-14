@@ -130,6 +130,62 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
+      - name: Import Apple signing and notarization credentials
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+          APPLE_API_PRIVATE_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
+        run: | # NOSONAR -- credentials are injected from GitHub Secrets; the keychain password is randomly generated.
+          set -euo pipefail
+
+          missing=()
+          for name in APPLE_CERTIFICATE APPLE_CERTIFICATE_PASSWORD APPLE_API_ISSUER APPLE_API_KEY APPLE_API_PRIVATE_KEY; do
+            if [[ -z "${!name:-}" ]]; then
+              missing+=("$name")
+            fi
+          done
+
+          if (( ${#missing[@]} )); then
+            printf '::error::Missing required macOS signing secrets: %s\n' "${missing[*]}"
+            exit 1
+          fi
+
+          certificate_path="$RUNNER_TEMP/nexterm-connector-certificate.p12"
+          keychain_path="$RUNNER_TEMP/nexterm-connector-signing.keychain-db"
+          api_key_path="$RUNNER_TEMP/nexterm-notarization-key.p8"
+          keychain_password="$(openssl rand -base64 32)"
+
+          printf '%s' "$APPLE_CERTIFICATE" | openssl base64 -d -A -out "$certificate_path"
+          printf '%s' "$APPLE_API_PRIVATE_KEY" | openssl base64 -d -A -out "$api_key_path"
+          chmod 600 "$api_key_path"
+          security create-keychain -p "$keychain_password" "$keychain_path"
+          security default-keychain -s "$keychain_path"
+          security unlock-keychain -p "$keychain_password" "$keychain_path"
+          security set-keychain-settings -lut 21600 "$keychain_path"
+          security import "$certificate_path" \
+            -k "$keychain_path" \
+            -P "$APPLE_CERTIFICATE_PASSWORD" \
+            -T /usr/bin/codesign
+          security set-key-partition-list \
+            -S apple-tool:,apple:,codesign: \
+            -s \
+            -k "$keychain_password" \
+            "$keychain_path"
+
+          signing_identity="$(security find-identity -v -p codesigning "$keychain_path" \
+            | sed -n 's/.*"\(Developer ID Application[^"]*\)".*/\1/p' \
+            | head -1)"
+
+          if [[ -z "$signing_identity" ]]; then
+            echo '::error::The imported certificate does not contain a Developer ID Application identity.'
+            exit 1
+          fi
+
+          echo "APPLE_SIGNING_IDENTITY=$signing_identity" >> "$GITHUB_ENV"
+          echo "APPLE_API_KEY_PATH=$api_key_path" >> "$GITHUB_ENV"
+
       - name: Update connector versions
         run: |
           VERSION="${{ inputs.semver }}"
@@ -160,12 +216,41 @@ jobs:
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ env.APPLE_SIGNING_IDENTITY }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+          APPLE_API_KEY_PATH: ${{ env.APPLE_API_KEY_PATH }}
 
       - name: Find artifact
         id: find_artifact
         run: |
-          ARTIFACT=$(ls ${{ matrix.artifact_path }} 2>/dev/null | head -1)
-          echo "artifact_file=$ARTIFACT" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          shopt -s nullglob
+          artifacts=(${{ matrix.artifact_path }})
+          if (( ${#artifacts[@]} != 1 )); then
+            printf '::error::Expected exactly one DMG, found %d\n' "${#artifacts[@]}"
+            exit 1
+          fi
+          echo "artifact_file=${artifacts[0]}" >> "$GITHUB_OUTPUT"
+
+      - name: Verify macOS signature and notarization
+        env:
+          APP_BUNDLE_DIR: connector/src-tauri/target/${{ matrix.target }}/release/bundle/macos
+          DMG_PATH: ${{ steps.find_artifact.outputs.artifact_file }}
+        run: |
+          set -euo pipefail
+
+          app_bundle="$(find "$APP_BUNDLE_DIR" -maxdepth 1 -name '*.app' -print -quit)"
+          if [[ -z "$app_bundle" ]]; then
+            echo '::error::Could not find the built macOS application bundle.'
+            exit 1
+          fi
+
+          codesign --verify --deep --strict --verbose=2 "$app_bundle"
+          spctl --assess --type execute --verbose=4 "$app_bundle"
+          hdiutil verify "$DMG_PATH"
+          xcrun stapler validate "$DMG_PATH"
+          spctl --assess --type install --verbose=4 "$DMG_PATH"
 
       - name: Upload to Release
         uses: actions/upload-release-asset@v1
@@ -176,6 +261,16 @@ jobs:
           asset_path: ${{ steps.find_artifact.outputs.artifact_file }}
           asset_name: ${{ matrix.artifact_name }}
           asset_content_type: application/octet-stream
+
+      - name: Remove temporary Apple credentials
+        if: always()
+        run: |
+          keychain_path="$RUNNER_TEMP/nexterm-connector-signing.keychain-db"
+          if [[ -f "$keychain_path" ]]; then
+            security delete-keychain "$keychain_path"
+          fi
+          rm -f "$RUNNER_TEMP/nexterm-connector-certificate.p12"
+          rm -f "$RUNNER_TEMP/nexterm-notarization-key.p8"
 
   build-linux:
     name: "Linux (${{ matrix.format }})"
