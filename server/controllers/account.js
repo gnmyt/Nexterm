@@ -253,7 +253,7 @@ module.exports.listUsers = async (options = {}) => {
     const [users, total] = await Promise.all([
         Account.findAll({
             where: whereClause,
-            attributes: { exclude: ["password", "totpSecret", "preferences", "sessionSync"] },
+            attributes: { exclude: ["password", "totpSecret", "totpSecretIV", "totpSecretAuthTag", "preferences", "sessionSync"] },
             limit: parseInt(limit),
             offset: parseInt(offset),
             order: [["id", "DESC"]],
