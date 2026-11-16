@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.104",
-    "@ai-sdk/openai": "^4.0.111",
+    "@ai-sdk/openai": "^4.0.117",
     "@ai-sdk/openai-compatible": "^3.0.92",
     "@inquirer/password": "^5.2.5",
     "@simplewebauthn/server": "^14.1.0",
