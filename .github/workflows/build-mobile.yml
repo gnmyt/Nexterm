@@ -20,13 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - abi: armeabi-v7a
-            flutter_target: android-arm
-          - abi: arm64-v8a
-            flutter_target: android-arm64
-          - abi: x86_64
-            flutter_target: android-x64
+        abi: [arm64-v8a, x86_64, universal]
 
     steps:
       - name: Checkout project
@@ -36,41 +30,27 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
-          java-version: "17"
+          java-version: "21"
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.44.6"
-          channel: "stable"
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Setup Android signing
-        run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > mobile/android/app/release.keystore
-          cat > mobile/android/key.properties << EOF
-          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
-          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
-          storeFile=release.keystore
-          EOF
-
-      - name: Update pubspec.yaml version
-        run: |
-          sed -i "s/^version: .*/version: ${{ inputs.semver }}+${{ github.run_number }}/" mobile/pubspec.yaml
-          sed -i "s/sdk: \^3.9.2/sdk: ^3.8.0/" mobile/pubspec.yaml
-
-      - name: Install dependencies
-        working-directory: mobile
-        run: flutter pub get
+        run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/release.keystore"
 
       - name: Build APK
         working-directory: mobile
-        run: flutter build apk --release --target-platform ${{ matrix.flutter_target }} --split-per-abi
-
-      - name: Rename APK
+        env:
+          ANDROID_KEYSTORE: ${{ runner.temp }}/release.keystore
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          mv mobile/build/app/outputs/flutter-apk/app-${{ matrix.abi }}-release.apk \
-             mobile/build/app/outputs/flutter-apk/nexterm-${{ inputs.version }}-${{ matrix.abi }}.apk
+          ABI_ARG=""
+          if [ "${{ matrix.abi }}" != "universal" ]; then ABI_ARG="-Pabi=${{ matrix.abi }}"; fi
+          ./gradlew :androidApp:assembleRelease $ABI_ARG \
+            -PversionName=${{ inputs.semver }} -PversionCode=${{ github.run_number }}
+          mv androidApp/build/outputs/apk/release/androidApp-release.apk "$RUNNER_TEMP/nexterm-${{ inputs.version }}-${{ matrix.abi }}.apk"
 
       - name: Upload APK to Release
         uses: actions/upload-release-asset@v1
@@ -78,66 +58,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ inputs.upload_url }}
-          asset_path: mobile/build/app/outputs/flutter-apk/nexterm-${{ inputs.version }}-${{ matrix.abi }}.apk
+          asset_path: ${{ runner.temp }}/nexterm-${{ inputs.version }}-${{ matrix.abi }}.apk
           asset_name: nexterm-${{ inputs.version }}-${{ matrix.abi }}.apk
-          asset_content_type: application/vnd.android.package-archive
-
-  build-apk-universal:
-    name: "APK (Universal)"
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v4
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "17"
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.44.6"
-          channel: "stable"
-
-      - name: Setup Android signing
-        run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > mobile/android/app/release.keystore
-          cat > mobile/android/key.properties << EOF
-          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
-          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
-          storeFile=release.keystore
-          EOF
-
-      - name: Update pubspec.yaml version
-        run: |
-          sed -i "s/^version: .*/version: ${{ inputs.semver }}+${{ github.run_number }}/" mobile/pubspec.yaml
-          sed -i "s/sdk: \^3.9.2/sdk: ^3.8.0/" mobile/pubspec.yaml
-
-      - name: Install dependencies
-        working-directory: mobile
-        run: flutter pub get
-
-      - name: Build Universal APK
-        working-directory: mobile
-        run: flutter build apk --release
-
-      - name: Rename APK
-        run: |
-          mv mobile/build/app/outputs/flutter-apk/app-release.apk \
-             mobile/build/app/outputs/flutter-apk/nexterm-${{ inputs.version }}-universal.apk
-
-      - name: Upload Universal APK to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ inputs.upload_url }}
-          asset_path: mobile/build/app/outputs/flutter-apk/nexterm-${{ inputs.version }}-universal.apk
-          asset_name: nexterm-${{ inputs.version }}-universal.apk
           asset_content_type: application/vnd.android.package-archive
 
   build-ios:
@@ -148,46 +70,42 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v4
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
         with:
-          flutter-version: "3.44.6"
-          channel: "stable"
+          xcode-version: latest-stable
 
-      - name: Update pubspec.yaml version
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Fetch libghostty-vt XCFramework
+        working-directory: mobile/shared/native
         run: |
-          sed -i '' "s/^version: .*/version: ${{ inputs.semver }}+${{ github.run_number }}/" mobile/pubspec.yaml
-          sed -i '' "s/sdk: \^3.9.2/sdk: ^3.8.0/" mobile/pubspec.yaml
-
-      - name: Install dependencies
-        working-directory: mobile
-        run: flutter pub get
-
-      - name: Install CocoaPods dependencies
-        working-directory: mobile/ios
-        run: pod install
+          VT=$(grep -m1 '^VT_VERSION=' build-libghostty.sh | cut -d= -f2)
+          BASE="https://release.files.ghostty.org/libghostty-vt/$VT"
+          curl -fsSLO "$BASE/SHA256SUMS" && curl -fsSLO "$BASE/ghostty-vt-$VT.xcframework.zip"
+          grep "ghostty-vt-$VT.xcframework.zip" SHA256SUMS | shasum -a 256 -c -
+          unzip -q "ghostty-vt-$VT.xcframework.zip" && rm -rf "ghostty-vt.xcframework/macos-arm64_x86_64" SHA256SUMS ./*.zip
 
       - name: Build iOS
-        working-directory: mobile
+        working-directory: mobile/iosApp
         run: |
-          flutter build ios --release --no-codesign
+          xcodebuild -project iosApp.xcodeproj -scheme iosApp -configuration Release -sdk iphoneos \
+            -derivedDataPath "$RUNNER_TEMP/build" CODE_SIGNING_ALLOWED=NO \
+            MARKETING_VERSION=${{ inputs.semver }} CURRENT_PROJECT_VERSION=${{ github.run_number }} build
 
       - name: Create unsigned IPA
         run: |
-          mkdir -p mobile/build/ios/ipa
-          APP_PATH=$(find mobile/build/ios -name "Runner.app" -type d | head -1)
-          if [ -z "$APP_PATH" ]; then
-            echo "Error: Runner.app not found"
-            find mobile/build/ios -type d -name "*.app" || true
-            exit 1
-          fi
-          echo "Found app at: $APP_PATH"
           WORK_DIR=$(mktemp -d)
           mkdir -p "$WORK_DIR/Payload"
-          cp -r "$APP_PATH" "$WORK_DIR/Payload/"
-          cd "$WORK_DIR"
-          zip -r "$GITHUB_WORKSPACE/mobile/build/ios/ipa/nexterm-${{ inputs.version }}.ipa" Payload
-          rm -rf "$WORK_DIR"
+          cp -r "$RUNNER_TEMP/build/Build/Products/Release-iphoneos/Nexterm.app" "$WORK_DIR/Payload/"
+          (cd "$WORK_DIR" && zip -qr "$RUNNER_TEMP/nexterm-${{ inputs.version }}.ipa" Payload)
 
       - name: Upload unsigned IPA to Release
         uses: actions/upload-release-asset@v1
@@ -195,6 +113,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ inputs.upload_url }}
-          asset_path: mobile/build/ios/ipa/nexterm-${{ inputs.version }}.ipa
+          asset_path: ${{ runner.temp }}/nexterm-${{ inputs.version }}.ipa
           asset_name: nexterm-${{ inputs.version }}.ipa
           asset_content_type: application/octet-stream
