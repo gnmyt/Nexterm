@@ -1,5 +1,5 @@
 import "./styles.sass";
-import { useKeymaps } from "@/common/contexts/KeymapContext.jsx";
+import { useKeymaps, keyFromEvent } from "@/common/contexts/KeymapContext.jsx";
 import { useEffect, useState } from "react";
 import Button from "@/common/components/Button";
 import { mdiRestore, mdiMagnify, mdiRobotOutline, mdiCodeArray, mdiKeyboard, mdiBroadcast, mdiContentCopy, mdiContentPaste, mdiFullscreen, mdiFlash, mdiKey, mdiCheckCircleOutline, mdiAutoFix } from "@mdi/js";
@@ -48,8 +48,8 @@ const KeybindRecorder = ({ action, currentKey, enabled, onUpdate, onReset }) => 
             if (e.altKey) parts.push("alt");
             if (e.metaKey) parts.push("meta");
 
-            const key = e.key.toLowerCase();
-            if (!["control", "shift", "alt", "meta"].includes(key)) {
+            const key = keyFromEvent(e);
+            if (!["control", "shift", "alt", "meta", "dead"].includes(key)) {
                 parts.push(key);
             }
 
