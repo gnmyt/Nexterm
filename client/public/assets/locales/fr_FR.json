@@ -1012,7 +1012,9 @@
         "list": "Vue de la liste",
         "listDescription": "Affiche les fichiers dans une liste détaillée avec des colonnes de taille et de date.",
         "grid": "Vue en grille",
-        "gridDescription": "Affiche les fichiers sous forme d'icônes dans une grille avec des vignettes."
+        "gridDescription": "Affiche les fichiers sous forme d'icônes dans une grille avec des vignettes.",
+        "compact": "Compact View",
+        "compactDescription": "Show only names in dense columns to fit many files on screen"
       },
       "thumbnails": {
         "title": "Vignettes d'images",
@@ -1044,6 +1046,10 @@
         "move": "Déplacer",
         "copy": "Copie",
         "ask": "Demande"
+      },
+      "singleClickOpen": {
+        "title": "Open with single click",
+        "description": "Open files and folders with a single click instead of selecting them. Double-click opens when this is off."
       }
     },
     "authentication": {
@@ -2016,10 +2022,17 @@
         "uploadFolder": "Dossier de téléchargement",
         "search": "Rechercher des fichiers",
         "closeSearch": "Fermer la recherche",
-        "refresh": "Actualiser"
+        "refresh": "Actualiser",
+        "back": "Back",
+        "forward": "Forward",
+        "up": "Parent directory",
+        "home": "Home directory",
+        "switchToCompact": "Switch to compact view"
       },
       "item": {
-        "link": "lien"
+        "link": "lien",
+        "expand": "Expand folder",
+        "collapse": "Collapse folder"
       },
       "search": {
         "placeholder": "Filtrer les fichiers de ce dossier...",
@@ -2035,14 +2048,47 @@
         "dropFilesHint": "Dépose les fichiers ici pour les télécharger"
       },
       "toast": {
-        "downloaded": "Téléchargé {{name}}",
-        "downloadingItems": "Téléchargement de {{count}} item(s)...",
-        "uploaded": "Téléchargé {{name}}",
-        "uploadedItems": "Fichiers mis en ligne sur {{count}}",
         "uploadFailed": "Le téléchargement a échoué : {{message}}",
-        "uploadFailedItems": "{{count}} Les fichiers n'ont pas pu être téléchargés : {{message}}",
         "connectionLost": "Connexion SFTP perdue. Reconnecte-toi s'il te plaît.",
         "error": "Une erreur s'est produite"
+      },
+      "transfers": {
+        "title": "Transfers",
+        "activeCount": "{{count}} active",
+        "allDone": "All done",
+        "clearFinished": "Clear finished",
+        "queued": "Queued",
+        "cancelling": "Cancelling...",
+        "completed": "Completed",
+        "savedTo": "Saved to {{path}}",
+        "cancelled": "Cancelled",
+        "failed": "Failed: {{message}}",
+        "dismiss": "Dismiss"
+      },
+      "status": {
+        "folders_one": "{{count}} folder",
+        "folders_other": "{{count}} folders",
+        "files_one": "{{count}} file",
+        "files_other": "{{count}} files",
+        "hidden_one": "{{count}} hidden",
+        "hidden_other": "{{count}} hidden",
+        "selected": "{{count}} selected",
+        "showHidden": "Show hidden files",
+        "hideHidden": "Hide hidden files"
+      },
+      "conflict": {
+        "title_one": "Item already exists",
+        "title_other": "{{count}} items already exist",
+        "upload_one": "A file with this name already exists in the destination. What would you like to do?",
+        "upload_other": "These files already exist in the destination. What would you like to do with them?",
+        "move_one": "An item with this name already exists in the destination. Moving will replace it.",
+        "move_other": "These items already exist in the destination. Moving will replace them.",
+        "copy_one": "An item with this name already exists in the destination. Copying will replace it.",
+        "copy_other": "These items already exist in the destination. Copying will replace them.",
+        "more": "+ {{count}} more",
+        "skip": "Skip",
+        "rename": "Keep both",
+        "overwrite": "Overwrite"
       }
     },
     "browser": {
