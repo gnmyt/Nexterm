@@ -135,6 +135,8 @@ export const KeymapProvider = ({ children }) => {
             .split("+")
             .map(k => {
                 if (mac && k === "ctrl") return "⌘";
+                if (mac && k === "alt") return "⌥";
+                if (mac && k === "shift") return "⇧";
                 if (k === "meta") return mac ? "⌘" : "META";
                 return k.toUpperCase();
             })
