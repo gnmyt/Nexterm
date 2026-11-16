@@ -29,6 +29,7 @@ export const FileItem = memo(({
                                   onRenameKeyDown,
                                   onRenameBlur,
                                   onClick,
+                                  onDoubleClick,
                                   onContextMenu,
                                   onDotsClick,
                                   onDotsPointerDown,
@@ -89,6 +90,7 @@ export const FileItem = memo(({
             ref={itemRef}
             className={classNames}
             onClick={onClick}
+            onDoubleClick={onDoubleClick}
             onContextMenu={onContextMenu}
             draggable={!isRenaming}
             onDragStart={onDragStart}
@@ -104,6 +106,7 @@ export const FileItem = memo(({
                         <Icon path={mdiChevronRight}
                               className={`expand-toggle${isExpanded ? " open" : ""}${isExpandLoading ? " loading" : ""}`}
                               onClick={onToggleExpand}
+                              onDoubleClick={(e) => e.stopPropagation()}
                               onMouseDown={(e) => e.stopPropagation()}
                               title={t(isExpanded ? "servers.fileManager.item.collapse" : "servers.fileManager.item.expand")} />
                     ) : <span className="expand-spacer" />
@@ -166,6 +169,7 @@ export const FileItem = memo(({
                 className="dots-menu"
                 onClick={onDotsClick}
                 onPointerDown={onDotsPointerDown}
+                onDoubleClick={(e) => e.stopPropagation()}
             />
         </div>
     );

@@ -3,7 +3,7 @@ import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { useTranslation } from "react-i18next";
 import { useContext } from "react";
 import Icon from "@mdi/react";
-import { mdiViewGrid, mdiViewList, mdiViewSequential, mdiImage, mdiEyeOff, mdiShieldCheck, mdiCursorMove, mdiFileMove, mdiContentCopy, mdiHelpCircle, mdiCloudSync, mdiCloudOffOutline } from "@mdi/js";
+import { mdiViewGrid, mdiViewList, mdiViewSequential, mdiImage, mdiEyeOff, mdiCursorDefaultClick, mdiShieldCheck, mdiCursorMove, mdiFileMove, mdiContentCopy, mdiHelpCircle, mdiCloudSync, mdiCloudOffOutline } from "@mdi/js";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
 import Button from "@/common/components/Button";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
@@ -40,6 +40,7 @@ export const FileManager = () => {
     const { 
         showThumbnails, setShowThumbnails,
         defaultViewMode, setDefaultViewMode,
+        openOnSingleClick, setOpenOnSingleClick,
         showHiddenFiles, setShowHiddenFiles,
         confirmBeforeDelete, setConfirmBeforeDelete,
         dragDropAction, setDragDropAction,
@@ -98,6 +99,18 @@ export const FileManager = () => {
                             onClick={() => setDefaultViewMode("compact")}
                         />
                     </div>
+                </SettingItem>
+
+                <SettingItem 
+                    icon={mdiCursorDefaultClick}
+                    title={t("settings.fileManager.singleClickOpen.title")} 
+                    description={t("settings.fileManager.singleClickOpen.description")}
+                >
+                    <ToggleSwitch 
+                        id="open-on-single-click" 
+                        checked={openOnSingleClick} 
+                        onChange={setOpenOnSingleClick} 
+                    />
                 </SettingItem>
 
                 <SettingItem 

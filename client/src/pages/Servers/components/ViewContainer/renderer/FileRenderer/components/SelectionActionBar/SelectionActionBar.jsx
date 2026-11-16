@@ -19,7 +19,7 @@ export const SelectionActionBar = ({ selectedItems, onClearSelection, onDownload
         return t(`servers.fileManager.selection.${key}`, { count });
     }, [count, selectedItems, t]);
 
-    if (count === 0 || !portalTarget) return null;
+    if (count < 2 || !portalTarget) return null;
 
     return createPortal(
         <div className="selection-action-bar">

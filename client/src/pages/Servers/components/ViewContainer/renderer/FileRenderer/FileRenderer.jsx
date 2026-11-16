@@ -8,6 +8,7 @@ import ActionBar from "@/pages/Servers/components/ViewContainer/renderer/FileRen
 import FileList from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/FileList";
 import TransferPanel from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/TransferPanel";
 import StatusBar from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/StatusBar";
+import ConflictDialog from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/ConflictDialog";
 import "./styles.sass";
 import Icon from "@mdi/react";
 import { mdiCloudUpload } from "@mdi/js";
@@ -18,13 +19,22 @@ const OPERATIONS = {
     READY: 0x0, LIST_FILES: 0x1, CREATE_FILE: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6,
     DELETE_FOLDER: 0x7, RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA,
     RESOLVE_SYMLINK: 0xB, MOVE_FILES: 0xC, COPY_FILES: 0xD, CHMOD: 0xE,
-    STAT: 0xF, CHECKSUM: 0x10, FOLDER_SIZE: 0x11, PATH_SYNC: 0x12,
+    STAT: 0xF, CHECKSUM: 0x10, FOLDER_SIZE: 0x11, PATH_SYNC: 0x12, CHECK_EXISTS: 0x15,
     ...TRANSFER_OPERATIONS,
 };
 
 const REFRESH_DEBOUNCE = 150;
 
 const joinPath = (...parts) => parts.join("/").replace(/\/+/g, "/");
+
+const baseName = (path) => path.split("/").filter(Boolean).pop() ?? "";
+
+const withoutSelfTargets = (sources, destination) => sources.filter(source => joinPath(destination, baseName(source)) !== joinPath(source));
+
+const renameCandidate = (name, attempt) => {
+    const [, stem = name, extension = ""] = name.match(/^(.+?)((?:\.tar)?\.[^.]*)$/) ?? [];
+    return `${stem} (${attempt})${extension}`;
+};
 
 const readAllEntries = (reader) => new Promise((resolve, reject) => {
     const all = [];
@@ -93,6 +103,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const [capabilities, setCapabilities] = useState({ shell: true, terminal: true });
     const [selectedCount, setSelectedCount] = useState(0);
     const [homePath, setHomePath] = useState(null);
+    const [conflict, setConflict] = useState(null);
 
     const handleSelectionChange = useCallback((selectedItems) => setSelectedCount(selectedItems.length), []);
 
@@ -104,6 +115,9 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const directoryRef = useRef(directory);
     const skipNextPathSync = useRef(false);
     const symlinkCallbacks = useRef([]);
+    const existsCallbacks = useRef(new Map());
+    const existsRequestId = useRef(0);
+    const conflictQueue = useRef(Promise.resolve());
     const dropZoneRef = useRef(null);
     const reconnectAttemptsRef = useRef(0);
     const fileListRef = useRef(null);
@@ -119,11 +133,93 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
 
     const downloadMultipleFiles = (paths) => startMultiDownload({ ...transferTarget(), paths });
 
-    const queueSessionUploads = (uploads) => queueUploads({ ...transferTarget(), uploads });
+    const askConflict = (kind, names) => {
+        const answer = conflictQueue.current.then(() => new Promise(resolve => setConflict({ kind, names, resolve })));
+        conflictQueue.current = answer;
+        return answer;
+    };
 
-    const transferFromSession = (paths, sourceSessionId, destination, action) => startCrossSessionTransfer({
-        sourceSessionId, targetSessionId: session.id, sessionToken, baseUrl: getBaseUrl(), paths, destination, action,
-    });
+    const settleConflict = (choice) => {
+        if (!conflict || conflict.settled) return;
+        conflict.resolve(choice);
+        setConflict({ ...conflict, settled: true });
+    };
+
+    const dismissConflict = () => {
+        if (conflict && !conflict.settled) conflict.resolve("cancel");
+        setConflict(null);
+    };
+
+    const queueSessionUploads = async (uploads) => {
+        if (!uploads.length) return;
+        const remotePath = (upload) => joinPath(upload.targetDir, upload.file.name);
+        const found = await checkExisting(uploads.map(remotePath));
+        if (!found) return;
+        const existing = new Set(found);
+        if (existing.size === 0) {
+            queueUploads({ ...transferTarget(), uploads });
+            return;
+        }
+
+        const conflicting = uploads.filter(upload => existing.has(remotePath(upload)));
+        const choice = await askConflict("upload", conflicting.map(upload => upload.file.name));
+        if (choice === "cancel") return;
+        if (choice === "overwrite") {
+            queueUploads({ ...transferTarget(), uploads });
+            return;
+        }
+        const untouched = uploads.filter(upload => !existing.has(remotePath(upload)));
+        if (choice === "skip") {
+            if (untouched.length) queueUploads({ ...transferTarget(), uploads: untouched });
+            return;
+        }
+
+        const taken = new Set([...existing, ...uploads.map(remotePath)]);
+        const nextFreePath = (upload) => {
+            let attempt = 1;
+            let candidate = joinPath(upload.targetDir, renameCandidate(upload.file.name, attempt));
+            while (taken.has(candidate)) candidate = joinPath(upload.targetDir, renameCandidate(upload.file.name, ++attempt));
+            taken.add(candidate);
+            return candidate;
+        };
+        const renamed = [];
+        let pending = conflicting;
+        while (pending.length) {
+            const candidates = pending.map(upload => ({ upload, path: nextFreePath(upload) }));
+            const found = await checkExisting(candidates.map(candidate => candidate.path));
+            if (!found) return;
+            const stillExisting = new Set(found);
+            pending = [];
+            for (const { upload, path } of candidates) {
+                if (stillExisting.has(path)) pending.push(upload);
+                else renamed.push({ ...upload, file: new File([upload.file], baseName(path), { type: upload.file.type, lastModified: upload.file.lastModified }) });
+            }
+        }
+        queueUploads({ ...transferTarget(), uploads: [...untouched, ...renamed] });
+    };
+
+    const resolveDestinationConflicts = async (kind, sources, destination) => {
+        const destinationOf = (source) => joinPath(destination, baseName(source));
+        if (!sources.length) return null;
+        const found = await checkExisting(sources.map(destinationOf));
+        if (!found) return null;
+        const existing = new Set(found);
+        if (existing.size === 0) return { sources, overwrite: false };
+        const choice = await askConflict(kind, [...existing].map(baseName));
+        if (choice === "cancel") return null;
+        if (choice === "overwrite") return { sources, overwrite: true };
+        const remaining = sources.filter(source => !existing.has(destinationOf(source)));
+        return remaining.length ? { sources: remaining, overwrite: false } : null;
+    };
+
+    const transferFromSession = async (paths, sourceSessionId, destination, action) => {
+        const resolved = await resolveDestinationConflicts(action, paths, destination);
+        if (!resolved) return;
+        startCrossSessionTransfer({
+            sourceSessionId, targetSessionId: session.id, sessionToken, baseUrl: getBaseUrl(),
+            paths: resolved.sources, destination, action,
+        });
+    };
 
     const uploadFile = async () => {
         const fileInput = document.createElement("input");
@@ -201,6 +297,10 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 case OPERATIONS.RESOLVE_SYMLINK:
                     if (payload) { const cb = symlinkCallbacks.current.shift(); if (cb) cb(payload); }
                     break;
+                case OPERATIONS.CHECK_EXISTS:
+                    existsCallbacks.current.get(payload?.id)?.(payload?.existing ?? []);
+                    existsCallbacks.current.delete(payload?.id);
+                    break;
                 case OPERATIONS.PATH_SYNC:
                     if (payload?.path && payload.path !== directoryRef.current) {
                         skipNextPathSync.current = true;
@@ -229,6 +329,8 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
 
     const handleWsClose = useCallback((event) => {
         setIsReady(false);
+        for (const resolve of existsCallbacks.current.values()) resolve(null);
+        existsCallbacks.current.clear();
         if (event.code === 4001 || event.code === 4002) {
             sendToast(t("common.error"), t("servers.fileManager.toast.connectionLost"));
             disconnectFromServer(session.id);
@@ -266,8 +368,28 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         clearTimeout(refreshTimerRef.current);
         refreshTimerRef.current = setTimeout(() => listFiles(true), REFRESH_DEBOUNCE);
     };
-    const moveFiles = useCallback((sources, destination) => sendOperation(OPERATIONS.MOVE_FILES, { sources, destination }), [sendOperation]);
-    const copyFiles = useCallback((sources, destination) => sendOperation(OPERATIONS.COPY_FILES, { sources, destination }), [sendOperation]);
+    const checkExisting = useCallback(async (paths) => {
+        if (!paths.length) return [];
+        const existing = await new Promise(resolve => {
+            const id = ++existsRequestId.current;
+            existsCallbacks.current.set(id, resolve);
+            if (!sendOperation(OPERATIONS.CHECK_EXISTS, { id, paths })) {
+                existsCallbacks.current.delete(id);
+                resolve(null);
+            }
+        });
+        if (!existing) sendToast(t("common.error"), t("servers.fileManager.toast.connectionLost"));
+        return existing;
+    }, [sendOperation]);
+
+    const moveFiles = useCallback(async (sources, destination) => {
+        const resolved = await resolveDestinationConflicts("move", withoutSelfTargets(sources, destination), destination);
+        if (resolved) sendOperation(OPERATIONS.MOVE_FILES, { sources: resolved.sources, destination, overwrite: resolved.overwrite });
+    }, [sendOperation, checkExisting]);
+    const copyFiles = useCallback(async (sources, destination) => {
+        const resolved = await resolveDestinationConflicts("copy", withoutSelfTargets(sources, destination), destination);
+        if (resolved) sendOperation(OPERATIONS.COPY_FILES, { sources: resolved.sources, destination, overwrite: resolved.overwrite });
+    }, [sendOperation, checkExisting]);
 
     const changeDirectory = (newDirectory) => {
         if (newDirectory === directory) return;
@@ -379,6 +501,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                     onOpenTerminal={onOpenTerminal} onPropertiesMessage={(handler) => { propertiesHandlerRef.current = handler; }}
                     onTreeListing={(handler) => { treeHandlerRef.current = handler; }} />
                 <TransferPanel sessionId={session.id} />
+                <ConflictDialog conflict={conflict} onChoice={settleConflict} onClose={dismissConflict} />
                 <StatusBar folderCount={folderCount} fileCount={fileCount} hiddenCount={hiddenCount} selectedCount={selectedCount}
                     showHiddenFiles={showHiddenFiles} onToggleHiddenFiles={toggleHiddenFiles}
                     viewMode={viewMode} setViewMode={setViewMode} />

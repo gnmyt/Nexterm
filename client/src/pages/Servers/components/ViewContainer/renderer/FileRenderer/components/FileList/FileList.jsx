@@ -17,6 +17,8 @@ import PropertiesDialog from "./components/PropertiesDialog";
 import { useBoxSelection, useDragDrop, useKeyboardNavigation, useClipboard } from "./hooks";
 import { isPreviewable, getFullPath, OPERATIONS } from "./utils/fileUtils";
 
+const COARSE_POINTER = typeof window !== "undefined" && !!window.matchMedia?.("(pointer: coarse)").matches;
+
 const SORT_COMPARATORS = {
     name: (a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" }),
     size: (a, b) => (a.size ?? 0) - (b.size ?? 0),
@@ -32,7 +34,8 @@ export const FileList = forwardRef(({
     capabilities = { shell: true, terminal: true },
 }, ref) => {
     const { t } = useTranslation();
-    const { showThumbnails, showHiddenFiles, confirmBeforeDelete, dragDropAction } = usePreferences();
+    const { showThumbnails, showHiddenFiles, confirmBeforeDelete, dragDropAction, openOnSingleClick } = usePreferences();
+    const opensOnSingleClick = openOnSingleClick || COARSE_POINTER;
     
     const [selectedItem, setSelectedItem] = useState(null);
     const [renamingItem, setRenamingItem] = useState(null);
@@ -52,6 +55,7 @@ export const FileList = forwardRef(({
 
     const containerRef = useRef(null);
     const itemRefs = useRef({});
+    const selectionAnchorRef = useRef(null);
     const contextMenu = useContextMenu();
     const emptyContextMenu = useContextMenu();
     const dropMenu = useContextMenu();
@@ -157,10 +161,32 @@ export const FileList = forwardRef(({
 
     const contextMenuOpen = contextMenu.isOpen || emptyContextMenu.isOpen || dropMenu.isOpen;
 
-    const { focusedIndex } = useKeyboardNavigation({
+    const startRename = useCallback((item) => { setRenamingItem(item); setRenameValue(item.name); }, []);
+
+    const deleteItems = useCallback((targets) => {
+        targets.forEach(item => sendOperation(item.type === "folder" ? OPERATIONS.DELETE_FOLDER : OPERATIONS.DELETE_FILE, { path: item.id }));
+        setSelectedItems([]);
+    }, [sendOperation]);
+
+    const requestDelete = useCallback((targets) => {
+        if (targets.length === 0) return;
+        if (!confirmBeforeDelete) return deleteItems(targets);
+        setSelectedItems(targets);
+        setMassDeleteDialogOpen(true);
+    }, [confirmBeforeDelete, deleteItems]);
+
+    const goUp = useCallback(() => {
+        if (path === "/") return;
+        const parent = path.split("/").filter(Boolean).slice(0, -1).join("/");
+        updatePath(parent ? `/${parent}` : "/");
+    }, [path, updatePath]);
+
+    const { focusedIndex, setFocusedIndex } = useKeyboardNavigation({
         isActive, filteredItems, selectedItems, setSelectedItems, itemRefs,
         renamingItem, creatingFolder, creatingFile, contextMenuOpen,
         handleCopy, handleCut, handlePaste, handleClick,
+        onDelete: requestDelete, onRename: startRename, onGoUp: goUp, onNewFolder: startCreateFolder,
+        treeEnabled, isExpanded, onToggleExpand: toggleExpand,
     });
 
     const { isSelecting, selectionBox, handleSelectionStart } = useBoxSelection({
@@ -177,35 +203,47 @@ export const FileList = forwardRef(({
     });
     const pendingDropFromOtherSession = !!pendingDrop && pendingDrop.sourceSessionId !== session.id;
 
-    const handleItemClick = useCallback((event, item) => {
+    const handleItemClick = useCallback((event, item, index) => {
+        setFocusedIndex(index);
         if (event.ctrlKey || event.metaKey) {
             event.preventDefault();
+            selectionAnchorRef.current = item.id;
             setSelectedItems(prev => prev.some(s => s.id === item.id)
                 ? prev.filter(s => s.id !== item.id)
                 : [...prev, item]
             );
             return;
         }
-        if (selectedItems.length > 0) setSelectedItems([]);
+        const anchorIndex = event.shiftKey ? filteredItems.findIndex(entry => entry.id === selectionAnchorRef.current) : -1;
+        if (anchorIndex !== -1) {
+            event.preventDefault();
+            const [from, to] = [anchorIndex, index].sort((a, b) => a - b);
+            setSelectedItems(filteredItems.slice(from, to + 1));
+            return;
+        }
+        selectionAnchorRef.current = item.id;
+        if (opensOnSingleClick) {
+            if (selectedItems.length > 0) setSelectedItems([]);
+            handleClick(item);
+            return;
+        }
+        setSelectedItems([item]);
+    }, [selectedItems, filteredItems, handleClick, opensOnSingleClick, setFocusedIndex]);
+
+    const handleItemDoubleClick = useCallback((event, item) => {
+        if (opensOnSingleClick || event.ctrlKey || event.metaKey || event.shiftKey) return;
+        setSelectedItems([]);
         handleClick(item);
-    }, [selectedItems, handleClick]);
+    }, [opensOnSingleClick, handleClick]);
 
     const handleMassDownload = useCallback(() => {
         if (selectedItems.length === 0) return;
         downloadMultipleFiles?.(selectedItems.map(item => item.id));
     }, [selectedItems, path, downloadMultipleFiles]);
 
-    const executeMassDelete = useCallback(() => {
-        selectedItems.forEach(item => {
-            sendOperation(item.type === "folder" ? OPERATIONS.DELETE_FOLDER : OPERATIONS.DELETE_FILE, { path: item.id });
-        });
-        setSelectedItems([]);
-    }, [selectedItems, path, sendOperation]);
+    const executeMassDelete = useCallback(() => deleteItems(selectedItems), [selectedItems, deleteItems]);
 
-    const handleMassDelete = useCallback(() => {
-        if (selectedItems.length === 0) return;
-        confirmBeforeDelete ? setMassDeleteDialogOpen(true) : executeMassDelete();
-    }, [selectedItems, confirmBeforeDelete, executeMassDelete]);
+    const handleMassDelete = useCallback(() => requestDelete(selectedItems), [selectedItems, requestDelete]);
 
     const clearSelection = useCallback(() => setSelectedItems([]), []);
 
@@ -227,7 +265,6 @@ export const FileList = forwardRef(({
     const handleDelete = () => sendOperation(selectedItem.type === "folder" ? OPERATIONS.DELETE_FOLDER : OPERATIONS.DELETE_FILE, { path: selectedItem.id });
     const handleDeleteClick = () => confirmBeforeDelete ? setDeleteDialogOpen(true) : handleDelete();
     const handleRename = (item, newName) => { if (newName && newName !== item.name) sendOperation(OPERATIONS.RENAME_FILE, { path: item.id, newPath: getFullPath(item.parentPath, newName) }); setRenamingItem(null); };
-    const startRename = (item) => { setRenamingItem(item); setRenameValue(item.name); };
     const handleRenameKeyDown = (e, item) => e.key === 'Enter' ? (e.preventDefault(), handleRename(item, renameValue)) : e.key === 'Escape' && setRenamingItem(null);
     const handleCreateFolder = () => { if (newFolderName.trim()) createFolder(newFolderName.trim()); setCreatingFolder(false); };
     const handleCreateFolderKeyDown = (e) => e.key === 'Enter' ? (e.preventDefault(), handleCreateFolder()) : e.key === 'Escape' && setCreatingFolder(false);
@@ -340,7 +377,8 @@ export const FileList = forwardRef(({
                             onRenameChange={(e) => setRenameValue(e.target.value)}
                             onRenameKeyDown={(e) => handleRenameKeyDown(e, item)}
                             onRenameBlur={() => handleRename(item, renameValue)}
-                            onClick={(e) => renamingItem?.id !== item.id && handleItemClick(e, item)}
+                            onClick={(e) => renamingItem?.id !== item.id && handleItemClick(e, item, index)}
+                            onDoubleClick={(e) => renamingItem?.id !== item.id && handleItemDoubleClick(e, item)}
                             onContextMenu={(e) => handleContextMenu(e, item)}
                             onDotsClick={(e) => { e.stopPropagation(); handleContextMenu(e, item, true); }}
                             onDotsPointerDown={(e) => handleDotsPointerDown(e, item)}

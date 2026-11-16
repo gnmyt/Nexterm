@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 
 export const useKeyboardNavigation = ({
     isActive,
@@ -14,8 +14,21 @@ export const useKeyboardNavigation = ({
     handleCut,
     handlePaste,
     handleClick,
+    onDelete,
+    onRename,
+    onGoUp,
+    onNewFolder,
+    treeEnabled = false,
+    isExpanded,
+    onToggleExpand,
 }) => {
-    const [focusedIndex, setFocusedIndex] = useState(-1);
+    const [focusedId, setFocusedId] = useState(null);
+
+    const focusedIndex = useMemo(() => (
+        focusedId === null ? -1 : filteredItems.findIndex(item => item.id === focusedId)
+    ), [filteredItems, focusedId]);
+
+    const setFocusedIndex = useCallback((index) => setFocusedId(filteredItems[index]?.id ?? null), [filteredItems]);
 
     const scrollItemIntoView = useCallback((index) => {
         if (index < 0 || index >= filteredItems.length) return;
@@ -49,6 +62,38 @@ export const useKeyboardNavigation = ({
             if (isMod && event.key === 'x') { event.preventDefault(); handleCut(); return; }
             if (isMod && event.key === 'v') { event.preventDefault(); handlePaste(); return; }
             if (isMod && event.key === 'a') { event.preventDefault(); setSelectedItems(filteredItems); return; }
+            if (isMod && event.shiftKey && (event.key === 'N' || event.key === 'n')) { event.preventDefault(); onNewFolder?.(); return; }
+
+            const focusedItem = focusedIndex >= 0 ? filteredItems[focusedIndex] : null;
+            const targets = selectedItems.length > 0 ? selectedItems : (focusedItem ? [focusedItem] : []);
+
+            if (event.key === 'Delete' && targets.length > 0) { event.preventDefault(); onDelete?.(targets); return; }
+            if (event.key === 'F2') {
+                const target = selectedItems.length === 1 ? selectedItems[0] : (selectedItems.length === 0 ? focusedItem : null);
+                if (target) { event.preventDefault(); onRename?.(target); }
+                return;
+            }
+            if (treeEnabled && focusedItem && (event.key === 'ArrowRight' || event.key === 'ArrowLeft')) {
+                event.preventDefault();
+                const focusRow = (index) => { setFocusedIndex(index); scrollItemIntoView(index); };
+                const expandable = focusedItem.type === 'folder' && !focusedItem.isSymlink;
+                if (event.key === 'ArrowRight') {
+                    if (!expandable) return;
+                    if (!isExpanded?.(focusedItem)) onToggleExpand?.(focusedItem);
+                    else if (filteredItems[focusedIndex + 1]?.depth > focusedItem.depth) focusRow(focusedIndex + 1);
+                    return;
+                }
+                if (expandable && isExpanded?.(focusedItem)) { onToggleExpand?.(focusedItem); return; }
+                for (let index = focusedIndex - 1; index >= 0; index--) {
+                    if (filteredItems[index].depth < focusedItem.depth) { focusRow(index); return; }
+                }
+                return;
+            }
+            if ((event.key === 'Backspace' && !isMod) || (event.altKey && event.key === 'ArrowUp')) {
+                event.preventDefault();
+                onGoUp?.();
+                return;
+            }
 
             if (event.key === 'Escape') {
                 if (selectedItems.length > 0) {
@@ -97,10 +142,9 @@ export const useKeyboardNavigation = ({
     }, [
         isActive, renamingItem, creatingFolder, creatingFile, contextMenuOpen, focusedIndex, filteredItems,
         selectedItems, setSelectedItems, handleCopy, handleCut, handlePaste, handleClick,
-        scrollItemIntoView, toggleSelection,
+        scrollItemIntoView, toggleSelection, onDelete, onRename, onGoUp, onNewFolder,
+        treeEnabled, isExpanded, onToggleExpand, setFocusedIndex,
     ]);
-
-    useEffect(() => setFocusedIndex(-1), [filteredItems]);
 
     return { focusedIndex, setFocusedIndex };
 };
