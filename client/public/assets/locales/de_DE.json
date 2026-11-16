@@ -1012,7 +1012,9 @@
         "list": "Listenansicht",
         "listDescription": "Dateien in einer detaillierten Liste mit Spalten für Größe und Datum anzeigen",
         "grid": "Rasteransicht",
-        "gridDescription": "Dateien als Icons in einem Rasterlayout mit Miniaturansichten anzeigen"
+        "gridDescription": "Dateien als Icons in einem Rasterlayout mit Miniaturansichten anzeigen",
+        "compact": "Compact View",
+        "compactDescription": "Show only names in dense columns to fit many files on screen"
       },
       "thumbnails": {
         "title": "Bild-Miniaturansichten",
@@ -1044,6 +1046,10 @@
         "move": "Verschiebe",
         "copy": "Kopiere",
         "ask": "Fragen"
+      },
+      "singleClickOpen": {
+        "title": "Open with single click",
+        "description": "Open files and folders with a single click instead of selecting them. Double-click opens when this is off."
       }
     },
     "authentication": {
@@ -2016,10 +2022,17 @@
         "uploadFolder": "Upload-Ordner",
         "search": "Durchsuche Dateien",
         "closeSearch": "Suchfeld schließen",
-        "refresh": "Aktualisieren"
+        "refresh": "Aktualisieren",
+        "back": "Back",
+        "forward": "Forward",
+        "up": "Parent directory",
+        "home": "Home directory",
+        "switchToCompact": "Switch to compact view"
       },
       "item": {
-        "link": "Link"
+        "link": "Link",
+        "expand": "Expand folder",
+        "collapse": "Collapse folder"
       },
       "search": {
         "placeholder": "Dateien in diesem Ordner filtern...",
@@ -2035,14 +2048,47 @@
         "dropFilesHint": "Dateien hier ablegen, um sie hochzuladen"
       },
       "toast": {
-        "downloaded": "{{name}} heruntergeladen",
-        "downloadingItems": "Herunterladen von {{count}} item(s)...",
-        "uploaded": "{{name}} hochgeladen",
-        "uploadedItems": "{{count}} -Dateien hochgeladen",
         "uploadFailed": "Upload fehlgeschlagen: {{message}}",
-        "uploadFailedItems": "{{count}} Dateien konnten nicht hochgeladen werden: {{message}}",
         "connectionLost": "SFTP-Verbindung verloren. Bitte stelle die Verbindung wieder her.",
         "error": "Ein Fehler ist aufgetreten"
+      },
+      "transfers": {
+        "title": "Transfers",
+        "activeCount": "{{count}} active",
+        "allDone": "All done",
+        "clearFinished": "Clear finished",
+        "queued": "Queued",
+        "cancelling": "Cancelling...",
+        "completed": "Completed",
+        "savedTo": "Saved to {{path}}",
+        "cancelled": "Cancelled",
+        "failed": "Failed: {{message}}",
+        "dismiss": "Dismiss"
+      },
+      "status": {
+        "folders_one": "{{count}} folder",
+        "folders_other": "{{count}} folders",
+        "files_one": "{{count}} file",
+        "files_other": "{{count}} files",
+        "hidden_one": "{{count}} hidden",
+        "hidden_other": "{{count}} hidden",
+        "selected": "{{count}} selected",
+        "showHidden": "Show hidden files",
+        "hideHidden": "Hide hidden files"
+      },
+      "conflict": {
+        "title_one": "Item already exists",
+        "title_other": "{{count}} items already exist",
+        "upload_one": "A file with this name already exists in the destination. What would you like to do?",
+        "upload_other": "These files already exist in the destination. What would you like to do with them?",
+        "move_one": "An item with this name already exists in the destination. Moving will replace it.",
+        "move_other": "These items already exist in the destination. Moving will replace them.",
+        "copy_one": "An item with this name already exists in the destination. Copying will replace it.",
+        "copy_other": "These items already exist in the destination. Copying will replace them.",
+        "more": "+ {{count}} more",
+        "skip": "Skip",
+        "rename": "Keep both",
+        "overwrite": "Overwrite"
       }
     },
     "browser": {
