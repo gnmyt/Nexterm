@@ -103,7 +103,7 @@ export const FileEditorWindow = ({ file, session, onClose }) => {
         setFileContentChanged(false);
         setLanguage(getMonacoLanguage(file));
 
-        const url = `/api/entries/sftp?sessionId=${session.id}&path=${file}&sessionToken=${sessionToken}`;
+        const url = `/api/entries/sftp?sessionId=${session.id}&path=${encodeURIComponent(file)}&sessionToken=${sessionToken}`;
         downloadRequest(url).then((res) => {
             const reader = new FileReader();
             reader.onload = () => {

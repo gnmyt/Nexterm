@@ -43,7 +43,7 @@ export const useBoxSelection = ({ containerRef, itemRefs, filteredItems, onSelec
         const containerRect = container.getBoundingClientRect();
         
         const newSelected = filteredItems.filter((item) => {
-            const itemEl = itemRefs.current[item.name];
+            const itemEl = itemRefs.current[item.id];
             if (!itemEl) return false;
             const itemRect = itemEl.getBoundingClientRect();
             const itemRelRect = {

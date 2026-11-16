@@ -4,6 +4,7 @@ import { StateStreamProvider } from "@/common/contexts/StateStreamContext.jsx";
 import { LiveSessionProvider } from "@/common/contexts/LiveSessionContext.jsx";
 import { ServerProvider } from "@/common/contexts/ServerContext.jsx";
 import { IdentityProvider } from "@/common/contexts/IdentityContext.jsx";
+import { TransferProvider } from "@/common/contexts/TransferContext.jsx";
 import { ToastProvider } from "@/common/contexts/ToastContext.jsx";
 import { PreferencesProvider } from "@/common/contexts/PreferencesContext.jsx";
 import { AIProvider } from "@/common/contexts/AIContext.jsx";
@@ -149,7 +150,9 @@ export default () => {
             <DndProvider backend={HTML5Backend}>
                 <ToastProvider>
                     <UserProvider>
-                        <AppContent />
+                        <TransferProvider>
+                            <AppContent />
+                        </TransferProvider>
                     </UserProvider>
                 </ToastProvider>
             </DndProvider>
