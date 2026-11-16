@@ -604,42 +604,42 @@
   resolved "https://registry.yarnpkg.com/@iconify/types/-/types-2.0.0.tgz#ab0e9ea681d6c8a1214f30cd741fe3a20cc57f57"
   integrity sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==
 
-"@inquirer/ansi@^2.0.10":
-  version "2.0.10"
-  resolved "https://registry.yarnpkg.com/@inquirer/ansi/-/ansi-2.0.10.tgz#25f81ba9e13423a6b9419489690321330a545c90"
-  integrity sha512-dwrc+1aqVZpHNkNDswXGtn1typ+Pxpo5FHZRyBw1le7onEJUkPUkYOY1FIFC1LvFMYUqqLuWBwElhAmencL7MQ==
+"@inquirer/ansi@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@inquirer/ansi/-/ansi-2.1.0.tgz#5bc0bb4cb986c52f325141e1964de5fa7b21d1ce"
+  integrity sha512-63GU5AD9KhNbWM0jlhHoMJTEFck2upFOPxHlnCKf3xYTV3rjTUUQfodihmTnfYQzMLS29oy8lK/gA1eJgu4bhA==
 
-"@inquirer/core@^12.0.6":
-  version "12.0.6"
-  resolved "https://registry.yarnpkg.com/@inquirer/core/-/core-12.0.6.tgz#7b426c029925817f3ec333e7dbb146aecbff144c"
-  integrity sha512-5yxn2LsJ8Tu4ei2a+yNkmFRhM/cb+JMEsEs/AW6CCOnBnpMy4IjYiPMFyHtYq8weOmlTyqqCx40y0DsD7OsEPw==
+"@inquirer/core@^12.1.0":
+  version "12.1.0"
+  resolved "https://registry.yarnpkg.com/@inquirer/core/-/core-12.1.0.tgz#a0c1327728170e89a45002818c62bd2dee5c70ac"
+  integrity sha512-6H7usRWw4Gdjgpaem10CA5MfZ/xoYPGyInriR1Xubqjv+SVo8LIJ1erpFxW5JgCza6VZVZiKLTko7RtUU3AQMg==
   dependencies:
-    "@inquirer/ansi" "^2.0.10"
-    "@inquirer/figures" "^2.0.10"
-    "@inquirer/type" "4.2.1"
+    "@inquirer/ansi" "^2.1.0"
+    "@inquirer/figures" "^2.1.0"
+    "@inquirer/type" "4.3.0"
     cli-width "^4.1.0"
     fast-wrap-ansi "^0.2.0"
-    mute-stream "^3.0.0"
+    mute-stream "^4.0.0"
     signal-exit "^4.1.0"
 
-"@inquirer/figures@^2.0.10":
-  version "2.0.10"
-  resolved "https://registry.yarnpkg.com/@inquirer/figures/-/figures-2.0.10.tgz#1e581e89cdc1dd08e14c1ff4b4ec5184b12fd045"
-  integrity sha512-51elrUJV3jZpvD0ygz8+U10Kc6+Lzqln+/tYmnbhy6jo5oXpE6hMCcv+OTBC0enwJXsb3JIuT3VtEinRNCSK2A==
+"@inquirer/figures@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@inquirer/figures/-/figures-2.1.0.tgz#d31ea8b21e5223102239f5e38b6c52e5dffe5106"
+  integrity sha512-CR9u2PME23jxy2SOyTb117efwAAPm98Zr+LoWI+PiQ55D6U8Yeu/HyFTxwytKhPa6oxAGzdsm2Kg7oLS6B9z8w==
 
-"@inquirer/password@^5.2.5":
-  version "5.2.5"
-  resolved "https://registry.yarnpkg.com/@inquirer/password/-/password-5.2.5.tgz#535c07d0134e091b3511eb0ce2bf4d5f9c9304f1"
-  integrity sha512-0v0wLQA4uhWbybmdH6oPl7ooxCiymNylkvi2gCSc+mA5ZQB6QoJLVhoHq12T82lhozpp9fpMJnJkC1nJrU/A+A==
+"@inquirer/password@^5.3.0":
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@inquirer/password/-/password-5.3.0.tgz#3f43a9719dfe554d97bf9e87650914404e22ac6b"
+  integrity sha512-KVqW4G/UbMK06uBN76xF89JKYC9YBWU7v+Kc2tUwMCO8pg3ASBr0HVabl1KaSqF94O2KiRu8aKx4EicN78PK+A==
   dependencies:
-    "@inquirer/ansi" "^2.0.10"
-    "@inquirer/core" "^12.0.6"
-    "@inquirer/type" "4.2.1"
+    "@inquirer/ansi" "^2.1.0"
+    "@inquirer/core" "^12.1.0"
+    "@inquirer/type" "4.3.0"
 
-"@inquirer/type@4.2.1":
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/@inquirer/type/-/type-4.2.1.tgz#ef7de2070d26e0e3f1c558b9e3939eab147717a3"
-  integrity sha512-lDkPsnv5M5CcYB2T1qTc3dobNTPkVr4DU3Ic2Q6SW8/qVRHgvzdRdmVZ6YqG9Ag1aJTeMsLU0s0WPRh3CZWDQQ==
+"@inquirer/type@4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@inquirer/type/-/type-4.3.0.tgz#223be58dd538eed1c03f09fa236d7e85fb184c19"
+  integrity sha512-/IA8q2nyjgyl0NGSjqiRXB8gh3We7Pzx9C0c+6Zoolu905jFc79anerrUG7+n65+qs310DRK43yi2WDI8nY59A==
 
 "@internationalized/date@^3.5.0":
   version "3.10.1"
@@ -3433,10 +3433,10 @@ ms@2.1.3, ms@^2.1.1, ms@^2.1.3:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
-mute-stream@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-3.0.0.tgz#cd8014dd2acb72e1e91bb67c74f0019e620ba2d1"
-  integrity sha512-dkEJPVvun4FryqBmZ5KhDo0K9iDXAwn08tMLDinNdRBNPcYEDiWYysLcc6k3mjTMlbP9KyylvRpd4wFtwrT9rw==
+mute-stream@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-4.0.0.tgz#3b04c237748aa7a2c93d8b5093cb001eaca1fbeb"
+  integrity sha512-gSrprq0fJ3EiOErzjdIZrjysVVmJ4uu1QWfCDss5LypA5OXvrMje5Ym5z6V6RLyJ2eF87lasX7t6a0AnFvZblg==
 
 mysql2@^3.24.6:
   version "3.24.6"
