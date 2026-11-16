@@ -1012,7 +1012,9 @@
         "list": "列表查看",
         "listDescription": "在详细列表中显示文件，包括文件大小和日期列",
         "grid": "网格视图",
-        "gridDescription": "在带缩略图的网格布局中以图标形式显示文件"
+        "gridDescription": "在带缩略图的网格布局中以图标形式显示文件",
+        "compact": "Compact View",
+        "compactDescription": "Show only names in dense columns to fit many files on screen"
       },
       "thumbnails": {
         "title": "图像缩略图",
@@ -1044,6 +1046,10 @@
         "move": "移动",
         "copy": "复制",
         "ask": "询问"
+      },
+      "singleClickOpen": {
+        "title": "Open with single click",
+        "description": "Open files and folders with a single click instead of selecting them. Double-click opens when this is off."
       }
     },
     "authentication": {
@@ -2016,10 +2022,17 @@
         "uploadFolder": "上传文件夹",
         "search": "搜索文件",
         "closeSearch": "关闭搜索",
-        "refresh": "刷新"
+        "refresh": "刷新",
+        "back": "Back",
+        "forward": "Forward",
+        "up": "Parent directory",
+        "home": "Home directory",
+        "switchToCompact": "Switch to compact view"
       },
       "item": {
-        "link": "链接"
+        "link": "链接",
+        "expand": "Expand folder",
+        "collapse": "Collapse folder"
       },
       "search": {
         "placeholder": "筛选此文件夹中的文件...",
@@ -2035,14 +2048,47 @@
         "dropFilesHint": "将文件放在此处上传"
       },
       "toast": {
-        "downloaded": "下载 {{name}}",
-        "downloadingItems": "下载 {{count}} 项目...",
-        "uploaded": "上传 {{name}}",
-        "uploadedItems": "已上传 {{count}} 个文件",
         "uploadFailed": "上传失败： {{message}}",
-        "uploadFailedItems": "{{count}} 文件上传失败： {{message}}",
         "connectionLost": "SFTP 连接丢失。请重新连接。",
         "error": "发生错误"
+      },
+      "transfers": {
+        "title": "Transfers",
+        "activeCount": "{{count}} active",
+        "allDone": "All done",
+        "clearFinished": "Clear finished",
+        "queued": "Queued",
+        "cancelling": "Cancelling...",
+        "completed": "Completed",
+        "savedTo": "Saved to {{path}}",
+        "cancelled": "Cancelled",
+        "failed": "Failed: {{message}}",
+        "dismiss": "Dismiss"
+      },
+      "status": {
+        "folders_one": "{{count}} folder",
+        "folders_other": "{{count}} folders",
+        "files_one": "{{count}} file",
+        "files_other": "{{count}} files",
+        "hidden_one": "{{count}} hidden",
+        "hidden_other": "{{count}} hidden",
+        "selected": "{{count}} selected",
+        "showHidden": "Show hidden files",
+        "hideHidden": "Hide hidden files"
+      },
+      "conflict": {
+        "title_one": "Item already exists",
+        "title_other": "{{count}} items already exist",
+        "upload_one": "A file with this name already exists in the destination. What would you like to do?",
+        "upload_other": "These files already exist in the destination. What would you like to do with them?",
+        "move_one": "An item with this name already exists in the destination. Moving will replace it.",
+        "move_other": "These items already exist in the destination. Moving will replace them.",
+        "copy_one": "An item with this name already exists in the destination. Copying will replace it.",
+        "copy_other": "These items already exist in the destination. Copying will replace them.",
+        "more": "+ {{count}} more",
+        "skip": "Skip",
+        "rename": "Keep both",
+        "overwrite": "Overwrite"
       }
     },
     "browser": {
