@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>CFBundleDisplayName</key>
+	<string>Nexterm</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera access is needed to scan QR codes for quick login authorization.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo library access is needed to select and upload files to your servers.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone access is needed for voice-to-command AI input.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Speech recognition is used to convert voice commands to terminal commands via AI.</string>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+</dict>
+</plist>
