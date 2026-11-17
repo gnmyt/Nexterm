@@ -119,6 +119,12 @@ export const UserProvider = ({ children }) => {
     }, [location]);
 
     useEffect(() => {
+        if (!user?.demoExpiresAt) return;
+        const timer = setTimeout(logout, Math.max(0, new Date(user.demoExpiresAt).getTime() - Date.now()));
+        return () => clearTimeout(timer);
+    }, [user?.demoExpiresAt]);
+
+    useEffect(() => {
         if (isConnectorMode && !hasActiveServer) return;
 
         sessionToken ? login() : checkFirstTimeSetup();
