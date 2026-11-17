@@ -54,12 +54,16 @@ const AUDIT_ACTIONS = {
 
     SCRIPT_EXECUTE: "script.execute",
 
-    AI_COMMAND: "ai.command",
-    AI_FILE_WRITE: "ai.file_write",
-    AI_FILE_DELETE: "ai.file_delete",
-    AI_FILE_RENAME: "ai.file_rename",
-    AI_FILE_CHMOD: "ai.file_chmod",
-    AI_FOLDER_CREATE: "ai.folder_create",
+    AGENT_COMMAND: "agent.command",
+    AGENT_TERMINAL_INPUT: "agent.terminal_input",
+    AGENT_DESKTOP_INPUT: "agent.desktop_input",
+    AGENT_SCREENSHOT: "agent.screenshot",
+    AGENT_FILE_READ: "agent.file_read",
+    AGENT_FILE_WRITE: "agent.file_write",
+    AGENT_FILE_DELETE: "agent.file_delete",
+    AGENT_FILE_RENAME: "agent.file_rename",
+    AGENT_FILE_CHMOD: "agent.file_chmod",
+    AGENT_FOLDER_CREATE: "agent.folder_create",
 };
 
 const RESOURCE_TYPES = {
@@ -109,6 +113,17 @@ const ACTION_LABELS = {
     "ai.file_rename": "AI moved / renamed a path",
     "ai.file_chmod": "AI changed permissions",
     "ai.folder_create": "AI created a folder",
+
+    "agent.command": "Agent ran a command",
+    "agent.terminal_input": "Agent sent terminal input",
+    "agent.desktop_input": "Agent sent desktop input",
+    "agent.screenshot": "Agent captured a screenshot",
+    "agent.file_read": "Agent read a file",
+    "agent.file_write": "Agent wrote a file",
+    "agent.file_delete": "Agent deleted a file or folder",
+    "agent.file_rename": "Agent moved / renamed a path",
+    "agent.file_chmod": "Agent changed permissions",
+    "agent.folder_create": "Agent created a folder",
 };
 
 const ACTION_CATEGORIES = [
@@ -119,6 +134,7 @@ const ACTION_CATEGORIES = [
     { key: "identity", label: "Identities", description: "Identity records and credential access" },
     { key: "script", label: "Scripts", description: "Script execution" },
     { key: "ai", label: "AI Assistant", description: "Actions performed by the AI assistant on a server" },
+    { key: "agent", label: "AI Agents", description: "Actions performed by the AI assistant and external agents connected through the MCP server" },
 ];
 
 const RESOURCE_LABELS = {
@@ -142,7 +158,7 @@ const getOrgAuditSettings = async (organizationId) => {
         enableServerManagementAudit: true, 
         enableFolderManagementAudit: true,
         enableScriptExecutionAudit: true,
-        enableAIOperationAudit: true,
+        enableAgentOperationAudit: true,
     };
 
     if (!org?.auditSettings) return defaults;
@@ -161,7 +177,7 @@ const shouldAudit = (action, settings) => {
         [action.includes("entry.create") || action.includes("entry.update") || action.includes("entry.delete"), settings.enableServerManagementAudit],
         [action.startsWith("folder_mgmt."), settings.enableFolderManagementAudit],
         [action.startsWith("script."), settings.enableScriptExecutionAudit],
-        [action.startsWith("ai."), settings.enableAIOperationAudit],
+        [action.startsWith("agent."), settings.enableAgentOperationAudit],
     ];
 
     for (const [condition, enabled] of checks) {
