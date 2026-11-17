@@ -691,6 +691,7 @@
       "sessionSyncAcrossDevicesDesc": "Relace budou dostupné a synchronizované mezi zařízeními",
       "sessionSyncSameBrowserDesc": "Relace budou synchronizovány pro aktuální uživatelskou relaci",
       "sessionSyncSameTabDesc": "Relace budou synchronizovány uvnitř vaší karty prohlížeče",
+      "showAgentSessionsDesc": "Show sessions opened by the AI assistant or MCP agents as view-only tabs",
       "twoFactorDialog": {
         "title": "Povolit 2FA",
         "description": "Naskenujte kód svou autentifikační aplikací nebo zadejte <span class=\"totp-code\">{{secret}}</span> ručně.",
@@ -795,8 +796,8 @@
         "folderManagementDescription": "Záznamy o vytváření, úpravách a mazání složek",
         "scriptExecutionLabel": "Spuštění skriptu",
         "scriptExecutionDescription": "Protokolování provádění skriptů a automatizačních úloh",
-        "aiOperationsLabel": "Operace v oblasti umělé inteligence",
-        "aiOperationsDescription": "Zaznamenávat příkazy a změny souborů provedené asistentem AI",
+        "agentOperationsLabel": "AI Agent Operations",
+        "agentOperationsDescription": "Log commands, input, screenshots and file changes performed by the AI assistant and by agents connected through the MCP server",
         "actions": {
           "save": "Uložit nastavení"
         },
@@ -1177,7 +1178,7 @@
     },
     "ai": {
       "title": "Konfigurace AI asistenta",
-      "description": "Nakonfigurujte asistenta s umělou inteligencí, který dokáže spouštět příkazy a spravovat soubory přímo v rámci vašich serverových relací.",
+      "description": "Configure the AI provider used by the assistant, which can operate your servers through its own sessions.",
       "loading": "Načítání nastavení AI...",
       "enable": {
         "title": "Povolit AI asistenta",
@@ -1190,10 +1191,6 @@
       "model": {
         "title": "Model",
         "description": "Vyberte model umělé inteligence, který má asistent používat"
-      },
-      "requireConfirmation": {
-        "title": "Před každým úkonem potvrďte",
-        "description": "Vyžadovat, aby uživatelé schvalovali každý příkaz a každou změnu souboru, kterou chce asistent provést"
       },
       "apiKey": {
         "title": "API klíč",
@@ -1296,10 +1293,12 @@
     },
     "identities": {
       "title": "SSH klíče a přihlašovací údaje",
-      "description": "Spravujte své SSH klíče a přihlašovací údaje pro připojení k serverům",
+      "description": "Identities you can link to any server. Server-specific ones live in that server's settings.",
       "createIdentity": "Vytvořit identitu",
       "personal": "Osobní",
       "noUsername": "Bez uživatelského jména",
+      "notInUse": "Not in use",
+      "notInUseHint": "Not linked to any server or folder",
       "sshKey": "SSH klíč",
       "password": "Heslo",
       "editIdentity": "Upravit identitu",
@@ -1367,6 +1366,7 @@
         "success": "Synchronizováno",
         "error": "Chyba",
         "pending": "Čeká",
+        "syncing": "Syncing",
         "disabled": "Zakázáno"
       },
       "dialog": {
@@ -1697,8 +1697,6 @@
       "folderUpdated": "Folder updated successfully",
       "createFailed": "Nepodařilo se vytvořit server",
       "updateFailed": "Nepodařilo se aktualizovat server",
-      "createIdentityFailed": "Nepodařilo se vytvořit identitu",
-      "updateIdentityFailed": "Nepodařilo se aktualizovat identitu",
       "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination."
     },
     "dialog": {
@@ -1795,10 +1793,6 @@
         }
       },
       "identities": {
-        "organizationIdentities": "Identity organizace",
-        "personalIdentities": "Osobní identity",
-        "orgDescription": "Sdíleno se všemi členy organizace. Všichni mohou používat tyto identity.",
-        "personalDescription": "Viditelné pouze pro vás. Ostatní členové organizace je neuvidí.",
         "identityName": "Název identity",
         "username": "Uživatelské jméno",
         "authentication": "Ověření",
@@ -1809,15 +1803,19 @@
         "both": "Klíč+Heslo",
         "sshPrivateKey": "SSH privátní klíč",
         "passphrase": "Heslo klíče (volitelné)",
-        "new": "Nový",
+        "add": "Add identity",
+        "linkGlobal": "Link global identity · {{count}}",
+        "empty": "No identities yet.",
         "removeIdentity": "Odebrat identitu",
         "unlinkIdentity": "Odpojit identitu",
         "moveToOrg": "Přesunout do organizace",
-        "selectOrganization": "Vybrat organizaci",
-        "availableToLink": "K dispozici pro propojení",
         "noUsername": "Bez uživatelského jména",
-        "noOrgIdentities": "Žádné identity organizace. Vytvořte jednu pro sdílení se všemi členy.",
-        "noPersonalIdentities": "Žádné osobní identity. Vytvořte jednu pro své soukromé použití."
+        "globalToggle": "Use on other servers",
+        "globalInUse": "This identity is used by {{count}} servers. Unlink it from the others first.",
+        "shareToggle": "Share with organization",
+        "inheritedHint": "Inherited from the folder settings.",
+        "onlyMe": "Only me",
+        "onlyMeHint": "Only you can see and use this identity."
       },
       "sections": {
         "general": "General",
@@ -2098,13 +2096,34 @@
         "downloaded": "Stáhl jsem si soubor „{{name}}“ ze vzdáleného serveru"
       }
     },
+    "automatedSession": {
+      "viewOnlyAi": "The AI assistant is working in this session. You can watch, but not type.",
+      "viewOnlyMcp": "An external agent (MCP) is working in this session. You can watch, but not type."
+    },
     "aiAssistant": {
       "title": "AI asistent",
       "open": "AI asistent",
-      "empty": "Požádejte asistenta, aby tento server zkontroloval nebo vyměnil. Může přes toto připojení spouštět příkazy a přímo číst či upravovat soubory.",
+      "empty": "Ask the assistant to inspect or change your servers. It opens its own sessions to the servers you add below, runs commands, edits files and can even operate remote desktops.",
+      "addServer": "Add server",
+      "removeServer": "Remove server",
+      "searchServers": "Search servers...",
+      "noMatches": "No matching servers",
+      "current": "current",
+      "openSessions": "{{count}} open session(s)",
+      "approval": {
+        "ask": "Ask before actions",
+        "askDescription": "Commands, input and file changes wait for your approval",
+        "allow": "Allow all",
+        "allowDescription": "Runs tool calls without asking",
+        "readonly": "Read-only",
+        "readonlyDescription": "Only inspects servers; anything that changes them is denied"
+      },
       "placeholder": "Napište asistentovi...",
       "connecting": "Připojuji se...",
       "send": "Odeslat",
+      "copyMessage": "Copy message",
+      "copied": "Copied",
+      "editMessage": "Edit message",
       "stop": "Zastavit",
       "connectionError": "Došlo ke ztrátě spojení s asistentem.",
       "reconnecting": "Připojení bylo přerušeno. Probíhá opětovné připojení...",
@@ -2117,19 +2136,65 @@
       "continuePrompt": "Asistent se po dlouhém úseku schodů na chvíli zastavil. Mám pokračovat?",
       "continue": "Pokračovat",
       "compacted": "Předchozí zprávy byly zkráceny, aby se uvolnilo místo pro kontext.",
+      "retryPrompt": "The last step failed. Retry from where it stopped?",
+      "retry": "Retry",
+      "questionOther": "Or type another answer...",
+      "questionAnswer": "Type your answer...",
+      "questionSend": "Answer",
+      "questionPickOne": "Pick one or type an answer",
+      "questionPickMany": "Pick any that apply",
+      "exitCode": "exit {{code}}",
+      "truncated": "[truncated]",
+      "toolSummary": {
+        "recursive": "{{path}} (recursive)",
+        "doubleClick": "{{target}} ×2"
+      },
       "tools": {
-        "runCommand": "Spustit příkaz",
-        "readFile": "Načíst soubor",
-        "writeFile": "Zapsat soubor",
-        "editFile": "Upravit soubor",
-        "listDirectory": "Seznam adresářů",
-        "statPath": "Zkontrolovat cestu",
-        "makeDirectory": "Vytvořit adresář",
-        "deleteFile": "Odstranit soubor",
-        "removeDirectory": "Odstranit adresář",
-        "movePath": "Přesunout",
-        "changePermissions": "Změnit oprávnění",
-        "findDirectories": "Najít adresáře"
+        "list_entries": "List servers",
+        "get_entry": "Inspect server",
+        "list_folders": "List folders",
+        "list_organizations": "List organizations",
+        "list_identities": "List identities",
+        "list_snippets": "List snippets",
+        "list_scripts": "List scripts",
+        "list_tags": "List tags",
+        "list_users": "List users",
+        "get_permissions": "Check permissions",
+        "get_monitoring": "Read monitoring",
+        "list_sessions": "List sessions",
+        "open_session": "Open session",
+        "get_session": "Inspect session",
+        "close_session": "Close session",
+        "close_all_sessions": "Close all sessions",
+        "terminal_run": "Run command",
+        "terminal_send": "Send input",
+        "terminal_read": "Read terminal",
+        "terminal_resize": "Resize terminal",
+        "run_command": "Run command",
+        "exec_command": "Run command",
+        "file_list": "List directory",
+        "file_stat": "Inspect path",
+        "file_read": "Read file",
+        "file_write": "Write file",
+        "file_edit": "Edit file",
+        "file_mkdir": "Create directory",
+        "file_delete": "Delete",
+        "file_move": "Move",
+        "file_chmod": "Change permissions",
+        "file_search_dirs": "Find directories",
+        "desktop_screenshot": "Screenshot",
+        "desktop_info": "Inspect desktop",
+        "desktop_click": "Click",
+        "desktop_mouse_move": "Move mouse",
+        "desktop_drag": "Drag",
+        "desktop_scroll": "Scroll",
+        "desktop_type": "Type text",
+        "desktop_key": "Press keys",
+        "desktop_resize": "Resize desktop",
+        "desktop_clipboard_set": "Set clipboard",
+        "desktop_clipboard_get": "Read clipboard",
+        "batch": "Run several actions",
+        "ask_user": "Question"
       }
     },
     "commandSuggestion": {
