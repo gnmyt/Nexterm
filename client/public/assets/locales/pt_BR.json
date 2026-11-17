@@ -48,9 +48,7 @@
     },
     "confirmDialog": {
       "title": "Você tem certeza?",
-      "defaultText": "Essa ação não pode ser desfeita.",
-      "unsavedChangesTitle": "Alterações Não Salvas",
-      "unsavedChangesText": "Você tem alterações não salvas. Tem certeza de que deseja fechar?"
+      "defaultText": "Essa ação não pode ser desfeita."
     },
     "loginDialog": {
       "title": "Nexterm",
@@ -63,7 +61,14 @@
       "backToLogin": "Voltar para o login",
       "authenticating": "Autenticando...",
       "noAccount": "Ainda não tem uma conta?",
-      "haveAccount": "Já tem uma conta?"
+      "haveAccount": "Já tem uma conta?",
+      "welcome": "Welcome back",
+      "subtitle": "Sign in to continue to Nexterm.",
+      "registrationSubtitle": "Create your account to get started.",
+      "firstTimeSubtitle": "Create the first administrator account for this instance.",
+      "twoFactorTitle": "Two-factor authentication",
+      "twoFactorDescription": "Enter the code from your authenticator app.",
+      "qrTitle": "Sign in with the app"
     },
     "deviceLink": {
       "title": "Vincular Dispositivo",
@@ -157,8 +162,6 @@
     "quickAction": {
       "placeholder": "Pesquisar servidores, snippets ou navegar...",
       "noResults": "Nenhum resultado encontrado",
-      "navigation": "Navegação",
-      "settings": "Configurações",
       "navigate": "Navegar",
       "select": "Selecionar",
       "close": "Fechar",
@@ -214,6 +217,11 @@
       "organizationDeleteError": "Falha ao excluir a organização",
       "leftOrganization": "Você deixou a organização",
       "leaveOrganizationError": "Falha ao deixar a organização"
+    },
+    "unsavedChanges": {
+      "title": "Unsaved changes",
+      "text": "Discard them, or keep editing and save when you're done.",
+      "keepEditing": "Keep editing"
     }
   },
   "audit": {
@@ -1546,7 +1554,8 @@
       "deleteConfirm": "Isso vai excluir definitivamente a função “{{name}}” e retirá-la de todos os membros.",
       "inheritsAllow": "Herdança: Permitida",
       "inheritsDeny": "Herdança: Negada"
-    }
+    },
+    "search": "Search settings"
   },
   "tunnel": {
     "title": "Tunelamento de Porta",
@@ -1580,25 +1589,6 @@
   "servers": {
     "addServerNote": "Clique com o botão direito do mouse para adicionar um novo servidor",
     "searchPlaceholder": "Pesquisar",
-    "inheritancePolicy": {
-      "title": "Apply inheritance",
-      "description": "Choose how existing objects should handle these inherited settings.",
-      "impact": "{{count}} existing objects are affected.",
-      "retain": {
-        "title": "Retain existing",
-        "description": "Keep current values as local overrides."
-      },
-      "adopt": {
-        "title": "Adopt folder settings",
-        "description": "Replace current values with the inherited folder settings."
-      },
-      "moveTitle": "Apply destination inheritance?",
-      "moveDescription": "Choose whether moved objects adopt the destination folder settings or retain their current values.",
-      "moveFailed": "Unable to move object",
-      "identitiesRemoved": "Some identities were removed because they are unavailable in the destination.",
-      "enableTitle": "Enable inheritance?",
-      "enableDescription": "Choose what existing objects should do when these folder settings are saved."
-    },
     "time": {
       "justNow": "Agora mesmo",
       "minuteAgo": "há {{count}} minuto",
@@ -1708,17 +1698,13 @@
       "createFailed": "Falha ao criar o servidor",
       "updateFailed": "Falha ao atualizar o servidor",
       "createIdentityFailed": "Falha ao criar a identidade",
-      "updateIdentityFailed": "Falha ao atualizar a identidade"
+      "updateIdentityFailed": "Falha ao atualizar a identidade",
+      "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination."
     },
     "dialog": {
       "addServer": "Adicionar Servidor",
       "addProtocolServer": "Adicionar Servidor {{protocol}}",
       "editServer": "Editar Servidor",
-      "tabs": {
-        "details": "Detalhes",
-        "identities": "Identidades",
-        "settings": "Configurações"
-      },
       "actions": {
         "save": "Salvar",
         "create": "Criar"
@@ -1764,7 +1750,6 @@
           "description": "Permitir acordar este servidor remotamente usando seu endereço MAC"
         },
         "rdpSecurity": {
-          "title": "Segurança",
           "description": "Método de autenticação usado para se conectar ao computador Windows remoto. Use o NLA em ambientes onde o NTLM está desativado (por exemplo, no grupo “Usuários Protegidos”).",
           "method": "Método de segurança"
         },
@@ -1807,8 +1792,7 @@
           "backspace": "Backspace",
           "delete": "Excluir",
           "functionKeys": "Teclas de Função"
-        },
-        "noSettings": "Não há configurações adicionais disponíveis para esse tipo de entrada."
+        }
       },
       "identities": {
         "organizationIdentities": "Identidades Organizacionais",
@@ -1834,7 +1818,16 @@
         "noUsername": "Sem nome de usuário",
         "noOrgIdentities": "Sem identidades organizacionais. Crie uma para compartilhar com todos os membros.",
         "noPersonalIdentities": "Sem identidades pessoais. Crie uma para uso privado."
-      }
+      },
+      "sections": {
+        "general": "General",
+        "connection": "Connection",
+        "identities": "Identities",
+        "options": "Options",
+        "credentials": "Credentials"
+      },
+      "useInherited": "Use inherited value",
+      "reset": "Reset"
     },
     "proxmoxDialog": {
       "title": {
@@ -1842,9 +1835,6 @@
         "edit": "Editar Proxmox VE"
       },
       "fields": {
-        "name": "Nome",
-        "serverIp": "IP do Servidor",
-        "port": "Porta",
         "username": "Nome de Usuário",
         "password": "Senha",
         "nodeName": "Nome do Node (Opcional)",
@@ -1853,8 +1843,6 @@
       "monitoringDescription": "Coletar métricas de CPU, memória e armazenamento em todo o cluster",
       "placeholders": {
         "name": "Nome",
-        "serverIp": "IP do Servidor",
-        "port": "Porta",
         "username": "Nome de usuário (ex. root@pam)",
         "password": "Senha",
         "specificNode": "Nome específico do node"
@@ -1868,7 +1856,8 @@
         "updated": "Integração Proxmox atualizada com sucesso",
         "createFailed": "Falha ao criar integração Proxmox",
         "updateFailed": "Falha ao atualizar integração Proxmox"
-      }
+      },
+      "credentialsDescription": "Proxmox user with API access, e.g. root@pam or a dedicated API user."
     },
     "connectionReasonDialog": {
       "title": "Motivo da Conexão é obrigatório",
@@ -2196,6 +2185,14 @@
     "liveSessions": {
       "activeOn": "Sessões ao vivo: {{users}}",
       "unknownUser": "Usuário desconhecido"
+    },
+    "folderSettings": {
+      "name": "Folder name",
+      "nameRequired": "Folder name is required",
+      "loadFailed": "Unable to load folder settings",
+      "protocol": "Defaults for",
+      "protocolHint": "Servers in this folder use what you set below unless they set their own value. Each protocol has its own defaults.",
+      "unset": "Remove from folder"
     }
   },
   "support": {
@@ -2227,7 +2224,8 @@
     "connectDevice": "Conectar Dispositivo",
     "recentConnections": "Conexões Recentes",
     "getStarted": "Começar",
-    "getStartedHint": "Adicione um servidor na barra lateral para começar a gerenciar sua infraestrutura."
+    "getStartedHint": "Adicione um servidor na barra lateral para começar a gerenciar sua infraestrutura.",
+    "hibernated": "Hibernated"
   },
   "downloadApps": {
     "title": "Baixar Apps",
@@ -2238,6 +2236,10 @@
       "linux": "Linux",
       "android": "Android",
       "ios": "iOS"
-    }
+    },
+    "recommended": "Recommended",
+    "versionUnavailable": "The server version could not be determined, so direct downloads are unavailable. You can still browse the releases on GitHub.",
+    "sourceHint": "Downloads are served from the GitHub releases.",
+    "allReleases": "All releases"
   }
 }
