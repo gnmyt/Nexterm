@@ -1293,10 +1293,12 @@
     },
     "identities": {
       "title": "SSH Keys & Credentials",
-      "description": "Manage your SSH keys and login credentials for server connections",
+      "description": "Identities you can link to any server. Server-specific ones live in that server's settings.",
       "createIdentity": "Create Identity",
       "personal": "Personal",
       "noUsername": "No username",
+      "notInUse": "Not in use",
+      "notInUseHint": "Not linked to any server or folder",
       "sshKey": "SSH Key",
       "password": "Password",
       "editIdentity": "Edit identity",
