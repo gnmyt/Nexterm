@@ -2,18 +2,18 @@
 # yarn lockfile v1
 
 
-"@ai-sdk/anthropic@^4.0.104":
-  version "4.0.104"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/anthropic/-/anthropic-4.0.104.tgz#d3181d5a7927b2d42063538edc098ffa3123a19c"
-  integrity sha512-8Es3QS7oeNH72O5LbeZMS+AP0Jf7bYJR80GgrOEZ0yGA6A4hnJ+QgFiIeUrzqSiVlqDTTNCk73NxXW2iwqSQuQ==
+"@ai-sdk/anthropic@^4.0.105":
+  version "4.0.105"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/anthropic/-/anthropic-4.0.105.tgz#809ce6510e297806289122aee1aab8e6015f2711"
+  integrity sha512-i6kmv6y+FGTBxOPtLRrb5I+92WcFFGubhd33CD0JeaSyFOnLJ8my4a9olkAgyR9fACHMzxFBmoEHd0uO4i72bA==
   dependencies:
     "@ai-sdk/provider" "4.0.38"
     "@ai-sdk/provider-utils" "5.0.81"
 
-"@ai-sdk/gateway@4.0.145":
-  version "4.0.145"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-4.0.145.tgz#5903a561db6ccacfeaf1988e8dc2193f6f229342"
-  integrity sha512-vquqCrEut1jlWshy2lWaOrBvyrpVjhLWoR/EVpb+m7JKtHtmpy0vpl9rtpB6xNFiumjT9e2s70MZmRth/hH9tw==
+"@ai-sdk/gateway@4.0.146":
+  version "4.0.146"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/gateway/-/gateway-4.0.146.tgz#a57ff328759bdf1bc460dfd97a67168940eda826"
+  integrity sha512-rJ5NQSyjnpo6HSBEYc9Ff6k1EROUuB7KeAfHYVbVDsk68ynY0Eb8JeWflZKXlT6NhYgqyCiBDxE5blXWACXMKQ==
   dependencies:
     "@ai-sdk/provider" "4.0.38"
     "@ai-sdk/provider-utils" "5.0.81"
@@ -27,10 +27,10 @@
     "@ai-sdk/provider" "4.0.38"
     "@ai-sdk/provider-utils" "5.0.81"
 
-"@ai-sdk/openai@^4.0.117":
-  version "4.0.117"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/openai/-/openai-4.0.117.tgz#58a4791dd63e68bf74a3414bcfdcdd36939806c9"
-  integrity sha512-iRa4elI5AtKfzeOsuFwMS71Oga9MMOP1A15IYFBQL0dC3q+hvMxp02ytNOBZvk+E9zh7IvHyr0rLmC8uISDVig==
+"@ai-sdk/openai@^4.0.118":
+  version "4.0.118"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/openai/-/openai-4.0.118.tgz#0dd7d2b894b2ae4b9c56578a99cb3e8466f81680"
+  integrity sha512-pBsFeB+IudrX96P0ic9AO/1NPnfB6IyoS2B2pnhBJ/Ovt4bsvAmBOPeUxwEfYbQyfetJdVFep9sfYX42uVX3SQ==
   dependencies:
     "@ai-sdk/provider" "4.0.38"
     "@ai-sdk/provider-utils" "5.0.81"
@@ -1473,12 +1473,12 @@ agent-base@^7.1.0, agent-base@^7.1.2:
   resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-7.1.4.tgz#e3cd76d4c548ee895d3c3fd8dc1f6c5b9032e7a8"
   integrity sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==
 
-ai@^7.0.172:
-  version "7.0.172"
-  resolved "https://registry.yarnpkg.com/ai/-/ai-7.0.172.tgz#d430e3f5b4f0dfec624717224ba9562c42b3f636"
-  integrity sha512-FDY7I0I/BE6mqa+hoeWwECO5fbnpXl9vYdvm7n5pNjru1mjrBhX1ZQrYOZOtYledTp0c0vCP/eGYPD5P3bLl3Q==
+ai@^7.0.173:
+  version "7.0.173"
+  resolved "https://registry.yarnpkg.com/ai/-/ai-7.0.173.tgz#a940a73e6d7b0ead5da103be6e02e400075aca1e"
+  integrity sha512-dLea37zT1h7cjkUsBprU4Rq35HJqhtHHaq1jTAXjHQoyfpeswpgCrhjZJWdWc10gjEAxmz114py7iLGQ3xIMxw==
   dependencies:
-    "@ai-sdk/gateway" "4.0.145"
+    "@ai-sdk/gateway" "4.0.146"
     "@ai-sdk/provider" "4.0.38"
     "@ai-sdk/provider-utils" "5.0.81"
 
@@ -3613,10 +3613,10 @@ oniguruma-to-es@^3.1.0:
     regex "^6.0.1"
     regex-recursion "^6.0.2"
 
-openid-client@^6.8.9:
-  version "6.8.9"
-  resolved "https://registry.yarnpkg.com/openid-client/-/openid-client-6.8.9.tgz#78eecccc01bebe1a7661e06b7b17b7b1bf460729"
-  integrity sha512-6mXMRNJxDOf6BflEWLXul1UwzLFz++9Ofz1PYwPwwsJsyXBsbfkO+Jo255SW1qnFNLYz4EJWHz42X4OJJrya/g==
+openid-client@^6.9.0:
+  version "6.9.0"
+  resolved "https://registry.yarnpkg.com/openid-client/-/openid-client-6.9.0.tgz#8ebdba3e00d65d32888b4aab0e00e62a6755cf6b"
+  integrity sha512-2IvamJR8PAnWHngaCsGGA8TYfcLI2egvuqa9cOQYHIISwIUhxJwwwcCnkgVX95fzZ6J0TAna0aVGUMOxnPeRqg==
   dependencies:
     jose "^6.2.15"
     oauth4webapi "^3.8.8"
