@@ -18,7 +18,7 @@ const app = Router();
  * @return {object} 403 - Access denied
  */
 app.get("/", async (req, res) => {
-    const result = await getAllServersMonitoring(req.user.id);
+    const result = await getAllServersMonitoring(req.user.id, { includeHistory: true });
     if (result?.code) return res.status(result.code).json(result);
 
     res.json(result);
