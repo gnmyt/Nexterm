@@ -69,6 +69,7 @@ export default defineConfig({
                     { text: "SSL/HTTPS", link: "/ssl" },
                     { text: "Reverse Proxy", link: "/reverse-proxy" },
                     { text: "Remote Browser", link: "/remote-browser" },
+                    { text: "MCP Server", link: "/mcp" },
                     {
                         text: "Authentication",
                         collapsed: true,

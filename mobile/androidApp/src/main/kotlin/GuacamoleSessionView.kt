@@ -44,7 +44,7 @@ fun GuacamoleSessionView(session: AppSession, toolsOpen: Boolean, onCloseTools: 
 
     Box(Modifier.fillMaxSize().background(Color.Black).systemBarsPadding().imePadding()) {
         GuacamoleCanvas(viewport, Modifier.fillMaxSize())
-        BasicTextField(
+        if (!session.isViewOnly) BasicTextField(
             text, { text = it; keyboard.onTextFieldChanged(it) },
             Modifier.size(1.dp).alpha(0f).focusRequester(focus).onFocusChanged { imeFocused = it.isFocused },
             keyboardOptions = KeyboardOptions(autoCorrectEnabled = false, imeAction = ImeAction.Send),
@@ -52,21 +52,27 @@ fun GuacamoleSessionView(session: AppSession, toolsOpen: Boolean, onCloseTools: 
         )
         ConnectionLoader(!hasFrame && error == null && connection != ConnectionState.DISCONNECTED)
         error?.let { Box(Modifier.align(Alignment.TopCenter)) { ErrorBanner("Error: $it", viewport.state.client::clearError) } }
+        session.agent?.let { ViewOnlyBanner(it.viewOnlyMessage, Modifier.align(Alignment.BottomCenter)) }
         if (connection == ConnectionState.DISCONNECTED) DisconnectedOverlay { nx.sessions.reconnect(session) }
     }
-    if (toolsOpen) GuacToolSheet(viewport, onCloseTools) {
+    if (toolsOpen) GuacToolSheet(viewport, session.isViewOnly, onCloseTools) {
         if (imeFocused) focusManager.clearFocus() else { focus.requestFocus(); ime?.show() }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun GuacToolSheet(viewport: GuacamoleViewport, onDismiss: () -> Unit, onToggleKeyboard: () -> Unit) {
+private fun GuacToolSheet(viewport: GuacamoleViewport, viewOnly: Boolean, onDismiss: () -> Unit, onToggleKeyboard: () -> Unit) {
     val kb = viewport.state.keyboard
     val ctrl by kb.ctrl.watch()
     val alt by kb.alt.watch()
     val shift by kb.shift.watch()
     val direct = viewport.mouseMode == GuacMouseMode.DIRECT
+    if (viewOnly) return ModalBottomSheet(onDismiss) {
+        Row(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
+            ToolAction(Icons.Outlined.FitScreen, "Fit to Screen") { onDismiss(); viewport.fit() }
+        }
+    }
     ModalBottomSheet(onDismiss) {
         Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

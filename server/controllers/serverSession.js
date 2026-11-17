@@ -13,6 +13,7 @@ const Organization = require('../models/Organization');
 const logger = require("../utils/logger");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const { getEffectiveEntryConfig } = require("../utils/folderInheritance");
+const { isWatchableAutomatedSession } = require("../lib/agentTools/context");
 const reconnectOperations = new Map();
 const closedSessions = new Map();
 const CLOSED_SESSION_TTL = 10 * 60 * 1000;
@@ -90,6 +91,9 @@ const createSession = async ({
     sessionId = null,
     broadcast = true,
     connectionGeneration = 0,
+    automated = false,
+    origin = null,
+    apiKeyId = null,
 }) => {
     const entry = await Entry.findByPk(entryId);
     if (!entry) {
@@ -131,7 +135,11 @@ const createSession = async ({
         action: getAuditAction(effectiveEntry, type, scriptId),
         resource: scriptId ? RESOURCE_TYPES.SCRIPT : RESOURCE_TYPES.ENTRY,
         resourceId: scriptId || entry.id,
-        details: { connectionReason, ...(scriptId && { serverId: entry.id }) },
+        details: {
+            connectionReason,
+            ...(scriptId && { serverId: entry.id }),
+            ...(automated && { automated: true, origin: origin || "automation", apiKeyId: apiKeyId || undefined }),
+        },
         ipAddress,
         userAgent,
     });
@@ -162,6 +170,10 @@ const createSession = async ({
         organizationId: entry.organizationId,
         sessionId: sessionId || undefined,
         connectionGeneration,
+        automated,
+        origin,
+        apiKeyId,
+        watchable: !automated || isWatchableAutomatedSession(entry, configuration),
     });
 
     if (broadcast) {
@@ -249,7 +261,9 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
     if (sessionSync === 'same_tab') filterTabId = tabId;
     else if (sessionSync === 'same_browser') filterBrowserId = browserId;
 
-    const sessions = SessionManager.getAll(accountId, filterTabId, filterBrowserId);
+    const showAgentSessions = account.preferences?.sessions?.showAgentSessions !== false;
+    const sessions = SessionManager.getAll(accountId, filterTabId, filterBrowserId)
+        .filter(session => session.watchable && (showAgentSessions || !session.automated));
     if (!sessions.length) return [];
 
     const entryIds = [...new Set(sessions.map(s => s.entryId))];
@@ -282,6 +296,8 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
             shareWritable: session.shareWritable || false,
             sftpPath: session.sftpPath || null,
             participants: SessionManager.getParticipants(session.sessionId),
+            automated: session.automated,
+            origin: session.origin || null,
         };
     });
 };
@@ -361,6 +377,8 @@ const getSession = async (accountId, sessionId) => {
         scriptId: session.configuration.scriptId || undefined,
         shareId: session.shareId || null,
         shareWritable: session.shareWritable || false,
+        automated: session.automated,
+        origin: session.origin || null,
     };
 };
 
@@ -431,6 +449,7 @@ const duplicateSession = async (accountId, sessionId, tabId = null, browserId = 
 const pasteIdentityPassword = async (accountId, sessionId, ipAddress = null, userAgent = null, requestedIdentityId = null, submit = false) => {
     const { session, error } = validateSessionOwnership(accountId, sessionId);
     if (error) return error;
+    if (session.automated) return { code: 403, message: 'Automated sessions are view-only' };
 
     let identityId = session.configuration?.identityId;
     if (requestedIdentityId && requestedIdentityId !== identityId) {

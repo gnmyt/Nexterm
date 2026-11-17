@@ -15,7 +15,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import kotlin.random.Random
 
 internal class AIAssistantChannel(
     private val api: ApiClient,
@@ -26,12 +28,13 @@ internal class AIAssistantChannel(
     private var job: Job? = null
     private var outgoing = Channel<String>(Channel.UNLIMITED)
     private var closedByUs = false
+    private val conversationId = "m-" + (1..16).joinToString("") { Random.nextInt(36).toString(36) }
 
     fun connect(onEvent: (JsonObject) -> Unit, onClosed: (Int?, String?) -> Unit) {
         job?.cancel()
         outgoing.close()
         val out = Channel<String>(Channel.UNLIMITED).also { outgoing = it }
-        val url = api.webSocketUrl("/ws/ai", mapOf("sessionToken" to token, "sessionId" to sessionId))
+        val url = api.webSocketUrl("/ws/ai", mapOf("sessionToken" to token, "sessionId" to sessionId, "conversationId" to conversationId))
         job = scope.launch {
             var code: Int? = null
             var reason: String? = null
@@ -67,6 +70,7 @@ internal class AIAssistantChannel(
 
     fun sendPrompt(content: String) = send(jsonOf("type" to "prompt", "content" to content))
     fun confirm(callId: String, allow: Boolean) = send(jsonOf("type" to "confirm", "callId" to callId, "allow" to allow))
+    fun answer(callId: String, answer: JsonElement) = send(jsonOf("type" to "answer", "callId" to callId, "answer" to answer))
     fun abort() = send(jsonOf("type" to "abort"))
 
     fun dispose() {

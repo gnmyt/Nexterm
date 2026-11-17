@@ -7,7 +7,6 @@ import { Terminal as Xterm } from "@xterm/xterm";
 import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { FitAddon } from "@xterm/addon-fit";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
-import AIAssistant from "./components/AIAssistant";
 import CommandSuggestion from "./components/CommandSuggestion";
 import SnippetsMenu from "./components/SnippetsMenu";
 import PasswordFillHint from "./components/PasswordFillHint";
@@ -23,6 +22,7 @@ import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 import { postRequest } from "@/common/utils/RequestUtil.js";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
+import "./styles/automated-session.sass";
 
 const PASSWORD_PROMPT_REGEX = /^[^$#%>]*(password|passphrase)[^:\r\n]*:\s?$/i;
 const ANSI_ESCAPE_REGEX = /\x1b(?:\[[0-9;?]*[a-zA-Z]|\][^\x07\x1b]*(?:\x07|\x1b\\)?|[()][0-9A-B]|[a-zA-Z=><])/g;
@@ -61,6 +61,7 @@ const XtermRenderer = ({ session, disconnectFromServer, reconnectSession, reconn
     }, [effectiveFontSize]);
     const aiContext = useContext(AIContext);
     const isAIAvailable = aiContext?.isAIAvailable || (() => false);
+    const isAutomated = session.automated;
     const aiAvailableRef = useRef(false);
     useEffect(() => {
         aiAvailableRef.current = isAIAvailable();
@@ -76,7 +77,6 @@ const XtermRenderer = ({ session, disconnectFromServer, reconnectSession, reconn
     }, [getParsedKeybind]);
 
     const { t } = useTranslation();
-    const [showAIAssistant, setShowAIAssistant] = useState(false);
     const [suggestion, setSuggestion] = useState(null);
     const [suggestionAnchor, setSuggestionAnchor] = useState(null);
     const suggestionRef = useRef(null);
@@ -210,11 +210,9 @@ const XtermRenderer = ({ session, disconnectFromServer, reconnectSession, reconn
         }
     }, [session.id, updateProgress]);
 
-    const toggleAIAssistant = () => setShowAIAssistant((visible) => !visible);
-
     const handleOpenAIAssistant = () => {
         contextMenu.close();
-        setShowAIAssistant(true);
+        aiContext?.openAssistant?.();
     };
 
     const updateSuggestion = useCallback((value) => {
@@ -695,6 +693,7 @@ const XtermRenderer = ({ session, disconnectFromServer, reconnectSession, reconn
 
 
         term.onData((data) => {
+            if (isAutomated) return;
             if (passwordPromptRef.current) hidePasswordHint();
             ws.send(data);
 
@@ -793,12 +792,7 @@ const XtermRenderer = ({ session, disconnectFromServer, reconnectSession, reconn
                 }
 
                 const aiKeybind = getParsedKeybind("ai-menu");
-                if (aiKeybind && aiAvailableRef.current && matchesKeybind(event, aiKeybind)) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    toggleAIAssistant();
-                    return false;
-                }
+                if (aiKeybind && aiAvailableRef.current && matchesKeybind(event, aiKeybind)) return false;
 
                 const aiCommandKeybind = getParsedKeybind("ai-command");
                 if (aiCommandKeybind && aiAvailableRef.current && matchesKeybind(event, aiCommandKeybind)) {
@@ -907,9 +901,7 @@ const XtermRenderer = ({ session, disconnectFromServer, reconnectSession, reconn
                     fontSize={effectiveFontSize}
                 />
             )}
-            {!isShared && isAIAvailable() && showAIAssistant && (
-                <AIAssistant session={session} onClose={() => setShowAIAssistant(false)} />
-            )}
+            {isAutomated && <div className="automated-session-frame" aria-hidden="true" />}
             {!isShared && isAIAvailable() && suggestion && suggestionAnchor && (
                 <CommandSuggestion
                     anchor={suggestionAnchor}

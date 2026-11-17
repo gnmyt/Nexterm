@@ -310,6 +310,15 @@
         background-color: colors.$gray
         border-bottom: 2px solid colors.$primary
 
+    .server-tab-automated
+      border-bottom-color: color-mix(in srgb, colors.$automation 45%, transparent)
+
+      &:hover
+        border-bottom-color: color-mix(in srgb, colors.$automation 70%, transparent)
+
+      &.server-tab-active, &.server-tab-active:hover
+        border-bottom-color: colors.$automation
+
 .title-bar .server-tabs
   flex: 1
   min-width: 0

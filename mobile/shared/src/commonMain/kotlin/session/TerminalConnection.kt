@@ -20,6 +20,7 @@ class TerminalConnection internal constructor(
     scope: CoroutineScope,
     attachesToExistingShell: Boolean,
     settings: TerminalSettings,
+    val viewOnly: Boolean = false,
 ) {
     private val _receivedData = MutableStateFlow(false)
     private val _error = MutableStateFlow<String?>(null)
@@ -66,12 +67,13 @@ class TerminalConnection internal constructor(
     }
 
     fun send(data: String) {
+        if (viewOnly) return
         typed = true
         sendRaw(data)
     }
 
     private fun respond(data: String) {
-        if (typed) sendRaw(data)
+        if (typed && !viewOnly) sendRaw(data)
     }
 
     private fun resize(cols: Int, rows: Int) {

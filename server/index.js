@@ -100,6 +100,7 @@ app.use("/api/engines", authenticate, requirePermission(Permission.SETTINGS_ENGI
 app.use("/api/scripts", authenticate, require("./routes/scripts"));
 app.use("/api/themes", authenticate, require("./routes/theme"));
 app.use("/api/share", require("./routes/share"));
+app.use("/api/mcp", authenticate, require("./routes/mcp"));
 
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../dist")));

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { getRequest, patchRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 
@@ -123,10 +123,13 @@ export const KeymapProvider = ({ children }) => {
         }
     };
 
-    const getKeymap = (action) => keymaps.find(k => k.action === action);
-    const getKeybind = (action) => getKeymap(action)?.enabled ? getKeymap(action).key : null;
-    const getParsedKeybind = (action) => parsedKeybinds[action] || null;
-    const formatKey = (key) => {
+    const getKeymap = useCallback((action) => keymaps.find(k => k.action === action), [keymaps]);
+    const getKeybind = useCallback((action) => {
+        const keymap = getKeymap(action);
+        return keymap?.enabled ? keymap.key : null;
+    }, [getKeymap]);
+    const getParsedKeybind = useCallback((action) => parsedKeybinds[action] || null, [parsedKeybinds]);
+    const formatKey = useCallback((key) => {
         if (!key) return "";
 
         const mac = isMac();
@@ -141,7 +144,7 @@ export const KeymapProvider = ({ children }) => {
                 return k.toUpperCase();
             })
             .join(" + ");
-    };
+    }, []);
 
 
 

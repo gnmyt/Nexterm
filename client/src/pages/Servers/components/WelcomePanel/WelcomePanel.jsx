@@ -2,9 +2,13 @@ import "./styles.sass";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
+import { QuickActionContext } from "@/common/contexts/QuickActionContext.jsx";
+import { useKeymaps } from "@/common/contexts/KeymapContext.jsx";
+import { useAI } from "@/common/contexts/AIContext.jsx";
+import Tooltip from "@/common/components/Tooltip";
 import Icon from "@mdi/react";
 import EmptyState from "@/common/components/EmptyState";
-import { mdiHistory, mdiPower, mdiPlay, mdiServerNetwork, mdiConnection, mdiFolderOpen, mdiCursorDefaultClick, mdiDownload, mdiLinkVariant, mdiWeb } from "@mdi/js";
+import { mdiHistory, mdiPower, mdiPlay, mdiServerNetwork, mdiConnection, mdiFolderOpen, mdiCursorDefaultClick, mdiDownload, mdiLinkVariant, mdiWeb, mdiMagnify, mdiRobotHappyOutline } from "@mdi/js";
 import { getRequest } from "@/common/utils/RequestUtil";
 import { useTranslation } from "react-i18next";
 import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
@@ -40,6 +44,12 @@ export const WelcomePanel = ({
     const { user } = useContext(UserContext);
     const { getServerById } = useContext(ServerContext);
     const { t } = useTranslation();
+    const { open: openQuickAction } = useContext(QuickActionContext);
+    const { getKeybind, formatKey } = useKeymaps();
+    const quickActionKey = formatKey(getKeybind("quick-action"));
+    const { available: aiAvailable, openAssistant } = useAI();
+    const aiKey = formatKey(getKeybind("ai-menu"));
+    const aiLabel = aiKey ? `${t("servers.aiAssistant.open")} · ${aiKey}` : t("servers.aiAssistant.open");
     const [recentConnections, setRecentConnections] = useState([]);
     const [loading, setLoading] = useState(true);
     const [contextItem, setContextItem] = useState(null);
@@ -114,6 +124,21 @@ export const WelcomePanel = ({
             </div>
 
             <div className="welcome-right">
+                <div className="welcome-search">
+                    <button type="button" className="welcome-search-trigger" onClick={openQuickAction}>
+                        <Icon path={mdiMagnify} className="welcome-search-icon" />
+                        <span className="welcome-search-placeholder">{t("common.quickAction.placeholder")}</span>
+                        {quickActionKey && <kbd>{quickActionKey}</kbd>}
+                    </button>
+                    {aiAvailable && (
+                        <Tooltip text={aiLabel}>
+                            <button type="button" className="welcome-search-ai" onClick={() => openAssistant()}
+                                    aria-label={t("servers.aiAssistant.open")}>
+                                <Icon path={mdiRobotHappyOutline} />
+                            </button>
+                        </Tooltip>
+                    )}
+                </div>
                 {loading ? (
                     <div className="loading-state">
                         <div className="loading-spinner" />

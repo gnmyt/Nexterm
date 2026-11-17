@@ -97,6 +97,10 @@ private let symbols: [String: String] = [
     "trash-can-outline": "trash", "lock-outline": "lock", "magnify": "magnifyingglass",
     "devices": "laptopcomputer.and.iphone", "application": "app.badge", "cellphone-link": "iphone.radiowaves.left.and.right",
     "cellphone": "iphone", "tablet": "ipad", "laptop": "laptopcomputer",
+    "format-list-bulleted": "list.bullet", "lan-connect": "link", "lan-disconnect": "link.badge.minus",
+    "keyboard-outline": "keyboard", "text-box-outline": "doc.plaintext", "monitor-screenshot": "camera.viewfinder",
+    "cursor-default-click": "cursorarrow.click", "mouse": "computermouse", "clipboard-text-outline": "doc.on.clipboard",
+    "help-circle-outline": "questionmark.circle",
 ]
 
 func sfSymbol(_ key: String) -> String { symbols[key] ?? "server.rack" }
@@ -114,6 +118,19 @@ struct Row: View {
         } icon: {
             Image(systemName: icon).foregroundStyle(color)
         }
+    }
+}
+
+struct ViewOnlyBanner: View {
+    let text: String
+
+    var body: some View {
+        Label(text, systemImage: "eye")
+            .font(.footnote)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(.regularMaterial)
     }
 }
 

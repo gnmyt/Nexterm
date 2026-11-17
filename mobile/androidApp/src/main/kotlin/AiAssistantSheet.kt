@@ -6,7 +6,10 @@ import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import android.graphics.BitmapFactory
+import android.util.Base64
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,11 +25,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.mikepenz.markdown.m3.Markdown
+import dev.gnm.nexterm.session.AIChatSession
 import dev.gnm.nexterm.session.ChatMessage
 import dev.gnm.nexterm.session.ChatRole
 import dev.gnm.nexterm.session.ToolStatus
@@ -58,7 +63,7 @@ fun AiAssistantSheet(session: AppSession, onDismiss: () -> Unit) {
                 Text("Ask the assistant to inspect or change this server. It can run commands and read or edit files directly over the connection.",
                     Modifier.padding(top = 16.dp), color = cs.outline, textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium)
             } else LazyColumn(Modifier.fillMaxSize(), list, PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(state.messages, key = { it.id }) { Message(it) { id, allow -> chat.confirm(id, allow) } }
+                items(state.messages, key = { it.id }) { Message(it, chat) }
                 if (state.isRunning) item {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp)
@@ -86,7 +91,7 @@ fun AiAssistantSheet(session: AppSession, onDismiss: () -> Unit) {
 }
 
 @Composable
-private fun Message(m: ChatMessage, onConfirm: (String, Boolean) -> Unit) {
+private fun Message(m: ChatMessage, chat: AIChatSession) {
     val cs = MaterialTheme.colorScheme
     when (m.role) {
         ChatRole.USER -> Box(Modifier.fillMaxWidth().padding(start = 40.dp), contentAlignment = Alignment.CenterEnd) {
@@ -96,12 +101,12 @@ private fun Message(m: ChatMessage, onConfirm: (String, Boolean) -> Unit) {
         }
         ChatRole.ASSISTANT -> Box(Modifier.padding(end = 24.dp)) { Markdown(m.text) }
         ChatRole.SYSTEM -> ErrorBanner(m.text)
-        ChatRole.TOOL -> ToolCard(m, onConfirm)
+        ChatRole.TOOL -> ToolCard(m, chat::confirm) { chat.QuestionBody(m) }
     }
 }
 
 @Composable
-private fun ToolCard(m: ChatMessage, onConfirm: (String, Boolean) -> Unit) {
+private fun ToolCard(m: ChatMessage, onConfirm: (String, Boolean) -> Unit, question: @Composable () -> Unit) {
     val cs = MaterialTheme.colorScheme
     val output = @Composable { text: String, isError: Boolean ->
         SelectionContainer {
@@ -125,6 +130,7 @@ private fun ToolCard(m: ChatMessage, onConfirm: (String, Boolean) -> Unit) {
                     else -> Unit
                 }
             }
+            if (m.isQuestion) question()
             if (m.summary.isNotEmpty()) Text(m.summary, Modifier.padding(start = 12.dp, end = 12.dp, bottom = 10.dp), style = MonoStyle, color = cs.onSurfaceVariant)
             if (m.isAwaitingConfirmation) Column(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)) {
                 Text("Allow this action?", style = MaterialTheme.typography.bodyMedium)
@@ -142,6 +148,46 @@ private fun ToolCard(m: ChatMessage, onConfirm: (String, Boolean) -> Unit) {
             if (m.directoryEntries.isNotEmpty()) FlowRow(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 m.directoryEntries.forEach { Text(it.displayName, style = MonoStyle, color = if (it.isFolder) cs.primary else cs.onSurfaceVariant) }
             }
+            m.images.forEach { img ->
+                val bitmap = remember(img.data) { runCatching { Base64.decode(img.data, Base64.DEFAULT).let { BitmapFactory.decodeByteArray(it, 0, it.size) } }.getOrNull() }
+                bitmap?.let { Image(it.asImageBitmap(), null, Modifier.padding(horizontal = 12.dp).padding(bottom = 10.dp).fillMaxWidth()) }
+            }
         }
+    }
+}
+
+@Composable
+private fun AIChatSession.QuestionBody(m: ChatMessage) {
+    val cs = MaterialTheme.colorScheme
+    var text by remember(m.callId) { mutableStateOf("") }
+    var selected by remember(m.callId) { mutableStateOf(emptyList<String>()) }
+    val callId = m.callId ?: return
+    fun submit() {
+        val typed = text.trim()
+        if (m.isMultiSelect) answer(callId, if (typed.isEmpty()) selected else selected + typed) else if (typed.isNotEmpty()) answer(callId, typed)
+    }
+    Column(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 10.dp)) {
+        m.question?.let { Markdown(it) }
+        if (m.isAwaitingAnswer) {
+            if (m.questionOptions.isNotEmpty()) FlowRow(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                m.questionOptions.forEach { o ->
+                    val isSelected = o.label in selected
+                    FilterChip(isSelected, {
+                        if (!m.isMultiSelect) answer(callId, o.label)
+                        else selected = if (isSelected) selected - o.label else selected + o.label
+                    }, { Text(o.label) }, leadingIcon = if (isSelected) ({ Icon(Icons.Outlined.Check, null, Modifier.size(16.dp)) }) else null)
+                }
+            }
+            if (m.allowsFreeText || m.isMultiSelect) Row(Modifier.padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                if (m.allowsFreeText) OutlinedTextField(
+                    text, { text = it }, Modifier.weight(1f), maxLines = 4,
+                    placeholder = { Text(if (m.questionOptions.isEmpty()) "Type your answer..." else "Something else...") },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send), keyboardActions = KeyboardActions { submit() },
+                ) else Spacer(Modifier.weight(1f))
+                Spacer(Modifier.width(8.dp))
+                FilledIconButton(::submit, enabled = text.isNotBlank() || (m.isMultiSelect && selected.isNotEmpty())) { Icon(Icons.AutoMirrored.Outlined.Send, "Send answer") }
+            }
+        }
+        m.answer?.let { Text(it, Modifier.padding(top = 8.dp), color = cs.primary, style = MaterialTheme.typography.bodyMedium) }
     }
 }

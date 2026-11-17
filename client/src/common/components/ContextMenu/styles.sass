@@ -33,6 +33,12 @@
     transform: scale(0.95) translateY(-8px)
     pointer-events: none
 
+  &.above
+    transform-origin: bottom left
+
+    &.closed
+      transform: scale(0.95) translateY(8px)
+
   .context-menu-item
     color: colors.$white
     padding: 0.625rem 0.75rem
@@ -77,6 +83,29 @@
       white-space: nowrap
       overflow: hidden
       text-overflow: ellipsis
+
+    .menu-text
+      flex: 1
+      min-width: 0
+      display: flex
+      flex-direction: column
+      gap: 0.1rem
+
+      .menu-label
+        font-weight: 600
+        line-height: 1.25
+
+    .menu-description
+      color: colors.$subtext
+      font-size: 0.72rem
+      font-weight: 500
+      line-height: 1.3
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
+
+    &.has-description
+      padding: 0.5rem 0.75rem 0.5rem 0.625rem
 
     .menu-check
       width: 1rem

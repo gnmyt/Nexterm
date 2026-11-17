@@ -18,6 +18,7 @@ import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { startRegistration } from "@simplewebauthn/browser";
 import { useTranslation } from "react-i18next";
 import SelectBox from "@/common/components/SelectBox";
+import ToggleSwitch from "@/common/components/ToggleSwitch";
 import { languages } from "@/i18n.js";
 import i18n from "@/i18n.js";
 import Icon from "@mdi/react";
@@ -101,6 +102,14 @@ export const Account = () => {
             .then(() => {
                 login();
             })
+            .catch(err => console.error(err));
+    };
+
+    const showAgentSessions = user?.preferences?.sessions?.showAgentSessions !== false;
+
+    const changeShowAgentSessions = (enabled) => {
+        patchRequest("accounts/me/preferences", { sessions: { showAgentSessions: enabled } })
+            .then(() => login())
             .catch(err => console.error(err));
     };
 
@@ -369,6 +378,10 @@ export const Account = () => {
                         {sessionSync === "same_tab" && t("settings.account.sessionSyncSameTabDesc")}
                     </p>
                     <SelectBox options={sessionSyncOptions} selected={sessionSync} setSelected={changeSessionSync} />
+                </div>
+                <div className="section-inner">
+                    <p style={{ maxWidth: "25rem" }}>{t("settings.account.showAgentSessionsDesc")}</p>
+                    <ToggleSwitch id="show-agent-sessions" checked={showAgentSessions} onChange={changeShowAgentSessions} />
                 </div>
             </div>
 

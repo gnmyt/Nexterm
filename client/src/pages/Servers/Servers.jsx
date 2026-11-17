@@ -148,6 +148,8 @@ export const Servers = () => {
                 shareId: session.shareId || null,
                 shareWritable: session.shareWritable || false,
                 participants: session.participants || [],
+                automated: session.automated === true,
+                origin: session.origin || null,
             };
         }).filter(Boolean);
 
