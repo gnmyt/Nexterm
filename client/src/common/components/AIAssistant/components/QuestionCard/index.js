@@ -1,0 +1,1 @@
+export { QuestionCard as default } from "./QuestionCard.jsx";
