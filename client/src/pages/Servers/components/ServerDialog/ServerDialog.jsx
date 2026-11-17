@@ -96,7 +96,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                     const result = await putRequest("identities", buildIdentityPayload(identity));
                     if (result.id) allIdentityIds.add(result.id);
                 } catch (error) {
-                    sendToast("Error", error.message || t("servers.messages.createIdentityFailed"));
+                    sendToast("Error", t(error.message) || t("servers.messages.createIdentityFailed"));
                     console.error(error);
                     return null;
                 }
@@ -107,7 +107,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                     await patchRequest("identities/" + identityId, buildIdentityPayload(identity));
                     allIdentityIds.add(parseInt(identityId));
                 } catch (error) {
-                    sendToast("Error", error.message || t("servers.messages.updateIdentityFailed"));
+                    sendToast("Error", t(error.message) || t("servers.messages.updateIdentityFailed"));
                     console.error(error);
                     return null;
                 }
