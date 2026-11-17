@@ -1417,7 +1417,7 @@
         "success": "Synchronisiert",
         "error": "Fehler",
         "pending": "Ausstehend",
-        "syncing": "Syncing",
+        "syncing": "Synchronisiere",
         "disabled": "Deaktiviert"
       },
       "dialog": {
@@ -1606,7 +1606,7 @@
       "inheritsAllow": "Vererbung: Erlaubt",
       "inheritsDeny": "Vererbung: Verweigert"
     },
-    "search": "Search settings"
+    "search": "Durchsuche Einstellungen"
   },
   "tunnel": {
     "title": "Port-Weiterleitung",
@@ -1664,7 +1664,7 @@
       "createFolder": "Ordner erstellen",
       "deleteFolder": "Ordner löschen",
       "renameFolder": "Ordner umbenennen",
-      "folderSettings": "Folder Settings",
+      "folderSettings": "Ordner Einstellungen",
       "new": "Neu",
       "sshServer": "SSH Server",
       "telnetServer": "Telnet Server",
@@ -1722,16 +1722,16 @@
         "duplicate": "Sitzung duplizieren",
         "openNotes": "Notizen anzeigen",
         "hibernateSession": "Ruhezustand aktivieren",
-        "reconnect": "Reconnect",
+        "reconnect": "Erneut verbinden",
         "closeSession": "Verbindung trennen",
         "splitRight": "Nach rechts aufteilen",
         "splitDown": "Nach unten aufteilen",
         "sendShortcut": "Tastenkürzel senden…",
         "zoom": "Zoom ({{zoom}}%)",
         "zoomReset": "Zoom zurücksetzen",
-        "displayScale": "Display Scale ({{scale}}%)",
-        "displayScaleAuto": "Automatic ({{scale}}%)",
-        "displayScaleReset": "Use Default"
+        "displayScale": "Anzeigeskalierung ({{scale}}%)",
+        "displayScaleAuto": "Automatisch ({{scale}}%)",
+        "displayScaleReset": "Standardwert benutzen"
       },
       "enableSplitView": "Geteilte Ansicht aktivieren",
       "disableSplitView": "Geteilte Ansicht deaktivieren",
@@ -1745,10 +1745,10 @@
       "fillRequiredFields": "Bitte fülle alle erforderlichen Felder aus",
       "serverCreated": "Server erfolgreich erstellt",
       "serverUpdated": "Server erfolgreich aktualisiert",
-      "folderUpdated": "Folder updated successfully",
+      "folderUpdated": "Ordner erfolgreich aktualisiert",
       "createFailed": "Server kann nicht erstellt werden",
       "updateFailed": "Server kann nicht aktualisiert werden",
-      "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination."
+      "identitiesRemovedOnMove": "Einige Identitäten wurden entfernt, da sie im Ziel nicht verfügbar sind."
     },
     "dialog": {
       "addServer": "Server hinzufügen",
@@ -1811,8 +1811,8 @@
           "description": "Configure color depth, resize behavior and scaling for the remote display",
           "colorDepth": "Farbtiefe",
           "resizeMethod": "Methode zur Größenänderung",
-          "displayScale": "Display Scale",
-          "displayScaleAuto": "Automatic (match this device)",
+          "displayScale": "Anzeigeskalierung",
+          "displayScaleAuto": "Automatisch (an das Gerät anpassen)",
           "displayScaleAccount": "Account default"
         },
         "performance": {
@@ -1854,29 +1854,29 @@
         "both": "Schlüssel+Pass",
         "sshPrivateKey": "Privater SSH-Schlüssel",
         "passphrase": "Passphrase (optional)",
-        "add": "Add identity",
-        "linkGlobal": "Link global identity · {{count}}",
-        "empty": "No identities yet.",
+        "add": "Identität hinzufügen",
+        "linkGlobal": "Globale Identität verlinken · {{count}}",
+        "empty": "Keine Identitäten vorhanden.",
         "removeIdentity": "Identität entfernen",
         "unlinkIdentity": "Identität entkoppeln",
         "moveToOrg": "Zur Organisation wechseln",
         "noUsername": "Kein Nutzername",
-        "globalToggle": "Use on other servers",
-        "globalInUse": "This identity is used by {{count}} servers. Unlink it from the others first.",
-        "shareToggle": "Share with organization",
-        "inheritedHint": "Inherited from the folder settings.",
-        "onlyMe": "Only me",
-        "onlyMeHint": "Only you can see and use this identity."
+        "globalToggle": "Bei anderen Servern benutzen",
+        "globalInUse": "Diese Identität wird von {{count}} Servern verwendet. Entferne sie von den anderen Servern zuerst.",
+        "shareToggle": "Mit Organisation teilen",
+        "inheritedHint": "Von den Ordnereinstellungen vererbt.",
+        "onlyMe": "Nur mir",
+        "onlyMeHint": "Nur du kannst diese Identität sehen und verwenden."
       },
       "sections": {
-        "general": "General",
-        "connection": "Connection",
-        "identities": "Identities",
-        "options": "Options",
-        "credentials": "Credentials"
+        "general": "Allgemein",
+        "connection": "Verbindung",
+        "identities": "Identitäten",
+        "options": "Optionen",
+        "credentials": "Zugangsdaten"
       },
-      "useInherited": "Use inherited value",
-      "reset": "Reset"
+      "useInherited": "Vererbten Wert verwenden",
+      "reset": "Zurücksetzen"
     },
     "proxmoxDialog": {
       "title": {
@@ -1906,7 +1906,7 @@
         "createFailed": "Die Proxmox-Integration konnte nicht erstellt werden",
         "updateFailed": "Aktualisierung der Proxmox-Integration fehlgeschlagen"
       },
-      "credentialsDescription": "Proxmox user with API access, e.g. root@pam or a dedicated API user."
+      "credentialsDescription": "Proxmox Benutzer mit API-Zugriff, z. B. root@pam oder ein dedizierter API-Benutzer."
     },
     "connectionReasonDialog": {
       "title": "Grund für Verbindungsaufbau erforderlich",
@@ -2061,16 +2061,16 @@
         "search": "Durchsuche Dateien",
         "closeSearch": "Suchfeld schließen",
         "refresh": "Aktualisieren",
-        "back": "Back",
-        "forward": "Forward",
-        "up": "Parent directory",
-        "home": "Home directory",
-        "switchToCompact": "Switch to compact view"
+        "back": "Zurück",
+        "forward": "Vorwärts",
+        "up": "Übergeordnetes Verzeichnis",
+        "home": "Home-Verzeichnis",
+        "switchToCompact": "Zu kompakter Ansicht wechseln"
       },
       "item": {
         "link": "Link",
-        "expand": "Expand folder",
-        "collapse": "Collapse folder"
+        "expand": "Ordner ausklappen",
+        "collapse": "Ordner einklappen"
       },
       "search": {
         "placeholder": "Dateien in diesem Ordner filtern...",
@@ -2092,41 +2092,41 @@
       },
       "transfers": {
         "title": "Transfers",
-        "activeCount": "{{count}} active",
-        "allDone": "All done",
+        "activeCount": "{{count}} aktiv",
+        "allDone": "Alles erledigt",
         "clearFinished": "Clear finished",
-        "queued": "Queued",
-        "cancelling": "Cancelling...",
-        "completed": "Completed",
-        "savedTo": "Saved to {{path}}",
-        "cancelled": "Cancelled",
-        "failed": "Failed: {{message}}",
-        "dismiss": "Dismiss"
+        "queued": "In Warteschlange",
+        "cancelling": "Abbrechen...",
+        "completed": "Abgeschlossen",
+        "savedTo": "Gespeichert unter {{path}}",
+        "cancelled": "Abgebrochen",
+        "failed": "Fehlgeschlagen: {{message}}",
+        "dismiss": "Schließen"
       },
       "status": {
-        "folders_one": "{{count}} folder",
-        "folders_other": "{{count}} folders",
-        "files_one": "{{count}} file",
-        "files_other": "{{count}} files",
-        "hidden_one": "{{count}} hidden",
-        "hidden_other": "{{count}} hidden",
-        "selected": "{{count}} selected",
-        "showHidden": "Show hidden files",
-        "hideHidden": "Hide hidden files"
+        "folders_one": "{{count}} Ordner",
+        "folders_other": "{{count}} Ordner",
+        "files_one": "{{count}} Datei",
+        "files_other": "{{count}} Dateien",
+        "hidden_one": "{{count}} ausgeblendet",
+        "hidden_other": "{{count}} ausgeblendet",
+        "selected": "{{count}} ausgewählt",
+        "showHidden": "Ausgeblendete Dateien anzeigen ",
+        "hideHidden": "Ausgeblendete Dateien verbergen"
       },
       "conflict": {
-        "title_one": "Item already exists",
-        "title_other": "{{count}} items already exist",
-        "upload_one": "A file with this name already exists in the destination. What would you like to do?",
-        "upload_other": "These files already exist in the destination. What would you like to do with them?",
-        "move_one": "An item with this name already exists in the destination. Moving will replace it.",
-        "move_other": "These items already exist in the destination. Moving will replace them.",
-        "copy_one": "An item with this name already exists in the destination. Copying will replace it.",
-        "copy_other": "These items already exist in the destination. Copying will replace them.",
-        "more": "+ {{count}} more",
-        "skip": "Skip",
-        "rename": "Keep both",
-        "overwrite": "Overwrite"
+        "title_one": "Element bereits vorhanden",
+        "title_other": "{{count}} Elemente bereits vorhanden",
+        "upload_one": "Eine Datei mit diesem Namen existiert bereits im Zielordner. Was möchtest du tun?",
+        "upload_other": "Diese Dateien existieren bereits im Zielordner. Was willst du mit diesem tun?",
+        "move_one": "Ein Element mit diesem Namen existiert bereits im Zielordner. Verschieben wird es ersetzen.",
+        "move_other": "Diese Elemente existieren bereits im Zielordner. Verschieben wird sie ersetzen.",
+        "copy_one": "Ein Element mit diesem Namen existiert bereits im Zielordner. Kopieren wird es ersetzen.",
+        "copy_other": "Diese Elemente existieren bereits im Zielordner. Kopieren wird sie ersetzen.",
+        "more": "+ {{count}} weitere",
+        "skip": "Überspringen",
+        "rename": "Beide behalten",
+        "overwrite": "Überschreiben"
       }
     },
     "browser": {
@@ -2148,33 +2148,33 @@
       }
     },
     "automatedSession": {
-      "viewOnlyAi": "The AI assistant is working in this session. You can watch, but not type.",
-      "viewOnlyMcp": "An external agent (MCP) is working in this session. You can watch, but not type."
+      "viewOnlyAi": "Der KI Assistent arbeitet in dieser Sitzung. Du kannst zuschauen, aber nichts tippen.",
+      "viewOnlyMcp": "Ein externer Agent (MCP) arbeitet in dieser Sitzung. Du kannst zuschauen, aber nichts tippen."
     },
     "aiAssistant": {
       "title": "KI-Assistent",
       "open": "KI-Assistent",
-      "empty": "Ask the assistant to inspect or change your servers. It opens its own sessions to the servers you add below, runs commands, edits files and can even operate remote desktops.",
-      "addServer": "Add server",
-      "removeServer": "Remove server",
-      "searchServers": "Search servers...",
-      "noMatches": "No matching servers",
-      "current": "current",
-      "openSessions": "{{count}} open session(s)",
+      "empty": "Bitte den Assistenten deine Server zu überprüfen oder Änderungen vorzunehmen. Er öffnet seine eigenen Sitzungen zu den Servern, die du unten hinzufügst, führt Befehle aus, bearbeitet Dateien und kann sogar Remote-Desktops bedienen.",
+      "addServer": "Server hinzufügen",
+      "removeServer": "Server entfernen",
+      "searchServers": "Durchsuche Server...",
+      "noMatches": "Keine übereinstimmenden Server",
+      "current": "aktuell",
+      "openSessions": "{{count}} aktive Sitzung(en)",
       "approval": {
-        "ask": "Ask before actions",
-        "askDescription": "Commands, input and file changes wait for your approval",
-        "allow": "Allow all",
-        "allowDescription": "Runs tool calls without asking",
-        "readonly": "Read-only",
-        "readonlyDescription": "Only inspects servers; anything that changes them is denied"
+        "ask": "Vor Aktionen fragen",
+        "askDescription": "Befehle, Eingaben und Dateiänderungen warten auf deine Genehmigung",
+        "allow": "Alles genehmigen",
+        "allowDescription": "Führt Tool-Aufrufe ohne Genehmigung aus",
+        "readonly": "Nur-lesen",
+        "readonlyDescription": "Nur Server überprüfen; alle Änderungen werden abgelehnt"
       },
       "placeholder": "Schreib dem Assistenten eine Nachricht...",
       "connecting": "Wird verbunden...",
       "send": "Senden",
-      "copyMessage": "Copy message",
-      "copied": "Copied",
-      "editMessage": "Edit message",
+      "copyMessage": "Nachricht kopieren",
+      "copied": "Kopiert",
+      "editMessage": "Nachricht bearbeiten",
       "stop": "Stopp",
       "connectionError": "Die Verbindung zum Assistenten wurde unterbrochen.",
       "reconnecting": "Verbindung unterbrochen. Wird neu verbunden...",
@@ -2187,65 +2187,65 @@
       "continuePrompt": "Der Assistent hielt nach einer langen Treppenstufe inne. Weiter?",
       "continue": "Weiter",
       "compacted": "Frühere Nachrichten wurden zusammengefasst, um Platz für den Kontext zu schaffen.",
-      "retryPrompt": "The last step failed. Retry from where it stopped?",
-      "retry": "Retry",
-      "questionOther": "Or type another answer...",
-      "questionAnswer": "Type your answer...",
-      "questionSend": "Answer",
-      "questionPickOne": "Pick one or type an answer",
-      "questionPickMany": "Pick any that apply",
-      "exitCode": "exit {{code}}",
-      "truncated": "[truncated]",
+      "retryPrompt": "Der letzte Schritt ist fehlgeschlagen. Erneut versuchen, wo es abgebrochen ist?",
+      "retry": "Erneut versuchen",
+      "questionOther": "Oder gib eine andere Antwort ein...",
+      "questionAnswer": "Tippe deine Antwort...",
+      "questionSend": "Antwort",
+      "questionPickOne": "Wähle eine Antwort oder tippe sie",
+      "questionPickMany": "Wähle alle zutreffenden",
+      "exitCode": "Exit {{code}}",
+      "truncated": "[abgebrochen]",
       "toolSummary": {
-        "recursive": "{{path}} (recursive)",
-        "doubleClick": "{{target}} ×2"
+        "recursive": "{{path}} (rekursiv)",
+        "doubleClick": "{{target}} x2"
       },
       "tools": {
-        "list_entries": "List servers",
-        "get_entry": "Inspect server",
-        "list_folders": "List folders",
-        "list_organizations": "List organizations",
-        "list_identities": "List identities",
-        "list_snippets": "List snippets",
-        "list_scripts": "List scripts",
-        "list_tags": "List tags",
-        "list_users": "List users",
-        "get_permissions": "Check permissions",
-        "get_monitoring": "Read monitoring",
-        "list_sessions": "List sessions",
-        "open_session": "Open session",
-        "get_session": "Inspect session",
-        "close_session": "Close session",
-        "close_all_sessions": "Close all sessions",
-        "terminal_run": "Run command",
-        "terminal_send": "Send input",
-        "terminal_read": "Read terminal",
-        "terminal_resize": "Resize terminal",
-        "run_command": "Run command",
-        "exec_command": "Run command",
-        "file_list": "List directory",
-        "file_stat": "Inspect path",
-        "file_read": "Read file",
-        "file_write": "Write file",
-        "file_edit": "Edit file",
-        "file_mkdir": "Create directory",
-        "file_delete": "Delete",
-        "file_move": "Move",
-        "file_chmod": "Change permissions",
-        "file_search_dirs": "Find directories",
+        "list_entries": "Server auflisten",
+        "get_entry": "Server überprüfen",
+        "list_folders": "Ordner auflisten",
+        "list_organizations": "Organisationen auflisten",
+        "list_identities": "Identitäten auflisten",
+        "list_snippets": "Snippets auflisten",
+        "list_scripts": "Skripte auflisten",
+        "list_tags": "Tags auflisten",
+        "list_users": "Benutzer auflisten",
+        "get_permissions": "Berechtigungen prüfen",
+        "get_monitoring": "Monitoring-Daten lesen",
+        "list_sessions": "Sitzungen auflisten",
+        "open_session": "Sitzung öffnen",
+        "get_session": "Sitzung überprüfen",
+        "close_session": "Sitzung schließen",
+        "close_all_sessions": "Alle Sitzungen schließen",
+        "terminal_run": "Befehl ausführen",
+        "terminal_send": "Eingabe senden",
+        "terminal_read": "Terminal lesen",
+        "terminal_resize": "Terminal-Größe anpassen",
+        "run_command": "Befehl ausführen",
+        "exec_command": "Befehl ausführen",
+        "file_list": "Verzeichnis auflisten",
+        "file_stat": "Pfad überprüfen",
+        "file_read": "Datei lesen",
+        "file_write": "Datei schreiben",
+        "file_edit": "Datei bearbeiten",
+        "file_mkdir": "Verzeichnis anlegen",
+        "file_delete": "Löschen",
+        "file_move": "Verschieben",
+        "file_chmod": "Berechtigungen ändern",
+        "file_search_dirs": "Verzeichnis suchen",
         "desktop_screenshot": "Screenshot",
-        "desktop_info": "Inspect desktop",
-        "desktop_click": "Click",
-        "desktop_mouse_move": "Move mouse",
-        "desktop_drag": "Drag",
-        "desktop_scroll": "Scroll",
-        "desktop_type": "Type text",
-        "desktop_key": "Press keys",
-        "desktop_resize": "Resize desktop",
-        "desktop_clipboard_set": "Set clipboard",
-        "desktop_clipboard_get": "Read clipboard",
-        "batch": "Run several actions",
-        "ask_user": "Question"
+        "desktop_info": "Desktop überprüfen",
+        "desktop_click": "Klick",
+        "desktop_mouse_move": "Maus bewegen",
+        "desktop_drag": "Ziehen",
+        "desktop_scroll": "Scrollen",
+        "desktop_type": "Text eingeben",
+        "desktop_key": "Tasten drücken",
+        "desktop_resize": "Desktop-Größe anpassen",
+        "desktop_clipboard_set": "Zwischenablage festlegen",
+        "desktop_clipboard_get": "Zwischenablage lesen",
+        "batch": "Mehrere Aktionen ausführen",
+        "ask_user": "Frage"
       }
     },
     "commandSuggestion": {
@@ -2303,12 +2303,12 @@
       "unknownUser": "Unbekannter Nutzer"
     },
     "folderSettings": {
-      "name": "Folder name",
-      "nameRequired": "Folder name is required",
-      "loadFailed": "Unable to load folder settings",
-      "protocol": "Defaults for",
-      "protocolHint": "Servers in this folder use what you set below unless they set their own value. Each protocol has its own defaults.",
-      "unset": "Remove from folder"
+      "name": "Ordnername",
+      "nameRequired": "Ein Ordnername ist erforderlich",
+      "loadFailed": "Die Ordnereinstellungen konnten nicht geladen werden",
+      "protocol": "Standard für",
+      "protocolHint": "Die Server in diesem Ordner verwenden die Einstellungen, die du unten festlegst, sofern sie nicht eigene Werte festlegen. Jedes Protokoll hat seine eigenen Standardeinstellungen.",
+      "unset": "Aus Ordner entfernen"
     }
   },
   "support": {
@@ -2324,8 +2324,8 @@
       "description": "Chatte mit der Community und hol dir Hilfe."
     },
     "docs": {
-      "title": "View Documentation",
-      "description": "Read the documentation and learn how to use Nexterm."
+      "title": "Dokumentation anzeigen",
+      "description": "Lies die Dokumentation und lerne, wie man Nexterm benutzt."
     },
     "github": {
       "title": "Auf GitHub ansehen",
@@ -2341,7 +2341,7 @@
     "recentConnections": "Letzte Verbindungen",
     "getStarted": "Erste Schritte",
     "getStartedHint": "Füge einen Server in der Seitenleiste hinzu, um mit der Verwaltung deiner Infrastruktur zu beginnen.",
-    "hibernated": "Hibernated"
+    "hibernated": "Im Ruhezustand"
   },
   "downloadApps": {
     "title": "Apps herunterladen",
@@ -2353,9 +2353,9 @@
       "android": "Android",
       "ios": "iOS"
     },
-    "recommended": "Recommended",
-    "versionUnavailable": "The server version could not be determined, so direct downloads are unavailable. You can still browse the releases on GitHub.",
-    "sourceHint": "Downloads are served from the GitHub releases.",
-    "allReleases": "All releases"
+    "recommended": "Empfohlen",
+    "versionUnavailable": "Die Serverversion konnte nicht ermittelt werden, daher sind direkte Downloads nicht möglich. Du kannst dir die Releases aber trotzdem auf GitHub ansehen.",
+    "sourceHint": "Downloads werden von den GitHub Releases bereitgestellt.",
+    "allReleases": "Alle Releases"
   }
 }
