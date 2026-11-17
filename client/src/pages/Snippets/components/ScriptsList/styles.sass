@@ -152,37 +152,6 @@
     top: 1rem
     right: 1rem
 
-    .action-button
-      width: 2rem
-      height: 2rem
-      border-radius: 0.5rem
-      background-color: transparent
-      border: 1px solid transparent
-      display: flex
-      justify-content: center
-      align-items: center
-      cursor: pointer
-      color: colors.$subtext
-      transition: all 0.1s ease
-
-      svg
-        width: 1rem
-        height: 1rem
-        opacity: 0.9
-      
-      &:hover
-        background-color: colors.$gray
-        border-color: colors.$gray
-        color: colors.$white
-
-        svg
-          opacity: 1
-      
-      &.delete:hover
-        background-color: colors.$error-opacity
-        border-color: colors.$error
-        color: colors.$error
-
 .pagination
   display: flex
   align-items: center
@@ -230,18 +199,3 @@
         padding: 0.35rem 0.625rem
         min-width: unset
 
-.empty-scripts
-  display: flex
-  flex-direction: column
-  align-items: center
-  justify-content: center
-  padding: 3rem
-  color: colors.$subtext
-  text-align: center
-  flex: 1
-  
-  p
-    margin: 0
-    color: colors.$subtext
-    font-size: 0.95rem
-    font-weight: 500

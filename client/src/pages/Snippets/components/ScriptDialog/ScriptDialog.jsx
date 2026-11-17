@@ -1,6 +1,7 @@
 import "./styles.sass";
-import { DialogProvider } from "@/common/components/Dialog";
-import { useState, useEffect, useRef } from "react";
+import { DialogProvider, DialogCancelButton } from "@/common/components/Dialog";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { useUnsavedChanges } from "@/common/hooks/useUnsavedChanges.js";
 import { getRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import Button from "@/common/components/Button";
 import IconInput from "@/common/components/IconInput";
@@ -23,7 +24,8 @@ export const ScriptDialog = ({ open, onClose, editScriptId, selectedOrganization
     const [content, setContent] = useState("");
     const [osFilter, setOsFilter] = useState([]);
     const editorRef = useRef(null);
-    const initialValues = useRef({ name: '', description: '', content: '', osFilter: [] });
+    const draft = useMemo(() => ({ name, description, content, osFilter }), [name, description, content, osFilter]);
+    const { isDirty, markClean } = useUnsavedChanges(draft);
 
     const { sendToast } = useToast();
     const { t } = useTranslation();
@@ -71,12 +73,12 @@ fi
             setDescription(script.description || "");
             setContent(script.content || getDefaultContent());
             setOsFilter(parsedOsFilter);
-            initialValues.current = { 
-                name: script.name || '', 
-                description: script.description || '', 
+            markClean({
+                name: script.name || "",
+                description: script.description || "",
                 content: script.content || getDefaultContent(),
-                osFilter: parsedOsFilter
-            };
+                osFilter: parsedOsFilter,
+            });
         } catch (error) {
             console.error("Failed to load script:", error);
             sendToast("Error", t("scripts.messages.errors.loadFailed"));
@@ -146,7 +148,7 @@ fi
         setDescription("");
         setContent(defaultContent);
         setOsFilter([]);
-        initialValues.current = { name: '', description: '', content: defaultContent, osFilter: [] };
+        markClean({ name: "", description: "", content: defaultContent, osFilter: [] });
     };
 
     const handleClose = () => {
@@ -154,20 +156,10 @@ fi
         onClose();
     };
 
-    const arraysEqual = (a, b) => {
-        if (a.length !== b.length) return false;
-        return a.every((val, i) => val === b[i]);
-    };
-
-    const isDirty = name !== initialValues.current.name || 
-                     description !== initialValues.current.description || 
-                     content !== initialValues.current.content ||
-                     !arraysEqual(osFilter, initialValues.current.osFilter);
-
     return (
         <DialogProvider open={open} onClose={handleClose} isDirty={isDirty}>
             <div className="create-script-dialog">
-                <div className="dialog-header">
+                <div className="dialog-header dialog-heading">
                     <h2>
                         <Icon path={mdiScript} />
                         {isEditing ? t("scripts.dialog.title.edit") : t("scripts.dialog.title.create")}
@@ -254,10 +246,8 @@ fi
                 </div>
 
                 <div className="dialog-actions">
-                    <Button
-                        onClick={handleClose}
+                    <DialogCancelButton
                         text={t("scripts.dialog.actions.cancel")}
-                        type="secondary"
                         icon={mdiClose}
                         disabled={creating}
                     />

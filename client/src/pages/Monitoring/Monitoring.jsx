@@ -9,6 +9,7 @@ import PageHeader from "@/common/components/PageHeader";
 import { mdiArrowLeft, mdiChartBoxOutline, mdiMagnify } from "@mdi/js";
 import IconInput from "@/common/components/IconInput";
 import { useTranslation } from "react-i18next";
+import { Page, PageContent } from "@/common/components/Page";
 
 export const Monitoring = () => {
     const { t } = useTranslation();
@@ -78,7 +79,7 @@ export const Monitoring = () => {
         : servers;
 
     return (
-        <div className="monitoring-page">
+        <Page>
             <PageHeader
                 icon={selectedServer ? undefined : mdiChartBoxOutline}
                 title={selectedServer ? selectedServer.name : t("monitoring.page.title")}
@@ -90,13 +91,13 @@ export const Monitoring = () => {
                         value={searchQuery} setValue={setSearchQuery} />
                 )}
             </PageHeader>
-            <div className="monitoring-content">
+            <PageContent flush={!!selectedServer}>
                 {selectedServer ? (
                     <ServerDetails server={selectedServer} activeTab={tab || "overview"} onTabChange={handleTabChange} />
                 ) : (
                     <MonitoringGrid servers={filteredServers} onServerSelect={handleServerSelect} />
                 )}
-            </div>
-        </div>
+            </PageContent>
+        </Page>
     );
 };
