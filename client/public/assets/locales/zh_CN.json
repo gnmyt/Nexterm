@@ -48,9 +48,7 @@
     },
     "confirmDialog": {
       "title": "确定吗？",
-      "defaultText": "此操作无法撤销。",
-      "unsavedChangesTitle": "未保存的更改",
-      "unsavedChangesText": "您有未保存的更改。您确定要关闭吗？"
+      "defaultText": "此操作无法撤销。"
     },
     "loginDialog": {
       "title": "登录",
@@ -63,7 +61,14 @@
       "backToLogin": "返回登录",
       "authenticating": "正在验证…",
       "noAccount": "还没有账号吗？",
-      "haveAccount": "已有账户吗？"
+      "haveAccount": "已有账户吗？",
+      "welcome": "Welcome back",
+      "subtitle": "Sign in to continue to Nexterm.",
+      "registrationSubtitle": "Create your account to get started.",
+      "firstTimeSubtitle": "Create the first administrator account for this instance.",
+      "twoFactorTitle": "Two-factor authentication",
+      "twoFactorDescription": "Enter the code from your authenticator app.",
+      "qrTitle": "Sign in with the app"
     },
     "deviceLink": {
       "title": "链接设备",
@@ -157,8 +162,6 @@
     "quickAction": {
       "placeholder": "搜索服务器、片段或导航...",
       "noResults": "未找到结果",
-      "navigation": "导航",
-      "settings": "设置",
       "navigate": "导航",
       "select": "选择",
       "close": "关闭",
@@ -214,6 +217,11 @@
       "organizationDeleteError": "删除组织失败",
       "leftOrganization": "您已离开该组织",
       "leaveOrganizationError": "离开组织失败"
+    },
+    "unsavedChanges": {
+      "title": "Unsaved changes",
+      "text": "Discard them, or keep editing and save when you're done.",
+      "keepEditing": "Keep editing"
     }
   },
   "audit": {
@@ -1546,7 +1554,8 @@
       "deleteConfirm": "这将永久删除角色“{{name}}”，并将其从所有成员中移除。",
       "inheritsAllow": "继承：允许",
       "inheritsDeny": "继承：被拒绝"
-    }
+    },
+    "search": "Search settings"
   },
   "tunnel": {
     "title": "端口转发",
@@ -1580,25 +1589,6 @@
   "servers": {
     "addServerNote": "右键单击添加新服务器",
     "searchPlaceholder": "搜索",
-    "inheritancePolicy": {
-      "title": "Apply inheritance",
-      "description": "Choose how existing objects should handle these inherited settings.",
-      "impact": "{{count}} existing objects are affected.",
-      "retain": {
-        "title": "Retain existing",
-        "description": "Keep current values as local overrides."
-      },
-      "adopt": {
-        "title": "Adopt folder settings",
-        "description": "Replace current values with the inherited folder settings."
-      },
-      "moveTitle": "Apply destination inheritance?",
-      "moveDescription": "Choose whether moved objects adopt the destination folder settings or retain their current values.",
-      "moveFailed": "Unable to move object",
-      "identitiesRemoved": "Some identities were removed because they are unavailable in the destination.",
-      "enableTitle": "Enable inheritance?",
-      "enableDescription": "Choose what existing objects should do when these folder settings are saved."
-    },
     "time": {
       "justNow": "刚刚",
       "minuteAgo": "{{count}} 分钟前",
@@ -1708,17 +1698,13 @@
       "createFailed": "创建服务器失败",
       "updateFailed": "更新服务器失败",
       "createIdentityFailed": "创建身份标识失败",
-      "updateIdentityFailed": "更新身份标识失败"
+      "updateIdentityFailed": "更新身份标识失败",
+      "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination."
     },
     "dialog": {
       "addServer": "添加服务器",
       "addProtocolServer": "添加 {{protocol}} 服务器",
       "editServer": "编辑服务器",
-      "tabs": {
-        "details": "详细信息",
-        "identities": "身份标识",
-        "settings": "设置"
-      },
       "actions": {
         "save": "保存",
         "create": "创建"
@@ -1764,7 +1750,6 @@
           "description": "允许使用其 MAC 地址远程唤醒该服务器"
         },
         "rdpSecurity": {
-          "title": "安全",
           "description": "用于连接远程 Windows 计算机的身份验证方法。在禁用了 NTLM 的环境中（例如“受保护的用户”组），请使用 NLA。",
           "method": "安全方法"
         },
@@ -1807,8 +1792,7 @@
           "backspace": "退格",
           "delete": "删除",
           "functionKeys": "功能键"
-        },
-        "noSettings": "此条目类型无可用附加设置。"
+        }
       },
       "identities": {
         "organizationIdentities": "组织身份标识",
@@ -1834,7 +1818,16 @@
         "noUsername": "无用户名",
         "noOrgIdentities": "无组织身份标识。创建一个以与所有成员共享。",
         "noPersonalIdentities": "无个人身份标识。创建一个供私人使用。"
-      }
+      },
+      "sections": {
+        "general": "General",
+        "connection": "Connection",
+        "identities": "Identities",
+        "options": "Options",
+        "credentials": "Credentials"
+      },
+      "useInherited": "Use inherited value",
+      "reset": "Reset"
     },
     "proxmoxDialog": {
       "title": {
@@ -1842,9 +1835,6 @@
         "edit": "编辑 Proxmox VE"
       },
       "fields": {
-        "name": "名称",
-        "serverIp": "服务器 IP",
-        "port": "端口",
         "username": "用户名",
         "password": "密码",
         "nodeName": "节点名称（可选）",
@@ -1853,8 +1843,6 @@
       "monitoringDescription": "收集整个集群的 CPU、内存和存储指标",
       "placeholders": {
         "name": "名称",
-        "serverIp": "服务器 IP",
-        "port": "端口",
         "username": "用户名（例如：root@pam）",
         "password": "密码",
         "specificNode": "特定节点名称"
@@ -1868,7 +1856,8 @@
         "updated": "Proxmox 集成更新成功",
         "createFailed": "创建 Proxmox 集成失败",
         "updateFailed": "更新 Proxmox 集成失败"
-      }
+      },
+      "credentialsDescription": "Proxmox user with API access, e.g. root@pam or a dedicated API user."
     },
     "connectionReasonDialog": {
       "title": "需要连接原因",
@@ -2196,6 +2185,14 @@
     "liveSessions": {
       "activeOn": "直播环节： {{users}}",
       "unknownUser": "未知用户"
+    },
+    "folderSettings": {
+      "name": "Folder name",
+      "nameRequired": "Folder name is required",
+      "loadFailed": "Unable to load folder settings",
+      "protocol": "Defaults for",
+      "protocolHint": "Servers in this folder use what you set below unless they set their own value. Each protocol has its own defaults.",
+      "unset": "Remove from folder"
     }
   },
   "support": {
@@ -2227,7 +2224,8 @@
     "connectDevice": "连接设备",
     "recentConnections": "近期联系",
     "getStarted": "开始",
-    "getStartedHint": "从侧边栏添加服务器，开始管理基础设施。"
+    "getStartedHint": "从侧边栏添加服务器，开始管理基础设施。",
+    "hibernated": "Hibernated"
   },
   "downloadApps": {
     "title": "下载应用程序",
@@ -2238,6 +2236,10 @@
       "linux": "利纳克斯",
       "android": "安卓",
       "ios": "iOS"
-    }
+    },
+    "recommended": "Recommended",
+    "versionUnavailable": "The server version could not be determined, so direct downloads are unavailable. You can still browse the releases on GitHub.",
+    "sourceHint": "Downloads are served from the GitHub releases.",
+    "allReleases": "All releases"
   }
 }
