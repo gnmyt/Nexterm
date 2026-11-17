@@ -1,4 +1,5 @@
 @use "@/common/styles/colors"
+@use "@/common/components/SettingsDialog/page" as settings-page
 @use "@/common/styles/breakpoints"
 
 .account-page
@@ -231,26 +232,45 @@
           width: 100%
           justify-content: flex-end
 
-        .action-btn
-          background: transparent
-          border: none
-          border-radius: 0.5rem
-          padding: 0.5rem
-          cursor: pointer
-          color: colors.$subtext
-          display: flex
-          align-items: center
-          justify-content: center
-          &:hover
-            background-color: colors.$gray
-            color: colors.$white
-          &.delete-btn:hover
-            background-color: colors.$error-opacity
-            color: colors.$error
-
     .list-empty
       padding: 1.5rem
       text-align: center
       color: colors.$subtext
       p
         margin: 0
+
++settings-page.scope
+  .main-description
+    margin: 0
+    font-size: 0.85rem
+    font-weight: 500
+    line-height: 1.5
+    color: colors.$subtext
+
+  .tfa-title
+    display: flex
+    align-items: center
+    gap: 0.625rem
+    margin-bottom: 0.25rem
+
+    h2
+      margin: 0
+
+    p, h2 + p
+      display: inline-flex
+      align-items: center
+      margin: 0
+      padding: 0.2rem 0.5rem
+      border-radius: 0.375rem
+      font-size: 0.72rem
+      font-weight: 600
+      letter-spacing: 0.02em
+      line-height: 1.2
+
+      &.active
+        background: colors.$success-opacity
+        color: colors.$success
+
+      &.inactive
+        background: colors.$error-opacity
+        color: colors.$error

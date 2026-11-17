@@ -8,6 +8,7 @@ import ToggleSwitch from "@/common/components/ToggleSwitch";
 import Button from "@/common/components/Button";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
 
 const SettingItem = ({ icon, title, description, children }) => (
     <div className="setting-item">
@@ -63,9 +64,9 @@ export const FileManager = () => {
 
     return (
         <div className="file-manager-settings">
-            <div className="settings-section">
+            <div className="settings-section settings-page-section">
                 <div className="section-header">
-                    <h2>{t("settings.fileManager.title")}</h2>
+                    <SettingsHeading>{t("settings.fileManager.title")}</SettingsHeading>
                     <Button
                         icon={isFilesSynced ? mdiCloudSync : mdiCloudOffOutline}
                         onClick={handleSyncToggle}

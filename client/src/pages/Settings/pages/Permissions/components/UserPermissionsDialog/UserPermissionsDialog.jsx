@@ -1,16 +1,22 @@
-import "./styles.sass";
-import { useEffect, useState } from "react";
-import { DialogProvider } from "@/common/components/Dialog";
-import Button from "@/common/components/Button";
-import Icon from "@mdi/react";
-import { mdiShieldAccount, mdiAccountKeyOutline, mdiShieldCrownOutline } from "@mdi/js";
+import { useEffect, useMemo, useState } from "react";
+import { mdiShieldAccount, mdiAccountKeyOutline, mdiShieldCrownOutline, mdiShieldKeyOutline } from "@mdi/js";
 import { getRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
-import TabSwitcher from "@/common/components/TabSwitcher";
-import Checkbox from "@/common/components/Checkbox";
+import { useUnsavedChanges } from "@/common/hooks/useUnsavedChanges.js";
+import SectionedDialog, { SectionBlock, SettingRow } from "@/common/components/SectionedDialog";
 import PermissionMatrix from "@/common/components/PermissionMatrix";
 import { useTranslation } from "react-i18next";
 import { getFullName } from "@/common/utils/avatar.js";
+
+const SECTIONS = [
+    { key: "roles", label: "settings.permissions.rolesTab", icon: mdiShieldAccount },
+    { key: "overrides", label: "settings.permissions.overridesTab", icon: mdiAccountKeyOutline },
+];
+
+const normalizeDraft = ({ groupIds, overrides }) => ({
+    groupIds: [...groupIds].sort(),
+    overrides: Object.fromEntries(Object.entries(overrides).filter(([, value]) => value !== "neutral")),
+});
 
 export const UserPermissionsDialog = ({ open, onClose, accountId, groups = [], catalog, onSaved }) => {
     const { t } = useTranslation();
@@ -19,21 +25,32 @@ export const UserPermissionsDialog = ({ open, onClose, accountId, groups = [], c
     const [data, setData] = useState(null);
     const [groupIds, setGroupIds] = useState([]);
     const [overrides, setOverrides] = useState({});
-    const [tab, setTab] = useState("roles");
     const [saving, setSaving] = useState(false);
+
+    const draft = useMemo(() => ({ groupIds, overrides }), [groupIds, overrides]);
+    const { isDirty, markClean, reset: resetDirty } = useUnsavedChanges(draft, { normalize: normalizeDraft });
 
     useEffect(() => {
         if (!open || !accountId) return;
-        setTab("roles");
+        let cancelled = false;
+
+        setData(null);
+        resetDirty();
         getRequest(`permissions/users/${accountId}`).then((res) => {
+            if (cancelled) return;
+            const initial = { groupIds: res.groupIds || [], overrides: res.overrides || {} };
             setData(res);
-            setGroupIds(res.groupIds || []);
-            setOverrides(res.overrides || {});
-        }).catch(() => sendToast("Error", t("settings.permissions.loadError")));
+            setGroupIds(initial.groupIds);
+            setOverrides(initial.overrides);
+            markClean(initial);
+        }).catch(() => {
+            if (!cancelled) sendToast("Error", t("settings.permissions.loadError"));
+        });
+        return () => { cancelled = true; };
     }, [open, accountId]);
 
-    const toggleGroup = (id) =>
-        setGroupIds((prev) => (prev.includes(id) ? prev.filter((g) => g !== id) : [...prev, id]));
+    const setGroup = (id, enabled) =>
+        setGroupIds((prev) => (enabled ? [...prev.filter((g) => g !== id), id] : prev.filter((g) => g !== id)));
 
     const setOverride = (perm, value) =>
         setOverrides((prev) => ({ ...prev, [perm]: value }));
@@ -58,60 +75,29 @@ export const UserPermissionsDialog = ({ open, onClose, accountId, groups = [], c
     const assignableGroups = groups.filter((g) => !g.isDefault);
 
     return (
-        <DialogProvider open={open} onClose={onClose}>
-            <div className="user-permissions-dialog">
-                <div className="upd-header">
-                    <h2>{t("settings.permissions.managePermissions")}</h2>
-                    {data && <p>{getFullName(data)} <span>@{data.username}</span></p>}
-                </div>
-
-                <TabSwitcher
-                    tabs={[
-                        { key: "roles", label: t("settings.permissions.rolesTab"), icon: mdiShieldAccount },
-                        { key: "overrides", label: t("settings.permissions.overridesTab"), icon: mdiAccountKeyOutline },
-                    ]}
-                    activeTab={tab}
-                    onTabChange={setTab}
-                    variant="flat"
-                />
-
-                <div className="upd-body">
-                    {tab === "roles" && (
-                        <div className="role-select-list">
-                            {assignableGroups.length === 0 && (
-                                <p className="empty">{t("settings.permissions.noAssignableRoles")}</p>
-                            )}
-                            {assignableGroups.map((group) => {
-                                const selected = groupIds.includes(group.id);
-                                return (
-                                    <div
-                                        key={group.id}
-                                        className={`role-select-item ${selected ? "selected" : ""}`}
-                                        onClick={() => toggleGroup(group.id)}
-                                    >
-                                        <span className="role-icon" style={{ backgroundColor: `${group.color}26`, color: group.color }}>
-                                            <Icon path={group.isAdmin ? mdiShieldCrownOutline : mdiShieldAccount} />
-                                        </span>
-                                        <span className="role-name">{group.name}</span>
-                                        <span className="role-check-wrap" onClick={(e) => e.stopPropagation()}>
-                                            <Checkbox checked={selected} onChange={() => toggleGroup(group.id)} id={`role-${group.id}`} />
-                                        </span>
-                                    </div>
-                                );
-                            })}
+        <SectionedDialog open={open} onClose={onClose} isDirty={isDirty} icon={mdiShieldKeyOutline}
+                         title={t("settings.permissions.managePermissions")}
+                         subtitle={data ? [getFullName(data), `@${data.username}`].filter(Boolean).join(" ") : undefined}
+                         sections={SECTIONS} ready={!!data} onSubmit={save} submitDisabled={saving || !data}
+                         submitLabel={saving ? t("common.actions.saving") : t("common.actions.save")}>
+            <SectionBlock id="roles" icon={mdiShieldAccount} title={t("settings.permissions.rolesTab")}>
+                {assignableGroups.length === 0
+                    ? <p className="sd-muted">{t("settings.permissions.noAssignableRoles")}</p>
+                    : (
+                        <div className="sd-settings">
+                            {assignableGroups.map((group) => (
+                                <SettingRow key={group.id} id={`role-${group.id}`} label={group.name} iconColor={group.color}
+                                            icon={group.isAdmin ? mdiShieldCrownOutline : mdiShieldAccount}
+                                            checked={groupIds.includes(group.id)}
+                                            onChange={(enabled) => setGroup(group.id, enabled)} />
+                            ))}
                         </div>
                     )}
+            </SectionBlock>
 
-                    {tab === "overrides" && (
-                        <PermissionMatrix catalog={catalog} values={overrides} onChange={setOverride} />
-                    )}
-                </div>
-
-                <div className="upd-actions">
-                    <Button text={t("common.actions.cancel")} type="secondary" onClick={onClose} />
-                    <Button text={saving ? t("common.actions.saving") : t("common.actions.save")} onClick={save} disabled={saving} />
-                </div>
-            </div>
-        </DialogProvider>
+            <SectionBlock id="overrides" icon={mdiAccountKeyOutline} title={t("settings.permissions.overridesTab")}>
+                <PermissionMatrix catalog={catalog} values={overrides} onChange={setOverride} />
+            </SectionBlock>
+        </SectionedDialog>
     );
 };

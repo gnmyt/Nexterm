@@ -6,6 +6,7 @@ import { mdiRestore, mdiMagnify, mdiRobotOutline, mdiCodeArray, mdiKeyboard, mdi
 import Icon from "@mdi/react";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
 
 const KEYMAP_ICONS = {
     "search": mdiMagnify,
@@ -144,7 +145,7 @@ export const Keymaps = () => {
         <div className="keymaps-page">
             <div className="keymaps-header">
                 <div className="header-text">
-                    <h2>{t("settings.keymaps.title")}</h2>
+                    <SettingsHeading>{t("settings.keymaps.title")}</SettingsHeading>
                     <p>{t("settings.keymaps.description")}</p>
                 </div>
                 <Button text={t("settings.keymaps.resetAll")} icon={mdiRestore} onClick={handleResetAll} />

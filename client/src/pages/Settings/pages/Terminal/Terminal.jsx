@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { mdiCloudSync, mdiCloudOffOutline } from "@mdi/js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
 
 export const Terminal = () => {
     const { t } = useTranslation();
@@ -101,9 +102,9 @@ export const Terminal = () => {
     };
 
     const renderSection = (title, description, group, children) => (
-        <div className="terminal-section">
+        <div className="terminal-section settings-page-section">
             <div className="section-header">
-                <h2>{title}</h2>
+                <SettingsHeading>{title}</SettingsHeading>
                 {renderSyncButton(group)}
             </div>
             <div className="section-inner">

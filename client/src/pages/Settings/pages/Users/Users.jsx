@@ -28,6 +28,7 @@ import { useTranslation } from "react-i18next";
 import { Permission } from "@/common/utils/permissions.js";
 import { getFullName } from "@/common/utils/avatar.js";
 import LetterAvatar from "@/common/components/LetterAvatar";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
 
 const ITEMS_PER_PAGE = 25;
 
@@ -197,7 +198,7 @@ export const Users = () => {
                             accountId={contextUserId} />
 
             <div className="users-header">
-                <h2>{t("settings.users.title", { count: total })}</h2>
+                <SettingsHeading>{t("settings.users.title", { count: total })}</SettingsHeading>
                 <div className="header-actions">
                     <div className="search-box">
                         <Icon path={mdiMagnify} />

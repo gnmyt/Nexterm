@@ -12,6 +12,8 @@ import SelectBox from "@/common/components/SelectBox";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import IdentityDialog from "./components/IdentityDialog";
 import "./styles.sass";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
+import EmptyState from "@/common/components/EmptyState";
 
 export const IdentityCard = ({ identity, onEdit, onDelete }) => {
     const { t } = useTranslation();
@@ -34,12 +36,8 @@ export const IdentityCard = ({ identity, onEdit, onDelete }) => {
                 </div>
             </div>
             <div className="identity-actions">
-                <button className="action-btn edit-btn" onClick={() => onEdit(identity)} aria-label={t("settings.identities.editIdentity")}>
-                    <Icon path={mdiPencil} size={0.8} />
-                </button>
-                <button className="action-btn delete-btn" onClick={() => onDelete(identity)} aria-label={t("settings.identities.deleteIdentity")}>
-                    <Icon path={mdiTrashCan} size={0.8} />
-                </button>
+                <Button icon={mdiPencil} onClick={() => onEdit(identity)} title={t("settings.identities.editIdentity")} />
+                <Button type="danger" icon={mdiTrashCan} onClick={() => onDelete(identity)} title={t("settings.identities.deleteIdentity")} />
             </div>
         </div>
     );
@@ -127,7 +125,7 @@ export const IdentitiesPage = () => {
             <div className="identities-section">
                 <div className="section-header">
                     <div className="header-content">
-                        <h2>{t("settings.identities.title")}</h2>
+                        <SettingsHeading>{t("settings.identities.title")}</SettingsHeading>
                         <p>{t("settings.identities.description")}</p>
                     </div>
                     <div className="header-actions">
@@ -150,11 +148,8 @@ export const IdentitiesPage = () => {
                                                                        onEdit={handleEdit}
                                                                        onDelete={handleDeleteRequest} />)
                         ) :
-                        <div className="no-identities">
-                            <Icon path={mdiKey} />
-                            <h2>{t("settings.identities.noIdentities")}</h2>
-                            <p>{t("settings.identities.noIdentitiesDescription")}</p>
-                        </div>
+                        <EmptyState icon={mdiKey} title={t("settings.identities.noIdentities")}
+                                    description={t("settings.identities.noIdentitiesDescription")} />
                     }
                 </div>
             </div>

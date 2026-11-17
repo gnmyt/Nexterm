@@ -17,6 +17,7 @@ import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/Act
 import CreateRoleDialog from "./components/CreateRoleDialog";
 import RoleMembers from "./components/RoleMembers";
 import { PRESET_COLORS } from "./constants";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
 
 const RoleRow = ({ group, draggable, onReorder, children }) => {
     const [{ isDragging }, drag, preview] = useDrag({
@@ -133,7 +134,6 @@ export const Permissions = () => {
         () => groups.filter((g) => !g.isAdmin && !g.isDefault).sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id),
         [groups]);
 
-    // Display order mirrors priority: Administrator on top, custom roles by priority, Default (baseline) last.
     const orderedGroups = useMemo(() => [
         ...groups.filter((g) => g.isAdmin),
         ...customGroups,
@@ -167,7 +167,7 @@ export const Permissions = () => {
 
             <div className="permissions-header">
                 <div>
-                    <h2>{t("settings.pages.permissions")}</h2>
+                    <SettingsHeading>{t("settings.pages.permissions")}</SettingsHeading>
                     <p>{t("settings.permissions.subtitle")}</p>
                 </div>
                 <Button text={t("settings.permissions.createRole")} icon={mdiPlus} onClick={() => setCreateOpen(true)} />
