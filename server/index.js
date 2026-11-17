@@ -26,6 +26,9 @@ const controlPlane = require("./lib/controlPlane/ControlPlaneServer");
 const SessionManager = require("./lib/SessionManager");
 const { ensureLocalEngine } = require("./controllers/engine");
 const { ensureCPCerts } = require("./utils/controlPlaneCerts");
+const { isDemoMode } = require("./utils/demoMode");
+const { seedDemo } = require("./utils/demoSeeder");
+const { startGuestCleanup, stopGuestCleanup, cleanupExpiredGuests } = require("./controllers/demo");
 require("./utils/folder");
 
 process.on("uncaughtException", (err) => require("./utils/errorHandling")(err));
@@ -133,6 +136,18 @@ db.authenticate()
 
         await ensureInternalProvider();
 
+        if (isDemoMode()) {
+            try {
+                await seedDemo();
+            } catch (err) {
+                logger.error("Could not prepare demo mode", { error: err.message });
+                process.exit(1);
+            }
+            startGuestCleanup();
+        } else {
+            await cleanupExpiredGuests();
+        }
+
         startStatusChecker();
 
         monitoringService.start();
@@ -210,6 +225,7 @@ process.on("SIGINT", async () => {
     stopStatusChecker();
     stopSourceSyncService();
     backupService.stop();
+    stopGuestCleanup();
 
     controlPlane.stop();
 

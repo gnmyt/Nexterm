@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const { requirePermission } = require("../middlewares/permission");
+const { isDemoGuest } = require("../utils/demoMode");
 const { Permission } = require("../permissions/registry");
 const { validateSchema } = require("../utils/schema");
 const { updateAISettingsValidation, oauthExchangeValidation, generateCommandValidation } = require("../validations/ai");
@@ -28,7 +29,9 @@ const app = Router();
  */
 app.get("/", async (req, res) => {
     try {
-        res.json(await getAISettings());
+        const settings = await getAISettings();
+        if (isDemoGuest(req.user)) return res.json({ ...settings, enabled: false });
+        res.json(settings);
     } catch {
         res.status(500).json({ error: "Internal server error" });
     }

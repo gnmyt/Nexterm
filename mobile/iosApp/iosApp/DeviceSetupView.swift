@@ -52,6 +52,13 @@ private struct DeviceSetupForm: View {
                     Section {
                         Button("Scan QR Code", systemImage: "qrcode.viewfinder") { scanning = true }
                             .disabled(s.isLoading)
+                    } footer: {
+                        Button("Try the demo") { Task { try? await flow.startDemo() } }
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .disabled(s.isLoading)
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, 24)
                     }
                 } else if s.step == DeviceSetupStep.authChoice {
                     Section("Choose how to authenticate with the server") {

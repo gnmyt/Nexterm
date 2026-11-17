@@ -33,6 +33,8 @@ export const LoginDialog = ({ open }) => {
     const [registerMode, setRegisterMode] = useState(false);
     const [passkeyLoading, setPasskeyLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [demo, setDemo] = useState({ enabled: false });
+    const [demoStarting, setDemoStarting] = useState(false);
 
     const [qrMode, setQrMode] = useState(false);
     const [qrCode, setQrCode] = useState(null);
@@ -57,7 +59,18 @@ export const LoginDialog = ({ open }) => {
         return internalAuthEnabled;
     };
 
+    const loadDemoStatus = async () => {
+        try {
+            const status = await getRequest("service/demo");
+            setDemo(status);
+            return status.enabled;
+        } catch {
+            return false;
+        }
+    };
+
     const loadProviders = async (skipAutoLogin = false) => {
+        const demoEnabled = await loadDemoStatus();
         try {
             const providers = await getRequest("auth/providers");
 
@@ -69,7 +82,7 @@ export const LoginDialog = ({ open }) => {
             setRegistrationEnabled(internalProvider ? Boolean(internalProvider.allowRegistration) : false);
             setProviders(externalProviders);
 
-            if (!skipAutoLogin && !firstTimeSetup && externalProviders.length === 1 && !internalAuthEnabled) {
+            if (!skipAutoLogin && !demoEnabled && !firstTimeSetup && externalProviders.length === 1 && !internalAuthEnabled) {
                 setTimeout(() => {
                     handleOIDCLogin(null, externalProviders[0].id);
                 }, 300);
@@ -134,6 +147,18 @@ export const LoginDialog = ({ open }) => {
             }
         } finally {
             setSubmitting(false);
+        }
+    };
+
+    const startDemo = async () => {
+        setDemoStarting(true);
+        try {
+            const result = await request("auth/demo", "POST");
+            if (result?.token) updateSessionToken(result.token);
+        } catch (error) {
+            sendToast("Error", error.message || t("common.loginDialog.demo.failed"));
+        } finally {
+            setDemoStarting(false);
         }
     };
 
@@ -229,16 +254,19 @@ export const LoginDialog = ({ open }) => {
     const qrColor = () => getComputedStyle(document.documentElement).getPropertyValue("--text").trim() || "#ffffff";
 
     const showSso = !registrationView && !totpRequired;
+    const showDemo = demo.enabled && !registrationView && !totpRequired && !qrMode;
     const hasAnyMethod = isInternalAuthEnabled() || providers.length > 0;
 
     const headerTitle = qrMode ? t("common.loginDialog.qrTitle")
         : totpRequired ? t("common.loginDialog.twoFactorTitle")
         : registrationView ? t("common.loginDialog.registrationTitle")
+        : showDemo ? t("common.loginDialog.demo.title")
         : t("common.loginDialog.welcome");
     const headerSubtitle = qrMode ? t("common.loginDialog.qrScanDescription")
         : totpRequired ? t("common.loginDialog.twoFactorDescription")
         : firstTimeSetup ? t("common.loginDialog.firstTimeSubtitle")
         : registrationView ? t("common.loginDialog.registrationSubtitle")
+        : showDemo ? t("common.loginDialog.demo.subtitle")
         : t("common.loginDialog.subtitle");
 
     return (
@@ -268,6 +296,17 @@ export const LoginDialog = ({ open }) => {
                     </div>
                 ) : (
                     <form className="login__form" onSubmit={submit}>
+                        {showDemo && (
+                            <>
+                                <Button className="login__wide" buttonType="button" onClick={startDemo} disabled={demoStarting}
+                                        icon={demoStarting ? mdiLoading : undefined} spin={demoStarting}
+                                        text={t("common.loginDialog.demo.start")} />
+                                {isInternalAuthEnabled() && (
+                                    <div className="login__divider"><span>{t("common.loginDialog.demo.orSignIn")}</span></div>
+                                )}
+                            </>
+                        )}
+
                         {registrationView && (
                             <div className="login__row">
                                 <Field className="login__field" label={t("common.labels.firstName")} htmlFor="firstName">

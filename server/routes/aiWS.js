@@ -1,4 +1,5 @@
 const { authenticateToken } = require("../middlewares/wsAuth");
+const { isDemoGuest } = require("../utils/demoMode");
 const logger = require("../utils/logger");
 const SessionManager = require("../lib/SessionManager");
 const Entry = require("../models/Entry");
@@ -58,6 +59,9 @@ module.exports = async function handleAIConnection(ws, req) {
     const auth = await authenticateToken(ws, req.query.sessionToken);
     if (!auth) return;
     const { user } = auth;
+
+    if (isDemoGuest(user))
+        return ws.close(4020, "The AI assistant is not available in the demo");
 
     const settings = await getRuntimeSettings();
     if (!isConfigured(settings)) return ws.close(4020, "AI assistant is not configured");

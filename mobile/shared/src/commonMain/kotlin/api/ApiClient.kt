@@ -29,6 +29,7 @@ class ApiResponse(val status: Int, val body: String) {
 
 object AppInfo {
     const val DEFAULT_BASE_URL = "http://localhost:8080"
+    const val DEMO_BASE_URL = "https://demo.nexterm.dev"
 
     fun userAgent(version: String) = "NextermMobile/$version (${Platform.osName}; ${Platform.osVersion})"
 
