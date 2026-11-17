@@ -10,8 +10,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import dev.gnm.nexterm.util.jsonOf
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 
 data class AIChatState(
     val messages: List<ChatMessage>,
@@ -63,6 +66,16 @@ class AIChatSession internal constructor(
         _state.update { it.patchTool(callId, if (allow) ToolStatus.RUNNING else ToolStatus.DENIED, null, null) }
     }
 
+    fun answer(callId: String, text: String) = answer(callId, JsonPrimitive(text.trim()))
+
+    fun answer(callId: String, choices: List<String>) = answer(callId, JsonArray(choices.map { JsonPrimitive(it) }))
+
+    private fun answer(callId: String, value: JsonElement) {
+        if ((value as? JsonPrimitive)?.content?.isEmpty() == true || (value as? JsonArray)?.isEmpty() == true) return
+        channel.answer(callId, value)
+        _state.update { it.patchTool(callId, ToolStatus.DONE, jsonOf("answer" to value), null) }
+    }
+
     fun close() {
         closed = true
         retryJob?.cancel()
@@ -77,6 +90,7 @@ class AIChatSession internal constructor(
                 "text-delta" -> s.appendAssistant(msg.str("delta") ?: "")
                 "tool-call" -> s.endStreaming().upsertTool(callId, msg, ToolStatus.RUNNING)
                 "confirm-request" -> s.upsertTool(callId, msg, ToolStatus.AWAITING_CONFIRM)
+                "question" -> s.endStreaming().upsertQuestion(callId, msg)
                 "tool-result" -> {
                     val result = msg["result"]
                     val denied = (result as? JsonObject)?.get("denied")?.toString() == "true"
@@ -147,6 +161,14 @@ private fun AIChatState.upsertTool(callId: String?, msg: JsonObject, status: Too
     else copy(messages = messages.toMutableList().also { it[i] = it[i].copy(status = status) })
 }
 
+private fun AIChatState.upsertQuestion(callId: String?, msg: JsonObject): AIChatState {
+    if (callId == null) return this
+    val args = JsonObject(listOf("question", "options", "multiSelect", "allowFreeText").mapNotNull { k -> msg[k]?.let { k to it } }.toMap())
+    val i = messages.indexOfFirst { it.role == ChatRole.TOOL && it.callId == callId }
+    return if (i == -1) add(ChatRole.TOOL, callId = callId, tool = AITools.ASK_USER, args = args, status = ToolStatus.AWAITING_ANSWER)
+    else copy(messages = messages.toMutableList().also { it[i] = it[i].copy(tool = AITools.ASK_USER, args = args, status = ToolStatus.AWAITING_ANSWER) })
+}
+
 private fun AIChatState.patchTool(callId: String?, status: ToolStatus, result: JsonElement?, error: String?): AIChatState {
     val i = messages.indexOfFirst { it.role == ChatRole.TOOL && it.callId == callId }
     if (callId == null || i == -1) return this
@@ -157,5 +179,5 @@ private fun AIChatState.patchTool(callId: String?, status: ToolStatus, result: J
 }
 
 private fun AIChatState.abortRunningTools() = copy(messages = messages.map {
-    if (it.role == ChatRole.TOOL && (it.status == ToolStatus.RUNNING || it.status == ToolStatus.AWAITING_CONFIRM)) it.copy(status = ToolStatus.ABORTED) else it
+    if (it.role == ChatRole.TOOL && (it.status == ToolStatus.RUNNING || it.status == ToolStatus.AWAITING_CONFIRM || it.status == ToolStatus.AWAITING_ANSWER)) it.copy(status = ToolStatus.ABORTED) else it
 })

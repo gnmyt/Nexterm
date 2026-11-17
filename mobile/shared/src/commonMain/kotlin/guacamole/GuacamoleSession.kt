@@ -17,6 +17,7 @@ class GuacamoleSession internal constructor(
     private val userAgent: String,
     private val webSocketUrl: String,
     private val connectData: String,
+    val viewOnly: Boolean = false,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var clientJob: Job? = null
@@ -37,7 +38,7 @@ class GuacamoleSession internal constructor(
         _viewport.value?.dispose()
         client?.dispose()
         _state.value = ConnectionState.CONNECTING
-        val newClient = GuacClient(webSocketUrl, http, userAgent)
+        val newClient = GuacClient(webSocketUrl, http, userAgent, viewOnly)
         client = newClient
         _viewport.value = GuacamoleViewport(GuacamoleDisplayState(newClient))
         clientJob = scope.launch {

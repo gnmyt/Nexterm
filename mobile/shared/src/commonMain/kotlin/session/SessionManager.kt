@@ -36,7 +36,14 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 @Serializable
-internal class RemoteSession(val sessionId: String, val entryId: Int, val isHibernated: Boolean = false, val configuration: Configuration? = null) {
+internal class RemoteSession(
+    val sessionId: String,
+    val entryId: Int,
+    val isHibernated: Boolean = false,
+    val configuration: Configuration? = null,
+    val automated: Boolean = false,
+    val origin: String? = null,
+) {
     @Serializable
     class Configuration(val type: String? = null, val renderer: String? = null, val identityId: String? = null)
 }
@@ -125,10 +132,12 @@ class SessionManager internal constructor(
             for (s in remote) {
                 if (getSession(s.sessionId) != null || s.isHibernated) continue
                 val server = entries[s.entryId] ?: continue
-                restored += build(s.sessionId, server, resolveType(s, server), account, s.configuration?.identityId?.toIntOrNull(), restored = true)
+                restored += build(s.sessionId, server, resolveType(s, server), account, s.configuration?.identityId?.toIntOrNull(), restored = true, agent = s.agentOrigin())
             }
             if (restored.isNotEmpty()) _sessions.update { it + restored }
-            if (_sessions.value.isNotEmpty() && _activeSessionId.value == null) _activeSessionId.value = _sessions.value.first().sessionId
+            if (_sessions.value.isNotEmpty() && _activeSessionId.value == null) {
+                _activeSessionId.value = (_sessions.value.firstOrNull { !it.isViewOnly } ?: _sessions.value.first()).sessionId
+            }
         } catch (e: CancellationException) {
             throw e
         } catch (_: Throwable) {
@@ -157,7 +166,15 @@ class SessionManager internal constructor(
         _fullscreen.value = false
     }
 
-    private fun build(sessionId: String, server: Server, type: ConnectionType, account: ServerAccount, identityId: Int?, restored: Boolean): AppSession {
+    private fun build(
+        sessionId: String,
+        server: Server,
+        type: ConnectionType,
+        account: ServerAccount,
+        identityId: Int?,
+        restored: Boolean,
+        agent: AgentOrigin? = null,
+    ): AppSession {
         val client = api.forBaseUrl(account.baseUrl, account.token)
         val sessionScope = CoroutineScope(scope.coroutineContext + SupervisorJob(scope.coroutineContext.job))
         sessionScopes[sessionId] = sessionScope
@@ -169,20 +186,27 @@ class SessionManager internal constructor(
                     put("sessionId", sessionId)
                     identityId?.let { put("identityId", it.toString()) }
                 }
-                val terminal = TerminalConnection(client.http, { client.webSocketUrl("/ws/term", query) }, client.userAgent, sessionScope, restored, terminalSettings)
-                AppSession(sessionId, server, type, account, terminal, null, null)
+                val terminal = TerminalConnection(client.http, { client.webSocketUrl("/ws/term", query) }, client.userAgent, sessionScope, restored, terminalSettings, viewOnly = agent != null)
+                AppSession(sessionId, server, type, account, terminal, null, null, agent)
             }
-            ConnectionType.SFTP -> AppSession(sessionId, server, type, account, null, SftpBrowser(client, sessionId, account.token, sftpSettings, sessionScope), null)
+            ConnectionType.SFTP -> AppSession(sessionId, server, type, account, null, SftpBrowser(client, sessionId, account.token, sftpSettings, sessionScope), null, agent)
             ConnectionType.GUACAMOLE -> {
                 val guacamole = GuacamoleSession(
                     client.http,
                     client.userAgent,
                     client.webSocketUrl("/ws/guac/"),
                     "sessionToken=${Uris.encode(account.token)}&sessionId=${Uris.encode(sessionId)}",
+                    viewOnly = agent != null,
                 )
-                AppSession(sessionId, server, type, account, null, null, guacamole)
+                AppSession(sessionId, server, type, account, null, null, guacamole, agent)
             }
         }
+    }
+
+    private fun RemoteSession.agentOrigin(): AgentOrigin? = when {
+        !automated -> null
+        origin == "ai" -> AgentOrigin.AI
+        else -> AgentOrigin.MCP
     }
 
     private fun resolveType(s: RemoteSession, server: Server): ConnectionType = when {

@@ -11,6 +11,11 @@ enum class ConnectionType(val label: String, val iconKey: String) {
     SFTP("File Browser", "folder-outline"),
 }
 
+enum class AgentOrigin(val viewOnlyMessage: String) {
+    AI("The AI assistant is working in this session. You can watch, but not type."),
+    MCP("An external agent (MCP) is working in this session. You can watch, but not type."),
+}
+
 class AppSession internal constructor(
     val sessionId: String,
     val server: Server,
@@ -19,12 +24,15 @@ class AppSession internal constructor(
     val terminal: TerminalConnection?,
     val sftp: SftpBrowser?,
     val guacamole: GuacamoleSession?,
+    val agent: AgentOrigin? = null,
 ) {
+    val isViewOnly: Boolean get() = agent != null
+
     val connectionState: StateFlow<ConnectionState>
         get() = terminal?.state ?: sftp?.connectionState ?: guacamole!!.state
 
-    val supportsSnippets: Boolean get() = type == ConnectionType.TERMINAL
-    val supportsAI: Boolean get() = type == ConnectionType.TERMINAL
+    val supportsSnippets: Boolean get() = type == ConnectionType.TERMINAL && !isViewOnly
+    val supportsAI: Boolean get() = type == ConnectionType.TERMINAL && !isViewOnly
     val hasToolMenu: Boolean get() = type == ConnectionType.GUACAMOLE
 
     internal fun disconnect() {

@@ -18,7 +18,7 @@ import kotlin.concurrent.Volatile
 
 enum class GuacClientState { IDLE, CONNECTING, WAITING, CONNECTED, DISCONNECTING, DISCONNECTED }
 
-class GuacClient internal constructor(url: String, http: HttpClient, userAgent: String) {
+class GuacClient internal constructor(url: String, http: HttpClient, userAgent: String, val viewOnly: Boolean = false) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val tunnel = GuacWebSocketTunnel(url, http, userAgent, ::onInstruction, ::onClosed)
     internal lateinit var display: GuacamoleDisplayState
@@ -111,13 +111,13 @@ class GuacClient internal constructor(url: String, http: HttpClient, userAgent: 
     }
 
     fun sendMouseState(mouse: GuacMouseState) {
-        if (!isConnected) return
+        if (!isConnected || viewOnly) return
         display.moveCursor(mouse.x, mouse.y)
         tunnel.sendMessage("mouse", floor(mouse.x).toInt(), floor(mouse.y).toInt(), mouse.buttonMask)
     }
 
     fun sendKeyEvent(pressed: Boolean, keysym: Int) {
-        if (!isConnected) return
+        if (!isConnected || viewOnly) return
         tunnel.sendMessage("key", keysym, if (pressed) 1 else 0)
     }
 
