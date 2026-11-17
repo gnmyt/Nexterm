@@ -734,7 +734,7 @@ const GuacamoleRenderer = ({
                 e.stopImmediatePropagation();
                 if (isMac() && e.ctrlKey && !e.metaKey) {
                     e.preventDefault();
-                    if (!e.repeat) pasteFromLocalClipboard();
+                    if (!e.repeat) void pasteFromLocalClipboard();
                 }
             }
         };
