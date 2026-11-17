@@ -448,25 +448,35 @@
     "page": {
       "title": "Мониторинг серверов",
       "subtitle": "Статистика и контроль состояния серверов в реальном времени",
-      "searchPlaceholder": "Поиск серверов..."
+      "searchPlaceholder": "Поиск серверов...",
+      "filters": {
+        "all": "All ({{count}})",
+        "online": "Online ({{count}})",
+        "issues": "Issues ({{count}})"
+      }
     },
     "errors": {
-      "loadFailed": "Не удалось загрузить данные мониторинга"
+      "loadFailed": "Не удалось загрузить данные мониторинга",
+      "loadFailedDescription": "The monitoring data could not be retrieved. Check your connection and try again.",
+      "retry": "Retry"
     },
     "grid": {
-      "loading": "Загрузка данных мониторинга...",
       "noServers": {
         "title": "Серверы не найдены",
         "subtitle": "Нет SSH-серверов для мониторинга.\nДобавьте серверы, чтобы начать отслеживание."
       },
+      "noResults": {
+        "title": "No matching servers",
+        "subtitle": "No monitored server matches your search."
+      },
       "metrics": {
-        "cpuUsage": "Загрузка CPU",
-        "memoryUsage": "Использование памяти",
         "loadAverage": "Средняя нагрузка",
         "processes": "Процессы",
         "uptime": "Время работы",
         "nodes": "Узлы",
-        "vms": "ВМ/контейнеры"
+        "vms": "ВМ/контейнеры",
+        "cpu": "CPU",
+        "memory": "Memory"
       },
       "status": {
         "serverOffline": "Сервер недоступен",
@@ -476,7 +486,16 @@
         "errorMessage": "Не удалось установить соединение с сервером.",
         "unknownMessage": "Не удалось определить статус сервера.",
         "lastSeen": "Последнее подключение: {{time}}",
-        "noRecentActivity": "Нет недавней активности"
+        "noRecentActivity": "Нет недавней активности",
+        "waitingForData": "Waiting for data",
+        "pendingMessage": "Monitoring data will appear after the next monitoring cycle.",
+        "labels": {
+          "online": "Online",
+          "offline": "Offline",
+          "error": "Error",
+          "pending": "Pending",
+          "unknown": "Unknown"
+        }
       },
       "uptime": {
         "unknown": "Неизвестно",
@@ -495,7 +514,6 @@
       },
       "tabs": {
         "overview": "Обзор",
-        "charts": "Графики",
         "storage": "Хранилище",
         "network": "Сеть",
         "processes": "Процессы",
@@ -515,12 +533,11 @@
         },
         "performance": {
           "title": "Метрики производительности",
-          "cpuUsage": "Загрузка CPU",
-          "memoryUsage": "Использование памяти",
           "loadAverage": "Средняя нагрузка",
           "processes": "Активные процессы",
           "total": "Всего: {{value}}",
-          "loadDetail": "5м: {{fiveMin}}, 15м: {{fifteenMin}}"
+          "loadDetail": "5м: {{fiveMin}}, 15м: {{fifteenMin}}",
+          "memory": "Memory"
         },
         "uptime": {
           "format": {
@@ -538,33 +555,67 @@
       },
       "storage": {
         "title": "Использование диска",
-        "used": "Использовано: {{value}}",
-        "available": "Доступно: {{value}}",
-        "total": "Всего: {{value}}",
-        "type": "Тип: {{value}}",
         "noData": "Нет данных об использовании диска",
-        "noPartitions": "Никаких смонтированных перегородок"
+        "noPartitions": "Никаких смонтированных перегородок",
+        "usedOf": "{{used}} of {{total}} used",
+        "free": "{{value}} free",
+        "filesystems": "Filesystems",
+        "disks": "Disks",
+        "on": "{{volume}} on {{partition}}",
+        "swap": "Swap",
+        "unmounted": "Not mounted",
+        "unallocated": "Unallocated",
+        "inodes": "Inodes",
+        "inodesDetail": "{{used}} of {{total}}",
+        "health": {
+          "passed": "Healthy",
+          "warning": "Warning",
+          "failed": "Failing",
+          "denied": "SMART needs root",
+          "temperature": "Temperature",
+          "powerOn": "Power-on time",
+          "wear": "Wear",
+          "reallocated": "Reallocated sectors",
+          "pending": "Pending sectors",
+          "mediaErrors": "Media errors",
+          "years": "{{value}} years",
+          "days": "{{value}} days",
+          "hours": "{{value}} hours",
+          "failedTitle": "Disk failure predicted",
+          "failedMessage": "{{disks}} failed its SMART self-assessment. Back up the data and replace the disk."
+        }
       },
       "network": {
-        "title": "Сетевые интерфейсы",
-        "rxBytes": "Получено байт",
-        "txBytes": "Отправлено байт",
-        "mac": "MAC-адрес",
         "speed": "Скорость",
-        "noData": "Нет данных о сетевых интерфейсах"
+        "noData": "Нет данных о сетевых интерфейсах",
+        "download": "Download",
+        "upload": "Upload",
+        "interface": "Interface",
+        "address": "Address",
+        "gateway": "Gateway",
+        "interfaces": "Interfaces",
+        "virtual": "Virtual interfaces",
+        "defaultRoute": "Default route",
+        "up": "Up",
+        "down": "Down",
+        "errors": "{{count}} errors",
+        "dropped": "{{count}} dropped",
+        "copy": "Copy {{address}}",
+        "total": "{{value}} total"
       },
       "processes": {
-        "title": "Запущенные процессы",
         "searchPlaceholder": "Поисковые процессы...",
         "showing": "Показывая {{count}} процессов {{total}}",
         "noData": "Данные о процессе недоступны. Данные о процессе появятся после следующего цикла мониторинга.",
-        "noResults": "Ни один процесс не соответствует твоим критериям поиска."
+        "noResults": "Ни один процесс не соответствует твоим критериям поиска.",
+        "columns": {
+          "command": "Command",
+          "cpu": "CPU",
+          "mem": "Memory"
+        }
       },
       "pve": {
         "clusterInfo": "Информация о кластере",
-        "resources": "Использование ресурсов",
-        "virtualMachines": "Виртуальные машины",
-        "totalNodes": "Всего узлов",
         "onlineNodes": "Онлайновые узлы",
         "totalCPU": "Общий процессор",
         "totalMemory": "Общая память",
