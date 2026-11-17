@@ -2,6 +2,7 @@ package dev.gnm.nexterm.util
 
 import kotlin.math.abs
 import kotlin.math.floor
+import kotlin.math.ln
 import kotlin.math.pow
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -16,28 +17,72 @@ object Formatters {
         return if (digits == 0) "$sign$intPart" else "$sign$intPart.$frac"
     }
 
-    fun bytes(bytes: Long?): String = when {
-        bytes == null || bytes == 0L -> "0 B"
-        bytes < 1024 -> "$bytes B"
-        bytes < 1048576 -> "${fixed(bytes / 1024.0, 1)} KB"
-        bytes < 1073741824 -> "${fixed(bytes / 1048576.0, 1)} MB"
-        else -> "${fixed(bytes / 1073741824.0, 2)} GB"
+    const val EMPTY = "–"
+
+    private val BYTE_UNITS = listOf("B", "KB", "MB", "GB", "TB", "PB")
+    private val RATE_UNITS = listOf("bit/s", "kbit/s", "Mbit/s", "Gbit/s")
+
+    fun number(value: Double): String = if (value % 1.0 == 0.0) "${value.toLong()}" else fixed(value, 1)
+
+    fun bytes(bytes: Long?): String {
+        if (bytes == null || bytes <= 0L) return "0 B"
+        val unit = (ln(bytes.toDouble()) / ln(1024.0)).toInt().coerceIn(0, BYTE_UNITS.lastIndex)
+        val value = bytes / 1024.0.pow(unit)
+        return "${if (unit == 0) "$bytes" else fixed(value, if (unit < 3) 1 else 2)} ${BYTE_UNITS[unit]}"
+    }
+
+    fun rate(bytesPerSecond: Double?): String {
+        if (bytesPerSecond == null) return EMPTY
+        val bits = bytesPerSecond * 8
+        if (bits < 1000) return "${bits.toLong()} bit/s"
+        val unit = (ln(bits) / ln(1000.0)).toInt().coerceIn(0, RATE_UNITS.lastIndex)
+        val value = bits / 1000.0.pow(unit)
+        return "${fixed(value, if (value >= 100) 0 else 1)} ${RATE_UNITS[unit]}"
+    }
+
+    fun linkSpeed(mbit: Double): String = if (mbit >= 1000) "${number(mbit / 1000)} Gbit/s" else "${mbit.toLong()} Mbit/s"
+
+    fun compact(value: Double): String = when {
+        value >= 1e9 -> "${number(floor(value / 1e8) / 10)}B"
+        value >= 1e6 -> "${number(floor(value / 1e5) / 10)}M"
+        value >= 1e3 -> "${number(floor(value / 1e2) / 10)}K"
+        else -> "${value.toLong()}"
+    }
+
+    fun powerOn(hours: Double): String = when {
+        hours >= 24 * 365 -> "${fixed(hours / (24 * 365), 1)} years"
+        hours >= 48 -> "${(hours / 24 + 0.5).toLong()} days"
+        else -> "${hours.toLong()} hours"
     }
 
     fun uptime(seconds: Long?): String = when {
-        seconds == null -> "Unknown"
+        seconds == null || seconds <= 0 -> "Unknown"
         seconds >= 86400 -> "${seconds / 86400}d ${(seconds % 86400) / 3600}h"
         seconds >= 3600 -> "${seconds / 3600}h ${(seconds % 3600) / 60}m"
         else -> "${seconds / 60}m"
     }
 
+    fun uptimeLong(seconds: Long?): String {
+        if (seconds == null || seconds <= 0) return "Unknown"
+        val days = seconds / 86400
+        val hours = (seconds % 86400) / 3600
+        val minutes = (seconds % 3600) / 60
+        return when {
+            days > 0 -> "$days days, $hours hours, $minutes minutes"
+            hours > 0 -> "$hours hours, $minutes minutes"
+            else -> "$minutes minutes"
+        }
+    }
+
     fun percent(value: Double): String = "${fixed(value, 1)}%"
+
+    fun wholePercent(value: Double?): String = value?.let { "${(it + 0.5).toLong()}%" } ?: EMPTY
 
     fun fraction(percent: Double): Double = (percent / 100).coerceIn(0.0, 1.0)
 
     fun usageLevel(percent: Double): UsageLevel = when {
-        percent > 80 -> UsageLevel.CRITICAL
-        percent > 60 -> UsageLevel.WARNING
+        percent >= 90 -> UsageLevel.CRITICAL
+        percent >= 75 -> UsageLevel.WARNING
         else -> UsageLevel.NORMAL
     }
 

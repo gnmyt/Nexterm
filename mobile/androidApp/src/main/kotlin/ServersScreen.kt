@@ -149,7 +149,7 @@ private fun SearchAndTags(ctrl: ServerListController) {
                 trailingIcon = { if (search.isNotEmpty()) IconButton(ctrl::clearSearch) { Icon(Icons.Outlined.Close, "Clear") } },
             )
         },
-        expanded = false, onExpandedChange = {}, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp), windowInsets = WindowInsets(0),
+        expanded = false, onExpandedChange = {}, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).focusOnTapOnly(), windowInsets = WindowInsets(0),
     ) {}
     if (tags.isNotEmpty()) LazyRow(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         if (selected.isNotEmpty()) item {

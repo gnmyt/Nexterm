@@ -11,6 +11,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
@@ -32,7 +33,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -139,8 +146,29 @@ fun ViewOnlyBanner(text: String, modifier: Modifier = Modifier) = ListItem(
 )
 
 @Composable
+fun Modifier.focusOnTapOnly(): Modifier {
+    var allowed by remember { mutableStateOf(false) }
+    return pointerInput(Unit) { awaitEachGesture { awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial); allowed = true } }
+        .focusProperties { canFocus = allowed }
+        .onFocusChanged { if (!it.hasFocus) allowed = false }
+}
+
+@Composable
 fun SectionHeader(text: String) =
-    Text(text, Modifier.padding(start = 16.dp, top = 24.dp, bottom = 8.dp), MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
+    Text(text, Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp, bottom = 4.dp), MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
+
+@Composable
+fun SettingsGroup(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) = Surface(
+    modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp), RoundedCornerShape(16.dp), MaterialTheme.colorScheme.surfaceContainerHigh,
+) { Column(content = content) }
+
+@Composable
+fun GroupDivider() = HorizontalDivider(Modifier.padding(start = 68.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+
+@Composable
+fun LeadingTile(icon: ImageVector) = Box(Modifier.size(36.dp).background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(10.dp)), Alignment.Center) {
+    Icon(icon, null, Modifier.size(18.dp), MaterialTheme.colorScheme.onPrimaryContainer)
+}
 
 @Composable
 fun ConfirmDialog(title: String, text: String, confirm: String, destructive: Boolean = false, onDismiss: () -> Unit, onConfirm: () -> Unit) =

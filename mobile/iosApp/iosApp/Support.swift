@@ -164,20 +164,3 @@ extension View {
         }
     }
 }
-
-struct UsageGauge: View {
-    let label: String
-    let value: Double
-
-    var body: some View {
-        let level = Formatters.shared.usageLevel(percent: value)
-        Gauge(value: Formatters.shared.fraction(percent: value)) {
-            Text(label)
-        } currentValueLabel: {
-            Text(Formatters.shared.percent(value: value))
-        }
-        .gaugeStyle(.linearCapacity)
-        .tint(level == UsageLevel.critical ? .red : level == UsageLevel.warning ? .orange : accent)
-        .font(.caption)
-    }
-}

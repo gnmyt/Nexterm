@@ -1,21 +1,24 @@
 package dev.gnm.nexterm.state
 
-import dev.gnm.nexterm.model.InfoRow
-import dev.gnm.nexterm.model.MonitoringDetails
-import dev.gnm.nexterm.model.MonitoringServer
 import dev.gnm.nexterm.api.ApiClient
-import dev.gnm.nexterm.util.Formatters
-import kotlinx.serialization.builtins.ListSerializer
+import dev.gnm.nexterm.model.MonitoringDetails
+import dev.gnm.nexterm.model.MonitoringFilter
+import dev.gnm.nexterm.model.MonitoringServer
+import dev.gnm.nexterm.model.TimeRange
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.serialization.builtins.ListSerializer
 
 class MonitoringController internal constructor(
     private val api: ApiClient,
@@ -27,7 +30,10 @@ class MonitoringController internal constructor(
     private val _error = MutableStateFlow<String?>(null)
     private val _selected = MutableStateFlow<MonitoringServer?>(null)
     private val _details = MutableStateFlow<MonitoringDetails?>(null)
-    private val _isLoadingDetails = MutableStateFlow(false)
+    private val _detailsFailed = MutableStateFlow(false)
+    private val _filter = MutableStateFlow(MonitoringFilter.ALL)
+    private val _query = MutableStateFlow("")
+    private val _timeRange = MutableStateFlow(TimeRange.HOUR)
     private var timer: Job? = null
 
     val servers: StateFlow<List<MonitoringServer>> = _servers.asStateFlow()
@@ -35,7 +41,15 @@ class MonitoringController internal constructor(
     val error: StateFlow<String?> = _error.asStateFlow()
     val selected: StateFlow<MonitoringServer?> = _selected.asStateFlow()
     val details: StateFlow<MonitoringDetails?> = _details.asStateFlow()
-    val isLoadingDetails: StateFlow<Boolean> = _isLoadingDetails.asStateFlow()
+    val detailsFailed: StateFlow<Boolean> = _detailsFailed.asStateFlow()
+    val filter: StateFlow<MonitoringFilter> = _filter.asStateFlow()
+    val query: StateFlow<String> = _query.asStateFlow()
+    val timeRange: StateFlow<TimeRange> = _timeRange.asStateFlow()
+
+    val visibleServers: StateFlow<List<MonitoringServer>> = combine(_servers, _filter, _query) { servers, filter, query ->
+        val q = query.trim().lowercase()
+        servers.filter { matches(it, filter) && (q.isEmpty() || q in it.name.lowercase() || q in it.ip.orEmpty().lowercase()) }
+    }.stateIn(scope, SharingStarted.Eagerly, emptyList())
 
     fun start() {
         timer?.cancel()
@@ -44,6 +58,7 @@ class MonitoringController internal constructor(
             while (isActive) {
                 delay(refreshIntervalMs)
                 load(true)
+                _selected.value?.let { loadDetails(it) }
             }
         }
     }
@@ -57,7 +72,7 @@ class MonitoringController internal constructor(
     suspend fun load(silent: Boolean) {
         if (!silent) _isLoading.value = true
         try {
-            val list = api.getAs("/monitoring", "Failed", ListSerializer(MonitoringServer.serializer()))
+            val list = api.getAs("/monitoring", "Failed", ListSerializer(MonitoringServer.serializer())).sortedBy { it.id }
             _servers.value = list
             _error.value = null
             _selected.value?.let { sel -> _selected.value = list.firstOrNull { it.id == sel.id } ?: sel }
@@ -72,60 +87,61 @@ class MonitoringController internal constructor(
 
     @Throws(CancellationException::class)
     suspend fun select(server: MonitoringServer) {
+        if (_selected.value?.id != server.id) _details.value = null
         _selected.value = server
-        _isLoadingDetails.value = true
-        try {
-            val path = if (server.id.startsWith("pve-")) "/monitoring/integration/${server.id.substring(4)}" else "/monitoring/${server.id}"
-            _details.value = api.getAs("$path?timeRange=1h", "Failed", MonitoringDetails.serializer())
-        } catch (e: CancellationException) {
-            throw e
-        } catch (_: Throwable) {
-        } finally {
-            _isLoadingDetails.value = false
-        }
+        loadDetails(server)
+    }
+
+    @Throws(CancellationException::class)
+    suspend fun refreshDetails() {
+        _selected.value?.let { loadDetails(it) }
+    }
+
+    @Throws(CancellationException::class)
+    suspend fun setTimeRange(range: TimeRange) {
+        _timeRange.value = range
+        refreshDetails()
+    }
+
+    fun setFilter(filter: MonitoringFilter) {
+        _filter.value = filter
+    }
+
+    fun setQuery(query: String) {
+        _query.value = query
     }
 
     fun clearSelection(): Boolean {
         if (_selected.value == null) return false
         _selected.value = null
         _details.value = null
+        _detailsFailed.value = false
         return true
     }
 
-    fun reportingSummary(): String = "${_servers.value.count { it.isReporting }} of ${_servers.value.size} reporting"
+    fun filterLabel(filter: MonitoringFilter): String = "${filter.label} (${_servers.value.count { matches(it, filter) }})"
 
-    fun infoTitle(): String = if (_selected.value?.isPve == true) "Cluster Info" else "System Info"
-
-    fun infoRows(): List<InfoRow> {
-        val server = _selected.value ?: return emptyList()
-        val latest = _details.value?.latest
-        val os = latest?.osInfo
-        fun n(v: Double?) = (v ?: 0.0).toLong()
-        val uptime = InfoRow("Uptime", Formatters.uptime(latest?.uptime?.toLong()))
-        return if (server.isPve) listOf(
-            InfoRow("Nodes", "${n(os?.onlineNodes)} / ${n(os?.totalNodes)} online"),
-            InfoRow("Total CPU", "${n(os?.totalCpu)} cores"),
-            InfoRow("Total Memory", Formatters.bytes(os?.totalMemory?.toLong())),
-            InfoRow("VMs", "${n(os?.runningVMs)} / ${n(os?.vmCount)} running"),
-            InfoRow("Containers", "${n(os?.runningLXC)} / ${n(os?.lxcCount)} running"),
-            uptime,
-        ) else listOf(
-            InfoRow("Hostname", os?.hostname ?: "Unknown"),
-            InfoRow("OS", os?.name ?: "Unknown"),
-            InfoRow("Version", os?.version ?: "Unknown"),
-            InfoRow("Kernel", os?.kernel ?: "Unknown"),
-            InfoRow("Architecture", os?.architecture ?: "Unknown"),
-            uptime,
-        )
-    }
-
-    fun performanceRows(): List<InfoRow> {
-        val latest = _details.value?.latest ?: return emptyList()
-        return listOfNotNull(
-            latest.processes?.let { InfoRow("Processes", "${it.toLong()}") },
-            latest.loadAverageText?.let { InfoRow("Load Average", it) },
-        )
-    }
+    fun reportingSummary(): String = "${_servers.value.count { it.isOnline }} of ${_servers.value.size} reporting"
 
     fun close() = scope.cancel()
+
+    private fun matches(server: MonitoringServer, filter: MonitoringFilter) = when (filter) {
+        MonitoringFilter.ALL -> true
+        MonitoringFilter.ONLINE -> server.isOnline
+        MonitoringFilter.ISSUES -> !server.isOnline
+    }
+
+    private suspend fun loadDetails(server: MonitoringServer) {
+        try {
+            val path = if (server.id.startsWith("pve-")) "/monitoring/integration/${server.id.substring(4)}" else "/monitoring/${server.id}"
+            val details = api.getAs("$path?timeRange=${_timeRange.value.key}", "Failed", MonitoringDetails.serializer())
+            if (_selected.value?.id != server.id) return
+            _details.value = details
+            _detailsFailed.value = false
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Throwable) {
+            if (_selected.value?.id == server.id) _detailsFailed.value = _details.value == null
+        }
+    }
 }

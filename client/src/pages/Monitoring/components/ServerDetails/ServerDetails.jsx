@@ -1,275 +1,234 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import "./styles.sass";
 import { getRequest } from "@/common/utils/RequestUtil.js";
-import { mdiChartLine, mdiInformation, mdiHarddisk, mdiNetwork, mdiConsole, mdiServerNetwork } from "@mdi/js";
+import { formatBytes } from "@/common/utils/formatUtils.js";
+import { mdiChartLine, mdiConsole, mdiHarddisk, mdiInformationOutline, mdiNetworkOutline, mdiServerNetwork, mdiClose } from "@mdi/js";
 import Button from "@/common/components/Button";
 import TabSwitcher from "@/common/components/TabSwitcher";
+import EmptyState from "@/common/components/EmptyState";
 import MonitoringChart from "./components/MonitoringChart";
 import ProcessesTab from "./components/ProcessesTab";
+import StorageTab from "./components/StorageTab";
+import NetworkTab from "./components/NetworkTab";
+import {
+    EMPTY, LoadFailedState, Meter, SectionHeading, ServerIdentity, StatusBadge, StateNotice, describeMonitoringState, formatUptime,
+} from "../shared";
 import { useTranslation } from "react-i18next";
 
 const TABS = {
     server: [
-        { id: "overview", icon: mdiInformation, labelKey: "monitoring.details.tabs.overview" },
-        { id: "charts", icon: mdiChartLine, labelKey: "monitoring.details.tabs.charts" },
-        { id: "storage", icon: mdiHarddisk, labelKey: "monitoring.details.tabs.storage" },
-        { id: "network", icon: mdiNetwork, labelKey: "monitoring.details.tabs.network" },
-        { id: "processes", icon: mdiConsole, labelKey: "monitoring.details.tabs.processes" },
+        { key: "overview", icon: mdiChartLine },
+        { key: "storage", icon: mdiHarddisk },
+        { key: "network", icon: mdiNetworkOutline },
+        { key: "processes", icon: mdiConsole },
     ],
-    pve: [
-        { id: "overview", icon: mdiInformation, labelKey: "monitoring.details.tabs.overview" },
-        { id: "charts", icon: mdiChartLine, labelKey: "monitoring.details.tabs.charts" },
-        { id: "nodes", icon: mdiServerNetwork, labelKey: "monitoring.details.tabs.nodes" },
+    proxmox: [
+        { key: "overview", icon: mdiChartLine },
+        { key: "nodes", icon: mdiServerNetwork },
     ],
 };
 
-const formatUptime = (seconds, t) => {
-    if (!seconds) return t("monitoring.details.overview.systemInfo.unknown");
-    const d = Math.floor(seconds / 86400), h = Math.floor((seconds % 86400) / 3600), m = Math.floor((seconds % 3600) / 60);
-    return d > 0 ? t("monitoring.details.overview.uptime.format.full", { days: d, hours: h, minutes: m })
-        : h > 0 ? t("monitoring.details.overview.uptime.format.hoursMinutes", { hours: h, minutes: m })
-        : t("monitoring.details.overview.uptime.format.minutes", { minutes: m });
-};
+const TIME_RANGES = ["1h", "6h", "24h"];
+const SYSTEM_INFO_FIELDS = { hostname: "hostname", os: "name", version: "version", kernel: "kernel", architecture: "architecture" };
 
-const formatBytes = (bytes) => {
-    if (!bytes) return "0 B";
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${["B", "KB", "MB", "GB", "TB"][i]}`;
-};
-
-const MetricItem = ({ label, value, detail }) => (
-    <div className="metric">
-        <div className="metric-label">{label}</div>
-        <div className="metric-value">{value}</div>
-        {detail && <div className="metric-detail">{detail}</div>}
+const Fact = ({ label, value, detail }) => (
+    <div className="fact">
+        <dt>{label}</dt>
+        <dd>{value ?? EMPTY}</dd>
+        {detail && <span className="fact__detail">{detail}</span>}
     </div>
 );
 
 const InfoItem = ({ label, value }) => (
-    <div className="info-item"><span className="label">{label}:</span><span className="value">{value}</span></div>
+    <div className="info-item"><dt>{label}</dt><dd>{value}</dd></div>
 );
 
-export const ServerDetails = ({ server, activeTab = "overview", onTabChange }) => {
+const SectionCard = ({ title, badge, children }) => (
+    <section className="mon-card section-card">
+        <div className="section-card__header">
+            <h3 className="section-card__title">{title}</h3>
+            {badge}
+        </div>
+        {children}
+    </section>
+);
+
+export const ServerDetails = ({ server, state = "online", activeTab = "overview", onTabChange, onClose }) => {
     const { t } = useTranslation();
     const [detailData, setDetailData] = useState(null);
+    const [loadFailed, setLoadFailed] = useState(false);
     const [timeRange, setTimeRange] = useState("1h");
-    const isPVE = server.type === "proxmox" || server.integrationId;
-    const tabs = TABS[isPVE ? "pve" : "server"];
+    const isPVE = server.type === "proxmox";
 
     const loadDetailData = useCallback(async () => {
         try {
             const endpoint = isPVE ? `monitoring/integration/${server.integrationId}` : `monitoring/${server.id}`;
             setDetailData(await getRequest(`${endpoint}?timeRange=${timeRange}`));
-        } catch (e) { console.error("Error loading server details:", e); }
+            setLoadFailed(false);
+        } catch (e) {
+            console.error("Error loading server details:", e);
+            setLoadFailed(true);
+        }
     }, [server.id, server.integrationId, isPVE, timeRange]);
 
-    useEffect(() => { loadDetailData(); const i = setInterval(loadDetailData, 60000); return () => clearInterval(i); }, [loadDetailData]);
+    useEffect(() => {
+        loadDetailData();
+        const interval = setInterval(loadDetailData, 60000);
+        return () => clearInterval(interval);
+    }, [loadDetailData]);
 
-    const latest = useMemo(() => detailData?.latest || detailData?.data?.[0] || null, [detailData]);
-    const validTab = tabs.some(t => t.id === activeTab) ? activeTab : "overview";
+    const tabs = useMemo(
+        () => TABS[isPVE ? "proxmox" : "server"].map(tab => ({ ...tab, label: t(`monitoring.details.tabs.${tab.key}`) })),
+        [isPVE, t],
+    );
+    const rangeTabs = useMemo(() => TIME_RANGES.map(range => ({ key: range, label: t(`monitoring.details.timeRanges.${range}`) })), [t]);
 
-    const tabSwitcherTabs = useMemo(() => tabs.map(tab => ({
-        key: tab.id,
-        label: t(tab.labelKey),
-        icon: tab.icon
-    })), [tabs, t]);
+    const latest = detailData?.latest || detailData?.data?.[0] || null;
+    const validTab = tabs.some(tab => tab.key === activeTab) ? activeTab : "overview";
+    const notice = state === "online" ? null : describeMonitoringState(server, state, t);
+
+    const renderTab = () => {
+        if (!detailData) return loadFailed ? <LoadFailedState className="details-empty" onRetry={loadDetailData} /> : null;
+
+        switch (validTab) {
+            case "nodes": return <NodesTab nodes={latest?.osInfo?.nodes} t={t} />;
+            case "storage": return <StorageTab disks={latest?.disk} />;
+            case "network": return <NetworkTab network={latest?.network} />;
+            case "processes": return <ProcessesTab processList={latest?.processList} />;
+            default: {
+                const Overview = isPVE ? PVEOverviewTab : OverviewTab;
+                const range = <TabSwitcher tabs={rangeTabs} activeTab={timeRange} onTabChange={setTimeRange} />;
+                return <Overview latest={latest} data={detailData.data} range={range} t={t} />;
+            }
+        }
+    };
 
     return (
-        <div className="server-details">
-            <div className="details-tabs">
-                <div className="tab-headers">
-                    <TabSwitcher
-                        tabs={tabSwitcherTabs}
-                        activeTab={validTab}
-                        onTabChange={(tabKey) => onTabChange?.(tabKey)}
-                        variant="flat"
-                    />
-                    {validTab === "charts" && (
-                        <div className="time-range-selector">
-                            {["1h", "6h", "24h"].map(r => <Button key={r} text={t(`monitoring.details.timeRanges.${r}`)} type={timeRange === r ? "primary" : "secondary"} onClick={() => setTimeRange(r)} />)}
-                        </div>
-                    )}
-                </div>
-                <div className="tab-content">
-                    {validTab === "overview" && (isPVE ? <PVEOverviewTab latest={latest} t={t} formatBytes={formatBytes} formatUptime={formatUptime} /> : <OverviewTab latest={latest} t={t} formatBytes={formatBytes} formatUptime={formatUptime} />)}
-                    {validTab === "charts" && <ChartsTab data={detailData?.data} t={t} isPVE={isPVE} />}
-                    {validTab === "nodes" && isPVE && <NodesTab pveInfo={latest?.osInfo} t={t} formatBytes={formatBytes} formatUptime={formatUptime} />}
-                    {validTab === "storage" && !isPVE && <StorageTab disk={latest?.disk} t={t} formatBytes={formatBytes} />}
-                    {validTab === "network" && !isPVE && <NetworkTab network={latest?.network} t={t} formatBytes={formatBytes} />}
-                    {validTab === "processes" && !isPVE && <ProcessesTab processList={latest?.processList} />}
-                </div>
+        <>
+            <header className="panel-header">
+                <ServerIdentity server={server} large />
+                <StatusBadge state={state} label={t(`monitoring.grid.status.labels.${state}`)} />
+                <Button icon={mdiClose} title={t("common.close")} onClick={onClose} />
+            </header>
+            <div className="panel-tabs">
+                <TabSwitcher tabs={tabs} activeTab={validTab} onTabChange={onTabChange} />
             </div>
-        </div>
+            <div className="panel-body server-details">
+                {notice && <StateNotice state={state} {...notice} />}
+                {renderTab()}
+            </div>
+        </>
     );
 };
 
-const OverviewTab = ({ latest, t, formatBytes, formatUptime }) => (
-    <div className="overview-tab">
-        <div className="stats-grid">
-            <div className="stat-card">
-                <h3>{t("monitoring.details.overview.systemInfo.title")}</h3>
-                {latest?.osInfo ? (
-                    <div className="info-list">
-                        {["hostname", "name", "version", "kernel", "architecture"].map(k => <InfoItem key={k} label={t(`monitoring.details.overview.systemInfo.${k === "name" ? "os" : k}`)} value={latest.osInfo[k] || t("monitoring.details.overview.systemInfo.unknown")} />)}
-                        <InfoItem label={t("monitoring.details.overview.systemInfo.uptime")} value={formatUptime(latest.uptime, t)} />
-                    </div>
-                ) : <p className="no-data">{t("monitoring.details.overview.systemInfo.noData")}</p>}
-            </div>
-            <div className="stat-card">
-                <h3>{t("monitoring.details.overview.performance.title")}</h3>
-                <div className="metrics-grid">
-                    <MetricItem label={t("monitoring.details.overview.performance.cpuUsage")} value={latest?.cpuUsage != null ? `${latest.cpuUsage}%` : "N/A"} />
-                    <MetricItem label={t("monitoring.details.overview.performance.memoryUsage")} value={latest?.memoryUsage != null ? `${latest.memoryUsage}%` : "N/A"} detail={latest?.memoryTotal ? t("monitoring.details.overview.performance.total", { value: formatBytes(latest.memoryTotal) }) : null} />
-                    <MetricItem label={t("monitoring.details.overview.performance.loadAverage")} value={latest?.loadAverage?.[0]?.toFixed(2) || "N/A"} detail={latest?.loadAverage?.length >= 3 ? t("monitoring.details.overview.performance.loadDetail", { fiveMin: latest.loadAverage[1].toFixed(2), fifteenMin: latest.loadAverage[2].toFixed(2) }) : null} />
-                    <MetricItem label={t("monitoring.details.overview.performance.processes")} value={latest?.processes ?? "N/A"} />
-                </div>
-            </div>
-        </div>
-    </div>
+const Charts = ({ data, range, processesTitle, t }) => (
+    <>
+        <SectionHeading title={t("monitoring.details.overview.performance.title")}>
+            <div className="monitoring-range">{range}</div>
+        </SectionHeading>
+        <MonitoringChart data={data} title={t("monitoring.details.charts.cpuUsage")} dataKey="cpuUsage" yAxisMax={100} />
+        <MonitoringChart data={data} title={t("monitoring.details.charts.memoryUsage")} dataKey="memoryUsage" yAxisMax={100} />
+        <MonitoringChart data={data} title={processesTitle} dataKey="processes" unit="" />
+    </>
 );
 
-const PVEOverviewTab = ({ latest, t, formatBytes, formatUptime }) => {
-    const p = latest?.osInfo;
+const OverviewTab = ({ latest, data, range, t }) => {
+    const os = latest?.osInfo;
+    const hasSystemInfo = os && Object.keys(os).length > 0;
+    const load = latest?.loadAverage;
+    const unknown = t("monitoring.details.overview.systemInfo.unknown");
+
     return (
-        <div className="overview-tab">
-            <div className="stats-grid">
-                <div className="stat-card">
-                    <h3>{t("monitoring.details.pve.clusterInfo")}</h3>
-                    <div className="info-list">
-                        <InfoItem label={t("monitoring.details.pve.totalNodes")} value={p?.totalNodes || 0} />
-                        <InfoItem label={t("monitoring.details.pve.onlineNodes")} value={p?.onlineNodes || 0} />
-                        <InfoItem label={t("monitoring.details.pve.totalCPU")} value={`${p?.totalCpu || 0} ${t("monitoring.details.pve.cores")}`} />
-                        <InfoItem label={t("monitoring.details.pve.totalMemory")} value={formatBytes(p?.totalMemory)} />
-                        <InfoItem label={t("monitoring.details.pve.totalStorage")} value={formatBytes(p?.totalDisk)} />
-                        <InfoItem label={t("monitoring.details.pve.uptime")} value={formatUptime(latest?.uptime, t)} />
-                    </div>
-                </div>
-                <div className="stat-card">
-                    <h3>{t("monitoring.details.pve.resources")}</h3>
-                    <div className="metrics-grid">
-                        <MetricItem label={t("monitoring.details.overview.performance.cpuUsage")} value={latest?.cpuUsage != null ? `${latest.cpuUsage}%` : "N/A"} />
-                        <MetricItem label={t("monitoring.details.overview.performance.memoryUsage")} value={latest?.memoryUsage != null ? `${latest.memoryUsage}%` : "N/A"} detail={latest?.memoryTotal ? t("monitoring.details.overview.performance.total", { value: formatBytes(latest.memoryTotal) }) : null} />
-                        <MetricItem label={t("monitoring.details.pve.storageUsage")} value={p?.diskUsage != null ? `${p.diskUsage}%` : "N/A"} detail={p?.totalDisk ? t("monitoring.details.overview.performance.total", { value: formatBytes(p.totalDisk) }) : null} />
-                    </div>
-                </div>
-                <div className="stat-card">
-                    <h3>{t("monitoring.details.pve.virtualMachines")}</h3>
-                    <div className="metrics-grid">
-                        <MetricItem label={t("monitoring.details.pve.qemuVMs")} value={p?.vmCount ?? 0} detail={t("monitoring.details.pve.running", { count: p?.runningVMs ?? 0 })} />
-                        <MetricItem label={t("monitoring.details.pve.lxcContainers")} value={p?.lxcCount ?? 0} detail={t("monitoring.details.pve.running", { count: p?.runningLXC ?? 0 })} />
-                    </div>
-                </div>
-            </div>
-        </div>
+        <>
+            <dl className="mon-card facts">
+                <Fact label={t("monitoring.details.overview.performance.loadAverage")} value={load?.[0]?.toFixed(2)}
+                      detail={load?.length >= 3 ? t("monitoring.details.overview.performance.loadDetail", { fiveMin: load[1].toFixed(2), fifteenMin: load[2].toFixed(2) }) : null} />
+                <Fact label={t("monitoring.details.overview.performance.processes")} value={latest?.processes} />
+                <Fact label={t("monitoring.details.overview.performance.memory")} value={latest?.memoryTotal ? formatBytes(latest.memoryTotal) : null} />
+                <Fact label={t("monitoring.details.overview.systemInfo.uptime")} value={latest?.uptime ? formatUptime(latest.uptime, t) : null} />
+            </dl>
+            <Charts data={data} range={range} processesTitle={t("monitoring.details.charts.processes")} t={t} />
+            <SectionCard title={t("monitoring.details.overview.systemInfo.title")}>
+                {hasSystemInfo ? (
+                    <dl className="info-list">
+                        {Object.entries(SYSTEM_INFO_FIELDS).map(([label, field]) => (
+                            <InfoItem key={label} label={t(`monitoring.details.overview.systemInfo.${label}`)} value={os[field] || unknown} />
+                        ))}
+                        <InfoItem label={t("monitoring.details.overview.systemInfo.uptime")} value={formatUptime(latest.uptime, t, "long")} />
+                    </dl>
+                ) : <EmptyState compact icon={mdiInformationOutline} description={t("monitoring.details.overview.systemInfo.noData")} />}
+            </SectionCard>
+        </>
     );
 };
 
-const NodesTab = ({ pveInfo, t, formatBytes, formatUptime }) => (
-    <div className="nodes-tab">
-        {pveInfo?.nodes?.length > 0 ? (
-            <div className="nodes-list">
-                {pveInfo.nodes.map((n, i) => (
-                    <div key={i} className="stat-card full-width node-card">
-                        <div className="node-header"><span className="node-name">{n.name}</span><span className={`node-status ${n.status}`}>{n.status}</span></div>
-                        {n.status === "online" ? (
+const PVEOverviewTab = ({ latest, data, range, t }) => {
+    const pve = latest?.osInfo;
+    const running = (count) => t("monitoring.details.pve.running", { count: count ?? 0 });
+
+    return (
+        <>
+            <dl className="mon-card facts">
+                <Fact label={t("monitoring.details.pve.onlineNodes")} value={`${pve?.onlineNodes ?? 0}/${pve?.totalNodes ?? 0}`} />
+                <Fact label={t("monitoring.details.pve.qemuVMs")} value={pve?.vmCount ?? 0} detail={running(pve?.runningVMs)} />
+                <Fact label={t("monitoring.details.pve.lxcContainers")} value={pve?.lxcCount ?? 0} detail={running(pve?.runningLXC)} />
+                <Fact label={t("monitoring.details.pve.storageUsage")} value={pve?.diskUsage != null ? `${pve.diskUsage}%` : null}
+                      detail={pve?.totalDisk ? t("monitoring.details.overview.performance.total", { value: formatBytes(pve.totalDisk) }) : null} />
+            </dl>
+            <Charts data={data} range={range} processesTitle={t("monitoring.details.pve.vmContainerCount")} t={t} />
+            <SectionCard title={t("monitoring.details.pve.clusterInfo")}>
+                <dl className="info-list">
+                    <InfoItem label={t("monitoring.details.pve.totalCPU")} value={`${pve?.totalCpu || 0} ${t("monitoring.details.pve.cores")}`} />
+                    <InfoItem label={t("monitoring.details.pve.totalMemory")} value={formatBytes(pve?.totalMemory)} />
+                    <InfoItem label={t("monitoring.details.pve.totalStorage")} value={formatBytes(pve?.totalDisk)} />
+                    <InfoItem label={t("monitoring.details.pve.uptime")} value={formatUptime(latest?.uptime, t, "long")} />
+                </dl>
+            </SectionCard>
+        </>
+    );
+};
+
+const NodesTab = ({ nodes, t }) => {
+    if (!nodes?.length) {
+        return <EmptyState className="details-empty" icon={mdiServerNetwork} description={t("monitoring.details.pve.noNodes")} />;
+    }
+
+    return (
+        <div className="card-grid">
+            {nodes.map((node, i) => {
+                const state = node.status === "online" ? "online" : "offline";
+                const metrics = [
+                    { key: "cpu", value: node.cpuUsage },
+                    { key: "memory", value: node.memoryUsage, detail: `${formatBytes(node.memoryUsed)} / ${formatBytes(node.memory)}` },
+                    { key: "storage", value: node.diskUsage, detail: `${formatBytes(node.diskUsed)} / ${formatBytes(node.disk)}` },
+                ].map(metric => ({ ...metric, label: t(`monitoring.details.pve.${metric.key}`) }));
+
+                return (
+                    <SectionCard key={node.name || i} title={node.name}
+                                 badge={<StatusBadge state={state} label={t(`monitoring.grid.status.labels.${state}`)} />}>
+                        {state === "online" ? (
                             <>
-                                <div className="node-metrics">
-                                    {[{ k: "cpu", v: n.cpuUsage }, { k: "memory", v: n.memoryUsage, d: `${formatBytes(n.memoryUsed)} / ${formatBytes(n.memory)}` }, { k: "storage", v: n.diskUsage, d: `${formatBytes(n.diskUsed)} / ${formatBytes(n.disk)}` }].map(m => (
-                                        <div key={m.k} className="node-metric">
-                                            <span className="metric-label">{t(`monitoring.details.pve.${m.k}`)}</span>
-                                            <div className="metric-bar"><div className={`metric-fill ${m.k}`} style={{ width: `${m.v}%` }}></div></div>
-                                            <span className="metric-value">{m.v}%{m.d ? ` (${m.d})` : ""}</span>
+                                <div className="usage-list">
+                                    {metrics.map(metric => (
+                                        <div key={metric.key} className="usage-row">
+                                            <div className="mon-row-head">
+                                                <span className="usage-row__label">{metric.label}</span>
+                                                {metric.detail && <span className="usage-row__detail">{metric.detail}</span>}
+                                                <span className="usage-row__value">{metric.value ?? EMPTY}%</span>
+                                            </div>
+                                            <Meter value={metric.value} label={metric.label} />
                                         </div>
                                     ))}
                                 </div>
-                                <div className="node-details"><span>{t("monitoring.details.pve.cores")}: {n.cpu}</span><span>{t("monitoring.details.pve.uptime")}: {formatUptime(n.uptime, t)}</span></div>
+                                <dl className="info-list info-list--inline">
+                                    <InfoItem label={t("monitoring.details.pve.cores")} value={node.cpu ?? EMPTY} />
+                                    <InfoItem label={t("monitoring.details.pve.uptime")} value={formatUptime(node.uptime, t, "long")} />
+                                </dl>
                             </>
-                        ) : <p className="node-offline">{t("monitoring.details.pve.nodeOffline")}</p>}
-                    </div>
-                ))}
-            </div>
-        ) : <div className="stat-card full-width"><p className="no-data">{t("monitoring.details.pve.noNodes")}</p></div>}
-    </div>
-);
-
-const ChartsTab = ({ data, t, isPVE }) => (
-    <div className="charts-tab">
-        <div className="charts-grid">
-            <MonitoringChart data={data || []} title={t("monitoring.details.charts.cpuUsage")} type="cpu" color="#314BD3" unit="%" yAxisMax={100} height="300px" />
-            <MonitoringChart data={data || []} title={t("monitoring.details.charts.memoryUsage")} type="memory" color="#29C16A" unit="%" yAxisMax={100} height="300px" />
-            <MonitoringChart data={data || []} title={t(isPVE ? "monitoring.details.pve.vmContainerCount" : "monitoring.details.charts.processes")} type="processes" color="#DC5600" unit="" height="300px" />
+                        ) : <p className="section-card__muted">{t("monitoring.details.pve.nodeOffline")}</p>}
+                    </SectionCard>
+                );
+            })}
         </div>
-    </div>
-);
-
-const StorageTab = ({ disk, t, formatBytes }) => (
-    <div className="storage-tab">
-        {disk?.length > 0 ? (
-            <div className="disk-list">
-                {disk.map((d, i) => (
-                    <div key={i} className="stat-card full-width disk-card">
-                        <div className="disk-header">
-                            <div className="disk-info">
-                                <span className="disk-name">/dev/{d.name}</span>
-                                {d.model && <span className="disk-model">{d.model}</span>}
-                                <span className={`disk-type ${d.rotational ? "hdd" : "ssd"}`}>{d.rotational ? "HDD" : "SSD"}</span>
-                            </div>
-                            <span className="disk-size">{formatBytes(d.size)}</span>
-                        </div>
-                        {d.partitions?.length > 0 ? (
-                            <div className="partition-list">
-                                {d.partitions.map((p, j) => (
-                                    <div key={j} className="partition-item">
-                                        <div className="partition-header">
-                                            <span className="partition-name">{p.name}</span>
-                                            {p.mountPoint && <span className="partition-mount">{p.mountPoint}</span>}
-                                            {p.type && <span className="partition-type">{p.type}</span>}
-                                            <span className="partition-usage">{p.usagePercent}%</span>
-                                        </div>
-                                        <div className="partition-bar"><div className="partition-fill" style={{ width: `${p.usagePercent}%` }}></div></div>
-                                        <div className="partition-details">
-                                            <span>{t("monitoring.details.storage.used", { value: formatBytes(p.used) })}</span>
-                                            <span>{t("monitoring.details.storage.available", { value: formatBytes(p.available) })}</span>
-                                            <span>{t("monitoring.details.storage.total", { value: formatBytes(p.size) })}</span>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : <p className="no-partitions">{t("monitoring.details.storage.noPartitions")}</p>}
-                    </div>
-                ))}
-            </div>
-        ) : <div className="stat-card full-width"><p className="no-data">{t("monitoring.details.storage.noData")}</p></div>}
-    </div>
-);
-
-const NetworkTab = ({ network, t, formatBytes }) => (
-    <div className="network-tab">
-        <div className="stat-card full-width">
-            <h3>{t("monitoring.details.network.title")}</h3>
-            {network?.length > 0 ? (
-                <div className="network-list">
-                    {network.map((iface, i) => (
-                        <div key={i} className="network-item">
-                            <div className="network-header">
-                                <span className="network-name">{iface.name}</span>
-                                {iface.mac && <span className="network-mac">{iface.mac}</span>}
-                                {iface.state && <span className={`network-state ${iface.state}`}>{iface.state}</span>}
-                            </div>
-                            <div className="network-addresses">
-                                {iface.ipv4?.map((ip, j) => <span key={`v4-${j}`} className="ip-badge ipv4">{ip}</span>)}
-                                {iface.ipv6?.map((ip, j) => <span key={`v6-${j}`} className="ip-badge ipv6">{ip}</span>)}
-                            </div>
-                            <div className="network-details">
-                                <span>{t("monitoring.details.network.rxBytes")}: {formatBytes(iface.rxBytes)}</span>
-                                <span>{t("monitoring.details.network.txBytes")}: {formatBytes(iface.txBytes)}</span>
-                                {iface.speed && <span>{t("monitoring.details.network.speed")}: {iface.speed} Mbps</span>}
-                                {iface.mtu && <span>MTU: {iface.mtu}</span>}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            ) : <p className="no-data">{t("monitoring.details.network.noData")}</p>}
-        </div>
-    </div>
-);
+    );
+};
