@@ -33,7 +33,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -138,6 +144,14 @@ fun ViewOnlyBanner(text: String, modifier: Modifier = Modifier) = ListItem(
         leadingIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
     ),
 )
+
+@Composable
+fun Modifier.focusOnTapOnly(): Modifier {
+    var allowed by remember { mutableStateOf(false) }
+    return pointerInput(Unit) { awaitEachGesture { awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial); allowed = true } }
+        .focusProperties { canFocus = allowed }
+        .onFocusChanged { if (!it.hasFocus) allowed = false }
+}
 
 @Composable
 fun SectionHeader(text: String) =
