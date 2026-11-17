@@ -1,23 +1,27 @@
-const wsAuth = require("../middlewares/wsAuth");
+const { authenticateToken } = require("../middlewares/wsAuth");
 const logger = require("../utils/logger");
 const SessionManager = require("../lib/SessionManager");
-const { getSFTPAIClient, getSessionPassword } = require("../lib/ConnectionService");
-const { hasResourcePermission } = require("../utils/permission");
-const { Permission } = require("../permissions/registry");
+const Entry = require("../models/Entry");
+const { validateEntryAccess } = require("../controllers/entry");
 const { getRuntimeSettings, isConfigured } = require("../controllers/ai");
-const { createAuditLog } = require("../controllers/audit");
 const { buildModel, getModelProviderOptions } = require("../lib/ai/providers");
 const { buildSystemPrompt } = require("../lib/ai/systemPrompt");
-const { createAgent } = require("../lib/ai/agent");
+const { createAgent, createPromptLog } = require("../lib/ai/agent");
+const { createToolContext } = require("../lib/agentTools/context");
+const { summarizeSessions } = require("../lib/agentTools/tools/discovery");
+const { buildAiSdkTools, APPROVAL_MODES } = require("../lib/agentTools/adapters");
 
 const CONVERSATION_GRACE_MS = 5 * 60 * 1000;
+const conversations = new Map();
 
-const takeConversation = (session, conversationId) => {
-    if (!session.aiConversations) session.aiConversations = new Map();
-    let conversation = session.aiConversations.get(conversationId);
+const conversationKey = (accountId, conversationId) => `${accountId}:${conversationId}`;
+
+const takeConversation = (accountId, conversationId) => {
+    const key = conversationKey(accountId, conversationId);
+    let conversation = conversations.get(key);
     if (!conversation) {
-        conversation = { messages: [], reapTimer: null };
-        session.aiConversations.set(conversationId, conversation);
+        conversation = { messages: [], prompts: createPromptLog(), reapTimer: null };
+        conversations.set(key, conversation);
     }
     if (conversation.reapTimer) {
         clearTimeout(conversation.reapTimer);
@@ -26,123 +30,114 @@ const takeConversation = (session, conversationId) => {
     return conversation;
 };
 
-const dropConversation = (session, conversationId) => {
-    const conversation = session.aiConversations?.get(conversationId);
+const dropConversation = (accountId, conversationId) => {
+    const key = conversationKey(accountId, conversationId);
+    const conversation = conversations.get(key);
     if (!conversation) return;
     if (conversation.reapTimer) clearTimeout(conversation.reapTimer);
-    session.aiConversations.delete(conversationId);
+    conversations.delete(key);
 };
 
-const scheduleReap = (session, conversationId) => {
-    const conversation = session.aiConversations?.get(conversationId);
+const scheduleReap = (accountId, conversationId) => {
+    const key = conversationKey(accountId, conversationId);
+    const conversation = conversations.get(key);
     if (!conversation || conversation.reapTimer) return;
-    conversation.reapTimer = setTimeout(() => {
-        session.aiConversations?.delete(conversationId);
-    }, CONVERSATION_GRACE_MS);
+    conversation.reapTimer = setTimeout(() => conversations.delete(key), CONVERSATION_GRACE_MS);
     conversation.reapTimer.unref?.();
 };
 
-const waitForConnection = async (sessionId, timeoutMs = 30000) => {
-    const start = Date.now();
-    while (Date.now() - start < timeoutMs) {
-        if (!SessionManager.get(sessionId)) return false;
-        if (SessionManager.getConnection(sessionId)) return true;
-        await new Promise(r => setTimeout(r, 100));
-    }
-    return false;
+const resolveAllowedEntries = async (accountId, entryIds) => {
+    const unique = [...new Set((entryIds || []).map(Number).filter(Number.isInteger))];
+    if (!unique.length) return [];
+    const entries = await Entry.findAll({ where: { id: unique } });
+    const checks = await Promise.all(entries.map(async (entry) => ((await validateEntryAccess(accountId, entry)).valid ? entry : null)));
+    return checks.filter(Boolean);
 };
 
 module.exports = async function handleAIConnection(ws, req) {
-    const context = await wsAuth(ws, req);
-    if (!context) return;
-
-    if (context.isShared) return ws.close(4015, "AI is not available in shared sessions");
-
-    const { entry, user, ipAddress, userAgent, serverSession } = context;
-    if (!serverSession) return ws.close(4007, "Session required");
-
-    if (!await hasResourcePermission(user.id, entry.organizationId, Permission.FILES_VIEW)) {
-        return ws.close(4008, "You do not have permission to use the AI assistant on this server");
-    }
-    const canModify = await hasResourcePermission(user.id, entry.organizationId, Permission.FILES_MODIFY);
+    const auth = await authenticateToken(ws, req.query.sessionToken);
+    if (!auth) return;
+    const { user } = auth;
 
     const settings = await getRuntimeSettings();
     if (!isConfigured(settings)) return ws.close(4020, "AI assistant is not configured");
 
-    const sessionId = serverSession.sessionId;
-    SessionManager.resume(sessionId);
-    if (!await waitForConnection(sessionId)) return ws.close(4014, "Connection not available");
-
-    const session = SessionManager.get(sessionId);
     const conversationId = typeof req.query.conversationId === "string" && req.query.conversationId
-        ? req.query.conversationId : `session-${sessionId}`;
-    const conversation = takeConversation(session, conversationId);
+        ? req.query.conversationId : `account-${user.id}`;
+    const conversation = takeConversation(user.id, conversationId);
 
     const send = (payload) => {
         if (ws.readyState === ws.OPEN) ws.send(JSON.stringify(payload));
     };
 
-    const getSftp = () => getSFTPAIClient(sessionId, entry, user.id);
-    try {
-        await getSftp();
-    } catch (err) {
-        logger.error("AI assistant failed to open SFTP channel", { sessionId, error: err.message });
-        return ws.close(4021, "Failed to open server channel");
-    }
+    const ipAddress = req.ip || req.socket?.remoteAddress || "unknown";
+    const userAgent = req.headers["user-agent"] || "unknown";
 
-    let passwordPromise = null;
-    const getPassword = () => {
-        if (!passwordPromise) {
-            passwordPromise = getSessionPassword(sessionId, entry, user.id).catch((err) => {
-                logger.error("AI assistant failed to resolve the session password", { sessionId, error: err.message });
-                return null;
-            });
-        }
-        return passwordPromise;
+    const ctx = createToolContext({ user, origin: "ai", ipAddress, userAgent, allowedEntryIds: [], ownSessionsOnly: true });
+    let allowedEntries = [];
+    let activeEntry = null;
+    let approvalMode = "ask";
+    const pendingApprovals = new Map();
+    const pendingQuestions = new Map();
+    let questionCounter = 0;
+
+    const settle = (pending, callId, value) => {
+        const resolver = pending.get(callId);
+        if (!resolver) return;
+        pending.delete(callId);
+        resolver(value);
     };
 
-    const pendingApprovals = new Map();
+    const settleAll = (pending, value) => {
+        for (const callId of [...pending.keys()]) settle(pending, callId, value);
+    };
+
+    const applyConfig = async ({ allowedEntryIds, activeEntryId, approvalMode: requestedMode }) => {
+        if (allowedEntryIds) {
+            allowedEntries = await resolveAllowedEntries(user.id, allowedEntryIds);
+            ctx.setAllowedEntries(allowedEntries.map((e) => e.id));
+        }
+        activeEntry = allowedEntries.find((e) => e.id === Number(activeEntryId)) || null;
+        if (APPROVAL_MODES.has(requestedMode) && requestedMode !== approvalMode) {
+            approvalMode = requestedMode;
+
+            if (approvalMode === "allow") settleAll(pendingApprovals, true);
+            if (approvalMode === "readonly") settleAll(pendingApprovals, false);
+        }
+        send({ type: "config", allowedEntryIds: allowedEntries.map((e) => e.id), activeEntryId: activeEntry?.id ?? null, approvalMode });
+    };
+
     const requestApproval = (tool, args, callId) => new Promise((resolve) => {
         pendingApprovals.set(callId, resolve);
         send({ type: "confirm-request", callId, tool, args });
     });
 
-    const logAudit = (action, resource, details) => {
-        createAuditLog({ accountId: user.id, organizationId: entry.organizationId, action, resource, resourceId: entry.id, details, ipAddress, userAgent })
-            .catch((err) => logger.error("Failed to write AI assistant audit log", { action, error: err.message }));
+    ctx.askUser = (question, toolCallId = null) => new Promise((resolve) => {
+        const callId = toolCallId || `question-${Date.now()}-${++questionCounter}`;
+        pendingQuestions.set(callId, resolve);
+        send({ type: "question", callId, ...question });
+    });
+
+    const abortPendingApprovals = () => {
+        settleAll(pendingApprovals, false);
+        settleAll(pendingQuestions, null);
     };
 
-    const resolveApproval = (callId, allowed) => {
-        const resolver = pendingApprovals.get(callId);
-        if (!resolver) return;
-        pendingApprovals.delete(callId);
-        resolver(allowed);
-    };
-
-    const inFlightTools = new Set();
-    const emit = (payload) => {
-        if (payload.type === "tool-call") inFlightTools.add(payload.callId);
-        else if (payload.type === "tool-result" || payload.type === "tool-error") inFlightTools.delete(payload.callId);
-        send(payload);
-    };
+    const openSessions = () => summarizeSessions(SessionManager.getAutomated(user.id).filter((s) => ctx.canUseSession(s)));
 
     let agent;
     try {
         agent = await createAgent({
             model: await buildModel(settings),
             providerOptions: getModelProviderOptions(settings),
-            system: await buildSystemPrompt(entry),
+            system: async () => buildSystemPrompt({ allowedEntries, activeEntry, openSessions: await openSessions() }),
             history: conversation.messages,
-            getSftp,
-            getPassword,
-            canModify,
-            requireConfirmation: settings.requireConfirmation,
-            requestApproval,
-            logAudit,
-            emit,
+            prompts: conversation.prompts,
+            buildTools: (tool) => buildAiSdkTools({ tool, ctx, getApprovalMode: () => approvalMode, requestApproval }),
+            emit: send,
         });
     } catch (err) {
-        logger.error("AI assistant failed to initialise", { sessionId, error: err.message });
+        logger.error("AI assistant failed to initialise", { error: err.message });
         return ws.close(4022, "Failed to initialise assistant");
     }
 
@@ -159,28 +154,18 @@ module.exports = async function handleAIConnection(ws, req) {
         try { ws.ping(); } catch {}
     }, 30000);
 
-    send({ type: "ready", requireConfirmation: settings.requireConfirmation });
+    const boundSession = typeof req.query.sessionId === "string" ? SessionManager.get(req.query.sessionId) : null;
+    if (boundSession && boundSession.accountId === user.id && !boundSession.automated) {
+        await applyConfig({ allowedEntryIds: [boundSession.entryId], activeEntryId: boundSession.entryId });
+    }
 
-    const abortPendingApprovals = () => {
-        for (const callId of pendingApprovals.keys()) resolveApproval(callId, false);
-    };
-
-    const resetSftpIfBusy = () => {
-        if (inFlightTools.size === 0) return;
-        inFlightTools.clear();
-        const conn = SessionManager.getConnection(sessionId);
-        if (conn?.aiClient) {
-            try { conn.aiClient.close(); } catch {}
-            conn.aiClient = null;
-        }
-    };
+    send({ type: "ready", approvalMode, sessions: await openSessions() });
 
     const handleAbort = () => {
         if (!controller) return;
         controller.abort();
         controller = null;
         abortPendingApprovals();
-        resetSftpIfBusy();
         send({ type: "aborted" });
     };
 
@@ -189,8 +174,6 @@ module.exports = async function handleAIConnection(ws, req) {
 
         const turn = new AbortController();
         controller = turn;
-        inFlightTools.clear();
-        SessionManager.updateActivity(sessionId);
 
         const previous = lastTurn;
         lastTurn = (async () => {
@@ -198,21 +181,27 @@ module.exports = async function handleAIConnection(ws, req) {
             try {
                 if (turn.signal.aborted) return;
                 await run(turn.signal);
-                if (!turn.signal.aborted) send({ type: "done" });
+                if (!turn.signal.aborted) send({ type: "done", sessions: await openSessions() });
             } catch (err) {
                 if (!turn.signal.aborted) {
-                    logger.error("AI assistant turn failed", { sessionId, error: err.message });
+                    logger.error("AI assistant turn failed", { error: err.message });
                     send({ type: "error", message: err.message });
                 }
             } finally {
-                SessionManager.updateActivity(sessionId);
                 if (controller === turn) controller = null;
             }
         })();
         await lastTurn;
     };
 
-    ws.on("message", async (raw) => {
+    const beginTurn = (run) => {
+        startTurn(run).catch((err) => logger.error("AI assistant turn failed", { error: err.message }));
+    };
+
+    const promptIdOf = (value) => (typeof value === "string" && value.length <= 64 ? value : null);
+    const contentOf = (message) => (typeof message.content === "string" ? message.content.trim() : "");
+
+    const handleMessage = async (raw) => {
         let message;
         try {
             message = JSON.parse(raw.toString());
@@ -220,27 +209,41 @@ module.exports = async function handleAIConnection(ws, req) {
             return;
         }
 
-        if (message.type === "confirm") resolveApproval(message.callId, Boolean(message.allow));
+        if (message.type === "config") await applyConfig(message);
+        else if (message.type === "confirm") settle(pendingApprovals, message.callId, Boolean(message.allow));
+        else if (message.type === "answer") settle(pendingQuestions, message.callId, message.answer ?? null);
         else if (message.type === "abort") handleAbort();
         else if (message.type === "close") {
             windowClosed = true;
             handleAbort();
-            dropConversation(session, conversationId);
+            dropConversation(user.id, conversationId);
             ws.close(1000, "Window closed");
         }
-        else if (message.type === "continue") await startTurn((signal) => agent.continueTurn(signal));
+        else if (message.type === "continue") beginTurn((signal) => agent.continueTurn(signal));
         else if (message.type === "prompt") {
-            const content = typeof message.content === "string" ? message.content.trim() : "";
-            if (content) await startTurn((signal) => agent.runTurn(content, signal));
+            const content = contentOf(message);
+            if (content) beginTurn((signal) => agent.runTurn(content, signal, promptIdOf(message.promptId)));
         }
+        else if (message.type === "edit") {
+            const content = contentOf(message);
+            if (content) beginTurn((signal) => {
+                if (!agent.rewindTo(promptIdOf(message.promptId))) throw new Error("This message can no longer be edited.");
+                return agent.runTurn(content, signal, promptIdOf(message.newPromptId));
+            });
+        }
+    };
+
+    let inbox = Promise.resolve();
+    ws.on("message", (raw) => {
+        inbox = inbox.then(() => handleMessage(raw))
+            .catch((err) => logger.error("AI assistant message failed", { error: err.message }));
     });
 
     ws.on("close", () => {
         clearInterval(keepAlive);
         controller?.abort();
         abortPendingApprovals();
-        resetSftpIfBusy();
-        if (windowClosed) dropConversation(session, conversationId);
-        else scheduleReap(session, conversationId);
+        if (windowClosed) dropConversation(user.id, conversationId);
+        else scheduleReap(user.id, conversationId);
     });
 };
