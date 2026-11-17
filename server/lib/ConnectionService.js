@@ -154,7 +154,7 @@ const createConnectionForSession = async (sessionId, accountId) => {
 };
 
 const resolveFileTransferContext = async (entry, identityId, directIdentity, accountId) => {
-    if (!entry.inheritedConfigFields) await applyEffectiveEntryConfig(entry);
+    await applyEffectiveEntryConfig(entry);
     const identityResult = await resolveIdentity(entry, identityId, directIdentity, accountId);
     const identity = extractIdentity(identityResult);
     const credentials = await resolveCredentials(identity);

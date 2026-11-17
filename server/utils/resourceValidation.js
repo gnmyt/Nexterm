@@ -3,10 +3,10 @@ const Folder = require("../models/Folder");
 const { listIdentities } = require("../controllers/identity");
 const { hasOrganizationAccess } = require("./permission");
 
-const isIdentityAllowedForScope = (identity, organizationId, accountId) => {
+const isIdentityAllowedForScope = (identity, organizationId, accountIds) => {
     if (!identity) return false;
     if (identity.organizationId !== null) return identity.organizationId === organizationId;
-    return identity.accountId === accountId;
+    return accountIds instanceof Set ? accountIds.has(identity.accountId) : identity.accountId === accountIds;
 };
 
 const validateIdentityIds = async (accountId, identityIds, organizationId = null) => {
