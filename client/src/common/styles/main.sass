@@ -96,7 +96,7 @@ body.tauri-mode
 
 
 .sidebar
-  width: calc(5rem + 2px)
+  width: 4.5rem
   flex-shrink: 0
 
 .main-content
@@ -126,12 +126,22 @@ body.tauri-mode
         transition: none
         box-shadow: none
 
+*
+  scrollbar-width: thin
+  scrollbar-color: colors.$gray transparent
+
 ::-webkit-scrollbar
-  width: 13px
+  width: 10px
+  height: 10px
+
+::-webkit-scrollbar-track
+  background: transparent
 
 ::-webkit-scrollbar-thumb
-  background: colors.$lighter-background
+  background: colors.$gray
   border-radius: 10px
+  border: 2px solid transparent
+  background-clip: padding-box
 
 ::-webkit-scrollbar-thumb:hover
-  filter: brightness(1.2)
+  background-color: colors.$subtext
