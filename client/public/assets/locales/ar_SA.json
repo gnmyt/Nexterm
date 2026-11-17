@@ -448,25 +448,35 @@
     "page": {
       "title": "مراقبة الخادم ",
       "subtitle": "إحصاءات الخادم في الوقت الفعلي ومراقبة الصحة",
-      "searchPlaceholder": " البحث عن الخوادم..."
+      "searchPlaceholder": " البحث عن الخوادم...",
+      "filters": {
+        "all": "All ({{count}})",
+        "online": "Online ({{count}})",
+        "issues": "Issues ({{count}})"
+      }
     },
     "errors": {
-      "loadFailed": "فشل في تحميل بيانات المراقبة"
+      "loadFailed": "فشل في تحميل بيانات المراقبة",
+      "loadFailedDescription": "The monitoring data could not be retrieved. Check your connection and try again.",
+      "retry": "Retry"
     },
     "grid": {
-      "loading": "جارٍ تحميل بيانات المراقبة...",
       "noServers": {
         "title": "لم يتم العثور على خوادم",
         "subtitle": "لا توجد خوادم SSH متاحة للمراقبة.\nأضف بعض الخوادم لبدء مراقبتها."
       },
+      "noResults": {
+        "title": "No matching servers",
+        "subtitle": "No monitored server matches your search."
+      },
       "metrics": {
-        "cpuUsage": "استخدام المعالج",
-        "memoryUsage": "استخدام الذاكرة",
         "loadAverage": "متوسط الحمل",
         "processes": "العمليات",
         "uptime": "وقت التشغيل",
         "nodes": "العُقد",
-        "vms": "الأجهزة الافتراضية/الحاويات"
+        "vms": "الأجهزة الافتراضية/الحاويات",
+        "cpu": "CPU",
+        "memory": "Memory"
       },
       "status": {
         "serverOffline": "الخادم غير متصل",
@@ -476,7 +486,16 @@
         "errorMessage": "غير قادر على إقامة اتصال بالخادم.",
         "unknownMessage": "لا يمكن تحديد حالة الخادم.",
         "lastSeen": "آخر ظهور: {{time}}",
-        "noRecentActivity": "لا توجد نشاط حديث"
+        "noRecentActivity": "لا توجد نشاط حديث",
+        "waitingForData": "Waiting for data",
+        "pendingMessage": "Monitoring data will appear after the next monitoring cycle.",
+        "labels": {
+          "online": "Online",
+          "offline": "Offline",
+          "error": "Error",
+          "pending": "Pending",
+          "unknown": "Unknown"
+        }
       },
       "uptime": {
         "unknown": "غير معروف",
@@ -495,7 +514,6 @@
       },
       "tabs": {
         "overview": "نظرة عامة",
-        "charts": "الرسوم البيانية",
         "storage": "التخزين",
         "network": "الشبكة",
         "processes": "العمليات",
@@ -515,12 +533,11 @@
         },
         "performance": {
           "title": "مقاييس الأداء",
-          "cpuUsage": "استخدام المعالج",
-          "memoryUsage": "استخدام الذاكرة",
           "loadAverage": "متوسط الحمل",
           "processes": "العمليات النشطة",
           "total": "الإجمالي: {{value}}",
-          "loadDetail": "5د: {{fiveMin}}، 15د: {{fifteenMin}}"
+          "loadDetail": "5د: {{fiveMin}}، 15د: {{fifteenMin}}",
+          "memory": "Memory"
         },
         "uptime": {
           "format": {
@@ -538,33 +555,67 @@
       },
       "storage": {
         "title": "استخدام القرص",
-        "used": "المستخدم: {{value}}",
-        "available": "المتاح: {{value}}",
-        "total": "الإجمالي: {{value}}",
-        "type": "النوع: {{value}}",
         "noData": "لا توجد بيانات استخدام قرص متاحة",
-        "noPartitions": "لا توجد أقسام مثبتة"
+        "noPartitions": "لا توجد أقسام مثبتة",
+        "usedOf": "{{used}} of {{total}} used",
+        "free": "{{value}} free",
+        "filesystems": "Filesystems",
+        "disks": "Disks",
+        "on": "{{volume}} on {{partition}}",
+        "swap": "Swap",
+        "unmounted": "Not mounted",
+        "unallocated": "Unallocated",
+        "inodes": "Inodes",
+        "inodesDetail": "{{used}} of {{total}}",
+        "health": {
+          "passed": "Healthy",
+          "warning": "Warning",
+          "failed": "Failing",
+          "denied": "SMART needs root",
+          "temperature": "Temperature",
+          "powerOn": "Power-on time",
+          "wear": "Wear",
+          "reallocated": "Reallocated sectors",
+          "pending": "Pending sectors",
+          "mediaErrors": "Media errors",
+          "years": "{{value}} years",
+          "days": "{{value}} days",
+          "hours": "{{value}} hours",
+          "failedTitle": "Disk failure predicted",
+          "failedMessage": "{{disks}} failed its SMART self-assessment. Back up the data and replace the disk."
+        }
       },
       "network": {
-        "title": "واجهات الشبكة",
-        "rxBytes": "بايتات RX",
-        "txBytes": "بايتات TX",
-        "mac": "عنوان MAC",
         "speed": "السرعة",
-        "noData": "لا توجد بيانات واجهة شبكة متاحة"
+        "noData": "لا توجد بيانات واجهة شبكة متاحة",
+        "download": "Download",
+        "upload": "Upload",
+        "interface": "Interface",
+        "address": "Address",
+        "gateway": "Gateway",
+        "interfaces": "Interfaces",
+        "virtual": "Virtual interfaces",
+        "defaultRoute": "Default route",
+        "up": "Up",
+        "down": "Down",
+        "errors": "{{count}} errors",
+        "dropped": "{{count}} dropped",
+        "copy": "Copy {{address}}",
+        "total": "{{value}} total"
       },
       "processes": {
-        "title": "عمليات التشغيل",
         "searchPlaceholder": "عمليات البحث...",
         "showing": "عرض {{count}} من عمليات {{total}}",
         "noData": "لا توجد بيانات عملية متاحة. ستظهر بيانات المعالجة بعد دورة المراقبة التالية.",
-        "noResults": "لا توجد عمليات تطابق معايير البحث الخاصة بك."
+        "noResults": "لا توجد عمليات تطابق معايير البحث الخاصة بك.",
+        "columns": {
+          "command": "Command",
+          "cpu": "CPU",
+          "mem": "Memory"
+        }
       },
       "pve": {
         "clusterInfo": "معلومات المجموعة",
-        "resources": "استخدام الموارد",
-        "virtualMachines": "الأجهزة الافتراضية",
-        "totalNodes": "إجمالي العقد",
         "onlineNodes": "العقد عبر الإنترنت",
         "totalCPU": "إجمالي وحدة المعالجة المركزية",
         "totalMemory": "إجمالي الذاكرة",
