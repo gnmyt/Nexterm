@@ -48,9 +48,7 @@
     },
     "confirmDialog": {
       "title": "你確定嗎？",
-      "defaultText": "此動作無法撤銷。",
-      "unsavedChangesTitle": "未儲存的變更",
-      "unsavedChangesText": "您有未儲存的變更。您確定要關閉？"
+      "defaultText": "此動作無法撤銷。"
     },
     "loginDialog": {
       "title": "Nexterm",
@@ -63,7 +61,14 @@
       "backToLogin": "返回登入",
       "authenticating": "驗證...",
       "noAccount": "還沒有帳號嗎？",
-      "haveAccount": "已經有帳號了嗎？"
+      "haveAccount": "已經有帳號了嗎？",
+      "welcome": "Welcome back",
+      "subtitle": "Sign in to continue to Nexterm.",
+      "registrationSubtitle": "Create your account to get started.",
+      "firstTimeSubtitle": "Create the first administrator account for this instance.",
+      "twoFactorTitle": "Two-factor authentication",
+      "twoFactorDescription": "Enter the code from your authenticator app.",
+      "qrTitle": "Sign in with the app"
     },
     "deviceLink": {
       "title": "連結裝置",
@@ -157,8 +162,6 @@
     "quickAction": {
       "placeholder": "搜尋伺服器、片段或瀏覽...",
       "noResults": "未找到結果",
-      "navigation": "導航",
-      "settings": "設定",
       "navigate": "導航",
       "select": "選擇",
       "close": "關閉",
@@ -214,6 +217,11 @@
       "organizationDeleteError": "刪除組織失敗",
       "leftOrganization": "您已離開組織",
       "leaveOrganizationError": "未能離開組織"
+    },
+    "unsavedChanges": {
+      "title": "Unsaved changes",
+      "text": "Discard them, or keep editing and save when you're done.",
+      "keepEditing": "Keep editing"
     }
   },
   "audit": {
@@ -1546,7 +1554,8 @@
       "deleteConfirm": "此操作將永久刪除角色「{{name}}」，並將其從所有成員中移除。",
       "inheritsAllow": "繼承：允許",
       "inheritsDeny": "繼承：駁回"
-    }
+    },
+    "search": "Search settings"
   },
   "tunnel": {
     "title": "連接埠轉寄",
@@ -1580,25 +1589,6 @@
   "servers": {
     "addServerNote": "按滑鼠右鍵新增伺服器",
     "searchPlaceholder": "搜尋",
-    "inheritancePolicy": {
-      "title": "Apply inheritance",
-      "description": "Choose how existing objects should handle these inherited settings.",
-      "impact": "{{count}} existing objects are affected.",
-      "retain": {
-        "title": "Retain existing",
-        "description": "Keep current values as local overrides."
-      },
-      "adopt": {
-        "title": "Adopt folder settings",
-        "description": "Replace current values with the inherited folder settings."
-      },
-      "moveTitle": "Apply destination inheritance?",
-      "moveDescription": "Choose whether moved objects adopt the destination folder settings or retain their current values.",
-      "moveFailed": "Unable to move object",
-      "identitiesRemoved": "Some identities were removed because they are unavailable in the destination.",
-      "enableTitle": "Enable inheritance?",
-      "enableDescription": "Choose what existing objects should do when these folder settings are saved."
-    },
     "time": {
       "justNow": "現在",
       "minuteAgo": "{{count}} 分鐘前",
@@ -1708,17 +1698,13 @@
       "createFailed": "建立伺服器失敗",
       "updateFailed": "更新伺服器失敗",
       "createIdentityFailed": "建立身分失敗",
-      "updateIdentityFailed": "更新身分失敗"
+      "updateIdentityFailed": "更新身分失敗",
+      "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination."
     },
     "dialog": {
       "addServer": "新增伺服器",
       "addProtocolServer": "新增 {{protocol}} 伺服器",
       "editServer": "編輯伺服器",
-      "tabs": {
-        "details": "詳細資訊",
-        "identities": "身份",
-        "settings": "設定"
-      },
       "actions": {
         "save": "節省",
         "create": "建立"
@@ -1764,7 +1750,6 @@
           "description": "允許使用其 MAC 位址遠端喚醒此伺服器"
         },
         "rdpSecurity": {
-          "title": "安全",
           "description": "用於連線至遠端 Windows 電腦的驗證方法。若 NTLM 已停用（例如「受保護的使用者」群組），請使用 NLA。",
           "method": "安全方法"
         },
@@ -1807,8 +1792,7 @@
           "backspace": "退格",
           "delete": "刪除",
           "functionKeys": "功能鍵"
-        },
-        "noSettings": "此項目類型無其他可用設定。"
+        }
       },
       "identities": {
         "organizationIdentities": "組織身分",
@@ -1834,7 +1818,16 @@
         "noUsername": "無用戶名",
         "noOrgIdentities": "沒有組織識別。建立一個與所有成員分享。",
         "noPersonalIdentities": "無個人身分。建立一個供您私人使用。"
-      }
+      },
+      "sections": {
+        "general": "General",
+        "connection": "Connection",
+        "identities": "Identities",
+        "options": "Options",
+        "credentials": "Credentials"
+      },
+      "useInherited": "Use inherited value",
+      "reset": "Reset"
     },
     "proxmoxDialog": {
       "title": {
@@ -1842,9 +1835,6 @@
         "edit": "編輯 Proxmox VE"
       },
       "fields": {
-        "name": "名稱",
-        "serverIp": "伺服器 IP",
-        "port": "港口",
         "username": "使用者名稱",
         "password": "密碼",
         "nodeName": "節點名稱（可選）",
@@ -1853,8 +1843,6 @@
       "monitoringDescription": "收集整個群集的 CPU、記憶體和儲存設備指標",
       "placeholders": {
         "name": "名稱",
-        "serverIp": "伺服器 IP",
-        "port": "港口",
         "username": "使用者名稱 (例如 root@pam)",
         "password": "密碼",
         "specificNode": "特定節點名稱"
@@ -1868,7 +1856,8 @@
         "updated": "Proxmox 整合更新成功",
         "createFailed": "建立 Proxmox 整合失敗",
         "updateFailed": "更新 Proxmox 整合失敗"
-      }
+      },
+      "credentialsDescription": "Proxmox user with API access, e.g. root@pam or a dedicated API user."
     },
     "connectionReasonDialog": {
       "title": "需要連接的原因",
@@ -2196,6 +2185,14 @@
     "liveSessions": {
       "activeOn": "現場直播： {{users}}",
       "unknownUser": "未知使用者"
+    },
+    "folderSettings": {
+      "name": "Folder name",
+      "nameRequired": "Folder name is required",
+      "loadFailed": "Unable to load folder settings",
+      "protocol": "Defaults for",
+      "protocolHint": "Servers in this folder use what you set below unless they set their own value. Each protocol has its own defaults.",
+      "unset": "Remove from folder"
     }
   },
   "support": {
@@ -2227,7 +2224,8 @@
     "connectDevice": "連接裝置",
     "recentConnections": "近期連線",
     "getStarted": "開始使用",
-    "getStartedHint": "從側邊欄新增伺服器，開始管理您的基礎架構。"
+    "getStartedHint": "從側邊欄新增伺服器，開始管理您的基礎架構。",
+    "hibernated": "Hibernated"
   },
   "downloadApps": {
     "title": "下載應用程式",
@@ -2238,6 +2236,10 @@
       "linux": "Linux",
       "android": "安卓",
       "ios": "iOS"
-    }
+    },
+    "recommended": "Recommended",
+    "versionUnavailable": "The server version could not be determined, so direct downloads are unavailable. You can still browse the releases on GitHub.",
+    "sourceHint": "Downloads are served from the GitHub releases.",
+    "allReleases": "All releases"
   }
 }
