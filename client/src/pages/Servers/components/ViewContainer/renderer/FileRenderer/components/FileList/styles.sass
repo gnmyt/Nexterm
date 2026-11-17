@@ -76,7 +76,7 @@ $columns: minmax(12rem, 1fr) 5.5rem 6.5rem 9rem 1.75rem
 
   .loading-state,
   .error-state,
-  .empty-state
+  .file-list-empty
     display: flex
     flex-direction: column
     align-items: center
@@ -126,7 +126,7 @@ $columns: minmax(12rem, 1fr) 5.5rem 6.5rem 9rem 1.75rem
     h3
       color: colors.$error
 
-  .empty-state
+  .file-list-empty
     svg
       color: colors.$subtext
       opacity: 0.35
@@ -174,13 +174,10 @@ $columns: minmax(12rem, 1fr) 5.5rem 6.5rem 9rem 1.75rem
       box-shadow: inset 0 0 0 1px colors.$primary
 
     &.selected
-      background-color: colors.$primary-opacity
+      background-color: colors.$gray
 
-      .file-name h2
-        color: colors.$white
-
-      &:hover
-        background-color: colors.$primary-opacity
+      .dots-menu
+        opacity: 1
 
     &.dragging
       opacity: 0.4
@@ -328,6 +325,15 @@ $columns: minmax(12rem, 1fr) 5.5rem 6.5rem 9rem 1.75rem
         color: colors.$white
         background-color: colors.$gray
 
+  &:not(.grid):not(.compact)
+    .file-item.selected:has(+ .file-item.selected)
+      border-bottom-left-radius: 0
+      border-bottom-right-radius: 0
+
+    .file-item.selected + .file-item.selected
+      border-top-left-radius: 0
+      border-top-right-radius: 0
+
   &.grid
     .file-list-header
       display: none
@@ -355,7 +361,14 @@ $columns: minmax(12rem, 1fr) 5.5rem 6.5rem 9rem 1.75rem
       &:hover .file-name > svg, &:hover .file-thumbnail
         background-color: colors.$gray
 
-      &.selected .file-name > svg, &.selected .file-thumbnail, &.drop-target .file-name > svg
+      &.selected
+        background-color: transparent
+
+      &.selected .file-name > svg, &.selected .file-thumbnail
+        background-color: colors.$gray
+        box-shadow: inset 0 0 0 1px colors.$subtext
+
+      &.drop-target .file-name > svg
         background-color: colors.$primary-opacity
         box-shadow: inset 0 0 0 1px colors.$primary
 

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
 import { mdiCloudDownload, mdiPencil, mdiTrashCan } from "@mdi/js";
 import Tooltip from "@/common/components/Tooltip";
+import Button from "@/common/components/Button";
 
 export const ThemeCard = ({ theme, isActive, onToggle, onEdit, onDelete, canEdit }) => {
     const { t } = useTranslation();
@@ -29,14 +30,10 @@ export const ThemeCard = ({ theme, isActive, onToggle, onEdit, onDelete, canEdit
             {canEdit && (
                 <div className="css-theme-card-actions" onClick={(e) => e.stopPropagation()}>
                     {onEdit && (
-                        <button className="action-btn" onClick={onEdit} aria-label={t("settings.account.customThemes.edit")}>
-                            <Icon path={mdiPencil} size={0.55} />
-                        </button>
+                        <Button icon={mdiPencil} onClick={onEdit} title={t("settings.account.customThemes.edit")} />
                     )}
                     {onDelete && (
-                        <button className="action-btn delete-btn" onClick={onDelete} aria-label={t("settings.account.customThemes.delete")}>
-                            <Icon path={mdiTrashCan} size={0.55} />
-                        </button>
+                        <Button type="danger" icon={mdiTrashCan} onClick={onDelete} title={t("settings.account.customThemes.delete")} />
                     )}
                 </div>
             )}

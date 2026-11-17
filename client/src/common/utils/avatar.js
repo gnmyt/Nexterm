@@ -2,8 +2,8 @@ import { getActiveServerUrl, isTauri } from "@/common/utils/TauriUtil.js";
 import { getToken } from "@/common/utils/RequestUtil.js";
 
 const AVATAR_COLORS = [
-    "#314BD3", "#5B3FD9", "#8E3FD4", "#C13B94", "#C1364F",
-    "#C25218", "#A8741A", "#1E9E5A", "#12908C", "#2A72C9",
+    "#7D8FF5", "#A98BF0", "#D08CE8", "#E88BBF", "#EF8A8A",
+    "#F0A06A", "#D9B45A", "#6FCF97", "#5FC9C3", "#6FB3F2",
 ];
 
 export const getAvatarIdentifier = (user) => user?.accountId ?? user?.id ?? user?.username ?? user?.viewerId ?? "";

@@ -36,6 +36,7 @@
     font-size: 1rem
     font-weight: 500
     color: colors.$white
+    white-space: nowrap
 
     @media (max-width: 768px)
       font-size: 0.9rem
@@ -52,6 +53,17 @@
   &:disabled
     background-color: colors.$gray
     cursor: not-allowed
+    opacity: 0.6
+
+    &:hover
+      filter: none
+
+.btn.size-small
+  flex-shrink: 0
+  padding: 0.5rem 0.75rem
+
+  h3
+    font-size: 0.85rem
 
 .type-secondary
   background-color: colors.$lighter-background
@@ -91,3 +103,13 @@
 
       svg
         color: colors.$error
+
+  &:disabled
+    background-color: transparent
+    opacity: 0.4
+
+    &:hover
+      background-color: transparent
+
+      svg
+        color: colors.$subtext

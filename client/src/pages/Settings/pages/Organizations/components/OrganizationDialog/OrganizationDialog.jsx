@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { DialogProvider } from "@/common/components/Dialog";
+import { DialogProvider, DialogCancelButton } from "@/common/components/Dialog";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import IconInput from "@/common/components/IconInput";
 import { mdiDomain, mdiFormTextbox } from "@mdi/js";
@@ -75,7 +75,7 @@ export const OrganizationDialog = ({ open, onClose, refreshOrganizations }) => {
                     </div>
 
                     <div className="dialog-actions">
-                        <Button text={t('settings.organizations.dialog.actions.cancel')} onClick={onClose} type="secondary" buttonType="button" />
+                        <DialogCancelButton text={t('settings.organizations.dialog.actions.cancel')} />
                         <Button text={t('settings.organizations.dialog.actions.create')} type="primary" buttonType="submit" />
                     </div>
                 </form>

@@ -1,6 +1,6 @@
 import "./styles.sass";
-import { DialogProvider } from "@/common/components/Dialog";
-import { useEffect, useState, useRef } from "react";
+import { DialogProvider, DialogCancelButton } from "@/common/components/Dialog";
+import { useEffect, useMemo, useState } from "react";
 import { getRequest, patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import Button from "@/common/components/Button";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
@@ -11,6 +11,8 @@ import { mdiFormTextbox, mdiTextBox, mdiCodeBrackets } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useTranslation } from "react-i18next";
 import { OS_OPTIONS, parseOsFilter } from "@/common/utils/osUtils.js";
+import TextArea from "@/common/components/TextArea";
+import { useUnsavedChanges } from "@/common/hooks/useUnsavedChanges.js";
 
 export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganization }) => {
     const { t } = useTranslation();
@@ -21,7 +23,8 @@ export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganizati
     const { sendToast } = useToast();
     const { loadAllSnippets } = useSnippets();
 
-    const initialValues = useRef({ name: '', command: '', description: '', osFilter: [] });
+    const draft = useMemo(() => ({ name, command, description, osFilter }), [name, command, description, osFilter]);
+    const { isDirty, markClean } = useUnsavedChanges(draft);
 
     useEffect(() => {
         if (open) {
@@ -42,7 +45,7 @@ export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganizati
             setCommand(snippet.command);
             setDescription(snippet.description || "");
             setOsFilter(parsedOsFilter);
-            initialValues.current = { name: snippet.name, command: snippet.command, description: snippet.description || '', osFilter: parsedOsFilter };
+            markClean({ name: snippet.name, command: snippet.command, description: snippet.description || "", osFilter: parsedOsFilter });
         } catch (error) {
             console.error("Failed to load snippet:", error);
             sendToast("Error", t('snippets.messages.errors.loadFailed'));
@@ -55,7 +58,7 @@ export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganizati
         setCommand("");
         setDescription("");
         setOsFilter([]);
-        initialValues.current = { name: '', command: '', description: '', osFilter: [] };
+        markClean({ name: "", command: "", description: "", osFilter: [] });
     };
 
     const handleSubmit = async (e) => {
@@ -95,25 +98,10 @@ export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganizati
         }
     };
 
-    const handleClose = (event) => {
-        event.preventDefault();
-        onClose();
-    };
-
-    const arraysEqual = (a, b) => {
-        if (a.length !== b.length) return false;
-        return a.every((val, i) => val === b[i]);
-    };
-
-    const isDirty = name !== initialValues.current.name || 
-                     command !== initialValues.current.command || 
-                     description !== initialValues.current.description ||
-                     !arraysEqual(osFilter, initialValues.current.osFilter);
-
     return (
         <DialogProvider open={open} onClose={onClose} isDirty={isDirty}>
             <div className="snippet-dialog">
-                <div className="snippet-dialog-title">
+                <div className="snippet-dialog-title dialog-heading">
                     <h2>
                         <Icon path={mdiCodeBrackets} />
                         {editSnippetId ? t('snippets.dialog.title.edit') : t('snippets.dialog.title.create')}
@@ -147,15 +135,13 @@ export const SnippetDialog = ({ open, onClose, editSnippetId, selectedOrganizati
 
                         <div className="form-group">
                             <label htmlFor="command">{t('snippets.dialog.fields.command')}</label>
-                            <div className="textarea-container">
-                                <textarea id="command" value={command} onChange={(e) => setCommand(e.target.value)}
-                                          placeholder={t('snippets.dialog.placeholders.command')} rows={5} className="custom-textarea" />
-                            </div>
+                            <TextArea id="command" value={command} setValue={setCommand} mono rows={6}
+                                      placeholder={t('snippets.dialog.placeholders.command')} />
                         </div>
                     </div>
 
                     <div className="dialog-actions">
-                        <Button text={t('snippets.dialog.actions.cancel')} onClick={handleClose} type="secondary" />
+                        <DialogCancelButton text={t('snippets.dialog.actions.cancel')} />
                         <Button text={editSnippetId ? t('snippets.dialog.actions.save') : t('snippets.dialog.actions.create')} type="primary" />
                     </div>
                 </form>

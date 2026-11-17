@@ -1,16 +1,13 @@
 import Icon from "@mdi/react";
 import { mdiDomain, mdiDomainOff } from "@mdi/js";
 import ServerEntries from "../ServerEntries.jsx";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { getFolderState, setFolderState } from "@/common/utils/folderState";
 import { useDrop } from "react-dnd";
-import { patchRequest } from "@/common/utils/RequestUtil.js";
-import { ServerContext } from "@/common/contexts/ServerContext.jsx";
-import { useInheritancePolicyMove } from "@/pages/Servers/components/InheritancePolicyDialog/useInheritancePolicyMove.jsx";
+import { useMove } from "../../useMove.js";
 
 const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, connectToPVEServer, setRenameStateId, hibernatedSessions = [] }) => {
-    const { loadServers } = useContext(ServerContext);
-    const { runMove, policyDialog } = useInheritancePolicyMove();
+    const move = useMove();
     const [isOpen, setIsOpen] = useState(() => getFolderState(id, true));
     
     const toggleFolder = () => {
@@ -26,22 +23,20 @@ const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, c
         drop: async (item) => {
             try {
                 if (item.type === "server") {
-                    await runMove((inheritancePolicy) => patchRequest(`entries/${item.id}/reposition`, {
+                    await move(`entries/${item.id}/reposition`, {
                         targetId: null,
                         placement: 'after',
                         folderId: null,
                         organizationId: Number.parseInt(orgId),
-                        ...(inheritancePolicy ? { inheritancePolicy } : {}),
-                    }), loadServers);
+                    });
                     return { id: orgId };
                 }
 
                 if (item.type === "folder") {
-                    await runMove((inheritancePolicy) => patchRequest(`folders/${item.id}`, {
+                    await move(`folders/${item.id}`, {
                         parentId: null,
                         organizationId: Number.parseInt(orgId),
-                        ...(inheritancePolicy ? { inheritancePolicy } : {}),
-                    }), loadServers);
+                    });
                     return { id: orgId };
                 }
             } catch (error) {
@@ -73,7 +68,6 @@ const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, c
                     hibernatedSessions={hibernatedSessions}
                 />
             )}
-            {policyDialog}
         </>
     );
 };

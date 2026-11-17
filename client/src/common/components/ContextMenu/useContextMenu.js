@@ -11,6 +11,8 @@ export const useContextMenu = () => {
 
         if (customPosition) {
             setPosition(customPosition);
+            const isAnchor = event?.type !== "contextmenu" && event?.currentTarget?.getBoundingClientRect;
+            triggerRef.current = isAnchor ? event.currentTarget : null;
         } else if (event) {
             if (event.currentTarget && event.currentTarget.getBoundingClientRect) {
                 const rect = event.currentTarget.getBoundingClientRect();

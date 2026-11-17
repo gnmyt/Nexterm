@@ -6,6 +6,7 @@ import Button from "@/common/components/Button";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { mdiContentSave } from "@mdi/js";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
 
 const NumberInput = ({ value, onChange, min, max, unit }) => (
     <div className="setting-input number-input">
@@ -58,8 +59,8 @@ export const Monitoring = () => {
 
     return (
         <div className="monitoring-settings">
-            <div className="settings-section">
-                <h2>{s("statusChecker.title")}</h2>
+            <div className="settings-section settings-page-section">
+                <SettingsHeading>{s("statusChecker.title")}</SettingsHeading>
                 <p>{s("statusChecker.description")}</p>
                 <SettingItem title={s("statusChecker.enable.title")} description={s("statusChecker.enable.description")}>
                     <ToggleSwitch onChange={(v) => set("statusCheckerEnabled", v)} id="status-checker" checked={settings.statusCheckerEnabled} />
@@ -71,8 +72,8 @@ export const Monitoring = () => {
                 )}
             </div>
 
-            <div className="settings-section">
-                <h2>{s("dataCollection.title")}</h2>
+            <div className="settings-section settings-page-section">
+                <SettingsHeading>{s("dataCollection.title")}</SettingsHeading>
                 <p>{s("dataCollection.description")}</p>
                 <SettingItem title={s("dataCollection.enable.title")} description={s("dataCollection.enable.description")}>
                     <ToggleSwitch onChange={(v) => set("monitoringEnabled", v)} id="monitoring" checked={settings.monitoringEnabled} />
@@ -87,8 +88,8 @@ export const Monitoring = () => {
                 </>)}
             </div>
 
-            <div className="settings-section">
-                <h2>{s("advanced.title")}</h2>
+            <div className="settings-section settings-page-section">
+                <SettingsHeading>{s("advanced.title")}</SettingsHeading>
                 <p>{s("advanced.description")}</p>
                 <SettingItem title={s("advanced.timeout.title")} description={s("advanced.timeout.description")}>
                     <NumberInput value={settings.connectionTimeout} onChange={(v) => set("connectionTimeout", clamp(v, 5, 120))} min={5} max={120} unit={s("seconds")} />

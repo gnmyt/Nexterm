@@ -310,7 +310,7 @@ export const FileList = forwardRef(({
                     <p>{error}</p>
                 </div>
             ) : filteredItems.length === 0 && !creatingFolder && !creatingFile ? (
-                <div className="empty-state" onContextMenu={handleEmptyContextMenu}>
+                <div className="file-list-empty" onContextMenu={handleEmptyContextMenu}>
                     <Icon path={query ? mdiFileSearchOutline : mdiFolderOpenOutline} />
                     <h3>{t(query ? "servers.fileManager.search.noResultsTitle" : "servers.fileManager.states.emptyFolder")}</h3>
                     <p>{query

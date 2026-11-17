@@ -1,60 +1,87 @@
-import React, { createContext, useCallback, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
-import { mdiClose } from "@mdi/js";
+import { mdiClose, mdiAlertCircleOutline } from "@mdi/js";
 import "./styles.sass";
+import Button from "@/common/components/Button";
 
-export const DialogContext = createContext({});
+const DialogContext = createContext({});
 
-export const DialogProvider = ({ disableClosing, open, children, onClose, isDirty }) => {
+const UnsavedChangesGuard = ({ onKeep, onDiscard, guardRef }) => {
     const { t } = useTranslation();
+    return (
+        <div className="dialog-guard" role="alert" ref={guardRef}>
+            <span className="dialog-guard__icon"><Icon path={mdiAlertCircleOutline} /></span>
+            <div className="dialog-guard__text">
+                <strong>{t("common.unsavedChanges.title")}</strong>
+                <span>{t("common.unsavedChanges.text")}</span>
+            </div>
+            <div className="dialog-guard__actions">
+                <Button type="secondary" size="small" text={t("common.unsavedChanges.keepEditing")} onClick={onKeep} />
+                <Button type="danger" size="small" text={t("common.actions.discard")} onClick={onDiscard} />
+            </div>
+        </div>
+    );
+};
+
+export const DialogCancelButton = ({ text, type = "secondary", ...props }) => {
+    const { t } = useTranslation();
+    const requestClose = useContext(DialogContext);
+    return <Button type={type} buttonType="button" text={text ?? t("common.actions.cancel")} {...props} onClick={requestClose} />;
+};
+
+export const DialogProvider = ({ disableClosing, open, children, onClose, isDirty, className }) => {
     const areaRef = useRef();
     const ref = useRef();
-    const confirmRef = useRef();
+    const guardRef = useRef();
 
     const [isVisible, setIsVisible] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
-    const [showConfirm, setShowConfirm] = useState(false);
+    const [showGuard, setShowGuard] = useState(false);
 
     const closeInner = useCallback(() => {
-        setShowConfirm(false);
+        setShowGuard(false);
         setIsClosing(true);
+    }, []);
+
+    const nudge = useCallback(() => {
+        const el = ref.current;
+        if (!el?.animate || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+        const offsets = [0, -2, 3, -4, 4, -4, 4, -4, 3, -2, 0];
+        el.animate(offsets.map(x => ({ transform: `translateX(${x}px)` })),
+            { duration: 400, easing: "cubic-bezier(0.36, 0.07, 0.19, 0.97)" });
     }, []);
 
     const tryClose = useCallback(() => {
         if (disableClosing) return;
-        
-        const dirty = typeof isDirty === 'function' ? isDirty() : isDirty;
+
+        const dirty = typeof isDirty === "function" ? isDirty() : isDirty;
         if (dirty) {
-            setShowConfirm(true);
+            setShowGuard(true);
+            nudge();
             return;
         }
         closeInner();
-    }, [disableClosing, isDirty, closeInner]);
+    }, [disableClosing, isDirty, closeInner, nudge]);
 
-    const handleConfirmClose = useCallback(() => {
-        closeInner();
-    }, [closeInner]);
+    const keepEditing = useCallback(() => setShowGuard(false), []);
 
-    const handleCancelClose = useCallback(() => {
-        setShowConfirm(false);
-    }, []);
+    useEffect(() => {
+        if (!showGuard) return;
+        const el = ref.current;
+        if (!el) return;
+        const onEdit = () => setShowGuard(false);
+        el.addEventListener("input", onEdit, true);
+        return () => el.removeEventListener("input", onEdit, true);
+    }, [showGuard]);
 
     useEffect(() => {
         const handleClick = (event) => {
-            if (showConfirm) {
-                if (!confirmRef.current?.contains(event.target)) {
-                    setShowConfirm(false);
-                }
-                return;
-            }
+            const isInsideDialog = ref.current?.contains(event.target) || guardRef.current?.contains(event.target);
+            const isInsidePortal = !!document.getElementById("select-box-portal")?.contains(event.target)
+                || !!event.target.closest(".select-box__options, .icon-chooser__dropdown");
 
-            if (event.target.closest("[data-dialog-action]")) return;
-            
-            const isInsideDialog = ref.current?.contains(event.target);
-            const isInsidePortal = !!event.target.closest('.select-box__options, .icon-chooser__dropdown');
-            
             if (!isInsideDialog && !isInsidePortal) {
                 tryClose();
             }
@@ -62,37 +89,39 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
 
         document.addEventListener("mousedown", handleClick);
         return () => document.removeEventListener("mousedown", handleClick);
-    }, [ref, tryClose, showConfirm]);
+    }, [ref, tryClose]);
 
     useEffect(() => {
         if (!open || disableClosing) return;
 
         const handleKeyDown = (event) => {
-            if (event.key === 'Escape') {
+            if (event.key === "Escape") {
+                if (document.querySelector(".icon-chooser__dropdown.open, .select-box__options.open")) return;
                 event.preventDefault();
-                if (showConfirm) {
-                    setShowConfirm(false);
+                if (showGuard) {
+                    setShowGuard(false);
                 } else {
                     tryClose();
                 }
             }
         };
 
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [open, disableClosing, tryClose, showConfirm]);
+        document.addEventListener("keydown", handleKeyDown);
+        return () => document.removeEventListener("keydown", handleKeyDown);
+    }, [open, disableClosing, tryClose, showGuard]);
 
     useEffect(() => {
         if (open) {
             setIsVisible(true);
             setIsClosing(false);
-            setShowConfirm(false);
+            setShowGuard(false);
         } else if (!isClosing) {
             closeInner();
         }
     }, [open]);
 
-    const handleAnimationEnd = () => {
+    const handleAnimationEnd = (event) => {
+        if (event.target !== ref.current) return;
         if (isClosing) {
             setIsVisible(false);
             setIsClosing(false);
@@ -102,8 +131,8 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
 
     const dialogContent = isVisible ? (
         <div className={`dialog-area ${isClosing ? "dialog-area-hidden" : ""}`} ref={areaRef}>
-            <div className={`dialog ${isClosing ? "dialog-hidden" : ""}`} ref={ref}
-                onAnimationEnd={handleAnimationEnd}>
+            <div className={`dialog${className ? " " + className : ""} ${isClosing ? "dialog-hidden" : ""}`}
+                 ref={ref} onAnimationEnd={handleAnimationEnd}>
                 {!disableClosing && (
                     <button className="dialog-close-btn" onClick={tryClose} aria-label="Close dialog">
                         <Icon path={mdiClose} size={0.9} />
@@ -111,27 +140,12 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
                 )}
                 {children}
             </div>
-            {showConfirm && (
-                <div className="dialog-confirm-overlay">
-                    <div className="dialog-confirm" ref={confirmRef}>
-                        <h3>{t('common.confirmDialog.unsavedChangesTitle')}</h3>
-                        <p>{t('common.confirmDialog.unsavedChangesText')}</p>
-                        <div className="dialog-confirm-actions">
-                            <button className="dialog-confirm-btn secondary" onClick={handleCancelClose}>
-                                {t('common.actions.cancel')}
-                            </button>
-                            <button className="dialog-confirm-btn primary" onClick={handleConfirmClose}>
-                                {t('common.actions.discard')}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {showGuard && <UnsavedChangesGuard onKeep={keepEditing} onDiscard={closeInner} guardRef={guardRef} />}
         </div>
     ) : null;
 
     return (
-        <DialogContext.Provider value={closeInner}>
+        <DialogContext.Provider value={tryClose}>
             {createPortal(dialogContent, document.body)}
         </DialogContext.Provider>
     );

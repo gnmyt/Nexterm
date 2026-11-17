@@ -87,38 +87,3 @@
     @media (max-width: 480px)
         flex-direction: column
         width: 100%
-
-.error-btn
-    display: flex
-    align-items: center
-    justify-content: center
-    gap: 0.5rem
-    padding: 0.75rem 1.25rem
-    border-radius: 0.5rem
-    border: 1px solid colors.$dark-gray
-    cursor: pointer
-    transition: all 0.2s ease
-    font-size: 0.9rem
-    font-weight: 500
-    font-family: inherit
-
-    svg
-        width: 1.1rem
-        height: 1.1rem
-
-    &:hover
-        filter: brightness(0.85)
-
-    &:active
-        transform: scale(0.97)
-
-    @media (max-width: 480px)
-        width: 100%
-
-.error-btn.primary
-    background: colors.$primary-opacity
-    color: colors.$white
-
-.error-btn.secondary
-    background: colors.$lighter-background
-    color: colors.$white

@@ -19,25 +19,28 @@
 
   &__input
     width: 100%
-    padding: 0.8rem 2.5rem 0.8rem 2.75rem
+    padding: 0.75rem 2.5rem 0.75rem 2.75rem
     border: 1px solid colors.$gray
-    background-color: colors.$lighter-background
+    background-color: colors.$dark-gray
     color: colors.$white
-    border-radius: 0.7rem
-    font-size: 14pt
+    border-radius: 0.625rem
+    font-size: 0.95rem
+    font-weight: 500
+    font-family: inherit
+    box-sizing: border-box
     outline: none
-    transition: border-color 0.15s ease, background-color 0.15s ease
-
-    @media (max-width: 768px)
-      padding: 0.7rem 2.25rem 0.7rem 2.5rem
-      font-size: 13pt
+    transition: border-color 0.15s ease, box-shadow 0.15s ease
 
     &::placeholder
       color: colors.$subtext
+      opacity: 0.8
+
+    &:hover
+      border-color: colors.$subtext
 
     &:focus
       border-color: colors.$primary
-      background-color: colors.$dark-gray
+      box-shadow: colors.$focus-ring
 
     &:disabled
       opacity: 0.6
@@ -109,11 +112,10 @@
 
     &:hover,
     &.highlighted
-      background-color: colors.$gray
+      background-color: colors.$dark-gray
 
     &.highlighted
-      outline: 2px solid colors.$primary
-      outline-offset: -2px
+      box-shadow: inset 0 0 0 1px colors.$gray
 
   &__user-info
     display: flex

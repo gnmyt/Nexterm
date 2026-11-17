@@ -9,6 +9,7 @@ import SelectBox from "@/common/components/SelectBox";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useAI } from "@/common/contexts/AIContext.jsx";
 import { mdiRobot, mdiTestTube, mdiEye, mdiEyeOff } from "@mdi/js";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
 
 export const AI = () => {
     const { t } = useTranslation();
@@ -263,8 +264,8 @@ export const AI = () => {
 
     return (
         <div className="ai-settings">
-            <div className="settings-section">
-                <h2>{t("settings.ai.title")}</h2>
+            <div className="settings-section settings-page-section">
+                <SettingsHeading>{t("settings.ai.title")}</SettingsHeading>
                 <p>{t("settings.ai.description")}</p>
 
                 <div className="setting-item">

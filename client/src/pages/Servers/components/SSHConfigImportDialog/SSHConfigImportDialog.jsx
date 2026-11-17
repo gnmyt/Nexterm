@@ -9,6 +9,7 @@ import Button from "@/common/components/Button";
 import { postRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import Icon from "@mdi/react";
+import TextArea from "@/common/components/TextArea";
 
 export const SSHConfigImportDialog = ({ open, onClose, currentFolderId, currentOrganizationId }) => {
     const { t } = useTranslation();
@@ -216,16 +217,9 @@ export const SSHConfigImportDialog = ({ open, onClose, currentFolderId, currentO
                 
                 <div className="form-group">
                     <label htmlFor="config-content">{t('servers.sshConfigImport.configContent.label')}</label>
-                    <textarea
-                        id="config-content"
-                        placeholder={t('servers.sshConfigImport.configContent.placeholder')}
-                        value={configContent}
-                        onChange={(e) => {
-                            setConfigContent(e.target.value);
-                            parseKeyFiles(e.target.value);
-                        }}
-                        rows={10}
-                    />
+                    <TextArea id="config-content" mono rows={10} value={configContent}
+                              placeholder={t('servers.sshConfigImport.configContent.placeholder')}
+                              onChange={(e) => { setConfigContent(e.target.value); parseKeyFiles(e.target.value); }} />
                 </div>
 
                 {Object.keys(keyFiles).length > 0 && (

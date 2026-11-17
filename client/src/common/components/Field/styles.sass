@@ -1,0 +1,66 @@
+@use "@/common/styles/colors"
+
+.form-field
+  display: flex
+  flex-direction: column
+  gap: 0.4rem
+  min-width: 0
+
+  &__label
+    display: flex
+    align-items: center
+    justify-content: space-between
+
+    .form-field-reset
+      margin-right: -0.375rem
+
+  label
+    color: colors.$subtext
+    font-weight: 600
+    font-size: 0.8rem
+
+  &__hint
+    margin: 0.125rem 0 0
+    font-size: 0.75rem
+    font-weight: 500
+    line-height: 1.45
+    color: colors.$subtext
+
+.form-field-inherited
+  opacity: 0.58
+  transition: opacity 0.15s ease
+
+  &:hover, &:focus-within
+    opacity: 1
+
+.form-field-reset
+  display: inline-flex
+  align-items: center
+  gap: 0.25rem
+  flex-shrink: 0
+  margin-left: 0.5rem
+  padding: 0.125rem 0.375rem
+  border: none
+  border-radius: 0.375rem
+  background: transparent
+  color: colors.$subtext
+  font-family: inherit
+  font-size: 0.72rem
+  font-weight: 600
+  line-height: 1
+  cursor: pointer
+  vertical-align: middle
+  outline: none
+  transition: background-color 0.12s ease, color 0.12s ease
+
+  svg
+    width: 0.8rem
+    height: 0.8rem
+    color: inherit
+
+  &:hover
+    color: colors.$white
+    background-color: colors.$gray
+
+  &:focus-visible
+    box-shadow: colors.$focus-ring

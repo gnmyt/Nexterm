@@ -1,35 +1,3 @@
 @use "@/common/styles/colors"
 @use "@/common/styles/breakpoints"
 
-.audit-page
-  background-color: colors.$background
-  height: 100%
-  display: flex
-  flex-direction: column
-  overflow: hidden
-  min-width: 0
-
-  .audit-content
-    display: flex
-    flex-direction: column
-    gap: 1rem
-    padding: 2rem
-    overflow-y: auto
-    overflow-x: hidden
-    flex: 1
-    min-width: 0
-
-    @media (max-width: breakpoints.$tablet)
-      padding: 1.5rem
-      gap: 0.875rem
-
-    @media (max-width: breakpoints.$mobile)
-      padding: 1rem
-      gap: 0.75rem
-
-    @media (max-width: 480px)
-      padding: 0.75rem
-      gap: 0.625rem
-
-    & > *
-      min-width: 0

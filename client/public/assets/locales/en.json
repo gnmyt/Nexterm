@@ -48,9 +48,7 @@
     },
     "confirmDialog": {
       "title": "Are you sure?",
-      "defaultText": "This action cannot be undone.",
-      "unsavedChangesTitle": "Unsaved Changes",
-      "unsavedChangesText": "You have unsaved changes. Are you sure you want to close?"
+      "defaultText": "This action cannot be undone."
     },
     "loginDialog": {
       "title": "Nexterm",
@@ -63,7 +61,14 @@
       "backToLogin": "Back to Login",
       "authenticating": "Authenticating...",
       "noAccount": "Don't have an account?",
-      "haveAccount": "Already have an account?"
+      "haveAccount": "Already have an account?",
+      "welcome": "Welcome back",
+      "subtitle": "Sign in to continue to Nexterm.",
+      "registrationSubtitle": "Create your account to get started.",
+      "firstTimeSubtitle": "Create the first administrator account for this instance.",
+      "twoFactorTitle": "Two-factor authentication",
+      "twoFactorDescription": "Enter the code from your authenticator app.",
+      "qrTitle": "Sign in with the app"
     },
     "deviceLink": {
       "title": "Link Device",
@@ -157,8 +162,6 @@
     "quickAction": {
       "placeholder": "Search servers, snippets, or navigate...",
       "noResults": "No results found",
-      "navigation": "Navigation",
-      "settings": "Settings",
       "navigate": "Navigate",
       "select": "Select",
       "close": "Close",
@@ -214,6 +217,11 @@
       "organizationDeleteError": "Failed to delete organization",
       "leftOrganization": "You have left the organization",
       "leaveOrganizationError": "Failed to leave organization"
+    },
+    "unsavedChanges": {
+      "title": "Unsaved changes",
+      "text": "Discard them, or keep editing and save when you're done.",
+      "keepEditing": "Keep editing"
     }
   },
   "audit": {
@@ -1546,7 +1554,8 @@
       "deleteConfirm": "This will permanently delete the role \"{{name}}\" and remove it from all members.",
       "inheritsAllow": "Inherits: Allowed",
       "inheritsDeny": "Inherits: Denied"
-    }
+    },
+    "search": "Search settings"
   },
   "tunnel": {
     "title": "Port Forward",
@@ -1580,25 +1589,6 @@
   "servers": {
     "addServerNote": "Right-click to add a new server",
     "searchPlaceholder": "Search",
-    "inheritancePolicy": {
-      "title": "Apply inheritance",
-      "description": "Choose how existing objects should handle these inherited settings.",
-      "impact": "{{count}} existing objects are affected.",
-      "retain": {
-        "title": "Retain existing",
-        "description": "Keep current values as local overrides."
-      },
-      "adopt": {
-        "title": "Adopt folder settings",
-        "description": "Replace current values with the inherited folder settings."
-      },
-      "moveTitle": "Apply destination inheritance?",
-      "moveDescription": "Choose whether moved objects adopt the destination folder settings or retain their current values.",
-      "moveFailed": "Unable to move object",
-      "identitiesRemoved": "Some identities were removed because they are unavailable in the destination.",
-      "enableTitle": "Enable inheritance?",
-      "enableDescription": "Choose what existing objects should do when these folder settings are saved."
-    },
     "time": {
       "justNow": "Just now",
       "minuteAgo": "{{count}} min ago",
@@ -1708,17 +1698,13 @@
       "createFailed": "Failed to create server",
       "updateFailed": "Failed to update server",
       "createIdentityFailed": "Failed to create identity",
-      "updateIdentityFailed": "Failed to update identity"
+      "updateIdentityFailed": "Failed to update identity",
+      "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination."
     },
     "dialog": {
       "addServer": "Add server",
       "addProtocolServer": "Add {{protocol}} server",
       "editServer": "Edit server",
-      "tabs": {
-        "details": "Details",
-        "identities": "Identities",
-        "settings": "Settings"
-      },
       "actions": {
         "save": "Save",
         "create": "Create"
@@ -1764,7 +1750,6 @@
           "description": "Allow waking this server remotely using its MAC address"
         },
         "rdpSecurity": {
-          "title": "Security",
           "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
           "method": "Security Method"
         },
@@ -1807,8 +1792,7 @@
           "backspace": "Backspace",
           "delete": "Delete",
           "functionKeys": "Function Keys"
-        },
-        "noSettings": "No additional settings available for this entry type."
+        }
       },
       "identities": {
         "organizationIdentities": "Organization Identities",
@@ -1834,7 +1818,16 @@
         "noUsername": "No username",
         "noOrgIdentities": "No organization identities. Create one to share with all members.",
         "noPersonalIdentities": "No personal identities. Create one for your private use."
-      }
+      },
+      "sections": {
+        "general": "General",
+        "connection": "Connection",
+        "identities": "Identities",
+        "options": "Options",
+        "credentials": "Credentials"
+      },
+      "useInherited": "Use inherited value",
+      "reset": "Reset"
     },
     "proxmoxDialog": {
       "title": {
@@ -1842,9 +1835,6 @@
         "edit": "Edit Proxmox VE"
       },
       "fields": {
-        "name": "Name",
-        "serverIp": "Server-IP",
-        "port": "Port",
         "username": "Username",
         "password": "Password",
         "nodeName": "Node Name (Optional)",
@@ -1853,8 +1843,6 @@
       "monitoringDescription": "Collect cluster-wide CPU, memory, and storage metrics",
       "placeholders": {
         "name": "Name",
-        "serverIp": "Server-IP",
-        "port": "Port",
         "username": "Username (e.g. root@pam)",
         "password": "Password",
         "specificNode": "Specific node name"
@@ -1868,7 +1856,8 @@
         "updated": "Proxmox integration updated successfully",
         "createFailed": "Failed to create Proxmox integration",
         "updateFailed": "Failed to update Proxmox integration"
-      }
+      },
+      "credentialsDescription": "Proxmox user with API access, e.g. root@pam or a dedicated API user."
     },
     "connectionReasonDialog": {
       "title": "Connection Reason Required",
@@ -2196,6 +2185,14 @@
     "liveSessions": {
       "activeOn": "Live sessions: {{users}}",
       "unknownUser": "Unknown user"
+    },
+    "folderSettings": {
+      "name": "Folder name",
+      "nameRequired": "Folder name is required",
+      "loadFailed": "Unable to load folder settings",
+      "protocol": "Defaults for",
+      "protocolHint": "Servers in this folder use what you set below unless they set their own value. Each protocol has its own defaults.",
+      "unset": "Remove from folder"
     }
   },
   "support": {
@@ -2227,7 +2224,8 @@
     "connectDevice": "Connect Device",
     "recentConnections": "Recent Connections",
     "getStarted": "Get Started",
-    "getStartedHint": "Add a server from the sidebar to begin managing your infrastructure."
+    "getStartedHint": "Add a server from the sidebar to begin managing your infrastructure.",
+    "hibernated": "Hibernated"
   },
   "downloadApps": {
     "title": "Download Apps",
@@ -2238,6 +2236,10 @@
       "linux": "Linux",
       "android": "Android",
       "ios": "iOS"
-    }
+    },
+    "recommended": "Recommended",
+    "versionUnavailable": "The server version could not be determined, so direct downloads are unavailable. You can still browse the releases on GitHub.",
+    "sourceHint": "Downloads are served from the GitHub releases.",
+    "allReleases": "All releases"
   }
 }

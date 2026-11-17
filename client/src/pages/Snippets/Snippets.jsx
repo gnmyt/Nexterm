@@ -16,10 +16,11 @@ import { getRequest } from "@/common/utils/RequestUtil.js";
 import { useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { Permission } from "@/common/utils/permissions.js";
+import { Page, PageToolbar, PageContent } from "@/common/components/Page";
 
 export const Snippets = () => {
     const { t } = useTranslation();
-    const [activeTab, setActiveTab] = useState(0); // 0 = snippets, 1 = scripts
+    const [activeTab, setActiveTab] = useState(0);
     const [snippetDialogOpen, setSnippetDialogOpen] = useState(false);
     const [scriptDialogOpen, setScriptDialogOpen] = useState(false);
     const [editSnippetId, setEditSnippetId] = useState(null);
@@ -110,7 +111,6 @@ export const Snippets = () => {
             { value: null, label: t("snippets.page.personal"), icon: mdiAccount },
         ];
 
-        // Add organizations
         organizations.forEach(org => {
             options.push({ value: org.id, label: org.name, icon: mdiDomain });
         });
@@ -185,7 +185,7 @@ export const Snippets = () => {
     };
 
     return (
-        <div className="snippets-page">
+        <Page>
             <PageHeader
                 icon={activeTab === 0 ? mdiCodeBraces : mdiScriptText}
                 title={activeTab === 0 ? t("snippets.page.title") : t("scripts.page.title")}
@@ -199,8 +199,7 @@ export const Snippets = () => {
                 )}
             </PageHeader>
 
-            <div className="snippets-content-wrapper">
-                <div className="snippets-controls">
+            <PageToolbar>
                     <div className="snippets-tabs">
                         <TabSwitcher
                             tabs={[
@@ -219,22 +218,21 @@ export const Snippets = () => {
                             setSelected={handleSelectionChange}
                         />
                     </div>
-                </div>
+            </PageToolbar>
 
-                <div className="snippets-content">
+            <PageContent>
                     {activeTab === 0 && <SnippetsList snippets={snippets} onEdit={openEditSnippetDialog}
                                                       selectedOrganization={selectedOrganization}
                                                       isReadOnly={isSourceSelected} />}
                     {activeTab === 1 && <ScriptsList scripts={displayScripts} onEdit={openEditScriptDialog}
                                                      selectedOrganization={selectedOrganization}
                                                      isReadOnly={isSourceSelected} />}
-                </div>
-            </div>
+            </PageContent>
 
             <SnippetDialog open={snippetDialogOpen} onClose={closeSnippetDialog} editSnippetId={editSnippetId}
                            selectedOrganization={selectedOrganization} />
             <ScriptDialog open={scriptDialogOpen} onClose={closeScriptDialog} editScriptId={editScriptId}
                           selectedOrganization={selectedOrganization} />
-        </div>
+        </Page>
     );
 };

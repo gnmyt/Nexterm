@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import Icon from "@mdi/react";
+import EmptyState from "@/common/components/EmptyState";
 import { mdiHistory, mdiPower, mdiPlay, mdiServerNetwork, mdiConnection, mdiFolderOpen, mdiCursorDefaultClick, mdiDownload, mdiLinkVariant, mdiWeb } from "@mdi/js";
 import { getRequest } from "@/common/utils/RequestUtil";
 import { useTranslation } from "react-i18next";
@@ -135,13 +136,13 @@ export const WelcomePanel = ({
                                         <div className="item-info">
                                             <span className="item-name">{item.name}</span>
                                             <span className="item-meta">
-                                                {hibernated ?
-                                                    <span className="hibernated-badge"><Icon path={mdiPower} />Hibernated</span> : formatTimeAgo(item.timestamp)}
+                                                {PROTOCOL_LABELS[item.connectionType] && <span className="item-protocol">{PROTOCOL_LABELS[item.connectionType]}</span>}
+                                                {hibernated
+                                                    ? <span className="hibernated-badge"><Icon path={mdiPower} />{t("welcome.hibernated")}</span>
+                                                    : <span>{formatTimeAgo(item.timestamp)}</span>}
                                             </span>
                                         </div>
                                         <div className="item-action">
-                                            <span
-                                                className="protocol-badge">{PROTOCOL_LABELS[item.connectionType] || "Connect"}</span>
                                             <Icon path={mdiPlay} className="play-icon" />
                                         </div>
                                     </div>
@@ -150,11 +151,7 @@ export const WelcomePanel = ({
                         </div>
                     </div>
                 ) : (
-                    <div className="empty-state">
-                        <Icon path={mdiServerNetwork} />
-                        <h3>{t("welcome.getStarted")}</h3>
-                        <p>{t("welcome.getStartedHint")}</p>
-                    </div>
+                    <EmptyState icon={mdiServerNetwork} title={t("welcome.getStarted")} description={t("welcome.getStartedHint")} />
                 )}
             </div>
 

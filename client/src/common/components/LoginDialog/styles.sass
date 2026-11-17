@@ -1,86 +1,116 @@
 @use "@/common/styles/colors"
+@use "@/common/styles/breakpoints"
+@use "@/common/styles/fonts"
 
-.login-dialog
+.dialog.login-card
+  width: min(92vw, 25rem)
+  padding: 2rem
+
+  @media (max-width: breakpoints.$mobile)
+    padding: 1.5rem 1.25rem
+
+.login
   display: flex
   flex-direction: column
-  align-items: center
-  justify-content: center
-  gap: 1rem
+  gap: 1.5rem
   user-select: none
-  margin: 1rem 1.5rem
 
-  &.qr-mode
-    min-width: 20rem
-
-.login-logo
-  display: flex
-  align-items: center
-  gap: 1rem
-
-  img
-    width: 3rem
-    height: 3rem
-
-  h1
-    margin: 0
-
-.qr-login-container
-  display: flex
-  flex-direction: column
-  align-items: center
-  gap: 1.25rem
-  width: 100%
-
-  .qr-login-description
-    color: colors.$subtext
-    font-size: 0.9rem
-    text-align: center
-    margin: 0
-    max-width: 18rem
-
-  .qr-code-wrapper
-    padding: 1.25rem
-    border-radius: 1rem
-    background: colors.$primary
-
-  .qr-device-code
-    font-family: monospace
-    font-size: 1.1rem
-    font-weight: 600
-    letter-spacing: 0.15em
-    color: colors.$subtext
-    opacity: 0.7
-
-  .btn
-    width: 100%
-
-.login-form
-  display: flex
-  flex-direction: column
-  gap: 1rem
-
-  .register-name-row
-    display: flex
-    width: 24rem
-    gap: 1rem
-
-    input
-      width: 100%
-
-  .form-group
+  &__header
     display: flex
     flex-direction: column
-    gap: 0.3rem
+    align-items: flex-start
+    gap: 0.25rem
 
-    label
+    h1
+      margin: 0.875rem 0 0
+      font-size: 1.35rem
+      font-weight: 700
+      letter-spacing: -0.015em
+      line-height: 1.2
+      color: colors.$white
+
+    p
+      margin: 0
+      font-size: 0.85rem
+      font-weight: 500
+      line-height: 1.45
       color: colors.$subtext
-      font-weight: 600
 
-  .register-switch
+  &__brand
+    display: flex
+    align-items: center
+    gap: 0.625rem
+
+    span
+      font-size: 1rem
+      font-weight: 700
+      letter-spacing: -0.01em
+      color: colors.$white
+
+  &__wide
+    width: 100%
+
+  &__submit
+    margin-top: 0.25rem
+
+  &__form
+    display: flex
+    flex-direction: column
+    gap: 0.875rem
+
+  &__row
+    display: grid
+    grid-template-columns: repeat(2, minmax(0, 1fr))
+    gap: 0.75rem
+
+    @media (max-width: breakpoints.$small)
+      grid-template-columns: 1fr
+
+  &__field
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button
+      -webkit-appearance: none
+      margin: 0
+
+    input[type="number"]
+      -moz-appearance: textfield
+
+  &__link
+    display: inline-flex
+    align-items: center
+    justify-content: center
+    gap: 0.375rem
+    align-self: center
+    padding: 0.25rem 0.5rem
+    border: none
+    border-radius: 0.5rem
+    background: none
+    color: colors.$subtext
+    font: inherit
+    font-size: 0.85rem
+    font-weight: 600
+    cursor: pointer
+    transition: color 0.15s ease, background-color 0.15s ease
+
+    svg
+      width: 1rem
+      height: 1rem
+
+    &:hover
+      color: colors.$white
+      background-color: colors.$dark-gray
+
+    &:focus-visible
+      outline: none
+      box-shadow: colors.$focus-ring
+
+  &__switch
     display: flex
     justify-content: center
     gap: 0.35rem
-    font-size: 0.9rem
+    margin: 0
+    font-size: 0.85rem
+    font-weight: 500
     color: colors.$subtext
 
     button
@@ -88,36 +118,93 @@
       border: none
       background: none
       font: inherit
-      color: colors.$primary
       font-weight: 600
+      color: colors.$primary
       cursor: pointer
 
       &:hover
         text-decoration: underline
 
-  .sso-options
+      &:focus-visible
+        outline: none
+        box-shadow: colors.$focus-ring
+        border-radius: 0.25rem
+
+  &__methods
     display: flex
     flex-direction: column
+    gap: 0.5rem
+
+  &__divider
+    display: flex
+    align-items: center
+    gap: 0.75rem
+    margin: 0.5rem 0 0.375rem
+    color: colors.$subtext
+    font-size: 0.75rem
+    font-weight: 600
+    letter-spacing: 0.02em
+
+    &::before,
+    &::after
+      content: ""
+      flex: 1
+      height: 1px
+      background-color: colors.$border
+
+  &__note
+    display: flex
+    align-items: flex-start
+    gap: 0.5rem
+    margin: 0
+    padding: 0.625rem 0.75rem
+    border-radius: 0.625rem
+    background-color: colors.$dark-gray
+    font-size: 0.8rem
+    font-weight: 500
+    line-height: 1.45
+    color: colors.$subtext
+
+    svg
+      width: 1rem
+      height: 1rem
+      flex-shrink: 0
+      margin-top: 0.1rem
+
+  &__qr
+    display: flex
+    flex-direction: column
+    align-items: center
     gap: 1rem
+
+  &__qr-tile
+    display: flex
+    align-items: center
+    justify-content: center
     width: 100%
+    min-height: 15rem
+    padding: 1.5rem
+    box-sizing: border-box
+    border: 1px solid colors.$border
+    border-radius: 1rem
+    background-color: colors.$dark-gray
 
-    .divider
-      display: flex
-      align-items: center
-      text-align: center
-      color: colors.$subtext
-      font-size: 0.9rem
-      margin: 1rem 0
+    canvas
+      display: block
 
-      &::before,
-      &::after
-        content: ""
-        flex: 1
-        border-bottom: 1px solid colors.$subtext
-        margin: 0 10px
+  &__qr-spinner
+    width: 2rem
+    height: 2rem
+    color: colors.$subtext
 
-    .sso-buttons
-      display: flex
-      flex-direction: column
-      gap: 0.5rem
-      width: 100%
+  &__qr-code
+    padding: 0.375rem 0.75rem
+    border: 1px solid colors.$border
+    border-radius: 0.5rem
+    background-color: colors.$dark-gray
+    font-family: fonts.$mono
+    font-size: 0.95rem
+    font-weight: 500
+    letter-spacing: 0.2em
+    color: colors.$white
+    user-select: all

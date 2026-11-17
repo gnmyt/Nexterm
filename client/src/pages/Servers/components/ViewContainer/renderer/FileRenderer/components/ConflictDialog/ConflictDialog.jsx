@@ -17,7 +17,7 @@ export const ConflictDialog = ({ conflict, onChoice, onClose }) => {
     return (
         <DialogProvider open={open} onClose={onClose}>
             <div className="conflict-dialog">
-                <div className="conflict-header">
+                <div className="conflict-header dialog-heading">
                     <Icon path={mdiAlertOutline} />
                     <h2>{t("servers.fileManager.conflict.title", { count: names.length })}</h2>
                 </div>

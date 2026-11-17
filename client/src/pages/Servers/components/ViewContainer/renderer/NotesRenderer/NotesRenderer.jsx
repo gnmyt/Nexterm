@@ -84,16 +84,14 @@ export const NotesRenderer = ({ session }) => {
         inFlightRef.current = true;
         setStatus(STATUS.SAVING);
 
-        // Save only the entry's own values, so inherited folder settings are not frozen in as overrides
-        const localConfig = entry.localConfig ?? entry.config;
-        const nextConfig = { ...localConfig, ...patch };
+        const nextConfig = { ...entry.localConfig, ...patch };
 
         try {
             await patchRequest("entries/" + entryId, {
                 name: entry.name,
                 icon: entry.icon,
                 config: nextConfig,
-                identities: entry.localIdentities ?? entry.identities ?? [],
+                identities: entry.localIdentities,
             });
             entrySnapshotRef.current = { ...entry, config: { ...entry.config, ...patch }, localConfig: nextConfig };
             if ("notes" in patch) lastSavedRef.current.notes = patch.notes;
