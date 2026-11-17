@@ -67,28 +67,41 @@ private fun SettingsList(page: SettingsPage?, onPage: (SettingsPage) -> Unit) {
     AppScreen("Settings") { padding ->
         Column(Modifier.padding(padding).verticalScroll(rememberScrollState()).padding(bottom = 24.dp)) {
             account?.let { a ->
-                ListItem(
-                    headlineContent = { Text(a.displayName) }, supportingContent = { Text(a.displayUrl) },
-                    leadingContent = { Icon(Icons.Outlined.AccountCircle, null) },
-                    trailingContent = { FilledTonalButton({ confirmLogout = true }) { Text("Logout") } },
-                )
+                SettingsGroup {
+                    ListItem(
+                        headlineContent = { Text(a.displayName, style = MaterialTheme.typography.titleMedium) }, supportingContent = { Text(a.displayUrl) },
+                        leadingContent = { LeadingTile(Icons.Outlined.Person) },
+                        trailingContent = { FilledTonalButton({ confirmLogout = true }) { Text("Logout") } },
+                        colors = transparentListItem,
+                    )
+                }
             }
-            NavTile(Icons.Outlined.Lan, "Connections", "${accounts.size} server(s)", page == SettingsPage.Accounts) { onPage(SettingsPage.Accounts) }
-            NavTile(Icons.Outlined.Monitor, "Sessions", "Manage active sessions", page == SettingsPage.Logins) { onPage(SettingsPage.Logins) }
-            NavTile(Icons.Outlined.QrCodeScanner, "Scan QR Code", "Authorize a web login", page is SettingsPage.Authorize) {
-                scope.launch {
-                    val raw = scanQrCode(context) ?: return@launch
-                    QrPayloads.parseAuthorize(raw)?.let { onPage(SettingsPage.Authorize(it)) } ?: toaster.show("Invalid QR code")
+            SettingsGroup {
+                NavTile(Icons.Outlined.Lan, "Connections", "${accounts.size} server(s)", page == SettingsPage.Accounts) { onPage(SettingsPage.Accounts) }
+                GroupDivider()
+                NavTile(Icons.Outlined.Monitor, "Sessions", "Manage active sessions", page == SettingsPage.Logins) { onPage(SettingsPage.Logins) }
+                GroupDivider()
+                NavTile(Icons.Outlined.QrCodeScanner, "Scan QR Code", "Authorize a web login", page is SettingsPage.Authorize) {
+                    scope.launch {
+                        val raw = scanQrCode(context) ?: return@launch
+                        QrPayloads.parseAuthorize(raw)?.let { onPage(SettingsPage.Authorize(it)) } ?: toaster.show("Invalid QR code")
+                    }
                 }
             }
             SectionHeader("Appearance")
-            AppearanceSection(nx.themeSettings)
+            SettingsGroup { AppearanceSection(nx.themeSettings) }
             SectionHeader("Terminal")
-            TerminalSection(nx.terminalSettings)
+            SettingsGroup { TerminalSection(nx.terminalSettings) }
+            SectionHeader("Keyboard Toolbar")
+            SettingsGroup { KeyboardToolbarSection(nx.terminalSettings) }
             SectionHeader("File Browser")
-            SwitchTile(Icons.Outlined.VisibilityOff, "Show Hidden Files", "Show files starting with .", sftp.showHiddenFiles.watch().value, sftp::setShowHiddenFiles)
-            SwitchTile(Icons.Outlined.DeleteForever, "Confirm Before Delete", null, sftp.confirmBeforeDelete.watch().value, sftp::setConfirmBeforeDelete)
-            SwitchTile(Icons.Outlined.DriveFolderUpload, "Sort Folders First", null, sftp.sortFoldersFirst.watch().value, sftp::setSortFoldersFirst)
+            SettingsGroup {
+                SwitchTile(Icons.Outlined.VisibilityOff, "Show Hidden Files", "Show files starting with .", sftp.showHiddenFiles.watch().value, sftp::setShowHiddenFiles)
+                GroupDivider()
+                SwitchTile(Icons.Outlined.DeleteForever, "Confirm Before Delete", null, sftp.confirmBeforeDelete.watch().value, sftp::setConfirmBeforeDelete)
+                GroupDivider()
+                SwitchTile(Icons.Outlined.DriveFolderUpload, "Sort Folders First", null, sftp.sortFoldersFirst.watch().value, sftp::setSortFoldersFirst)
+            }
         }
     }
     if (confirmLogout) ConfirmDialog("Logout", "Are you sure you want to logout?", "Logout", onDismiss = { confirmLogout = false }) {
@@ -102,7 +115,7 @@ private fun AppearanceSection(ts: ThemeSettings) {
     val dynamic by ts.useDynamicColor.watch()
     val accent by ts.accentColor.watch()
     ListItem(
-        headlineContent = { Text("Theme") }, leadingContent = { Icon(Icons.Outlined.Contrast, null) },
+        headlineContent = { Text("Theme") }, leadingContent = { LeadingTile(Icons.Outlined.Contrast) }, colors = transparentListItem,
         trailingContent = {
             SingleChoiceSegmentedButtonRow {
                 listOf(ThemeMode.SYSTEM to Icons.Outlined.BrightnessAuto, ThemeMode.LIGHT to Icons.Outlined.LightMode, ThemeMode.DARK to Icons.Outlined.DarkMode)
@@ -112,9 +125,13 @@ private fun AppearanceSection(ts: ThemeSettings) {
             }
         },
     )
-    if (supportsDynamicColor) SwitchTile(Icons.Outlined.Palette, "Dynamic Color", "Use system accent color", dynamic, ts::setUseDynamicColor)
+    if (supportsDynamicColor) {
+        GroupDivider()
+        SwitchTile(Icons.Outlined.Palette, "Dynamic Color", "Use system accent color", dynamic, ts::setUseDynamicColor)
+    }
+    if (!dynamic || !supportsDynamicColor) GroupDivider()
     if (!dynamic || !supportsDynamicColor) ListItem(
-        headlineContent = { Text("Accent Color") }, leadingContent = { Icon(Icons.Outlined.FormatColorFill, null) },
+        headlineContent = { Text("Accent Color") }, leadingContent = { LeadingTile(Icons.Outlined.FormatColorFill) }, colors = transparentListItem,
         supportingContent = {
             FlowRow(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 ThemeSettings.ACCENT_COLOR_OPTIONS.forEach { argb ->
@@ -132,11 +149,10 @@ private fun TerminalSection(ts: TerminalSettings) {
     val fontSize by ts.fontSize.watch()
     val themeId by ts.themeId.watch()
     val cursor by ts.cursorStyle.watch()
-    val order by ts.groupOrder.watch()
-    val enabled by ts.groupEnabled.watch()
     ListItem(
+        colors = transparentListItem,
         headlineContent = { Row { Text("Font Size", Modifier.weight(1f)); Text("${fontSize.toInt()} pt", style = MaterialTheme.typography.labelLarge) } },
-        leadingContent = { Icon(Icons.Outlined.FormatSize, null) },
+        leadingContent = { LeadingTile(Icons.Outlined.FormatSize) },
         supportingContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton({ ts.setFontSize(fontSize - 1) }, enabled = fontSize > TerminalSettings.MIN_FONT_SIZE) { Icon(Icons.Outlined.Remove, "Smaller") }
@@ -146,8 +162,9 @@ private fun TerminalSection(ts: TerminalSettings) {
             }
         },
     )
-    ListItem(headlineContent = { Text("Color Theme") }, leadingContent = { Icon(Icons.Outlined.ColorLens, null) })
-    LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    GroupDivider()
+    ListItem(headlineContent = { Text("Color Theme") }, leadingContent = { LeadingTile(Icons.Outlined.ColorLens) }, colors = transparentListItem)
+    LazyRow(contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         items(TerminalThemes.all, key = { it.id }) { t ->
             val sel = t.id == themeId
             OutlinedCard(
@@ -161,8 +178,9 @@ private fun TerminalSection(ts: TerminalSettings) {
             }
         }
     }
+    GroupDivider()
     ListItem(
-        headlineContent = { Text("Cursor") }, leadingContent = { Icon(Icons.Outlined.CropSquare, null) },
+        headlineContent = { Text("Cursor") }, leadingContent = { LeadingTile(Icons.Outlined.CropSquare) }, colors = transparentListItem,
         supportingContent = {
             SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(top = 8.dp)) {
                 TerminalSettings.CURSOR_STYLES.forEachIndexed { i, c ->
@@ -173,9 +191,16 @@ private fun TerminalSection(ts: TerminalSettings) {
             }
         },
     )
-    SectionHeader("Keyboard Toolbar")
+}
+
+@Composable
+private fun KeyboardToolbarSection(ts: TerminalSettings) {
+    val order by ts.groupOrder.watch()
+    val enabled by ts.groupEnabled.watch()
     order.forEachIndexed { i, g ->
+        if (i > 0) GroupDivider()
         ListItem(
+            colors = transparentListItem,
             headlineContent = { Text(g.label) }, supportingContent = { Text(g.description) },
             leadingContent = {
                 Column {
@@ -190,15 +215,16 @@ private fun TerminalSection(ts: TerminalSettings) {
 
 @Composable
 private fun NavTile(icon: ImageVector, title: String, subtitle: String, selected: Boolean, onClick: () -> Unit) = ListItem(
-    headlineContent = { Text(title) }, supportingContent = { Text(subtitle) }, leadingContent = { Icon(icon, null) },
-    colors = if (selected) ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.secondaryContainer) else ListItemDefaults.colors(),
+    headlineContent = { Text(title) }, supportingContent = { Text(subtitle) }, leadingContent = { LeadingTile(icon) },
+    trailingContent = { Icon(Icons.Outlined.ChevronRight, null, tint = MaterialTheme.colorScheme.outline) },
+    colors = if (selected) ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.secondaryContainer) else transparentListItem,
     modifier = Modifier.clickable(onClick = onClick),
 )
 
 @Composable
 private fun SwitchTile(icon: ImageVector, title: String, subtitle: String?, checked: Boolean, onChange: (Boolean) -> Unit) = ListItem(
-    headlineContent = { Text(title) }, supportingContent = subtitle?.let { { Text(it) } }, leadingContent = { Icon(icon, null) },
-    trailingContent = { Switch(checked, null) }, modifier = Modifier.toggleable(checked, role = Role.Switch, onValueChange = onChange),
+    headlineContent = { Text(title) }, supportingContent = subtitle?.let { { Text(it) } }, leadingContent = { LeadingTile(icon) },
+    trailingContent = { Switch(checked, null) }, colors = transparentListItem, modifier = Modifier.toggleable(checked, role = Role.Switch, onValueChange = onChange),
 )
 
 @Composable
@@ -211,11 +237,12 @@ fun AccountsScreen(onBack: (() -> Unit)?, onAdd: () -> Unit) {
     AppScreen("Connections", onBack = onBack, actions = { IconButton(onAdd) { Icon(Icons.Outlined.Add, "Add Server") } }) { padding ->
         if (accounts.isEmpty()) Box(Modifier.padding(padding).fillMaxSize(), Alignment.Center) {
             StateMessage(Icons.Outlined.CloudOff, "No connections", "Add a server to get started")
-        } else LazyColumn(Modifier.padding(padding).fillMaxSize()) {
+        } else LazyColumn(Modifier.padding(padding).fillMaxSize(), contentPadding = PaddingValues(vertical = 8.dp)) {
             items(accounts, key = { it.id }) { a ->
                 val isActive = a.id == active?.id
                 var menu by remember { mutableStateOf(false) }
-                ListItem(
+                SettingsGroup { ListItem(
+                    colors = transparentListItem,
                     headlineContent = { Text(a.label, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     supportingContent = { Text(a.subtitle, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     overlineContent = if (isActive) { { Text("Active") } } else null,
@@ -231,7 +258,7 @@ fun AccountsScreen(onBack: (() -> Unit)?, onAdd: () -> Unit) {
                         }
                     },
                     modifier = Modifier.selectable(isActive, role = Role.RadioButton) { if (!isActive) nx.accounts.switchAccount(a.id) },
-                )
+                ) }
             }
         }
     }
@@ -253,17 +280,18 @@ fun LoginSessionsScreen(onBack: (() -> Unit)?) {
     LaunchedEffect(Unit) { load() }
     AppScreen("Active Sessions", onBack = onBack, actions = { IconButton(load) { Icon(Icons.Outlined.Refresh, "Refresh") } }) { padding ->
         PullToRefreshBox(loading && sessions != null, load, Modifier.padding(padding).fillMaxSize()) {
-            LazyColumn(Modifier.fillMaxSize()) {
+            LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(vertical = 8.dp)) {
                 if (sessions == null) item { Box(Modifier.fillMaxWidth().padding(48.dp), Alignment.Center) { CircularProgressIndicator() } }
                 else if (sessions!!.isEmpty()) item { StateMessage(Icons.Outlined.Monitor, "No other sessions", "Only this device is active") }
                 items(sessions.orEmpty(), key = { it.id }) { s ->
-                    ListItem(
+                    SettingsGroup { ListItem(
+                        colors = transparentListItem,
                         overlineContent = if (s.current == true) { { Text("This Device") } } else null,
                         headlineContent = { Text(UserAgents.deviceLabel(s.userAgent)) },
                         supportingContent = { Text("${s.ip ?: "Unknown IP"} · ${Formatters.relativeTime(s.lastActivity)}") },
-                        leadingContent = { Icon(iconFor(IconKeys.userAgent(s.userAgent)), null) },
+                        leadingContent = { LeadingTile(iconFor(IconKeys.userAgent(s.userAgent))) },
                         trailingContent = { if (s.current != true) IconButton({ revoke = s }) { Icon(Icons.Outlined.Delete, "Revoke", tint = MaterialTheme.colorScheme.error) } },
-                    )
+                    ) }
                 }
             }
         }
@@ -287,16 +315,20 @@ fun AuthorizeScreen(payload: AuthorizePayload, onBack: (() -> Unit)?, onDone: ()
     val toaster = LocalToaster.current
     AppScreen("Authorize Login", onBack = onBack) { padding ->
         Column(Modifier.padding(padding).verticalScroll(rememberScrollState())) {
-            ListItem(
-                headlineContent = { Text("Web Login Request", style = MaterialTheme.typography.titleMedium) }, supportingContent = { Text(payload.server) },
-                leadingContent = { Icon(Icons.Outlined.DesktopWindows, null) },
-            )
-            HorizontalDivider()
-            listOf(Triple(Icons.Outlined.Key, "Device Code", payload.code), Triple(Icons.Outlined.Language, "Server", payload.server)).forEach { (icon, label, value) ->
+            SettingsGroup(Modifier.padding(top = 8.dp)) {
                 ListItem(
-                    headlineContent = { Text(value, maxLines = 1, overflow = TextOverflow.Ellipsis) }, overlineContent = { Text(label) },
-                    leadingContent = { Icon(icon, null) },
+                    headlineContent = { Text("Web Login Request", style = MaterialTheme.typography.titleMedium) }, supportingContent = { Text(payload.server) },
+                    leadingContent = { LeadingTile(Icons.Outlined.DesktopWindows) }, colors = transparentListItem,
                 )
+            }
+            SettingsGroup {
+                listOf(Triple(Icons.Outlined.Key, "Device Code", payload.code), Triple(Icons.Outlined.Language, "Server", payload.server)).forEachIndexed { i, (icon, label, value) ->
+                    if (i > 0) GroupDivider()
+                    ListItem(
+                        headlineContent = { Text(value, maxLines = 1, overflow = TextOverflow.Ellipsis) }, overlineContent = { Text(label) },
+                        leadingContent = { LeadingTile(icon) }, colors = transparentListItem,
+                    )
+                }
             }
             error?.let { ErrorBanner(it) }
             Column(Modifier.padding(16.dp), Arrangement.spacedBy(8.dp)) {

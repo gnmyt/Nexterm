@@ -11,6 +11,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
@@ -140,7 +141,20 @@ fun ViewOnlyBanner(text: String, modifier: Modifier = Modifier) = ListItem(
 
 @Composable
 fun SectionHeader(text: String) =
-    Text(text, Modifier.padding(start = 16.dp, top = 24.dp, bottom = 8.dp), MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
+    Text(text, Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp, bottom = 4.dp), MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
+
+@Composable
+fun SettingsGroup(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) = Surface(
+    modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp), RoundedCornerShape(16.dp), MaterialTheme.colorScheme.surfaceContainerHigh,
+) { Column(content = content) }
+
+@Composable
+fun GroupDivider() = HorizontalDivider(Modifier.padding(start = 68.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+
+@Composable
+fun LeadingTile(icon: ImageVector) = Box(Modifier.size(36.dp).background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(10.dp)), Alignment.Center) {
+    Icon(icon, null, Modifier.size(18.dp), MaterialTheme.colorScheme.onPrimaryContainer)
+}
 
 @Composable
 fun ConfirmDialog(title: String, text: String, confirm: String, destructive: Boolean = false, onDismiss: () -> Unit, onConfirm: () -> Unit) =
