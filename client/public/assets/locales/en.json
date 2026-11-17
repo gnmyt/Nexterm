@@ -1364,6 +1364,7 @@
         "success": "Synced",
         "error": "Error",
         "pending": "Pending",
+        "syncing": "Syncing",
         "disabled": "Disabled"
       },
       "dialog": {
