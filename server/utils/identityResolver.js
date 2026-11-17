@@ -1,7 +1,7 @@
 const Identity = require('../models/Identity');
 const { listIdentities } = require("../controllers/identity");
 const { getEntryIdentityIds } = require("./folderInheritance");
-const { getEntryScope, isIdentityAllowedForScope } = require("./resourceValidation");
+const { getEntryScope, isIdentityAllowedForEntry, isIdentityAllowedForScope } = require("./resourceValidation");
 
 const CREDENTIALLESS_PROTOCOLS = ['telnet', 'demo'];
 
@@ -30,6 +30,7 @@ const resolveIdentity = async (entry, identityId, directIdentity = null, account
     if (identityId) {
         const identity = await Identity.findByPk(identityId);
         if (!identity) return { identity: null, requiresIdentity };
+        if (!isIdentityAllowedForEntry(identity, entry.id)) return { identity: null, requiresIdentity, accessDenied: true };
         if (accessibleIds && (!accessibleIds.has(identity.id)
             || !isIdentityAllowedForScope(identity, scope.organizationId, accountId))) {
             return { identity: null, requiresIdentity, accessDenied: true };

@@ -49,7 +49,7 @@
     align-items: center
     gap: 0.5rem
 
-  &__scope
+  &__icon
     display: flex
     align-items: center
     justify-content: center
@@ -64,17 +64,65 @@
       width: 1rem
       height: 1rem
 
-  &--org &__scope
-    color: colors.$primary
-
-  &__name
+  &__title
     flex: 1
     min-width: 0
+    padding: 0.375rem 0.5rem
+    border: 1px solid transparent
+    border-radius: 0.5rem
+    background: transparent
+    color: colors.$white
+    font-family: inherit
+    font-size: 0.9rem
+    font-weight: 600
+    outline: none
+    text-overflow: ellipsis
+    transition: border-color 0.1s ease, background-color 0.1s ease
+
+    &::placeholder
+      color: colors.$subtext
+      font-weight: 500
+
+    &:hover
+      border-color: colors.$border
+
+    &:focus
+      border-color: colors.$primary
+      background-color: colors.$lighter-background
 
   &__fields
     display: flex
     flex-direction: column
     gap: 0.75rem
+
+  &__options
+    flex-direction: row
+    margin: 0 -0.75rem -0.75rem
+    border: none
+    border-top: 1px solid colors.$border
+    border-radius: 0 0 0.75rem 0.75rem
+
+    .sd-setting
+      flex: 1
+      min-width: 0
+      gap: 0.5rem
+      padding: 0.375rem 0.75rem
+
+      & + .sd-setting
+        border-top: none
+        border-left: 1px solid colors.$border
+
+    .sd-setting__icon
+      width: 1rem
+      height: 1rem
+
+    .sd-setting__label
+      font-size: 0.8rem
+      font-weight: 500
+      color: colors.$subtext
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
 
 .server-badge
   display: inline-flex
@@ -97,23 +145,15 @@
     font-size: 0.72rem
     font-weight: 600
 
+.server-identity-actions
+  display: flex
+  flex-wrap: wrap
+  gap: 0.5rem
+
 .server-linkable
   display: flex
   flex-direction: column
   gap: 0.375rem
-
-  &__label
-    font-size: 0.72rem
-    font-weight: 600
-    color: colors.$subtext
-    text-transform: uppercase
-    letter-spacing: 0.05em
-    padding: 0.25rem 0
-
-  &__list
-    display: flex
-    flex-direction: column
-    gap: 0.375rem
 
   &__item
     display: flex

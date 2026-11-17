@@ -39,6 +39,9 @@ const saveFolderIdentityProfiles = async (folder, accountId, profiles, transacti
             || !isIdentityAllowedForScope(accessibleById.get(identityId), folder.organizationId || null, accountId))) {
             return { code: 403, message: "One or more identities are not available in this folder scope" };
         }
+        if (identityIds.some((identityId) => accessibleById.get(identityId).entryId)) {
+            return { code: 400, message: "Identities bound to a server cannot be inherited. Make them global first." };
+        }
         [...new Set(identityIds)].forEach((identityId, position) => {
             const identity = accessibleById.get(identityId);
             const shared = folder.organizationId && identity.organizationId === folder.organizationId;

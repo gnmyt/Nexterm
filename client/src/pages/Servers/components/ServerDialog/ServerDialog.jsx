@@ -10,7 +10,7 @@ import { useUnsavedChanges } from "@/common/hooks/useUnsavedChanges.js";
 import * as mdiIcons from "@mdi/js";
 import GeneralSection from "./sections/GeneralSection.jsx";
 import ConnectionSection from "./sections/ConnectionSection.jsx";
-import IdentitiesSection, { buildIdentityPayload } from "./sections/IdentitiesSection.jsx";
+import IdentitiesSection, { buildServerIdentities } from "./sections/IdentitiesSection.jsx";
 import TerminalSection from "./sections/TerminalSection.jsx";
 import DisplaySection from "./sections/DisplaySection.jsx";
 import OptionsSection from "./sections/OptionsSection.jsx";
@@ -45,21 +45,22 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
 
     const dialogRef = useRef(null);
 
-    const effectiveIdentities = useCallback((ids, updates) => {
-        const pick = (source, update) => ({
+    const effectiveIdentities = useCallback((ids, updates) => [...(ids || [])].map(String).sort().map((id) => {
+        const source = knownIdentities?.find(i => String(i.id) === id);
+        const update = updates?.[id];
+        return {
+            id,
             name: update?.name ?? source?.name,
             username: update?.username ?? source?.username,
             authType: update?.authType ?? source?.authType ?? source?.type,
             scope: update?.scope ?? source?.scope,
             organizationId: update?.organizationId ?? source?.organizationId,
+            global: update?.global ?? (source ? !source.entryId : undefined),
             password: update?.passwordTouched ? update.password : undefined,
             sshKey: update?.sshKey ?? undefined,
             passphrase: update?.passphraseTouched ? update.passphrase : undefined,
-        });
-        const linked = [...(ids || [])].sort().map(id => ({ id, ...pick(knownIdentities?.find(i => i.id === id), updates?.[id]) }));
-        const added = Object.keys(updates || {}).filter(k => k.startsWith("new-")).sort().map(k => ({ id: k, ...updates[k] }));
-        return [...linked, ...added];
-    }, [knownIdentities]);
+        };
+    }), [knownIdentities]);
 
     const normalizeDraft = useCallback((draft) => ({
         name: draft.name,
@@ -85,37 +86,10 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             || JSON.stringify(config[key]) !== JSON.stringify(inheritedConfig[key]))
     ), [config, inheritedConfig, explicitOverrideKeys]);
 
-    const updateIdentities = async () => {
-        const allIdentityIds = new Set(identities);
-
-        for (const identityId of Object.keys(identityUpdates)) {
-            const identity = identityUpdates[identityId];
-
-            if (identityId.startsWith("new-")) {
-                try {
-                    const result = await putRequest("identities", buildIdentityPayload(identity));
-                    if (result.id) allIdentityIds.add(result.id);
-                } catch (error) {
-                    sendToast("Error", error.message || t("servers.messages.createIdentityFailed"));
-                    console.error(error);
-                    return null;
-                }
-            } else if (identity.linked) {
-                allIdentityIds.add(parseInt(identityId));
-            } else {
-                try {
-                    await patchRequest("identities/" + identityId, buildIdentityPayload(identity));
-                    allIdentityIds.add(parseInt(identityId));
-                } catch (error) {
-                    sendToast("Error", error.message || t("servers.messages.updateIdentityFailed"));
-                    console.error(error);
-                    return null;
-                }
-            }
-        }
-
-        return Array.from(allIdentityIds);
-    };
+    const identityPayload = () => buildServerIdentities(
+        [...identities, ...inheritedIdentities.filter((id) => identityUpdates[id] && !identities.includes(id))],
+        identityUpdates, knownIdentities, name
+    );
 
     const buildConfig = () => {
         const finalConfig = { ...config };
@@ -150,15 +124,12 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
 
     const createServer = async () => {
         try {
-            const serverIdentityIds = await updateIdentities();
-            if (serverIdentityIds === null) return;
-            loadIdentities();
-
             const result = await putRequest("entries", {
                 name, icon, config: buildLocalConfig(), folderId: currentFolderId, organizationId: currentOrganizationId,
-                identities: serverIdentityIds, type: "server",
+                identities: identityPayload(), type: "server",
             });
 
+            loadIdentities();
             loadServers();
             if (result.id) {
                 sendToast("Success", t("servers.messages.serverCreated"));
@@ -172,11 +143,9 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
 
     const patchServer = async () => {
         try {
-            const serverIdentityIds = await updateIdentities();
-            if (serverIdentityIds === null) return;
+            await patchRequest("entries/" + editServerId, { name, icon, config: buildLocalConfig(), identities: identityPayload() });
 
-            await patchRequest("entries/" + editServerId, { name, icon, config: buildLocalConfig(), identities: serverIdentityIds });
-
+            loadIdentities();
             loadServers();
             sendToast("Success", t("servers.messages.serverUpdated"));
             onClose();
@@ -354,7 +323,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                 <IdentitiesSection serverIdentities={serverIdentities} specificIdentities={identities} setIdentityUpdates={setIdentityUpdates}
                                    identityUpdates={identityUpdates} setIdentities={setIdentities}
                                    currentOrganizationId={currentOrganizationId} allowedAuthTypes={fieldConfig.allowedAuthTypes}
-                                   serverName={name} />
+                                   serverName={name} bindable />
             )}
             {has("terminal") && <TerminalSection config={config} setConfig={setConfig} />}
             {has("display") && <DisplaySection config={config} setConfig={setConfig} fieldConfig={fieldConfig} />}
