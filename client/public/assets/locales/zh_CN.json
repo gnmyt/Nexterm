@@ -448,25 +448,35 @@
     "page": {
       "title": "服务器监控",
       "subtitle": "服务器统计数据和健康状态实时监控",
-      "searchPlaceholder": "搜索服务器..."
+      "searchPlaceholder": "搜索服务器...",
+      "filters": {
+        "all": "All ({{count}})",
+        "online": "Online ({{count}})",
+        "issues": "Issues ({{count}})"
+      }
     },
     "errors": {
-      "loadFailed": "加载监控数据失败"
+      "loadFailed": "加载监控数据失败",
+      "loadFailedDescription": "The monitoring data could not be retrieved. Check your connection and try again.",
+      "retry": "Retry"
     },
     "grid": {
-      "loading": "加载监控数据...",
       "noServers": {
         "title": "未找到服务器",
         "subtitle": "无可用的SSH服务器进行监控。\n添加服务器以开始监控。"
       },
+      "noResults": {
+        "title": "No matching servers",
+        "subtitle": "No monitored server matches your search."
+      },
       "metrics": {
-        "cpuUsage": "CPU 使用率",
-        "memoryUsage": "内存使用率",
         "loadAverage": "平均负载",
         "processes": "进程",
         "uptime": "运行时间",
         "nodes": "节点",
-        "vms": "虚拟机/容器"
+        "vms": "虚拟机/容器",
+        "cpu": "CPU",
+        "memory": "Memory"
       },
       "status": {
         "serverOffline": "服务器离线",
@@ -476,7 +486,16 @@
         "errorMessage": "无法建立服务器连接。",
         "unknownMessage": "无法确定服务器状态。",
         "lastSeen": "最后在线：{{time}}",
-        "noRecentActivity": "无近期活动"
+        "noRecentActivity": "无近期活动",
+        "waitingForData": "Waiting for data",
+        "pendingMessage": "Monitoring data will appear after the next monitoring cycle.",
+        "labels": {
+          "online": "Online",
+          "offline": "Offline",
+          "error": "Error",
+          "pending": "Pending",
+          "unknown": "Unknown"
+        }
       },
       "uptime": {
         "unknown": "未知",
@@ -495,7 +514,6 @@
       },
       "tabs": {
         "overview": "概览",
-        "charts": "图表",
         "storage": "存储",
         "network": "网络",
         "processes": "进程",
@@ -515,12 +533,11 @@
         },
         "performance": {
           "title": "性能指标",
-          "cpuUsage": "CPU 使用率",
-          "memoryUsage": "内存使用率",
           "loadAverage": "平均负载",
           "processes": "活动进程",
           "total": "总数: {{value}}",
-          "loadDetail": "5分钟: {{fiveMin}}, 15分钟: {{fifteenMin}}"
+          "loadDetail": "5分钟: {{fiveMin}}, 15分钟: {{fifteenMin}}",
+          "memory": "Memory"
         },
         "uptime": {
           "format": {
@@ -538,33 +555,67 @@
       },
       "storage": {
         "title": "磁盘使用情况",
-        "used": "已用: {{value}}",
-        "available": "可用： {{value}}",
-        "total": "总计: {{value}}",
-        "type": "类型： {{value}}",
         "noData": "无磁盘使用数据",
-        "noPartitions": "未挂载分区"
+        "noPartitions": "未挂载分区",
+        "usedOf": "{{used}} of {{total}} used",
+        "free": "{{value}} free",
+        "filesystems": "Filesystems",
+        "disks": "Disks",
+        "on": "{{volume}} on {{partition}}",
+        "swap": "Swap",
+        "unmounted": "Not mounted",
+        "unallocated": "Unallocated",
+        "inodes": "Inodes",
+        "inodesDetail": "{{used}} of {{total}}",
+        "health": {
+          "passed": "Healthy",
+          "warning": "Warning",
+          "failed": "Failing",
+          "denied": "SMART needs root",
+          "temperature": "Temperature",
+          "powerOn": "Power-on time",
+          "wear": "Wear",
+          "reallocated": "Reallocated sectors",
+          "pending": "Pending sectors",
+          "mediaErrors": "Media errors",
+          "years": "{{value}} years",
+          "days": "{{value}} days",
+          "hours": "{{value}} hours",
+          "failedTitle": "Disk failure predicted",
+          "failedMessage": "{{disks}} failed its SMART self-assessment. Back up the data and replace the disk."
+        }
       },
       "network": {
-        "title": "网络接口",
-        "rxBytes": "接收字节数",
-        "txBytes": "发送字节数",
-        "mac": "MAC地址",
         "speed": "速度",
-        "noData": "无网络接口数据"
+        "noData": "无网络接口数据",
+        "download": "Download",
+        "upload": "Upload",
+        "interface": "Interface",
+        "address": "Address",
+        "gateway": "Gateway",
+        "interfaces": "Interfaces",
+        "virtual": "Virtual interfaces",
+        "defaultRoute": "Default route",
+        "up": "Up",
+        "down": "Down",
+        "errors": "{{count}} errors",
+        "dropped": "{{count}} dropped",
+        "copy": "Copy {{address}}",
+        "total": "{{value}} total"
       },
       "processes": {
-        "title": "运行中进程",
         "searchPlaceholder": "搜索进程...",
         "showing": "显示 {{count}} of {{total}} 进程",
         "noData": "没有可用的进程数据。进程数据将在下一个监测周期之后出现。",
-        "noResults": "没有符合搜索条件的进程。"
+        "noResults": "没有符合搜索条件的进程。",
+        "columns": {
+          "command": "Command",
+          "cpu": "CPU",
+          "mem": "Memory"
+        }
       },
       "pve": {
         "clusterInfo": "集群信息",
-        "resources": "资源占用",
-        "virtualMachines": "虚拟机",
-        "totalNodes": "节点数",
         "onlineNodes": "在线节点",
         "totalCPU": "总CPU",
         "totalMemory": "总内存",
