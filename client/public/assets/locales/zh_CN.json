@@ -68,7 +68,24 @@
       "firstTimeSubtitle": "Create the first administrator account for this instance.",
       "twoFactorTitle": "Two-factor authentication",
       "twoFactorDescription": "Enter the code from your authenticator app.",
-      "qrTitle": "Sign in with the app"
+      "qrTitle": "Sign in with the app",
+      "demo": {
+        "title": "Try Nexterm",
+        "subtitle": "Explore a live instance with simulated servers, no account needed.",
+        "start": "Start the demo",
+        "orSignIn": "or sign in to your account",
+        "failed": "Could not start a demo session"
+      }
+    },
+    "demo": {
+      "timeLeft": "Demo · {{time}} left",
+      "end": "End demo",
+      "endConfirmText": "End your demo session? Everything you created will be removed.",
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min",
+      "hours_one": "{{count}} hour",
+      "hours_other": "{{count}} hours",
+      "hoursMinutes": "{{hours}}h {{minutes}}m"
     },
     "deviceLink": {
       "title": "链接设备",
@@ -659,6 +676,10 @@
     },
     "account": {
       "title": "账户",
+      "demo": {
+        "title": "Security",
+        "description": "Password, two-factor authentication, passkeys, API keys and profile pictures can't be changed while you're exploring as a guest."
+      },
       "avatar": {
         "label": "图片",
         "upload": "更改个人头像",
@@ -2341,7 +2362,10 @@
     "recentConnections": "近期联系",
     "getStarted": "开始",
     "getStartedHint": "从侧边栏添加服务器，开始管理基础设施。",
-    "hibernated": "Hibernated"
+    "hibernated": "Hibernated",
+    "demo": {
+      "explore": "Start exploring"
+    }
   },
   "downloadApps": {
     "title": "下载应用程序",
