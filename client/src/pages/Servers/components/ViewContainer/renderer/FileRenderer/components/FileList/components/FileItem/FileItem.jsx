@@ -1,14 +1,14 @@
 import React, { memo, useState, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
-import { mdiDotsVertical, mdiFolder, mdiFolderOpen, mdiLinkVariant, mdiChevronRight } from "@mdi/js";
+import { mdiDotsVertical, mdiLinkVariant, mdiChevronRight } from "@mdi/js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import Tooltip from "@/common/components/Tooltip";
 import { getBaseUrl } from "@/common/utils/ConnectionUtil.js";
 import {
-    getExtension, getIconByFileEnding, getIconColor, convertUnits, isThumbnailSupported,
-    formatPermissionsString, formatOctal, formatModified,
+    convertUnits, isThumbnailSupported, formatPermissionsString, formatOctal, formatModified,
 } from "../../utils/fileUtils";
+import { getFileIcon } from "@/common/utils/fileIcons.js";
 
 export const FileItem = memo(({
                                   item,
@@ -84,6 +84,7 @@ export const FileItem = memo(({
     ].filter(Boolean).join(" ");
 
     const depth = item.depth ?? 0;
+    const icon = getFileIcon(item, { expanded: isExpanded });
 
     return (
         <div
@@ -121,9 +122,9 @@ export const FileItem = memo(({
                     />
                 ) : (
                     <Icon
-                        path={item.type === "folder" ? (isExpanded ? mdiFolderOpen : mdiFolder) : getIconByFileEnding(getExtension(item.name))}
-                        className={item.type === "folder" ? "folder-icon" : "type-icon"}
-                        style={{ color: getIconColor(item) }}
+                        path={icon.path}
+                        className={`${item.type === "folder" ? "folder-icon" : "type-icon"}${icon.brand ? " brand-icon" : ""}`}
+                        style={{ color: icon.color }}
                     />
                 )}
                 {isRenaming ? (

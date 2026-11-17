@@ -7,7 +7,8 @@ import { downloadRequest, uploadFile } from "@/common/utils/RequestUtil.js";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import Editor, { loader } from "@monaco-editor/react";
 import Icon from "@mdi/react";
-import { mdiContentSave, mdiTextBox } from "@mdi/js";
+import { mdiContentSave } from "@mdi/js";
+import { getFileIcon } from "@/common/utils/fileIcons.js";
 import FloatingWindow, { FloatingWindowAction } from "@/common/components/FloatingWindow";
 import "./styles.sass";
 import * as monaco from "monaco-editor";
@@ -140,6 +141,8 @@ export const FileEditorWindow = ({ file, session, onClose }) => {
 
     if (!file) return null;
 
+    const fileName = file.split("/").pop();
+
     return (
         <>
             <ActionConfirmDialog
@@ -151,8 +154,8 @@ export const FileEditorWindow = ({ file, session, onClose }) => {
 
             <FloatingWindow
                 className="file-editor-window"
-                icon={mdiTextBox}
-                title={file.split("/").pop()}
+                icon={getFileIcon({ name: fileName, type: "file" })}
+                title={fileName}
                 titleExtra={fileContentChanged && <span className="modified-indicator">●</span>}
                 onClose={closeFile}
                 actions={

@@ -4,7 +4,8 @@ import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { getBaseUrl } from "@/common/utils/ConnectionUtil.js";
 import { useTransfers } from "@/common/contexts/TransferContext.jsx";
 import Icon from "@mdi/react";
-import { mdiImage, mdiFileDownload } from "@mdi/js";
+import { mdiFileDownload } from "@mdi/js";
+import { getFileIcon } from "@/common/utils/fileIcons.js";
 import FloatingWindow, { FloatingWindowAction } from "@/common/components/FloatingWindow";
 import "./styles.sass";
 
@@ -84,6 +85,13 @@ export const FilePreviewWindow = ({ file, session, onClose }) => {
         return () => content.removeEventListener("wheel", handleWheel);
     });
 
+    const fileName = file?.split("/").pop() ?? "";
+    const fileIcon = getFileIcon({ name: fileName, type: "file" });
+    const renderFileIcon = () => (
+        <Icon path={fileIcon.path} size={3} className={`preview-file-icon${fileIcon.brand ? " brand" : ""}`}
+              style={{ color: fileIcon.color }} />
+    );
+
     const renderPreview = () => {
         switch (fileType) {
             case "image":
@@ -105,8 +113,8 @@ export const FilePreviewWindow = ({ file, session, onClose }) => {
             case "audio":
                 return (
                     <div className="preview-content audio-preview">
-                        <Icon path={mdiImage} size={3} />
-                        <h3>{file.split("/").pop()}</h3>
+                        {renderFileIcon()}
+                        <h3>{fileName}</h3>
                         <audio controls src={fileUrl}>
                             {t("servers.fileManager.filePreview.audioNotSupported")}
                         </audio>
@@ -121,9 +129,9 @@ export const FilePreviewWindow = ({ file, session, onClose }) => {
             default:
                 return (
                     <div className="preview-content unknown-preview">
-                        <Icon path={mdiImage} size={3} />
+                        {renderFileIcon()}
                         <h3>{t("servers.fileManager.filePreview.cannotPreview")}</h3>
-                        <p>{file.split("/").pop()}</p>
+                        <p>{fileName}</p>
                     </div>
                 );
         }
@@ -134,8 +142,8 @@ export const FilePreviewWindow = ({ file, session, onClose }) => {
     return (
         <FloatingWindow
             className="file-preview-window"
-            icon={mdiImage}
-            title={file.split("/").pop()}
+            icon={fileIcon}
+            title={fileName}
             onClose={onClose}
             actions={
                 <FloatingWindowAction onClick={downloadFile} title={t("common.download")}>
