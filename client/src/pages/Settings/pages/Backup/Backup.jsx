@@ -9,12 +9,14 @@ import SelectBox from "@/common/components/SelectBox";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import ActionConfirmDialog from "@/common/components/ActionConfirmDialog";
 import Icon from "@mdi/react";
+import EmptyState from "@/common/components/EmptyState";
 import {
     mdiPlus, mdiDatabase, mdiVideo, mdiFileDocument, mdiHarddisk, mdiLanConnect,
     mdiCloud, mdiPencil, mdiTrashCan, mdiBackupRestore, mdiCloudUpload, mdiLoading, mdiContentSave, mdiRestore, mdiArchive, mdiDownload, mdiFolderOpen,
 } from "@mdi/js";
 import ProviderDialog from "./components/ProviderDialog";
 import FileBrowserDialog from "./components/FileBrowserDialog";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
 
 const StorageCard = ({ icon, title, size, onClick, actionIcon }) => (
     <div className={`storage-card ${onClick ? "clickable" : ""}`} onClick={onClick}>
@@ -183,10 +185,10 @@ export const Backup = () => {
 
     return (
         <div className="backup-page">
-            <div className="settings-section">
+            <div className="settings-section settings-page-section">
                 <div className="section-header">
                     <div className="header-content">
-                        <h2>{t("settings.backup.storage.title")}</h2>
+                        <SettingsHeading>{t("settings.backup.storage.title")}</SettingsHeading>
                         <p>{t("settings.backup.storage.description")}</p>
                     </div>
                 </div>
@@ -198,10 +200,10 @@ export const Backup = () => {
                 </div>
             </div>
 
-            <div className="settings-section">
+            <div className="settings-section settings-page-section">
                 <div className="section-header">
                     <div className="header-content">
-                        <h2>{t("settings.backup.backupsSection.title")}</h2>
+                        <SettingsHeading>{t("settings.backup.backupsSection.title")}</SettingsHeading>
                         <p>{t("settings.backup.backupsSection.description")}</p>
                     </div>
                     <Button text={t("settings.backup.addProvider")} icon={mdiPlus} onClick={openAddProvider} />
@@ -229,11 +231,8 @@ export const Backup = () => {
 
                 <div className="vertical-list">
                     {settings.providers.length === 0 ? (
-                        <div className="no-providers">
-                            <Icon path={mdiBackupRestore} />
-                            <h3>{t("settings.backup.noProviders")}</h3>
-                            <p>{t("settings.backup.noProvidersDescription")}</p>
-                        </div>
+                        <EmptyState icon={mdiBackupRestore} title={t("settings.backup.noProviders")}
+                                    description={t("settings.backup.noProvidersDescription")} />
                     ) : (
                         settings.providers.map(provider => (
                             <div key={provider.id}>

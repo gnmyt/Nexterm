@@ -34,25 +34,19 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
         return `${Math.floor(seconds / 3600)} ${t("audit.table.durationUnits.hours")}`;
     }, []);
 
-    const formatAction = useCallback((action) =>
-            action.replace(".", " → ").replace(/_/g, " ").toUpperCase()
-        , []);
+    const humanize = (value) => value.replace(/_/g, " ").replace(/\b([a-z])/g, (m) => m.toUpperCase())
+        .replace(/\b(Ssh|Sftp|Rdp|Vnc|Ftp|Ftps|Pve|Api|Totp|Oidc|Ldap)\b/g, (m) => m.toUpperCase());
 
-    const getActionBadgeColor = useCallback((action) => {
-        if (action.startsWith("user.")) return "blue";
-        if (action.startsWith("server.") || action.startsWith("entry.")) {
-            if (action.includes("connect")) return "green";
-            if (action.includes("disconnect")) return "orange";
-        }
-        if (action.startsWith("file.")) {
-            if (action.includes("upload")) return "green";
-            if (action.includes("download")) return "blue";
-            if (action.includes("delete")) return "red";
-        }
-        if (action.startsWith("folder.delete")) return "red";
-        if (action.startsWith("identity.")) return "purple";
-        if (action.startsWith("organization.")) return "cyan";
-        return "gray";
+    const splitAction = useCallback((action) => {
+        const [category, ...rest] = action.split(".");
+        return { category: humanize(category), verb: humanize(rest.join(".") || category) };
+    }, []);
+
+    const getActionTone = useCallback((action) => {
+        if (action.includes("delete") || action.includes("remove") || action.includes("fail")) return "error";
+        if (action.includes("disconnect") || action.includes("logout")) return "warning";
+        if (action.includes("connect") || action.includes("login") || action.includes("create") || action.includes("upload")) return "success";
+        return "neutral";
     }, []);
 
     const renderDetails = useCallback((details) => {
@@ -146,9 +140,12 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
 
                     <div className="cell action" data-label="Action">
                         <div className="action-content">
-                            <Icon path={getIconForAction(log.action)} />
-                            <span className={`action-badge ${getActionBadgeColor(log.action)}`}>
-                                {formatAction(log.action)}
+                            <span className={`action-icon tone-${getActionTone(log.action)}`}>
+                                <Icon path={getIconForAction(log.action)} />
+                            </span>
+                            <span className="action-text">
+                                <span className="action-verb">{splitAction(log.action).verb}</span>
+                                <span className="action-category">{splitAction(log.action).category}</span>
                             </span>
                         </div>
                     </div>
@@ -227,7 +224,7 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
                 )}
             </div>
         );
-    }, [expandedRow, formatTimestamp, formatAction, getActionBadgeColor, getIconForAction, handleRowClick, handlePlayRecording, renderDetails, t]);
+    }, [expandedRow, formatTimestamp, splitAction, getActionTone, getIconForAction, handleRowClick, handlePlayRecording, renderDetails, t]);
 
     return (
         <>

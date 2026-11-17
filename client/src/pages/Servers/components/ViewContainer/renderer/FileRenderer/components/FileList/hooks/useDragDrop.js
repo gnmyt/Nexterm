@@ -1,22 +1,32 @@
 import { useState, useCallback, useRef } from "react";
-import { childPath } from "../utils/fileUtils";
 
-export const useDragDrop = ({ path, sessionId, selectedItems, isItemSelected, moveFiles, copyFiles, dragDropAction, updatePath }) => {
+const DRAG_MIME = "application/x-sftp-files";
+
+const withTrailingSlash = (path) => (path.endsWith("/") ? path : path + "/");
+
+export const useDragDrop = ({ path, sessionId, selectedItems, isItemSelected, moveFiles, copyFiles, transferFromSession, dragDropAction, updatePath }) => {
     const [draggedItems, setDraggedItems] = useState([]);
     const [dropTarget, setDropTarget] = useState(null);
     const [pendingDrop, setPendingDrop] = useState(null);
     const dragImageRef = useRef(null);
     const hoverTimerRef = useRef(null);
 
+    const clearHoverTimer = () => {
+        if (hoverTimerRef.current) {
+            clearTimeout(hoverTimerRef.current);
+            hoverTimerRef.current = null;
+        }
+    };
+
     const handleDragStart = useCallback((event, item) => {
         const itemsToDrag = isItemSelected(item) ? selectedItems : [item];
         setDraggedItems(itemsToDrag);
-        const paths = itemsToDrag.map(i => childPath(path, i.name));
+        const paths = itemsToDrag.map(i => i.id);
         const dragData = { paths, items: itemsToDrag, sessionId };
         event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
-        event.dataTransfer.setData("application/x-sftp-files", JSON.stringify(dragData));
+        event.dataTransfer.setData(DRAG_MIME, JSON.stringify(dragData));
         event.dataTransfer.effectAllowed = "copyMove";
-        
+
         if (dragImageRef.current) {
             const preview = dragImageRef.current;
             const iconsContainer = preview.querySelector('.drag-icons');
@@ -41,21 +51,18 @@ export const useDragDrop = ({ path, sessionId, selectedItems, isItemSelected, mo
     const handleDragEnd = useCallback(() => {
         setDraggedItems([]);
         setDropTarget(null);
-        if (hoverTimerRef.current) {
-            clearTimeout(hoverTimerRef.current);
-            hoverTimerRef.current = null;
-        }
+        clearHoverTimer();
     }, []);
 
     const handleDragOver = useCallback((event, item) => {
-        if (item.type !== "folder" || !event.dataTransfer.types.includes("application/x-sftp-files")) return;
+        if (item.type !== "folder" || !event.dataTransfer.types.includes(DRAG_MIME)) return;
         event.preventDefault();
         event.stopPropagation();
-        if (dropTarget !== item.name) {
-            setDropTarget(item.name);
-            if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+        if (dropTarget !== item.id) {
+            setDropTarget(item.id);
+            clearHoverTimer();
             hoverTimerRef.current = setTimeout(() => {
-                updatePath(childPath(path, item.name));
+                updatePath(item.id);
                 setDropTarget(null);
             }, 800);
         }
@@ -65,70 +72,78 @@ export const useDragDrop = ({ path, sessionId, selectedItems, isItemSelected, mo
         const relatedTarget = event.relatedTarget;
         if (relatedTarget && event.currentTarget.contains(relatedTarget)) return;
         setDropTarget(null);
-        if (hoverTimerRef.current) {
-            clearTimeout(hoverTimerRef.current);
-            hoverTimerRef.current = null;
-        }
+        clearHoverTimer();
     }, []);
 
-    const executeDrop = useCallback((paths, destination, action) => {
-        if (action === "move") moveFiles?.(paths, destination);
-        else if (action === "copy") copyFiles?.(paths, destination);
-        else return false;
+    const readDragData = (event) => {
+        try {
+            const data = JSON.parse(event.dataTransfer.getData(DRAG_MIME));
+            return data?.paths?.length ? data : null;
+        } catch {
+            return null;
+        }
+    };
+
+    const executeDrop = useCallback(({ paths, sourceSessionId, destination, action }) => {
+        if (action !== "move" && action !== "copy") return false;
+        if (sourceSessionId !== sessionId) transferFromSession?.(paths, sourceSessionId, destination, action);
+        else if (action === "move") moveFiles?.(paths, destination);
+        else copyFiles?.(paths, destination);
         return true;
-    }, [moveFiles, copyFiles]);
+    }, [sessionId, moveFiles, copyFiles, transferFromSession]);
+
+    const settleDrop = useCallback((event, drop, onClearSelection, openDropMenu) => {
+        if (executeDrop({ ...drop, action: dragDropAction })) {
+            onClearSelection();
+            return;
+        }
+        setPendingDrop(drop);
+        openDropMenu(event);
+    }, [executeDrop, dragDropAction]);
 
     const handleDrop = useCallback((event, item, onClearSelection, openDropMenu) => {
         event.preventDefault();
         event.stopPropagation();
-        if (hoverTimerRef.current) { clearTimeout(hoverTimerRef.current); hoverTimerRef.current = null; }
+        clearHoverTimer();
         setDropTarget(null);
         setDraggedItems([]);
         if (item.type !== "folder") return;
-        try {
-            const data = JSON.parse(event.dataTransfer.getData("application/x-sftp-files"));
-            if (!data?.paths?.length || data.sessionId !== sessionId || data.items?.some(d => d.name === item.name)) return;
-            const destination = childPath(path, item.name);
-            if (!executeDrop(data.paths, destination, dragDropAction)) {
-                setPendingDrop({ paths: data.paths, destination });
-                openDropMenu(event);
-            } else {
-                onClearSelection();
-            }
-        } catch {}
-    }, [path, sessionId, dragDropAction, executeDrop]);
+        const data = readDragData(event);
+        if (!data) return;
+        const sameSession = data.sessionId === sessionId;
+        if (sameSession && data.items?.some(d => d.id === item.id || item.id.startsWith(withTrailingSlash(d.id)))) return;
+        const destination = item.id;
+        settleDrop(event, { paths: data.paths, sourceSessionId: data.sessionId, destination }, onClearSelection, openDropMenu);
+    }, [path, sessionId, settleDrop]);
 
     const handleContainerDrop = useCallback((event, onClearSelection, openDropMenu) => {
         event.preventDefault();
         event.stopPropagation();
         setDraggedItems([]);
-        try {
-            const data = JSON.parse(event.dataTransfer.getData("application/x-sftp-files"));
-            if (!data?.paths?.length || data.sessionId !== sessionId) return;
+        const data = readDragData(event);
+        if (!data) return;
+        if (data.sessionId === sessionId) {
             const currentDir = path.endsWith("/") ? path.slice(0, -1) : path;
-            if (data.paths.every(p => { const parent = p.substring(0, p.lastIndexOf("/")) || "/"; return parent === currentDir || parent === path; })) return;
-            if (!executeDrop(data.paths, path, dragDropAction)) {
-                setPendingDrop({ paths: data.paths, destination: path });
-                openDropMenu(event);
-            } else {
-                onClearSelection();
-            }
-        } catch {}
-    }, [path, sessionId, dragDropAction, executeDrop]);
+            const alreadyHere = data.paths.every(p => { const parent = p.substring(0, p.lastIndexOf("/")) || "/"; return parent === currentDir || parent === path; });
+            if (alreadyHere) return;
+        }
+        settleDrop(event, { paths: data.paths, sourceSessionId: data.sessionId, destination: path }, onClearSelection, openDropMenu);
+    }, [path, sessionId, settleDrop]);
 
     const handleDropAction = useCallback((action, onClearSelection, closeDropMenu) => {
         if (pendingDrop) {
-            action === "move" ? moveFiles?.(pendingDrop.paths, pendingDrop.destination) : copyFiles?.(pendingDrop.paths, pendingDrop.destination);
+            executeDrop({ ...pendingDrop, action });
             onClearSelection();
             setPendingDrop(null);
         }
         closeDropMenu();
-    }, [pendingDrop, moveFiles, copyFiles]);
+    }, [pendingDrop, executeDrop]);
 
     return {
         draggedItems,
         dropTarget,
         dragImageRef,
+        pendingDrop,
         handleDragStart,
         handleDragEnd,
         handleDragOver,

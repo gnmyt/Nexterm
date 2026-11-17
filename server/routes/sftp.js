@@ -1,9 +1,14 @@
 const { Router } = require("express");
 const express = require("express");
+const { Transform } = require("node:stream");
+const { pipeline } = require("node:stream/promises");
 const Session = require("../models/Session");
 const Account = require("../models/Account");
 const SessionManager = require("../lib/SessionManager");
-const { getSFTPTransferClient } = require("../lib/ConnectionService");
+const TransferRegistry = require("../lib/TransferRegistry");
+const { runCrossSessionTransfer } = require("../lib/CrossSessionTransfer");
+const { isCancelled } = require("../lib/EngineSftpClient");
+const { getSFTPTransferClient, getSFTPBackgroundClient } = require("../lib/ConnectionService");
 const Entry = require("../models/Entry");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
 const { hasResourcePermission } = require("../utils/permission");
@@ -26,9 +31,13 @@ const MIME_TYPES = {
 const getExt = (p) => p.split(".").pop()?.toLowerCase();
 const getFileName = (p) => p.split("/").pop();
 const sanitizeFileName = (name) => name.replaceAll(/[^\w\s.-]/g, "_").substring(0, 255);
+const isUnsafePath = (p) => typeof p !== "string" || p.length === 0 || p.includes("\0") || p.split("/").includes("..");
 
 const handleError = (res, err) => {
-    if (res.headersSent) return;
+    if (res.headersSent) {
+        res.destroy();
+        return;
+    }
     const msg = err.message || "Internal error";
     if (msg.includes("does not exist")) return res.status(404).json({ error: "Not found" });
     if (msg.includes("Permission denied")) return res.status(403).json({ error: "Permission denied" });
@@ -45,47 +54,73 @@ const audit = (ctx, req, action, resource, details) => {
     });
 };
 
-const archiveFolder = async (sftpClient, archive, dirPath, basePath) => {
-    const entries = await sftpClient.listDir(dirPath);
-    if (entries.length === 0) {
-        archive.append("", { name: basePath + "/" });
-        return;
-    }
-    for (const entry of entries) {
-        if (entry.isSymlink) continue;
-        const fullPath = dirPath === "/" ? `/${entry.name}` : `${dirPath}/${entry.name}`;
-        const archivePath = basePath ? `${basePath}/${entry.name}` : entry.name;
-        if (entry.type === "folder") {
-            await archiveFolder(sftpClient, archive, fullPath, archivePath);
-        } else {
-            const { stream, totalSizePromise, done } = sftpClient.readFile(fullPath);
-            stream.on("error", (err) => logger.warn("Archive stream error", { error: err.message, path: fullPath }));
-            await totalSizePromise;
-            archive.append(stream, { name: archivePath });
-            await done;
-        }
-    }
-}
+const createByteCounter = (onBytes) => {
+    let count = 0;
+    return new Transform({
+        transform(chunk, _encoding, callback) {
+            count += chunk.length;
+            onBytes(count);
+            callback(null, chunk);
+        },
+    });
+};
 
-const archiveItems = async (sftpClient, archive, paths) => {
-    for (const remotePath of paths) {
+const createArchiveJob = (sftpClient, archive) => {
+    let aborted = false;
+    let activeRead = null;
+
+    const appendFile = async (remotePath, archivePath) => {
+        if (aborted) return;
+        const read = sftpClient.readFile(remotePath);
+        activeRead = read;
         try {
-            const stats = await sftpClient.stat(remotePath);
-            const name = getFileName(remotePath);
-            if (stats.isDir) {
-                await archiveFolder(sftpClient, archive, remotePath, name);
-            } else {
-                const { stream, totalSizePromise, done } = sftpClient.readFile(remotePath);
-                stream.on("error", (err) => logger.warn("Archive stream error", { error: err.message, path: remotePath }));
-                await totalSizePromise;
-                archive.append(stream, { name });
-                await done;
-            }
-        } catch (err) {
-            logger.warn("Failed to add file to archive", { path: remotePath, error: err.message });
+            await read.totalSizePromise;
+            archive.append(read.stream, { name: archivePath });
+            await read.done;
+        } finally {
+            activeRead = null;
         }
-    }
-}
+    };
+
+    const appendFolder = async (dirPath, basePath) => {
+        if (aborted) return;
+        const entries = await sftpClient.listDir(dirPath);
+        if (entries.length === 0) {
+            archive.append("", { name: basePath + "/" });
+            return;
+        }
+        for (const entry of entries) {
+            if (aborted) return;
+            if (entry.isSymlink) continue;
+            const fullPath = dirPath === "/" ? `/${entry.name}` : `${dirPath}/${entry.name}`;
+            const archivePath = basePath ? `${basePath}/${entry.name}` : entry.name;
+            if (entry.type === "folder") await appendFolder(fullPath, archivePath);
+            else await appendFile(fullPath, archivePath);
+        }
+    };
+
+    const appendItems = async (paths) => {
+        for (const remotePath of paths) {
+            if (aborted) return;
+            try {
+                const stats = await sftpClient.stat(remotePath);
+                const name = getFileName(remotePath);
+                if (stats.isDir) await appendFolder(remotePath, name);
+                else await appendFile(remotePath, name);
+            } catch (err) {
+                if (aborted || isCancelled(err)) throw err;
+                logger.warn("Failed to add item to archive", { path: remotePath, error: err.message });
+            }
+        }
+    };
+
+    const abort = () => {
+        aborted = true;
+        activeRead?.cancel();
+    };
+
+    return { appendFolder, appendItems, abort, get aborted() { return aborted; } };
+};
 
 const validateSession = async (sessionToken, sessionId) => {
     const session = await findActiveSession(sessionToken);
@@ -127,26 +162,130 @@ const validateSession = async (sessionToken, sessionId) => {
 
     if (!sftpClient) return { error: "No active SFTP connection", status: 400 };
 
-    return { session, user, serverSession, entry, sftpClient };
+    return { session, user, serverSession, entry, sessionId, metadataClient: conn.sftpClient, sftpClient };
 };
+
+const resolveClient = async (ctx, getClient, label) => {
+    try {
+        return await getClient(ctx.sessionId, ctx.entry, ctx.user.id);
+    } catch (err) {
+        logger.warn(`Falling back to metadata SFTP client for ${label}`, { sessionId: ctx.sessionId, error: err.message });
+        return ctx.metadataClient;
+    }
+};
+
+const resolveTransferClient = (ctx) => resolveClient(ctx, getSFTPTransferClient, "transfer");
+const resolveBackgroundClient = (ctx) => resolveClient(ctx, getSFTPBackgroundClient, "thumbnail");
 
 const validateRequest = (query) => {
     const { sessionToken, sessionId, path: remotePath } = query;
     if (!sessionToken || !sessionId || !remotePath) return "Missing parameters";
-    if (typeof remotePath !== "string" || remotePath.includes("\0")) return "Invalid path";
-    if (remotePath.split("/").includes("..")) return "Invalid path";
+    if (isUnsafePath(remotePath)) return "Invalid path";
+    if (query.transferId !== undefined && !TransferRegistry.isValidTransferId(query.transferId)) return "Invalid transfer id";
     return null;
+};
+
+const resolveTransferId = (query) => query.transferId || null;
+
+const finishTransfer = (transferId, err) => {
+    if (!err) TransferRegistry.finish(transferId);
+    else if (isCancelled(err)) TransferRegistry.finish(transferId, { cancelled: true });
+    else TransferRegistry.finish(transferId, { error: err.message });
+};
+
+const isClientGone = (res) => res.destroyed || res.socket?.destroyed;
+
+const streamFile = async (ctx, req, res, sftpClient, remotePath, stats, transferId) => {
+    const fileName = getFileName(remotePath);
+    const disposition = req.query.preview === "true" ? "inline" : "attachment";
+    res.header("Content-Disposition", `${disposition}; filename="${sanitizeFileName(fileName)}"; filename*=UTF-8''${encodeURIComponent(fileName)}`);
+    res.header("Content-Length", stats.size);
+    const ext = getExt(remotePath);
+    if (MIME_TYPES[ext]) res.header("Content-Type", MIME_TYPES[ext]);
+
+    const read = sftpClient.readFile(remotePath);
+    let delivered = 0;
+    const fullyDelivered = () => delivered >= stats.size;
+    TransferRegistry.register({
+        id: transferId, sessionId: ctx.sessionId, name: fileName, direction: "download",
+        total: stats.size, cancel: () => { read.cancel(); res.destroy(); },
+    });
+    res.on("close", () => { if (!fullyDelivered()) read.cancel(); });
+
+    const counter = createByteCounter((count) => {
+        delivered = count;
+        TransferRegistry.progress(transferId, count);
+    });
+
+    const succeed = () => {
+        TransferRegistry.finish(transferId);
+        audit(ctx, req, AUDIT_ACTIONS.FILE_DOWNLOAD, RESOURCE_TYPES.FILE, { filePath: remotePath, fileSize: stats.size });
+    };
+
+    try {
+        await pipeline(read.stream, counter, res);
+        await read.done;
+        succeed();
+    } catch (err) {
+        if (fullyDelivered() && !isCancelled(err)) {
+            try {
+                await read.done;
+                succeed();
+                return;
+            } catch (doneErr) {
+                err = doneErr;
+            }
+        }
+        const cause = isClientGone(res) && !isCancelled(err) ? Object.assign(new Error("Transfer cancelled"), { cancelled: true }) : err;
+        finishTransfer(transferId, cause);
+        if (!isCancelled(cause)) logger.warn("Download failed", { path: remotePath, error: cause.message });
+        handleError(res, cause);
+    }
+};
+
+const streamArchive = async (ctx, req, res, sftpClient, transferId, name, populate) => {
+    res.header("Content-Disposition", `attachment; filename="${name}"`);
+    res.header("Content-Type", "application/zip");
+
+    const archive = new ZipArchive({ zlib: { level: 1 } });
+    const job = createArchiveJob(sftpClient, archive);
+    TransferRegistry.register({
+        id: transferId, sessionId: ctx.sessionId, name, direction: "download",
+        total: 0, cancel: () => { job.abort(); res.destroy(); },
+    });
+    res.on("close", () => job.abort());
+
+    const counter = createByteCounter((count) => TransferRegistry.progress(transferId, count));
+    const output = pipeline(archive, counter, res);
+    output.catch(() => {});
+
+    try {
+        await populate(job);
+        if (job.aborted) throw Object.assign(new Error("Transfer cancelled"), { cancelled: true });
+        await archive.finalize();
+        await output;
+        TransferRegistry.finish(transferId);
+        return true;
+    } catch (err) {
+        const cause = job.aborted || isClientGone(res) ? Object.assign(new Error("Transfer cancelled"), { cancelled: true }) : err;
+        archive.abort();
+        finishTransfer(transferId, cause);
+        if (!isCancelled(cause)) logger.warn("Archive download failed", { name, error: cause.message });
+        handleError(res, cause);
+        return false;
+    }
 };
 
 /**
  * POST /sftp/upload
  * @summary Upload File via SFTP
- * @description Uploads a file to a remote server via SFTP. The file content should be sent as the raw request body. Missing parent directories are created when the user is allowed to modify files. Requires an active session with SFTP capabilities.
+ * @description Uploads a file to a remote server via SFTP. The file content should be sent as the raw request body. Missing parent directories are created when the user is allowed to modify files. Progress is pushed to the session's SFTP websockets when a transferId is given. Requires an active session with SFTP capabilities.
  * @tags SFTP
  * @produces application/json
  * @param {string} sessionToken.query.required - Session authentication token
  * @param {string} sessionId.query.required - Active server session ID
  * @param {string} path.query.required - Remote destination path for the uploaded file
+ * @param {string} transferId.query - Client-chosen identifier used for progress reporting and cancellation
  * @return {object} 200 - Upload successful with file path and size
  * @return {object} 400 - Missing parameters or invalid path
  * @return {object} 401 - Invalid session token
@@ -159,6 +298,8 @@ app.post("/upload", async (req, res) => {
     if (error) return res.status(400).json({ error });
 
     const { sessionToken, sessionId, path: remotePath } = req.query;
+    const transferId = resolveTransferId(req.query);
+    let registered = false;
 
     try {
         const ctx = await validateSession(sessionToken, sessionId);
@@ -167,28 +308,43 @@ app.post("/upload", async (req, res) => {
         if (!(await checkFilePermission(ctx, Permission.FILES_UPLOAD)))
             return res.status(403).json({ error: "You don't have permission to upload files" });
 
+        const sftpClient = await resolveTransferClient(ctx);
+
         const parentPath = remotePath.substring(0, remotePath.lastIndexOf("/"));
         if (parentPath && await checkFilePermission(ctx, Permission.FILES_MODIFY)) {
-            const created = await ctx.sftpClient.mkdirRecursive(parentPath);
+            const created = await sftpClient.mkdirRecursive(parentPath);
             for (const folderPath of created)
                 audit(ctx, req, AUDIT_ACTIONS.FOLDER_CREATE, RESOURCE_TYPES.FOLDER, { folderPath });
         }
 
-        await ctx.sftpClient.writeFile(remotePath, req);
-
         const totalSize = Number.parseInt(req.headers["content-length"]) || 0;
+        const abortController = new AbortController();
+        TransferRegistry.register({
+            id: transferId, sessionId, name: getFileName(remotePath), direction: "upload",
+            total: totalSize, cancel: () => { abortController.abort(); req.destroy(); },
+        });
+        registered = true;
+
+        await sftpClient.writeFile(remotePath, req, {
+            signal: abortController.signal,
+            onProgress: (sent) => TransferRegistry.progress(transferId, sent),
+        });
+
+        TransferRegistry.finish(transferId);
         res.json({ success: true, path: remotePath, size: totalSize });
         audit(ctx, req, AUDIT_ACTIONS.FILE_UPLOAD, RESOURCE_TYPES.FILE, { filePath: remotePath, fileSize: totalSize });
     } catch (err) {
-        logger.error("Upload error", { error: err.message, path: remotePath });
-        handleError(res, err);
+        const cause = req.destroyed && !isCancelled(err) ? Object.assign(new Error("Transfer cancelled"), { cancelled: true }) : err;
+        if (registered) finishTransfer(transferId, cause);
+        if (!isCancelled(cause)) logger.error("Upload error", { error: cause.message, path: remotePath });
+        handleError(res, cause);
     }
 });
 
 /**
  * GET /sftp
  * @summary Download or Preview File via SFTP
- * @description Downloads a file or folder from a remote server via SFTP. Supports file preview, thumbnail generation for images, and folder download as ZIP archive.
+ * @description Downloads a file or folder from a remote server via SFTP. Supports file preview, thumbnail generation for images, and folder download as ZIP archive. Progress is pushed to the session's SFTP websockets when a transferId is given.
  * @tags SFTP
  * @produces application/octet-stream
  * @produces application/zip
@@ -199,6 +355,7 @@ app.post("/upload", async (req, res) => {
  * @param {string} preview.query - Set to "true" to display file inline instead of downloading
  * @param {string} thumbnail.query - Set to "true" to generate a thumbnail (images only, max 10MB)
  * @param {number} size.query - Thumbnail size in pixels (50-300, default: 100)
+ * @param {string} transferId.query - Client-chosen identifier used for progress reporting and cancellation
  * @return {file} 200 - File content, ZIP archive, or thumbnail image
  * @return {object} 400 - Missing parameters or invalid path
  * @return {object} 401 - Invalid session token
@@ -210,7 +367,7 @@ app.get("/", async (req, res) => {
     const error = validateRequest(req.query);
     if (error) return res.status(400).json({ error });
 
-    const { sessionToken, sessionId, path: remotePath, preview, thumbnail, size, graphics, maxSize } = req.query;
+    const { sessionToken, sessionId, path: remotePath, thumbnail, size, graphics, maxSize } = req.query;
 
     try {
         const ctx = await validateSession(sessionToken, sessionId);
@@ -225,10 +382,21 @@ app.get("/", async (req, res) => {
             ? Math.min(Number.isFinite(requestedGraphicsLimit) && requestedGraphicsLimit > 0 ? requestedGraphicsLimit : MAX_GRAPHICS_SIZE, MAX_GRAPHICS_SIZE)
             : null;
 
-        const { sftpClient } = ctx;
+        if (thumbnail === "true") {
+            if (!THUMB_EXTS.has(getExt(remotePath))) return res.status(415).json({ error: "Thumbnails are not supported for this file type" });
+            const backgroundClient = await resolveBackgroundClient(ctx);
+            const thumbStats = await backgroundClient.stat(remotePath);
+            if (thumbStats.isDir || thumbStats.size > MAX_THUMB_SIZE) return res.status(413).json({ error: "File too large for thumbnail" });
+            const thumbSize = Math.min(Math.max(Number.parseInt(size) || 100, 50), 300);
+            const { data } = await backgroundClient.thumbnail(remotePath, thumbSize);
+            res.header("Content-Type", "image/jpeg");
+            res.header("Cache-Control", "public, max-age=3600");
+            res.end(data);
+            return;
+        }
+
+        const sftpClient = await resolveTransferClient(ctx);
         const stats = await sftpClient.stat(remotePath);
-        const fileName = getFileName(remotePath);
-        const safeFileName = sanitizeFileName(fileName);
 
         if (isGraphics && stats.isDir) {
             return res.status(400).json({ error: "Terminal images must be regular files" });
@@ -237,42 +405,17 @@ app.get("/", async (req, res) => {
             return res.status(413).json({ error: `Terminal image exceeds the ${graphicsLimit} byte limit` });
         }
 
+        const transferId = resolveTransferId(req.query);
+
         if (stats.isDir) {
-            res.header("Content-Disposition", `attachment; filename="${safeFileName}.zip"`);
-            res.header("Content-Type", "application/zip");
-            const archive = new ZipArchive({ zlib: { level: 1 } });
-            archive.on("error", (err) => {
-                logger.warn("Archive error", { error: err.message, path: remotePath });
-                archive.abort();
-            });
-            res.on("close", () => archive.abort());
-            archive.pipe(res);
-            await archiveFolder(sftpClient, archive, remotePath, safeFileName);
-            archive.finalize();
-            audit(ctx, req, AUDIT_ACTIONS.FOLDER_DOWNLOAD, RESOURCE_TYPES.FOLDER, { folderPath: remotePath });
+            const archiveName = `${sanitizeFileName(getFileName(remotePath))}.zip`;
+            const ok = await streamArchive(ctx, req, res, sftpClient, transferId, archiveName,
+                (job) => job.appendFolder(remotePath, sanitizeFileName(getFileName(remotePath))));
+            if (ok) audit(ctx, req, AUDIT_ACTIONS.FOLDER_DOWNLOAD, RESOURCE_TYPES.FOLDER, { folderPath: remotePath });
             return;
         }
 
-        if (thumbnail === "true" && THUMB_EXTS.has(getExt(remotePath)) && stats.size <= MAX_THUMB_SIZE) {
-            const thumbSize = Math.min(Math.max(Number.parseInt(size) || 100, 50), 300);
-            const { data } = await sftpClient.thumbnail(remotePath, thumbSize);
-            res.header("Content-Type", "image/jpeg");
-            res.header("Cache-Control", "public, max-age=3600");
-            res.end(data);
-            return;
-        }
-
-        const disposition = preview === "true" ? "inline" : "attachment";
-        res.header("Content-Disposition", `${disposition}; filename="${safeFileName}"; filename*=UTF-8''${encodeURIComponent(fileName)}`);
-        res.header("Content-Length", stats.size);
-        const ext = getExt(remotePath);
-        if (MIME_TYPES[ext]) res.header("Content-Type", MIME_TYPES[ext]);
-
-        const { stream } = sftpClient.readFile(remotePath);
-        stream.on("error", (err) => { logger.warn("Download stream error", { error: err.message, path: remotePath }); if (!res.headersSent) res.status(500).end(); });
-        res.on("close", () => stream.destroy());
-        stream.pipe(res);
-        audit(ctx, req, AUDIT_ACTIONS.FILE_DOWNLOAD, RESOURCE_TYPES.FILE, { filePath: remotePath, fileSize: stats.size });
+        await streamFile(ctx, req, res, sftpClient, remotePath, stats, transferId);
     } catch (err) {
         handleError(res, err);
     }
@@ -281,12 +424,13 @@ app.get("/", async (req, res) => {
 /**
  * POST /sftp/multi
  * @summary Download Multiple Files via SFTP
- * @description Downloads multiple files and/or folders as a single ZIP archive. Supports mixed selection of files and folders. Failed items are skipped and logged.
+ * @description Downloads multiple files and/or folders as a single ZIP archive. Supports mixed selection of files and folders. Failed items are skipped and logged. Progress is pushed to the session's SFTP websockets when a transferId is given.
  * @tags SFTP
  * @consumes application/x-www-form-urlencoded
  * @produces application/zip
  * @param {string} sessionToken.query.required - Session authentication token
  * @param {string} sessionId.query.required - Active server session ID
+ * @param {string} transferId.query - Client-chosen identifier used for progress reporting and cancellation
  * @param {object} request.body.required - Request body containing paths array
  * @return {file} 200 - ZIP archive containing all requested files and folders
  * @return {object} 400 - Missing parameters, invalid paths format, or no paths provided
@@ -306,7 +450,9 @@ app.post("/multi", express.urlencoded({ extended: true }), async (req, res) => {
 
     if (!sessionToken || !sessionId) return res.status(400).json({ error: "Missing session parameters" });
     if (!Array.isArray(paths) || paths.length === 0) return res.status(400).json({ error: "No paths provided" });
-    if (paths.some((p) => p.includes(".."))) return res.status(400).json({ error: "Invalid path" });
+    if (paths.some(isUnsafePath)) return res.status(400).json({ error: "Invalid path" });
+    if (req.query.transferId !== undefined && !TransferRegistry.isValidTransferId(req.query.transferId))
+        return res.status(400).json({ error: "Invalid transfer id" });
 
     try {
         const ctx = await validateSession(sessionToken, sessionId);
@@ -315,26 +461,85 @@ app.post("/multi", express.urlencoded({ extended: true }), async (req, res) => {
         if (!(await checkFilePermission(ctx, Permission.FILES_DOWNLOAD)))
             return res.status(403).json({ error: "You don't have permission to download files" });
 
+        const sftpClient = await resolveTransferClient(ctx);
         const timestamp = new Date().toISOString().replaceAll(/[:.]/g, "-").slice(0, 19);
-        res.header("Content-Disposition", `attachment; filename="nexterm-download-${timestamp}.zip"`);
-        res.header("Content-Type", "application/zip");
+        const archiveName = paths.length === 1
+            ? `${sanitizeFileName(getFileName(paths[0]))}.zip`
+            : `nexterm-download-${timestamp}.zip`;
 
-        const archive = new ZipArchive({ zlib: { level: 5 } });
-        archive.on("error", (err) => {
-            logger.warn("Multi-download archive error", { error: err.message });
-            archive.abort();
-        });
-        res.on("close", () => archive.abort());
-        archive.pipe(res);
-
-        await archiveItems(ctx.sftpClient, archive, paths);
-        archive.finalize();
+        const ok = await streamArchive(ctx, req, res, sftpClient, resolveTransferId(req.query), archiveName,
+            (job) => job.appendItems(paths));
+        if (!ok) return;
 
         audit(ctx, req, AUDIT_ACTIONS.FILE_DOWNLOAD, RESOURCE_TYPES.FILE, {
             paths,
             count: paths.length,
             connectionReason: ctx.serverSession.connectionReason || null,
         });
+    } catch (err) {
+        handleError(res, err);
+    }
+});
+
+const TRANSFER_ACTIONS = new Set(["copy", "move"]);
+
+/**
+ * POST /sftp/transfer
+ * @summary Copy or Move Files Between Two Sessions
+ * @description Streams files or folders from one active file session to another through the server, regardless of the protocols or jump hosts involved. Runs in the background; progress and completion are pushed to both sessions' SFTP websockets under the given transferId.
+ * @tags SFTP
+ * @consumes application/json
+ * @produces application/json
+ * @param {string} sessionToken.query.required - Session authentication token
+ * @param {string} transferId.query.required - Client-chosen identifier used for progress reporting and cancellation
+ * @param {object} request.body.required - { sourceSessionId, targetSessionId, sources: string[], destination, action: "copy" | "move" }
+ * @return {object} 202 - Transfer started
+ * @return {object} 400 - Invalid parameters
+ * @return {object} 401 - Invalid session token
+ * @return {object} 403 - Permission denied
+ * @return {object} 404 - Session or entry not found
+ */
+app.post("/transfer", async (req, res) => {
+    const { sessionToken, transferId } = req.query;
+    const { sourceSessionId, targetSessionId, sources, destination, action } = req.body ?? {};
+
+    if (!sessionToken || !sourceSessionId || !targetSessionId) return res.status(400).json({ error: "Missing session parameters" });
+    if (!TransferRegistry.isValidTransferId(transferId)) return res.status(400).json({ error: "Invalid transfer id" });
+    if (sourceSessionId === targetSessionId) return res.status(400).json({ error: "Source and target session must differ" });
+    if (!Array.isArray(sources) || sources.length === 0 || sources.some(isUnsafePath)) return res.status(400).json({ error: "Invalid sources" });
+    if (isUnsafePath(destination)) return res.status(400).json({ error: "Invalid destination" });
+    if (!TRANSFER_ACTIONS.has(action)) return res.status(400).json({ error: "Invalid action" });
+
+    try {
+        const [sourceCtx, targetCtx] = await Promise.all([
+            validateSession(sessionToken, sourceSessionId),
+            validateSession(sessionToken, targetSessionId),
+        ]);
+        if (sourceCtx.error) return res.status(sourceCtx.status).json({ error: `Source: ${sourceCtx.error}` });
+        if (targetCtx.error) return res.status(targetCtx.status).json({ error: `Target: ${targetCtx.error}` });
+
+        if (!(await checkFilePermission(sourceCtx, Permission.FILES_DOWNLOAD)))
+            return res.status(403).json({ error: "You don't have permission to read files on the source server" });
+        if (!(await checkFilePermission(targetCtx, Permission.FILES_UPLOAD)))
+            return res.status(403).json({ error: "You don't have permission to upload files to the target server" });
+        if (action === "move" && !(await checkFilePermission(sourceCtx, Permission.FILES_MODIFY)))
+            return res.status(403).json({ error: "You don't have permission to delete files on the source server" });
+
+        const [sourceClient, targetClient] = await Promise.all([resolveTransferClient(sourceCtx), resolveTransferClient(targetCtx)]);
+
+        runCrossSessionTransfer({
+            id: transferId, sessionIds: [sourceSessionId, targetSessionId],
+            sourceClient, targetClient, sources, destination, action,
+            onFinished: (err) => {
+                if (err) return;
+                const details = { sources, destination, action, sourceSessionId, targetSessionId };
+                audit(sourceCtx, req, AUDIT_ACTIONS.FILE_DOWNLOAD, RESOURCE_TYPES.FILE, details);
+                audit(targetCtx, req, AUDIT_ACTIONS.FILE_UPLOAD, RESOURCE_TYPES.FILE, details);
+                if (action === "move") audit(sourceCtx, req, AUDIT_ACTIONS.FILE_DELETE, RESOURCE_TYPES.FILE, details);
+            },
+        });
+
+        res.status(202).json({ id: transferId });
     } catch (err) {
         handleError(res, err);
     }

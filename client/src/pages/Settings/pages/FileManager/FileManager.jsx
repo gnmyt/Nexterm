@@ -3,11 +3,12 @@ import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { useTranslation } from "react-i18next";
 import { useContext } from "react";
 import Icon from "@mdi/react";
-import { mdiViewGrid, mdiViewList, mdiImage, mdiEyeOff, mdiShieldCheck, mdiCursorMove, mdiFileMove, mdiContentCopy, mdiHelpCircle, mdiCloudSync, mdiCloudOffOutline } from "@mdi/js";
+import { mdiViewGrid, mdiViewList, mdiViewSequential, mdiImage, mdiEyeOff, mdiCursorDefaultClick, mdiShieldCheck, mdiCursorMove, mdiFileMove, mdiContentCopy, mdiHelpCircle, mdiCloudSync, mdiCloudOffOutline } from "@mdi/js";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
 import Button from "@/common/components/Button";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
 
 const SettingItem = ({ icon, title, description, children }) => (
     <div className="setting-item">
@@ -40,6 +41,7 @@ export const FileManager = () => {
     const { 
         showThumbnails, setShowThumbnails,
         defaultViewMode, setDefaultViewMode,
+        openOnSingleClick, setOpenOnSingleClick,
         showHiddenFiles, setShowHiddenFiles,
         confirmBeforeDelete, setConfirmBeforeDelete,
         dragDropAction, setDragDropAction,
@@ -62,9 +64,9 @@ export const FileManager = () => {
 
     return (
         <div className="file-manager-settings">
-            <div className="settings-section">
+            <div className="settings-section settings-page-section">
                 <div className="section-header">
-                    <h2>{t("settings.fileManager.title")}</h2>
+                    <SettingsHeading>{t("settings.fileManager.title")}</SettingsHeading>
                     <Button
                         icon={isFilesSynced ? mdiCloudSync : mdiCloudOffOutline}
                         onClick={handleSyncToggle}
@@ -91,7 +93,25 @@ export const FileManager = () => {
                             selected={defaultViewMode === "list"}
                             onClick={() => setDefaultViewMode("list")}
                         />
+                        <ViewOption 
+                            icon={mdiViewSequential} 
+                            label={t("settings.fileManager.defaultView.compact")} 
+                            selected={defaultViewMode === "compact"}
+                            onClick={() => setDefaultViewMode("compact")}
+                        />
                     </div>
+                </SettingItem>
+
+                <SettingItem 
+                    icon={mdiCursorDefaultClick}
+                    title={t("settings.fileManager.singleClickOpen.title")} 
+                    description={t("settings.fileManager.singleClickOpen.description")}
+                >
+                    <ToggleSwitch 
+                        id="open-on-single-click" 
+                        checked={openOnSingleClick} 
+                        onChange={setOpenOnSingleClick} 
+                    />
                 </SettingItem>
 
                 <SettingItem 

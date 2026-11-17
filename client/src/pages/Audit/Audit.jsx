@@ -14,6 +14,7 @@ import AuditTable from "./components/AuditTable";
 import AuditFilters from "./components/AuditFilters";
 import { useTranslation } from "react-i18next";
 import "./styles.sass";
+import { Page, PageContent } from "@/common/components/Page";
 
 export const Audit = () => {
     const { t } = useTranslation();
@@ -97,15 +98,15 @@ export const Audit = () => {
     }, []);
 
     return (
-        <div className="audit-page">
+        <Page>
             <PageHeader icon={mdiShieldCheckOutline} title={t('audit.page.title')}
                         subtitle={t('audit.page.subtitle')} />
-            <div className="audit-content">
+            <PageContent>
                 <AuditFilters filters={filters} metadata={metadata} organizations={organizations}
                               onChange={handleFilterChange} />
                 <AuditTable logs={auditLogs} loading={loading} pagination={pagination} onPageChange={handlePageChange}
                             getIconForAction={getIconForAction} />
-            </div>
-        </div>
+            </PageContent>
+        </Page>
     );
 };

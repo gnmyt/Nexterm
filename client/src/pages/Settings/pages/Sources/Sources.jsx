@@ -24,10 +24,12 @@ import {
     mdiFormTextbox,
     mdiLink,
 } from "@mdi/js";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
+import EmptyState from "@/common/components/EmptyState";
 
 export const Sources = () => {
     const { t } = useTranslation();
-    const [sources, setSources] = useState([]);
+    const [sources, setSources] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editSource, setEditSource] = useState(null);
     const [formData, setFormData] = useState({ name: "", url: "", enabled: true });
@@ -43,6 +45,7 @@ export const Sources = () => {
             const data = await getRequest("sources");
             setSources(data);
         } catch (error) {
+            setSources(prev => prev ?? []);
             sendToast(t("common.errors.generalError"), t("settings.sources.errors.loadFailed"));
         }
     }, [sendToast, t]);
@@ -164,19 +167,16 @@ export const Sources = () => {
             <div className="sources-section">
                 <div className="section-header">
                     <div className="header-content">
-                        <h2>{t("settings.sources.title")}</h2>
+                        <SettingsHeading>{t("settings.sources.title")}</SettingsHeading>
                         <p>{t("settings.sources.description")}</p>
                     </div>
                     <Button text={t("settings.sources.addSource")} icon={mdiPlus} onClick={openCreateDialog} />
                 </div>
 
                 <div className="sources-grid">
-                    {sources.length === 0 ? (
-                        <div className="no-sources">
-                            <Icon path={mdiCloudDownload} />
-                            <h2>{t("settings.sources.noSources")}</h2>
-                            <p>{t("settings.sources.noSourcesDescription")}</p>
-                        </div>
+                    {sources === null ? null : sources.length === 0 ? (
+                        <EmptyState icon={mdiCloudDownload} title={t("settings.sources.noSources")}
+                                    description={t("settings.sources.noSourcesDescription")} />
                     ) : (
                         sources.map(source => (
                             <div key={source.id} className={`source-card ${!source.enabled ? "disabled" : ""}`}>
@@ -207,26 +207,15 @@ export const Sources = () => {
                                     </div>
                                 </div>
                                 <div className="source-actions">
-                                    <button className="action-btn sync-btn"
+                                    <Button icon={syncing[source.id] ? mdiLoading : mdiSync} spin={!!syncing[source.id]}
                                             onClick={() => handleSync(source.id)}
                                             disabled={syncing[source.id] || !source.enabled}
-                                            aria-label={t("settings.sources.sync")}>
-                                        <Icon path={syncing[source.id] ? mdiLoading : mdiSync}
-                                              spin={syncing[source.id] ? 1 : 0} />
-                                    </button>
+                                            title={t("settings.sources.sync")} />
                                     {!source.isDefault && (
-                                        <button className="action-btn edit-btn"
-                                                onClick={() => openEditDialog(source)}
-                                                aria-label={t("settings.sources.edit")}>
-                                            <Icon path={mdiPencil} />
-                                        </button>
+                                        <Button icon={mdiPencil} onClick={() => openEditDialog(source)} title={t("settings.sources.edit")} />
                                     )}
                                     {!source.isDefault && (
-                                        <button className="action-btn delete-btn"
-                                                onClick={() => handleDeleteRequest(source)}
-                                                aria-label={t("settings.sources.delete")}>
-                                            <Icon path={mdiTrashCan} />
-                                        </button>
+                                        <Button type="danger" icon={mdiTrashCan} onClick={() => handleDeleteRequest(source)} title={t("settings.sources.delete")} />
                                     )}
                                 </div>
                             </div>

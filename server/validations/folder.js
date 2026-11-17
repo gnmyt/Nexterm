@@ -3,20 +3,24 @@ const { createIdentityValidation, updateIdentityValidation } = require('./identi
 
 const temporaryIdentityId = Joi.string().pattern(/^new-[A-Za-z0-9-]+$/);
 
+const FOLDER_PROFILE_PROTOCOLS = ["ssh", "telnet", "rdp", "vnc", "sftp", "ftp", "ftps"];
+const protocol = Joi.string().valid(...FOLDER_PROFILE_PROTOCOLS);
+
+module.exports.FOLDER_PROFILE_PROTOCOLS = FOLDER_PROFILE_PROTOCOLS;
+
 module.exports.folderCreationValidation = Joi.object({
     name: Joi.string().min(1).max(50).required(),
     parentId: Joi.number().integer().allow(null).optional(),
-    organizationId: Joi.number().integer().allow(null).optional(),
-    config: Joi.object().unknown(true).optional()
+    organizationId: Joi.number().integer().allow(null).optional()
 });
 
 module.exports.folderEditValidation = Joi.object({
     name: Joi.string().min(1).max(50),
     parentId: Joi.number().integer().allow(null).optional(),
     organizationId: Joi.number().integer().allow(null).optional(),
-    config: Joi.object().unknown(true).optional(),
+    profiles: Joi.object().pattern(protocol, Joi.object().unknown(true)).optional(),
     identityProfiles: Joi.object().pattern(
-        Joi.string().valid("ssh", "telnet", "rdp", "vnc", "sftp", "ftp", "ftps"),
+        protocol,
         Joi.array().items(Joi.alternatives().try(Joi.number().integer(), temporaryIdentityId)).unique()
     ).optional(),
     identityCreates: Joi.array().items(Joi.object({
@@ -26,13 +30,5 @@ module.exports.folderEditValidation = Joi.object({
     identityUpdates: Joi.array().items(Joi.object({
         id: Joi.number().integer().required(),
         config: updateIdentityValidation.required(),
-    })).unique("id").optional(),
-    inheritancePolicy: Joi.string().valid("retain", "adopt").optional(),
-    inheritanceTransitions: Joi.array().items(Joi.object({
-        protocol: Joi.string().valid("ssh", "telnet", "rdp", "vnc", "sftp", "ftp", "ftps").required(),
-        section: Joi.string().valid("details", "settings", "identities").required(),
-        from: Joi.string().valid("transparent", "enabled", "disabled").required(),
-        to: Joi.string().valid("transparent", "enabled", "disabled").required(),
-        policy: Joi.string().valid("retain", "adopt").optional()
-    })).unique((left, right) => left.protocol === right.protocol && left.section === right.section).optional()
+    })).unique("id").optional()
 }).min(1);

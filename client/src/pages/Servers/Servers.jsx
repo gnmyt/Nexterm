@@ -5,7 +5,6 @@ import { createPortal } from "react-dom";
 import WelcomePanel from "@/pages/Servers/components/WelcomePanel";
 import ServerDialog from "@/pages/Servers/components/ServerDialog";
 import ViewContainer from "@/pages/Servers/components/ViewContainer";
-import ProxmoxDialog from "@/pages/Servers/components/ProxmoxDialog";
 import SSHConfigImportDialog from "@/pages/Servers/components/SSHConfigImportDialog";
 import ConnectionReasonDialog from "@/pages/Servers/components/ConnectionReasonDialog";
 import DirectConnectDialog from "@/pages/Servers/components/DirectConnectDialog";
@@ -47,7 +46,6 @@ export const Servers = () => {
 
     const [serverDialogOpen, setServerDialogOpen] = useState(false);
     const [serverDialogProtocol, setServerDialogProtocol] = useState(null);
-    const [proxmoxDialogOpen, setProxmoxDialogOpen] = useState(false);
     const [sshConfigImportDialogOpen, setSSHConfigImportDialogOpen] = useState(false);
     const [connectionReasonDialogOpen, setConnectionReasonDialogOpen] = useState(false);
     const [directConnectDialogOpen, setDirectConnectDialogOpen] = useState(false);
@@ -728,12 +726,6 @@ export const Servers = () => {
         setEditServerId(null);
     };
 
-    const closePVEDialog = () => {
-        setProxmoxDialogOpen(false);
-        setCurrentFolderId(null);
-        setEditServerId(null);
-    };
-
     const closeSSHConfigImportDialog = () => {
         setSSHConfigImportDialogOpen(false);
         setCurrentFolderId(null);
@@ -807,10 +799,6 @@ export const Servers = () => {
             <ServerDialog open={serverDialogOpen} onClose={closeDialog} currentFolderId={currentFolderId}
                           currentOrganizationId={currentOrganizationId} editServerId={editServerId}
                           initialProtocol={serverDialogProtocol} />
-            <ProxmoxDialog open={proxmoxDialogOpen} onClose={closePVEDialog}
-                           currentFolderId={currentFolderId}
-                           currentOrganizationId={currentOrganizationId}
-                           editServerId={editServerId} />
             <SSHConfigImportDialog open={sshConfigImportDialogOpen} onClose={closeSSHConfigImportDialog}
                                    currentFolderId={currentFolderId}
                                    currentOrganizationId={currentOrganizationId} />
@@ -832,7 +820,6 @@ export const Servers = () => {
                     setServerDialogOpen(true);
                 }}
                             connectToServer={connectToServer}
-                            setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
                             setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
                             setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
                             setEditServerId={setEditServerId} openSFTP={openSFTP} openBrowser={openBrowser}

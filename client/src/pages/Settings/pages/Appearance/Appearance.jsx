@@ -10,6 +10,7 @@ import SelectBox from "@/common/components/SelectBox";
 import ActionConfirmDialog from "@/common/components/ActionConfirmDialog";
 import { applyActiveThemeCSS, removeActiveThemeCSS } from "@/common/components/ThemeLoader";
 import Icon from "@mdi/react";
+import EmptyState from "@/common/components/EmptyState";
 import {
     mdiPalette, mdiWhiteBalanceSunny, mdiWeatherNight, mdiCheck, mdiCloudSync,
     mdiCloudOffOutline, mdiPlus, mdiBrush, mdiMonitor,
@@ -18,6 +19,7 @@ import ThemeCard from "./components/ThemeCard";
 import ThemeEditorDialog from "./components/ThemeEditorDialog";
 import Tooltip from "@/common/components/Tooltip";
 import { AUTO_SCALE, SCALE_STEPS } from "@/common/utils/displayScale.js";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
 
 export const Appearance = () => {
     const { t } = useTranslation();
@@ -144,12 +146,12 @@ export const Appearance = () => {
 
     return (
         <div className="appearance-page">
-            <div className="appearance-section">
+            <div className="appearance-section settings-page-section">
                 <div className="section-header">
-                    <h2>
+                    <SettingsHeading>
                         <Icon path={mdiPalette} size={0.8} />
                         {t("settings.account.appearance")}
-                    </h2>
+                    </SettingsHeading>
                     <Button
                         icon={isGroupSynced("appearance") ? mdiCloudSync : mdiCloudOffOutline}
                         onClick={() => toggleSync("appearance",
@@ -248,12 +250,12 @@ export const Appearance = () => {
                 </div>
             </div>
 
-            <div className="appearance-section">
+            <div className="appearance-section settings-page-section">
                 <div className="section-header">
-                    <h2>
+                    <SettingsHeading>
                         <Icon path={mdiMonitor} size={0.8} />
                         {t("settings.account.remoteDesktop")}
-                    </h2>
+                    </SettingsHeading>
                     <Button
                         icon={isGroupSynced("remoteDesktop") ? mdiCloudSync : mdiCloudOffOutline}
                         onClick={() => toggleSync("remoteDesktop",
@@ -275,13 +277,13 @@ export const Appearance = () => {
                 </div>
             </div>
 
-            <div className="appearance-section">
+            <div className="appearance-section settings-page-section">
                 <div className="section-header">
                     <div className="header-content">
-                        <h2>
+                        <SettingsHeading>
                             <Icon path={mdiBrush} size={0.8} />
                             {t("settings.account.customThemes.title")}
-                        </h2>
+                        </SettingsHeading>
                         <p>{t("settings.account.customThemes.description")}</p>
                     </div>
                     <Button text={t("settings.account.customThemes.newTheme")} icon={mdiPlus} onClick={openCreateEditor} />
@@ -289,11 +291,8 @@ export const Appearance = () => {
 
                 <div className="css-themes-grid">
                     {themes.length === 0 ? (
-                        <div className="no-themes">
-                            <Icon path={mdiBrush} />
-                            <h3>{t("settings.account.customThemes.noThemesYet")}</h3>
-                            <p>{t("settings.account.customThemes.noThemesDescription")}</p>
-                        </div>
+                        <EmptyState icon={mdiBrush} title={t("settings.account.customThemes.noThemesYet")}
+                                    description={t("settings.account.customThemes.noThemesDescription")} />
                     ) : (
                         <div className="css-theme-cards">
                             {themes.map((theme) => (

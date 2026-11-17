@@ -63,7 +63,14 @@
       "backToLogin": "Back to Login",
       "authenticating": "Authenticating...",
       "noAccount": "Don't have an account?",
-      "haveAccount": "Already have an account?"
+      "haveAccount": "Already have an account?",
+      "welcome": "Welcome back",
+      "subtitle": "Sign in to continue to Nexterm.",
+      "registrationSubtitle": "Create your account to get started.",
+      "firstTimeSubtitle": "Create the first administrator account for this instance.",
+      "twoFactorTitle": "Two-factor authentication",
+      "twoFactorDescription": "Enter the code from your authenticator app.",
+      "qrTitle": "Sign in with the app"
     },
     "deviceLink": {
       "title": "Link Device",
@@ -157,8 +164,6 @@
     "quickAction": {
       "placeholder": "Search servers, snippets, or navigate...",
       "noResults": "No results found",
-      "navigation": "Navigation",
-      "settings": "Settings",
       "navigate": "Navigate",
       "select": "Select",
       "close": "Close",
@@ -167,7 +172,9 @@
         "snippet": "Snippet",
         "navigation": "Go to",
         "settings": "Settings"
-      }
+      },
+      "navigation": "Navigation",
+      "settings": "Settings"
     },
     "errors": {
       "loadingAuthProviders": "Error loading authentication providers: {{error}}",
@@ -197,7 +204,6 @@
         "authenticationFailed": "Authentication failed",
         "permissionDenied": "Permission denied",
         "failed": "Connection failed",
-        "disabled": "Server is disabled",
         "closedUnexpectedly": "Connection closed unexpectedly",
         "error": "Connection error occurred",
         "scriptClosedUnexpectedly": "Script connection closed unexpectedly",
@@ -205,6 +211,7 @@
         "rdpSessionConflict": "The session was disconnected by the server because another connection was opened.",
         "rdpSessionTimeout": "The RDP session was disconnected because its session time limit was reached.",
         "rdpSessionClosed": "The RDP session was ended by the remote server or an administrator.",
+        "disabled": "Server is disabled",
         "spiceUnavailable": "SPICE support is not available on the connected engine (missing libguac-client-spice). Rebuild the engine with SPICE support."
       }
     },
@@ -216,6 +223,11 @@
       "organizationDeleteError": "Failed to delete organization",
       "leftOrganization": "You have left the organization",
       "leaveOrganizationError": "Failed to leave organization"
+    },
+    "unsavedChanges": {
+      "title": "Unsaved changes",
+      "text": "Discard them, or keep editing and save when you're done.",
+      "keepEditing": "Keep editing"
     }
   },
   "audit": {
@@ -449,10 +461,6 @@
     },
     "grid": {
       "loading": "Loading monitoring data...",
-      "restricted": {
-        "title": "Access restricted",
-        "subtitle": "Monitoring data is hidden by your network restrictions."
-      },
       "noServers": {
         "title": "No Servers Found",
         "subtitle": "No SSH servers available for monitoring.\nAdd some servers to start monitoring them."
@@ -483,6 +491,10 @@
           "hours": "{{hours}}h {{minutes}}m",
           "minutes": "{{minutes}}m"
         }
+      },
+      "restricted": {
+        "title": "Access restricted",
+        "subtitle": "Monitoring data is hidden by your network restrictions."
       }
     },
     "details": {
@@ -631,15 +643,6 @@
       "themeLabel": "Theme",
       "accentColor": "Accent Color",
       "sizeLabel": "Size",
-      "serverList": {
-        "title": "Server list",
-        "description": "Choose how notes are displayed under server names.",
-        "noteScrollMode": "Note scrolling mode",
-        "scrollModeNone": "No scrolling",
-        "scrollModeHover": "Scroll once on hover",
-        "scrollModeStop": "Scroll with pauses",
-        "scrollModeInfinite": "Infinite scrolling"
-      },
       "sizeXS": "XS",
       "sizeS": "S",
       "sizeM": "M",
@@ -756,7 +759,16 @@
       "remoteDesktopScale": "Display Scale",
       "remoteDesktopScaleAuto": "Automatic (match device)",
       "remoteDesktopSyncEnabled": "Remote desktop settings will now sync across devices",
-      "remoteDesktopSyncDisabled": "Remote desktop settings are now saved on this device only"
+      "remoteDesktopSyncDisabled": "Remote desktop settings are now saved on this device only",
+      "serverList": {
+        "title": "Server list",
+        "description": "Choose how notes are displayed under server names.",
+        "noteScrollMode": "Note scrolling mode",
+        "scrollModeNone": "No scrolling",
+        "scrollModeHover": "Scroll once on hover",
+        "scrollModeStop": "Scroll with pauses",
+        "scrollModeInfinite": "Infinite scrolling"
+      }
     },
     "passwordChange": {
       "title": "Change password",
@@ -773,7 +785,6 @@
       "invite": "Invite",
       "delete": "Delete",
       "leave": "Leave",
-      "rename": "Rename organization",
       "members": "Members",
       "auditSettings": {
         "auditSettingsTab": "Audit Settings",
@@ -819,7 +830,6 @@
       "leaveConfirmation": "Are you sure you want to leave this organization?",
       "dialog": {
         "title": "Create Organization",
-        "editTitle": "Rename Organization",
         "fields": {
           "name": "Name",
           "namePlaceholder": "Organization name",
@@ -837,7 +847,8 @@
           "createFailed": "Failed to create organization",
           "updateSuccess": "Organization renamed successfully",
           "updateFailed": "Failed to rename organization"
-        }
+        },
+        "editTitle": "Rename Organization"
       },
       "sessionSettings": {
         "sessionSettingsTab": "Live Sessions",
@@ -852,7 +863,8 @@
           "updated": "Live session settings updated successfully",
           "updateFailed": "Failed to update live session settings"
         }
-      }
+      },
+      "rename": "Rename organization"
     },
     "users": {
       "title": "{{count}} users",
@@ -1038,7 +1050,9 @@
         "list": "List View",
         "listDescription": "Show files in a detailed list with size and date columns",
         "grid": "Grid View",
-        "gridDescription": "Show files as icons in a grid layout with thumbnails"
+        "gridDescription": "Show files as icons in a grid layout with thumbnails",
+        "compact": "Compact View",
+        "compactDescription": "Show only names in dense columns to fit many files on screen"
       },
       "thumbnails": {
         "title": "Image Thumbnails",
@@ -1070,6 +1084,10 @@
         "move": "Move",
         "copy": "Copy",
         "ask": "Ask"
+      },
+      "singleClickOpen": {
+        "title": "Open with single click",
+        "description": "Open files and folders with a single click instead of selecting them. Double-click opens when this is off."
       }
     },
     "authentication": {
@@ -1584,7 +1602,8 @@
         "engineIdPlaceholder": "Engine ID, e.g. 2",
         "inheritedNote": "Additional restrictions from roles apply."
       }
-    }
+    },
+    "search": "Search settings"
   },
   "tunnel": {
     "title": "Port Forward",
@@ -1618,26 +1637,6 @@
   "servers": {
     "addServerNote": "Right-click to add a new server",
     "searchPlaceholder": "Search",
-    "accessRestricted": "Access restricted",
-    "inheritancePolicy": {
-      "title": "Apply inheritance",
-      "description": "Choose how existing objects should handle these inherited settings.",
-      "impact": "{{count}} existing objects are affected.",
-      "retain": {
-        "title": "Retain existing",
-        "description": "Keep current values as local overrides."
-      },
-      "adopt": {
-        "title": "Adopt folder settings",
-        "description": "Replace current values with the inherited folder settings."
-      },
-      "moveTitle": "Apply destination inheritance?",
-      "moveDescription": "Choose whether moved objects adopt the destination folder settings or retain their current values.",
-      "moveFailed": "Unable to move object",
-      "identitiesRemoved": "Some identities were removed because they are unavailable in the destination.",
-      "enableTitle": "Enable inheritance?",
-      "enableDescription": "Choose what existing objects should do when these folder settings are saved."
-    },
     "time": {
       "justNow": "Just now",
       "minuteAgo": "{{count}} min ago",
@@ -1668,7 +1667,6 @@
       "telnetServer": "Telnet Server",
       "rdpServer": "RDP Server",
       "vncServer": "VNC Server",
-      "spiceServer": "SPICE Server",
       "demoServer": "Demo Connection",
       "sftpServer": "SFTP Server",
       "ftpServer": "FTP Server",
@@ -1692,10 +1690,6 @@
       "editServer": "Edit Server",
       "editIntegration": "Edit Integration",
       "duplicateServer": "Duplicate Server",
-      "disableServer": "Disable Server",
-      "enableServer": "Enable Server",
-      "disableFailed": "Failed to disable \"{{name}}\".",
-      "enableFailed": "Failed to enable \"{{name}}\".",
       "pasteIdentityPassword": "Paste Password",
       "deleteServer": "Delete Server",
       "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
@@ -1706,7 +1700,12 @@
       "stop": "Stop",
       "start": "Start",
       "joinSession": "Join Session",
-      "joinSessionOf": "Join session of {{user}}"
+      "joinSessionOf": "Join session of {{user}}",
+      "spiceServer": "SPICE Server",
+      "disableServer": "Disable Server",
+      "enableServer": "Enable Server",
+      "disableFailed": "Failed to disable \"{{name}}\".",
+      "enableFailed": "Failed to enable \"{{name}}\"."
     },
     "passwordHint": {
       "paste": "paste password",
@@ -1753,6 +1752,7 @@
       "updateFailed": "Failed to update server",
       "createIdentityFailed": "Failed to create identity",
       "updateIdentityFailed": "Failed to update identity",
+      "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination.",
       "serverDisabled": "Server \"{{name}}\" is disabled",
       "accessBlocked": "Access to \"{{name}}\" is restricted"
     },
@@ -1760,11 +1760,6 @@
       "addServer": "Add server",
       "addProtocolServer": "Add {{protocol}} server",
       "editServer": "Edit server",
-      "tabs": {
-        "details": "Details",
-        "identities": "Identities",
-        "settings": "Settings"
-      },
       "actions": {
         "save": "Save",
         "create": "Create"
@@ -1801,22 +1796,6 @@
           "removeTooltip": "Remove jump host",
           "noServersAvailable": "No SSH servers available for jump hosts. Create SSH servers first."
         },
-        "hooks": {
-          "pre": {
-            "title": "Pre-Connect Commands",
-            "description": "Run before the SSH connection is established. A failing engine command aborts the connection."
-          },
-          "after": {
-            "title": "Post-Disconnect Commands",
-            "description": "Run after the SSH session has ended. Failures are only logged."
-          },
-          "localBadge": "ENGINE",
-          "remoteBadge": "TARGET",
-          "localHint": "Runs on the engine host",
-          "remoteHint": "Runs on the target server",
-          "unknownEngineHint": "Selected engine (ID {{engine}}) is unknown or offline",
-          "swapTooltip": "Swap execution order"
-        },
         "monitoring": {
           "title": "Enable Performance Monitoring",
           "description": "Collect CPU, memory, disk, and network metrics for this server"
@@ -1826,9 +1805,9 @@
           "description": "Allow waking this server remotely using its MAC address"
         },
         "rdpSecurity": {
-          "title": "Security",
           "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
-          "method": "Security Method"
+          "method": "Security Method",
+          "title": "Security"
         },
         "keyboardLayout": {
           "title": "Keyboard Layout",
@@ -1870,6 +1849,22 @@
           "delete": "Delete",
           "functionKeys": "Function Keys"
         },
+        "hooks": {
+          "pre": {
+            "title": "Pre-Connect Commands",
+            "description": "Run before the SSH connection is established. A failing engine command aborts the connection."
+          },
+          "after": {
+            "title": "Post-Disconnect Commands",
+            "description": "Run after the SSH session has ended. Failures are only logged."
+          },
+          "localBadge": "ENGINE",
+          "remoteBadge": "TARGET",
+          "localHint": "Runs on the engine host",
+          "remoteHint": "Runs on the target server",
+          "unknownEngineHint": "Selected engine (ID {{engine}}) is unknown or offline",
+          "swapTooltip": "Swap execution order"
+        },
         "noSettings": "No additional settings available for this entry type."
       },
       "identities": {
@@ -1896,6 +1891,20 @@
         "noUsername": "No username",
         "noOrgIdentities": "No organization identities. Create one to share with all members.",
         "noPersonalIdentities": "No personal identities. Create one for your private use."
+      },
+      "sections": {
+        "general": "General",
+        "connection": "Connection",
+        "identities": "Identities",
+        "options": "Options",
+        "credentials": "Credentials"
+      },
+      "useInherited": "Use inherited value",
+      "reset": "Reset",
+      "tabs": {
+        "details": "Details",
+        "identities": "Identities",
+        "settings": "Settings"
       }
     },
     "proxmoxDialog": {
@@ -1904,22 +1913,22 @@
         "edit": "Edit Proxmox VE"
       },
       "fields": {
-        "name": "Name",
-        "serverIp": "Server-IP",
-        "port": "Port",
         "username": "Username",
         "password": "Password",
         "nodeName": "Node Name (Optional)",
-        "monitoring": "Performance Monitoring"
+        "monitoring": "Performance Monitoring",
+        "name": "Name",
+        "serverIp": "Server-IP",
+        "port": "Port"
       },
       "monitoringDescription": "Collect cluster-wide CPU, memory, and storage metrics",
       "placeholders": {
         "name": "Name",
-        "serverIp": "Server-IP",
-        "port": "Port",
         "username": "Username (e.g. root@pam)",
         "password": "Password",
-        "specificNode": "Specific node name"
+        "specificNode": "Specific node name",
+        "serverIp": "Server-IP",
+        "port": "Port"
       },
       "actions": {
         "import": "Add",
@@ -1930,7 +1939,8 @@
         "updated": "Proxmox integration updated successfully",
         "createFailed": "Failed to create Proxmox integration",
         "updateFailed": "Failed to update Proxmox integration"
-      }
+      },
+      "credentialsDescription": "Proxmox user with API access, e.g. root@pam or a dedicated API user."
     },
     "connectionReasonDialog": {
       "title": "Connection Reason Required",
@@ -2084,10 +2094,17 @@
         "uploadFolder": "Upload folder",
         "search": "Search files",
         "closeSearch": "Close search",
-        "refresh": "Refresh"
+        "refresh": "Refresh",
+        "back": "Back",
+        "forward": "Forward",
+        "up": "Parent directory",
+        "home": "Home directory",
+        "switchToCompact": "Switch to compact view"
       },
       "item": {
-        "link": "link"
+        "link": "link",
+        "expand": "Expand folder",
+        "collapse": "Collapse folder"
       },
       "search": {
         "placeholder": "Filter files in this folder...",
@@ -2103,14 +2120,52 @@
         "dropFilesHint": "Drop files here to upload them"
       },
       "toast": {
+        "uploadFailed": "Upload failed: {{message}}",
+        "connectionLost": "SFTP connection lost. Please reconnect.",
+        "error": "An error occurred",
         "downloaded": "Downloaded {{name}}",
         "downloadingItems": "Downloading {{count}} item(s)...",
         "uploaded": "Uploaded {{name}}",
         "uploadedItems": "Uploaded {{count}} files",
-        "uploadFailed": "Upload failed: {{message}}",
-        "uploadFailedItems": "{{count}} files failed to upload: {{message}}",
-        "connectionLost": "SFTP connection lost. Please reconnect.",
-        "error": "An error occurred"
+        "uploadFailedItems": "{{count}} files failed to upload: {{message}}"
+      },
+      "transfers": {
+        "title": "Transfers",
+        "activeCount": "{{count}} active",
+        "allDone": "All done",
+        "clearFinished": "Clear finished",
+        "queued": "Queued",
+        "cancelling": "Cancelling...",
+        "completed": "Completed",
+        "savedTo": "Saved to {{path}}",
+        "cancelled": "Cancelled",
+        "failed": "Failed: {{message}}",
+        "dismiss": "Dismiss"
+      },
+      "status": {
+        "folders_one": "{{count}} folder",
+        "folders_other": "{{count}} folders",
+        "files_one": "{{count}} file",
+        "files_other": "{{count}} files",
+        "hidden_one": "{{count}} hidden",
+        "hidden_other": "{{count}} hidden",
+        "selected": "{{count}} selected",
+        "showHidden": "Show hidden files",
+        "hideHidden": "Hide hidden files"
+      },
+      "conflict": {
+        "title_one": "Item already exists",
+        "title_other": "{{count}} items already exist",
+        "upload_one": "A file with this name already exists in the destination. What would you like to do?",
+        "upload_other": "These files already exist in the destination. What would you like to do with them?",
+        "move_one": "An item with this name already exists in the destination. Moving will replace it.",
+        "move_other": "These items already exist in the destination. Moving will replace them.",
+        "copy_one": "An item with this name already exists in the destination. Copying will replace it.",
+        "copy_other": "These items already exist in the destination. Copying will replace them.",
+        "more": "+ {{count}} more",
+        "skip": "Skip",
+        "rename": "Keep both",
+        "overwrite": "Overwrite"
       }
     },
     "browser": {
@@ -2218,6 +2273,34 @@
     "liveSessions": {
       "activeOn": "Live sessions: {{users}}",
       "unknownUser": "Unknown user"
+    },
+    "folderSettings": {
+      "name": "Folder name",
+      "nameRequired": "Folder name is required",
+      "loadFailed": "Unable to load folder settings",
+      "protocol": "Defaults for",
+      "protocolHint": "Servers in this folder use what you set below unless they set their own value. Each protocol has its own defaults.",
+      "unset": "Remove from folder"
+    },
+    "accessRestricted": "Access restricted",
+    "inheritancePolicy": {
+      "title": "Apply inheritance",
+      "description": "Choose how existing objects should handle these inherited settings.",
+      "impact": "{{count}} existing objects are affected.",
+      "retain": {
+        "title": "Retain existing",
+        "description": "Keep current values as local overrides."
+      },
+      "adopt": {
+        "title": "Adopt folder settings",
+        "description": "Replace current values with the inherited folder settings."
+      },
+      "moveTitle": "Apply destination inheritance?",
+      "moveDescription": "Choose whether moved objects adopt the destination folder settings or retain their current values.",
+      "moveFailed": "Unable to move object",
+      "identitiesRemoved": "Some identities were removed because they are unavailable in the destination.",
+      "enableTitle": "Enable inheritance?",
+      "enableDescription": "Choose what existing objects should do when these folder settings are saved."
     }
   },
   "support": {
@@ -2249,7 +2332,8 @@
     "connectDevice": "Connect Device",
     "recentConnections": "Recent Connections",
     "getStarted": "Get Started",
-    "getStartedHint": "Add a server from the sidebar to begin managing your infrastructure."
+    "getStartedHint": "Add a server from the sidebar to begin managing your infrastructure.",
+    "hibernated": "Hibernated"
   },
   "downloadApps": {
     "title": "Download Apps",
@@ -2260,6 +2344,10 @@
       "linux": "Linux",
       "android": "Android",
       "ios": "iOS"
-    }
+    },
+    "recommended": "Recommended",
+    "versionUnavailable": "The server version could not be determined, so direct downloads are unavailable. You can still browse the releases on GitHub.",
+    "sourceHint": "Downloads are served from the GitHub releases.",
+    "allReleases": "All releases"
   }
 }

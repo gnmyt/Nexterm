@@ -97,54 +97,52 @@
   .action-content
     display: flex
     align-items: center
-    gap: 0.5rem
+    gap: 0.625rem
     min-width: 0
 
-    svg
-      width: 1.125rem
-      height: 1.125rem
-      color: colors.$subtext
-      flex-shrink: 0
-
-  .action-badge
-    padding: 0.25rem 0.625rem
+  .action-icon
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 2rem
+    height: 2rem
     border-radius: 0.5rem
-    font-size: 0.75rem
-    font-weight: 500
-    text-transform: uppercase
+    background-color: colors.$dark-gray
+    color: colors.$subtext
+    flex-shrink: 0
+
+    svg
+      width: 1.05rem
+      height: 1.05rem
+
+    &.tone-success
+      color: colors.$success
+
+    &.tone-warning
+      color: colors.$warning
+
+    &.tone-error
+      color: colors.$error
+
+  .action-text
+    display: flex
+    flex-direction: column
+    gap: 0.125rem
+    min-width: 0
+
+  .action-verb
+    font-size: 0.85rem
+    font-weight: 600
+    color: colors.$white
     white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
 
-    @media (max-width: breakpoints.$mobile)
-      font-size: 0.7rem
-      padding: 0.2rem 0.5rem
-
-    &.green
-      background-color: rgba(34, 197, 94, 0.2)
-      color: #22c55e
-
-    &.blue
-      background-color: rgba(59, 130, 246, 0.2)
-      color: #3b82f6
-
-    &.orange
-      background-color: rgba(249, 115, 22, 0.2)
-      color: #f97316
-
-    &.red
-      background-color: rgba(239, 68, 68, 0.2)
-      color: #ef4444
-
-    &.purple
-      background-color: rgba(168, 85, 247, 0.2)
-      color: #a855f7
-
-    &.cyan
-      background-color: rgba(6, 182, 212, 0.2)
-      color: #06b6d4
-
-    &.gray
-      background-color: colors.$gray
-      color: colors.$subtext
+  .action-category
+    font-size: 0.72rem
+    font-weight: 500
+    color: colors.$subtext
+    white-space: nowrap
 
   .actor-info
     display: flex

@@ -50,7 +50,6 @@ module.exports.createServerValidation = Joi.object({
     renderer: Joi.string().optional(),
     disabled: Joi.boolean().optional(),
     identities: Joi.array().items(Joi.number()).optional(),
-    identityOverride: Joi.boolean().optional(),
     config: configValidation.fork(["protocol"], (schema) => schema.required()).required()
 });
 
@@ -61,7 +60,6 @@ module.exports.updateServerValidation = Joi.object({
     renderer: Joi.string().optional(),
     disabled: Joi.boolean().optional(),
     identities: Joi.array().items(Joi.number()).optional(),
-    identityOverride: Joi.boolean().optional(),
     config: configValidation
 });
 
@@ -69,6 +67,7 @@ module.exports.repositionServerValidation = Joi.object({
     targetId: Joi.number().allow(null).optional(),
     placement: Joi.string().valid('before', 'after').required(),
     folderId: Joi.number().allow(null).optional(),
-    organizationId: Joi.number().allow(null).optional(),
-    inheritancePolicy: Joi.string().valid("retain", "adopt").optional()
+    organizationId: Joi.number().allow(null).optional()
 });
+
+module.exports.configValidation = configValidation;

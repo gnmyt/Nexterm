@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react";
-import { childPath } from "../utils/fileUtils";
 
 export const useClipboard = ({ selectedItems, selectedItem, path, copyFiles, moveFiles }) => {
     const [clipboard, setClipboard] = useState(null);
@@ -7,14 +6,14 @@ export const useClipboard = ({ selectedItems, selectedItem, path, copyFiles, mov
     const handleCopy = useCallback(() => {
         const items = selectedItems.length > 0 ? selectedItems : (selectedItem ? [selectedItem] : []);
         if (items.length > 0) {
-            setClipboard({ paths: items.map(item => childPath(path, item.name)), operation: 'copy' });
+            setClipboard({ paths: items.map(item => item.id), operation: 'copy' });
         }
     }, [selectedItems, selectedItem, path]);
 
     const handleCut = useCallback(() => {
         const items = selectedItems.length > 0 ? selectedItems : (selectedItem ? [selectedItem] : []);
         if (items.length > 0) {
-            setClipboard({ paths: items.map(item => childPath(path, item.name)), operation: 'cut' });
+            setClipboard({ paths: items.map(item => item.id), operation: 'cut' });
         }
     }, [selectedItems, selectedItem, path]);
 

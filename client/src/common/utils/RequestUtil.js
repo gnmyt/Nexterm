@@ -1,33 +1,16 @@
 import { isTauri, getActiveServerUrl } from "@/common/utils/TauriUtil.js";
-import { invoke } from "@tauri-apps/api/core";
-import { save } from "@tauri-apps/plugin-dialog";
-import { writeFile } from "@tauri-apps/plugin-fs";
 import { fetch as tauriFetchApi } from "@tauri-apps/plugin-http";
+import {
+    browserDownload, browserUpload, createTransferId, getConnectorUserAgent, nativeDownload, nativeUpload, pickSavePath,
+} from "@/common/utils/TransferUtil.js";
 
-let cachedUserAgent = null;
-
-const getTauriUserAgent = async () => {
-    if (cachedUserAgent) return cachedUserAgent;
-    if (!isTauri()) return "NextermConnector/1.0.0";
-    try {
-        cachedUserAgent = await invoke("get_user_agent");
-        return cachedUserAgent;
-    } catch {
-        return "NextermConnector/1.0.0";
-    }
-};
+const getTauriUserAgent = getConnectorUserAgent;
 
 export const tauriDownload = async (url, defaultFileName, options = {}) => {
-    const filePath = await save({ defaultPath: defaultFileName, title: "Save File", ...options });
-    if (!filePath) return null;
-    
-    const userAgent = await getTauriUserAgent();
-    const fetchOptions = { method: "GET", ...options.fetchOptions, headers: { ...options.fetchOptions?.headers, "User-Agent": userAgent } };
-    const response = await tauriFetchApi(url, fetchOptions);
-    if (!response.ok) throw new Error(`Download failed: ${response.status}`);
-    
-    await writeFile(filePath, new Uint8Array(await response.arrayBuffer()));
-    return filePath;
+    const destination = await pickSavePath({ fileName: defaultFileName, filters: options.filters });
+    if (!destination) return null;
+    const { method = "GET", headers = {}, body } = options.fetchOptions ?? {};
+    return nativeDownload({ id: createTransferId(), url, destination, method, headers, body, onProgress: options.onProgress });
 };
 
 const getBaseUrl = () => {
@@ -53,66 +36,15 @@ export const tauriFetch = async (url, options = {}) => {
     return fetch(url, options);
 };
 
-export const uploadFile = async (url, file, { onProgress, timeout = 300000, headers = {} } = {}) => {
+export const uploadFile = async (url, file, { onProgress, timeout = 300000, headers = {}, signal } = {}) => {
     const baseUrl = getBaseUrl();
     const fullUrl = baseUrl ? `${baseUrl}${url}` : url;
+    const reportPercent = onProgress ? (loaded, total) => onProgress(total ? Math.round((loaded / total) * 100) : 0) : undefined;
 
     if (isTauri()) {
-        try {
-            const userAgent = await getTauriUserAgent();
-            const arrayBuffer = await file.arrayBuffer();
-            
-            const response = await tauriFetchApi(fullUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/octet-stream", "User-Agent": userAgent, ...headers },
-                body: arrayBuffer,
-            });
-
-            if (onProgress) onProgress(100);
-
-            if (!response.ok) {
-                const text = await response.text();
-                let error = `Upload failed (${response.status})`;
-                try { error = JSON.parse(text).error || error; } catch {}
-                throw new Error(error);
-            }
-
-            const text = await response.text();
-            try { return JSON.parse(text); } catch { return { success: true }; }
-        } catch (e) {
-            if (e.message?.includes("Upload failed")) throw e;
-            console.warn("Tauri upload failed, trying XHR fallback:", e);
-        }
+        return nativeUpload({ id: createTransferId(), url: fullUrl, file, headers, signal, onProgress: reportPercent });
     }
-
-    return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        
-        if (onProgress) {
-            xhr.upload.addEventListener("progress", (e) => {
-                if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
-            });
-        }
-
-        xhr.onload = () => {
-            if (xhr.status >= 200 && xhr.status < 300) {
-                try { resolve(JSON.parse(xhr.responseText)); } catch { resolve({ success: true }); }
-            } else {
-                let errorMsg = `Upload failed (${xhr.status})`;
-                try { errorMsg = JSON.parse(xhr.responseText).error || errorMsg; } catch {}
-                reject(new Error(errorMsg));
-            }
-        };
-        xhr.onerror = () => reject(new Error("Network error"));
-        xhr.onabort = () => reject(new Error("Upload cancelled"));
-        xhr.ontimeout = () => reject(new Error("Upload timed out"));
-        xhr.timeout = timeout;
-
-        xhr.open("POST", fullUrl, true);
-        xhr.setRequestHeader("Content-Type", "application/octet-stream");
-        Object.entries(headers).forEach(([key, value]) => xhr.setRequestHeader(key, value));
-        xhr.send(file);
-    });
+    return browserUpload({ url: fullUrl, file, headers, signal, timeout, onProgress: reportPercent });
 };
 
 export const request = async (url, method, body, headers) => {
@@ -194,13 +126,8 @@ export const downloadFile = async (url) => {
     const fileName = url.split("?")[0].split("/").pop() || "download";
     
     if (isTauri()) return tauriDownload(downloadUrl, fileName);
-    
-    const a = document.createElement("a");
-    a.href = downloadUrl;
-    a.download = "";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+
+    browserDownload({ url: downloadUrl, fileName });
 }
 
 export const getRawRequest = async (url) => {

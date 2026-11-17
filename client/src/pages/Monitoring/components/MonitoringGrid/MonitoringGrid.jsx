@@ -2,6 +2,7 @@ import Icon from "@mdi/react";
 import { mdiServerOff, mdiAlertCircle, mdiClockOutline, mdiServerNetwork } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import { getIconPath } from "@/common/utils/iconUtils.js";
+import EmptyState from "@/common/components/EmptyState";
 
 const STATUS_ICONS = { offline: mdiServerOff, error: mdiAlertCircle, unknown: mdiClockOutline };
 
@@ -21,11 +22,8 @@ export const MonitoringGrid = ({ servers, onServerSelect }) => {
     if (!servers?.length) {
         return (
             <div className="monitoring-grid empty">
-                <div className="no-servers">
-                    <Icon path={mdiServerOff} />
-                    <h2>{t("monitoring.grid.noServers.title")}</h2>
-                    <p>{t("monitoring.grid.noServers.subtitle")}</p>
-                </div>
+                <EmptyState icon={mdiServerOff} title={t("monitoring.grid.noServers.title")}
+                            description={t("monitoring.grid.noServers.subtitle")} />
             </div>
         );
     }

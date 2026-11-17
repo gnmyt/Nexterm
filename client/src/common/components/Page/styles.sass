@@ -1,0 +1,56 @@
+@use "@/common/styles/colors"
+@use "@/common/styles/breakpoints"
+
+.page
+  --page-gutter: 2rem
+  display: flex
+  flex-direction: column
+  height: 100%
+  min-width: 0
+  background-color: colors.$background
+  overflow: hidden
+
+  @media (max-width: breakpoints.$tablet)
+    --page-gutter: 1.5rem
+
+  @media (max-width: breakpoints.$mobile)
+    --page-gutter: 1rem
+
+  > .page-header
+    padding-left: var(--page-gutter)
+    padding-right: var(--page-gutter)
+
+.page-toolbar
+  display: flex
+  align-items: center
+  justify-content: space-between
+  gap: 1rem
+  padding: 0.25rem var(--page-gutter) 1rem
+  flex-shrink: 0
+  min-width: 0
+
+  > *
+    min-width: 0
+
+  @media (max-width: breakpoints.$small)
+    flex-direction: column
+    align-items: stretch
+    gap: 0.75rem
+
+.page-content
+  flex: 1
+  min-height: 0
+  min-width: 0
+  display: flex
+  flex-direction: column
+  gap: 1rem
+  padding: 0.25rem var(--page-gutter) var(--page-gutter)
+  overflow-y: auto
+  overflow-x: hidden
+
+  > *
+    min-width: 0
+
+  &--flush
+    padding: 0
+    gap: 0

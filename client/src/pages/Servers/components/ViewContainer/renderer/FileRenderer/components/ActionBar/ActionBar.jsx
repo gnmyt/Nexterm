@@ -1,15 +1,16 @@
 import "./styles.sass";
 import Icon from "@mdi/react";
 import {
-    mdiChevronLeft,
+    mdiArrowLeft,
+    mdiArrowRight,
+    mdiArrowUp,
+    mdiHome,
     mdiChevronRight,
-    mdiChevronUp,
+    mdiHarddisk,
     mdiFileUpload,
     mdiFolderUpload,
     mdiFilePlus,
     mdiFolderPlus,
-    mdiViewList,
-    mdiViewGrid,
     mdiFileMove,
     mdiContentCopy,
     mdiMagnify,
@@ -21,6 +22,15 @@ import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/component
 import { useTranslation } from "react-i18next";
 import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import Tooltip from "@/common/components/Tooltip";
+
+const ToolButton = ({ icon, active = false, className = "", title, ...props }) => (
+    <Tooltip text={title} delay={500} disabled={props.disabled} asChild>
+        <button type="button" className={`tool-btn${active ? " active" : ""}${className ? " " + className : ""}`}
+                aria-label={title} {...props}>
+            <Icon path={icon} />
+        </button>
+    </Tooltip>
+);
 
 export const ActionBar = ({
                               path,
@@ -35,8 +45,7 @@ export const ActionBar = ({
                               goForward,
                               historyIndex,
                               historyLength,
-                              viewMode = "list",
-                              setViewMode,
+                              homePath,
                               searchDirectories,
                               directorySuggestions = [],
                               setDirectorySuggestions,
@@ -106,9 +115,9 @@ export const ActionBar = ({
         }
 
         const containerWidth = breadcrumbRef.current.offsetWidth;
-        const avgWidth = 80;
+        const avgWidth = 90;
         const ellipsisWidth = 50;
-        const available = containerWidth - 20 - ellipsisWidth;
+        const available = containerWidth - 40 - ellipsisWidth;
         const maxParts = Math.floor(available / avgWidth);
 
         if (maxParts >= total) return { parts: pathArray, showEllipsis: false, ellipsisIndex: -1 };
@@ -313,40 +322,44 @@ export const ActionBar = ({
 
         return (
             <>
-                <div 
-                    className={`path-part-divider root-drop ${dropTarget === root ? "drop-target" : ""}`}
+                <div
+                    className={`crumb crumb-root ${dropTarget === root ? "drop-target" : ""} ${path === root ? "current" : ""}`}
+                    title={root}
                     onClick={(e) => { e.stopPropagation(); path === root ? refreshFiles?.() : updatePath(root); }}
                     onDragOver={(e) => handlePathDragOver(e, root)}
                     onDragLeave={handlePathDragLeave}
                     onDrop={(e) => handlePathDrop(e, root)}
-                >/
+                >
+                    <Icon path={mdiHarddisk} />
                 </div>
                 {parts.map((part, i) => {
                     const originalIndex = showEllipsis ? (i === 0 ? 0 : fullArray.length - (parts.length - i)) : i;
                     const targetPath = joinRoot(fullArray.slice(0, originalIndex + 1));
                     const isDropping = dropTarget === targetPath;
+                    const isCurrent = originalIndex === fullArray.length - 1;
 
                     return (
                         <Fragment key={`${originalIndex}-${part}`}>
                             {showEllipsis && i === ellipsisIndex && (
                                 <>
+                                    <Icon path={mdiChevronRight} className="crumb-sep" />
                                     <Tooltip text={t("servers.fileManager.actionBar.hiddenDirectories", { count: originalLength - parts.length + 1 })} delay={500} asChild>
-                                        <div className="path-part ellipsis">
-                                            ...
+                                        <div className="crumb ellipsis">
+                                            …
                                         </div>
                                     </Tooltip>
-                                    <div className="path-part-divider">/</div>
                                 </>
                             )}
+                            <Icon path={mdiChevronRight} className="crumb-sep" />
                             <Tooltip text={part} delay={500} asChild>
-                                <button type="button" className={`path-part ${isDropping ? "drop-target" : ""}`}
+                                <button type="button"
+                                    className={`crumb ${isDropping ? "drop-target" : ""} ${isCurrent ? "current" : ""}`}
                                     onClick={(e) => { e.stopPropagation(); navigate(i, showEllipsis, originalIndex); }}
                                     onDragOver={(e) => handlePathDragOver(e, targetPath)}
                                     onDragLeave={handlePathDragLeave}
                                     onDrop={(e) => handlePathDrop(e, targetPath)}
                                 >{part}</button>
                             </Tooltip>
-                            <div className="path-part-divider">/</div>
                         </Fragment>
                     );
                 })}
@@ -356,12 +369,18 @@ export const ActionBar = ({
 
     return (
         <div className="action-bar">
-            <Icon path={mdiChevronLeft} onClick={goBack} className={historyIndex === 0 ? " nav-disabled" : ""} />
-            <Icon path={mdiChevronRight} onClick={goForward}
-                  className={historyIndex === historyLength - 1 ? " nav-disabled" : ""} />
-            <Icon path={mdiChevronUp} onClick={goUp} className={normalizeRoot(path) === normalizeRoot(rootPath) ? " nav-disabled" : ""} />
+            <div className="tool-group nav-group">
+                <ToolButton icon={mdiArrowLeft} onClick={goBack} disabled={historyIndex === 0}
+                            title={t("servers.fileManager.actionBar.back")} />
+                <ToolButton icon={mdiArrowRight} onClick={goForward} disabled={historyIndex === historyLength - 1}
+                            title={t("servers.fileManager.actionBar.forward")} />
+                <ToolButton icon={mdiArrowUp} onClick={goUp} disabled={path === normalizeRoot(rootPath)}
+                            title={t("servers.fileManager.actionBar.up")} />
+                <ToolButton icon={mdiHome} onClick={() => homePath === path ? refreshFiles?.() : updatePath(homePath)}
+                            disabled={!homePath} title={t("servers.fileManager.actionBar.home")} />
+            </div>
 
-            <div className="address-bar" onClick={() => setIsEditing(true)}>
+            <div className={`address-bar ${isEditing ? "editing" : ""}`} onClick={() => setIsEditing(true)}>
                 {isEditing ? (
                     <div className="path-input-container">
                         <input ref={inputRef} className="path-input" type="text" value={editPath}
@@ -394,35 +413,37 @@ export const ActionBar = ({
 
             {searchOpen && (
                 <div className="file-search">
+                    <Icon path={mdiMagnify} className="search-icon" />
                     <input ref={searchInputRef} className="search-input" type="text" value={searchQuery}
                            onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={handleSearchKeyDown}
                            placeholder={t("servers.fileManager.search.placeholder")} autoComplete="off" spellCheck="false" />
                     {searchQuery.trim() && (
                         <span className="search-count">{t("servers.fileManager.search.results", { count: searchResultCount })}</span>
                     )}
-                    <Icon path={mdiClose} className="search-close" onClick={closeSearch} />
+                    <Tooltip text={t("servers.fileManager.actionBar.closeSearch")} delay={500} asChild>
+                        <button type="button" className="search-close" onClick={closeSearch}
+                                aria-label={t("servers.fileManager.actionBar.closeSearch")}>
+                            <Icon path={mdiClose} />
+                        </button>
+                    </Tooltip>
                 </div>
             )}
 
-            <div className="file-actions">
-                <Icon path={mdiMagnify} onClick={() => searchOpen ? closeSearch?.() : setSearchOpen?.(true)} className={searchOpen ? "active" : ""} />
-                <Icon path={viewMode === "list" ? mdiViewGrid : mdiViewList}
-                      onClick={() => setViewMode(viewMode === "list" ? "grid" : "list")} />
-                <Icon path={mdiRefresh} onClick={refreshFiles} />
-                <Tooltip text={t("servers.fileManager.actionBar.uploadFile")} delay={500} asChild>
-                    <Icon path={mdiFileUpload} onClick={uploadFile}
-                          aria-label={t("servers.fileManager.actionBar.uploadFile")} />
-                </Tooltip>
-                <Tooltip text={t("servers.fileManager.actionBar.uploadFolder")} delay={500} asChild>
-                    <Icon path={mdiFolderUpload} onClick={uploadFolder}
-                          aria-label={t("servers.fileManager.actionBar.uploadFolder")} />
-                </Tooltip>
-                <Tooltip text={t("servers.fileManager.createFile.title")} delay={500} asChild>
-                    <Icon path={mdiFilePlus} onClick={createFile} aria-label={t("servers.fileManager.createFile.title")} />
-                </Tooltip>
-                <Tooltip text={t("servers.fileManager.createFolder.title")} delay={500} asChild>
-                    <Icon path={mdiFolderPlus} onClick={createFolder} aria-label={t("servers.fileManager.createFolder.title")} />
-                </Tooltip>
+            <div className="tool-group">
+                <ToolButton icon={mdiMagnify} active={searchOpen}
+                            onClick={() => searchOpen ? closeSearch?.() : setSearchOpen?.(true)}
+                            title={t("servers.fileManager.actionBar.search")} />
+                <ToolButton icon={mdiRefresh} onClick={refreshFiles} title={t("servers.fileManager.actionBar.refresh")} />
+            </div>
+            <div className="tool-divider" />
+            <div className="tool-group">
+                <ToolButton icon={mdiFilePlus} onClick={createFile} title={t("servers.fileManager.contextMenu.newFile")} />
+                <ToolButton icon={mdiFolderPlus} onClick={createFolder} title={t("servers.fileManager.contextMenu.newFolder")} />
+            </div>
+            <div className="tool-divider" />
+            <div className="tool-group">
+                <ToolButton icon={mdiFileUpload} onClick={uploadFile} title={t("servers.fileManager.actionBar.uploadFile")} />
+                <ToolButton icon={mdiFolderUpload} onClick={uploadFolder} title={t("servers.fileManager.actionBar.uploadFolder")} />
             </div>
 
             <ContextMenu isOpen={dropMenu.isOpen} position={dropMenu.position} onClose={() => { dropMenu.close(); setPendingDrop(null); }}>
@@ -432,4 +453,3 @@ export const ActionBar = ({
         </div>
     );
 };
-

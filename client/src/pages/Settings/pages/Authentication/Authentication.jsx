@@ -11,6 +11,7 @@ import ProviderDialog from "./components/ProviderDialog";
 import LDAPProviderDialog from "./components/LDAPProviderDialog";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
 
 export const Authentication = () => {
     const { t } = useTranslation();
@@ -72,7 +73,7 @@ export const Authentication = () => {
     return (
         <div className="authentication-page">
             <div className="auth-header">
-                <h2>{t("settings.authentication.title", { count: providers.length + ldapProviders.length })}</h2>
+                <SettingsHeading>{t("settings.authentication.title", { count: providers.length + ldapProviders.length })}</SettingsHeading>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                     <Button onClick={() => setLdapDialogOpen(true)} text={t("settings.authentication.addLdapProvider")} icon={mdiServer} type="secondary" />
                     <Button onClick={() => setCreateDialogOpen(true)} text={t("settings.authentication.addProvider")} icon={mdiPlus} />

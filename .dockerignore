@@ -11,9 +11,7 @@ data/
 *.log
 
 # Mobile & connector builds
-mobile/.dart_tool/
 mobile/build/
-mobile/.flutter-plugins*
 connector/src-tauri/target/
 
 # Git & CI

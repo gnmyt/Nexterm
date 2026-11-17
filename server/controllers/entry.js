@@ -17,8 +17,8 @@ const logger = require("../utils/logger");
 const { sendWakeOnLan } = require("../utils/wol");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const SessionManager = require("../lib/SessionManager");
-const { changesProtocol, omitsProtocol, withoutInheritance, getFolderInheritance, getEffectiveEntryConfig, getEntryIdentityIds } = require("../utils/folderInheritance");
-const { applyMovePolicy, getMoveImpact, snapshotEntry } = require("../utils/inheritanceLifecycle");
+const { changesProtocol, omitsProtocol, getFolderInheritance, getEffectiveEntryConfig, getEntryIdentityIds } = require("../utils/folderInheritance");
+const { getAllowedPersonalAccountIds, removeUnavailableEntryIdentities } = require("../utils/scopeMove");
 const sequelize = require("../utils/database");
 const { getEntryScope, isIdentityAllowedForScope, isSameSecurityScope, validateIdentityIds, validateJumpHostIds } = require("../utils/resourceValidation");
 
@@ -80,7 +80,7 @@ module.exports.createEntry = async (accountId, configuration) => {
     }
 
     const inheritedConfig = configuration.folderId ? await getFolderInheritance(configuration.folderId, configuration.config?.protocol, { accountId }) : { config: {} };
-    const effectiveConfig = { ...inheritedConfig.config, ...withoutInheritance(configuration.config) };
+    const effectiveConfig = { ...inheritedConfig.config, ...configuration.config };
 
     if (!configuration.renderer && effectiveConfig.protocol) {
         configuration.renderer = PROTOCOL_RENDERERS[effectiveConfig.protocol] ?? configuration.renderer;
@@ -226,8 +226,7 @@ module.exports.editEntry = async (accountId, entryId, configuration) => {
 
     if (configuration.config?.jumpHosts !== undefined) {
         const scope = await getEntryScope(entry);
-        // Only validate newly added jump hosts, so servers with legacy jump hosts stay editable
-        const existingJumpHosts = new Set(withoutInheritance(entry.config).jumpHosts || []);
+        const existingJumpHosts = new Set(entry.config?.jumpHosts || []);
         const jumpHosts = configuration.config.jumpHosts;
         const addedJumpHosts = Array.isArray(jumpHosts) ? jumpHosts.filter((jumpHostId) => !existingJumpHosts.has(jumpHostId)) : jumpHosts;
         const validationResult = await validateJumpHostIds(accountId, addedJumpHosts || [], {
@@ -310,14 +309,14 @@ module.exports.getEntry = async (accountId, entryId) => {
     const identityIds = await getEntryIdentityIds(entry, { accountId });
     const filteredIdentityIds = identityIds.filter(isAllowedIdentity);
     const inherited = entry.folderId
-        ? await getFolderInheritance(entry.folderId, withoutInheritance(entry.config).protocol, { accountId })
+        ? await getFolderInheritance(entry.folderId, entry.config?.protocol, { accountId })
         : { config: {}, identities: [] };
 
     return {
         ...entry,
         disabled: Boolean(entry.disabled ?? entry.dataValues?.disabled),
         config: await getEffectiveEntryConfig(entry),
-        localConfig: withoutInheritance(entry.config),
+        localConfig: entry.config || {},
         inheritedConfig: inherited.config,
         identities: filteredIdentityIds,
         localIdentities: directIdentityIds.filter(isAllowedIdentity),
@@ -394,7 +393,7 @@ module.exports.listEntries = async (accountId) => {
     const inheritanceCache = new Map();
     const getCachedInheritance = async (entry) => {
         if (!entry.folderId) return { config: {}, identities: [] };
-        const protocol = withoutInheritance(entry.config).protocol;
+        const protocol = entry.config?.protocol;
         const key = `${entry.folderId}:${protocol}`;
         if (!inheritanceCache.has(key)) inheritanceCache.set(key, await getFolderInheritance(entry.folderId, protocol, { accountId }));
         return inheritanceCache.get(key);
@@ -468,7 +467,7 @@ module.exports.listEntries = async (accountId) => {
         const inheritance = entry.type === "server"
             ? await getCachedInheritance(entry)
             : { config: {}, identities: [] };
-        const localConfig = withoutInheritance(entry.config);
+        const localConfig = entry.config || {};
         const directIdentityIds = directIdentityMap.get(entry.id) || [];
         const identities = [...directIdentityIds, ...inheritance.identities.filter((id) => !directIdentityIds.includes(id))]
             .filter((id) => isIdentityAllowedForScope(accessibleIdentitiesById.get(id), entry.organizationId || null, accountId));
@@ -612,7 +611,7 @@ module.exports.importSSHConfig = async (accountId, configuration) => {
     };
 };
 
-module.exports.repositionEntry = async (accountId, entryId, { targetId, placement, folderId, organizationId, inheritancePolicy }) => {
+module.exports.repositionEntry = async (accountId, entryId, { targetId, placement, folderId, organizationId }) => {
     const entryIdNum = parseInt(entryId);
 
     const entry = await Entry.findByPk(entryIdNum);
@@ -657,7 +656,7 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
 
     const changesScope = !isSameSecurityScope(await getEntryScope(entry), { organizationId: targetOrganizationId, accountId: targetAccountId });
     if (changesScope) {
-        const localJumpHostValidation = await validateJumpHostIds(accountId, withoutInheritance(entry.config).jumpHosts, {
+        const localJumpHostValidation = await validateJumpHostIds(accountId, entry.config?.jumpHosts, {
             enforceScope: true,
             skipMissing: true,
             organizationId: targetOrganizationId,
@@ -667,12 +666,10 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
     }
 
     const oldOrganizationId = entry.organizationId;
-    const changesFolder = targetFolderId !== entry.folderId;
-    let moveResult = { impact: { entryCount: 0, sections: [], warnings: [] }, removedIdentityCount: 0 };
+    let removedIdentityCount = 0;
 
     try {
         await sequelize.transaction(async (transaction) => {
-            const snapshot = changesFolder ? await snapshotEntry(entry, transaction) : null;
             const entries = await Entry.findAll({
                 where: {
                     folderId: targetFolderId,
@@ -707,39 +704,9 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
                 await Entry.update(updateData, { where: { id: normalizedEntries[i].id }, transaction });
             }
 
-            if (snapshot) {
-                snapshot.entry.folderId = targetFolderId;
-                snapshot.entry.organizationId = targetOrganizationId;
-                const impact = await getMoveImpact([snapshot], transaction);
-                moveResult.impact = impact;
-                if (impact.entryCount > 0 && !inheritancePolicy) {
-                    const error = new Error("Choose how moved objects should handle destination inheritance");
-                    error.lifecycleError = { code: 409, reason: "inheritance_policy_required", message: error.message, impact };
-                    throw error;
-                }
-                const applied = await applyMovePolicy([snapshot], inheritancePolicy || "adopt", targetOrganizationId, accountId, transaction);
-                moveResult.removedIdentityCount = applied.removedIdentityCount;
-            }
-
             if (oldOrganizationId !== targetOrganizationId) {
-                const entryIdentities = await EntryIdentity.findAll({ where: { entryId: entryIdNum }, transaction });
-                const identityIds = entryIdentities.map(ei => ei.identityId);
-                if (identityIds.length > 0) {
-                    const linkedIdentities = await Identity.findAll({
-                        where: { id: { [Op.in]: identityIds } },
-                        transaction,
-                    });
-                    const unavailableIdentityIds = linkedIdentities
-                        .filter((identity) => identity.organizationId !== null && identity.organizationId !== targetOrganizationId)
-                        .map((identity) => identity.id);
-                    if (unavailableIdentityIds.length > 0) {
-                        await EntryIdentity.destroy({
-                            where: { entryId: entryIdNum, identityId: { [Op.in]: unavailableIdentityIds } },
-                            transaction,
-                        });
-                        moveResult.removedIdentityCount += unavailableIdentityIds.length;
-                    }
-                }
+                const allowedPersonalAccountIds = await getAllowedPersonalAccountIds(targetOrganizationId, accountId, transaction);
+                removedIdentityCount = await removeUnavailableEntryIdentities([entryIdNum], targetOrganizationId, allowedPersonalAccountIds, transaction);
             }
         });
     } catch (error) {
@@ -755,7 +722,7 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
         organizationId: oldOrganizationId,
         resource: RESOURCE_TYPES.ENTRY,
         resourceId: entryIdNum,
-        details: { action: 'reposition', targetId, placement, folderId: targetFolderId, inheritancePolicy, ...moveResult }
+        details: { action: 'reposition', targetId, placement, folderId: targetFolderId, removedIdentityCount }
     });
 
     stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: oldOrganizationId });
@@ -763,7 +730,7 @@ module.exports.repositionEntry = async (accountId, entryId, { targetId, placemen
         stateBroadcaster.broadcast("ENTRIES", { organizationId: targetOrganizationId });
     }
 
-    return { success: true, ...moveResult };
+    return { success: true, removedIdentityCount };
 };
 
 module.exports.wakeEntry = async (accountId, entryId) => {

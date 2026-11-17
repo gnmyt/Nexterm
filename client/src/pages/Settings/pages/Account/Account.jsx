@@ -22,6 +22,7 @@ import { languages } from "@/i18n.js";
 import i18n from "@/i18n.js";
 import Icon from "@mdi/react";
 import { openExternalUrl } from "@/common/utils/TauriUtil.js";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
 
 export const Account = () => {
     const { t } = useTranslation();
@@ -258,8 +259,8 @@ export const Account = () => {
                 onConfirm={deleteApiKey}
                 text={t("settings.account.apiKeys.confirmDelete")}
             />
-            <div className="account-section">
-                <h2><Icon path={mdiAccountEdit} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.accountDetails")}</h2>
+            <div className="account-section settings-page-section">
+                <SettingsHeading><Icon path={mdiAccountEdit} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.accountDetails")}</SettingsHeading>
                 <div className="section-inner">
                     <div className="form-group avatar-group">
                         <label htmlFor="avatar">{t("settings.account.avatar.label")}</label>
@@ -300,9 +301,9 @@ export const Account = () => {
                 </div>
             </div>
 
-            <div className="account-section">
+            <div className="account-section settings-page-section">
                 <div className="tfa-title">
-                    <h2><Icon path={mdiShieldCheck} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.twoFactor")}</h2>
+                    <SettingsHeading><Icon path={mdiShieldCheck} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.twoFactor")}</SettingsHeading>
                     {user?.totpEnabled ? <p className="active">{t("settings.account.twoFactorActive")}</p> :
                         <p className="inactive">{t("settings.account.twoFactorInactive")}</p>}
                 </div>
@@ -314,8 +315,8 @@ export const Account = () => {
                 </div>
             </div>
 
-            <div className="account-section">
-                <h2><Icon path={mdiLockReset} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.changePassword")}</h2>
+            <div className="account-section settings-page-section">
+                <SettingsHeading><Icon path={mdiLockReset} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.changePassword")}</SettingsHeading>
                 <div className="section-inner">
                     <p style={{ maxWidth: "25rem" }}>{t("settings.account.changePasswordDescription")}</p>
 
@@ -324,9 +325,9 @@ export const Account = () => {
                 </div>
             </div>
 
-            <div className="account-section">
+            <div className="account-section settings-page-section">
                 <div className="section-header">
-                    <h2><Icon path={mdiTranslate} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.language")}</h2>
+                    <SettingsHeading><Icon path={mdiTranslate} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.language")}</SettingsHeading>
                     <Button
                         icon={isGroupSynced("general") ? mdiCloudSync : mdiCloudOffOutline}
                         onClick={() => {
@@ -359,8 +360,8 @@ export const Account = () => {
                 </div>
             </div>
 
-            <div className="account-section">
-                <h2><Icon path={mdiSync} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.sessionSynchronization")}</h2>
+            <div className="account-section settings-page-section">
+                <SettingsHeading><Icon path={mdiSync} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.sessionSynchronization")}</SettingsHeading>
                 <div className="section-inner">
                     <p style={{ maxWidth: "25rem" }}>
                         {sessionSync === "across_devices" && t("settings.account.sessionSyncAcrossDevicesDesc")}
@@ -371,10 +372,10 @@ export const Account = () => {
                 </div>
             </div>
 
-            <div className="account-section">
+            <div className="account-section settings-page-section">
                 <div className="section-header">
                     <div className="header-content">
-                        <h2><Icon path={mdiFingerprint} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.passkeys.sectionTitle")}</h2>
+                        <SettingsHeading><Icon path={mdiFingerprint} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.passkeys.sectionTitle")}</SettingsHeading>
                         <p>{t("settings.account.passkeys.sectionDescription")}</p>
                     </div>
                     <Button text={t("settings.account.passkeys.addButton")} icon={mdiPlus} onClick={() => setAddPasskeyOpen(true)} />
@@ -411,12 +412,8 @@ export const Account = () => {
                                     </div>
                                 </div>
                                 <div className="item-actions">
-                                    <button className="action-btn edit-btn" onClick={() => startEditPasskey(passkey)} aria-label={t("settings.account.passkeys.rename")}>
-                                        <Icon path={mdiPencil} size={0.8} />
-                                    </button>
-                                    <button className="action-btn delete-btn" onClick={() => confirmDeletePasskey(passkey)} aria-label={t("settings.account.passkeys.delete")}>
-                                        <Icon path={mdiTrashCan} size={0.8} />
-                                    </button>
+                                    <Button icon={mdiPencil} onClick={() => startEditPasskey(passkey)} title={t("settings.account.passkeys.rename")} />
+                                    <Button type="danger" icon={mdiTrashCan} onClick={() => confirmDeletePasskey(passkey)} title={t("settings.account.passkeys.delete")} />
                                 </div>
                             </div>
                         ))
@@ -428,10 +425,10 @@ export const Account = () => {
                 </div>
             </div>
 
-            <div className="account-section">
+            <div className="account-section settings-page-section">
                 <div className="section-header">
                     <div className="header-content">
-                        <h2><Icon path={mdiApi} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.apiKeys.sectionTitle")}</h2>
+                        <SettingsHeading><Icon path={mdiApi} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.apiKeys.sectionTitle")}</SettingsHeading>
                         <p>{t("settings.account.apiKeys.sectionDescription")}</p>
                     </div>
                     <Button text={t("settings.account.apiKeys.addButton")} icon={mdiPlus} onClick={() => setAddApiKeyOpen(true)} />
@@ -458,9 +455,7 @@ export const Account = () => {
                                     </div>
                                 </div>
                                 <div className="item-actions">
-                                    <button className="action-btn delete-btn" onClick={() => confirmDeleteApiKey(apiKey)} aria-label={t("settings.account.apiKeys.delete")}>
-                                        <Icon path={mdiTrashCan} size={0.8} />
-                                    </button>
+                                    <Button type="danger" icon={mdiTrashCan} onClick={() => confirmDeleteApiKey(apiKey)} title={t("settings.account.apiKeys.delete")} />
                                 </div>
                             </div>
                         ))

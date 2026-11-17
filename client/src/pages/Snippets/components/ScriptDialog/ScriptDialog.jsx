@@ -1,6 +1,7 @@
 import "./styles.sass";
-import { DialogProvider } from "@/common/components/Dialog";
-import { useState, useEffect, useRef } from "react";
+import { DialogProvider, DialogCancelButton } from "@/common/components/Dialog";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { useUnsavedChanges } from "@/common/hooks/useUnsavedChanges.js";
 import { getRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import Button from "@/common/components/Button";
 import IconInput from "@/common/components/IconInput";
@@ -12,7 +13,7 @@ import { registerNextermLanguage } from "@/common/monaco/nexterm-lang.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import { useScripts } from "@/common/contexts/ScriptContext.jsx";
-import { OS_OPTIONS, parseOsFilter, normalizeScriptOsFilter } from "@/common/utils/osUtils.js";
+import { OS_OPTIONS, normalizeScriptOsFilter } from "@/common/utils/osUtils.js";
 import * as monaco from "monaco-editor";
 
 loader.config({ monaco });
@@ -23,7 +24,8 @@ export const ScriptDialog = ({ open, onClose, editScriptId, selectedOrganization
     const [content, setContent] = useState("");
     const [osFilter, setOsFilter] = useState([]);
     const editorRef = useRef(null);
-    const initialValues = useRef({ name: '', description: '', content: '', osFilter: [] });
+    const draft = useMemo(() => ({ name, description, content, osFilter }), [name, description, content, osFilter]);
+    const { isDirty, markClean } = useUnsavedChanges(draft);
 
     const { sendToast } = useToast();
     const { t } = useTranslation();
@@ -85,16 +87,17 @@ fi
             const queryParams = selectedOrganization ? `?organizationId=${selectedOrganization}` : "";
             const script = await getRequest(`scripts/${editScriptId}${queryParams}`);
             const parsedOsFilter = normalizeScriptOsFilter(script.osFilter);
+            const content = script.content || getDefaultContent(parsedOsFilter.includes("Windows") ? "windows" : "linux");
             setName(script.name || "");
             setDescription(script.description || "");
-            setContent(script.content || getDefaultContent(parsedOsFilter.includes("Windows") ? "windows" : "linux"));
+            setContent(content);
             setOsFilter(parsedOsFilter);
-            initialValues.current = { 
-                name: script.name || '', 
-                description: script.description || '', 
-                content: script.content || getDefaultContent(parsedOsFilter.includes("Windows") ? "windows" : "linux"),
-                osFilter: parsedOsFilter
-            };
+            markClean({
+                name: script.name || "",
+                description: script.description || "",
+                content,
+                osFilter: parsedOsFilter,
+            });
         } catch (error) {
             console.error("Failed to load script:", error);
             sendToast("Error", t("scripts.messages.errors.loadFailed"));
@@ -164,7 +167,7 @@ fi
         setDescription("");
         setContent(defaultContent);
         setOsFilter([]);
-        initialValues.current = { name: '', description: '', content: defaultContent, osFilter: [] };
+        markClean({ name: "", description: "", content: defaultContent, osFilter: [] });
     };
 
     const handleOsFilterChange = (nextFilter) => {
@@ -179,20 +182,10 @@ fi
         onClose();
     };
 
-    const arraysEqual = (a, b) => {
-        if (a.length !== b.length) return false;
-        return a.every((val, i) => val === b[i]);
-    };
-
-    const isDirty = name !== initialValues.current.name || 
-                     description !== initialValues.current.description || 
-                     content !== initialValues.current.content ||
-                     !arraysEqual(osFilter, initialValues.current.osFilter);
-
     return (
         <DialogProvider open={open} onClose={handleClose} isDirty={isDirty}>
             <div className="create-script-dialog">
-                <div className="dialog-header">
+                <div className="dialog-header dialog-heading">
                     <h2>
                         <Icon path={mdiScript} />
                         {isEditing ? t("scripts.dialog.title.edit") : t("scripts.dialog.title.create")}
@@ -233,7 +226,7 @@ fi
                             <SelectBox 
                                 options={OS_OPTIONS} 
                                 selected={osFilter} 
-                                setSelected={handleOsFilterChange}
+                                setSelected={handleOsFilterChange} 
                                 multiple={true}
                                 placeholder={t("scripts.dialog.placeholders.osFilter")}
                             />
@@ -279,10 +272,8 @@ fi
                 </div>
 
                 <div className="dialog-actions">
-                    <Button
-                        onClick={handleClose}
+                    <DialogCancelButton
                         text={t("scripts.dialog.actions.cancel")}
-                        type="secondary"
                         icon={mdiClose}
                         disabled={creating}
                     />

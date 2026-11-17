@@ -13,20 +13,15 @@ const HookGroup = ({ icon, title, description, steps, onStepsChange, values, onV
     };
 
     return (
-        <div className="jump-hosts-section">
-            <div className="jump-hosts-header">
-                <div className="jump-hosts-info">
-                    <span className="jump-hosts-label">
-                        <Icon path={icon} size={0.8} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+        <div className="sd-subsection connection-hooks">
+            <div className="sd-subsection__header">
+                <div>
+                    <h4>
+                        <Icon path={icon} size={0.85} />
                         {title}
-                    </span>
-                    <span className="jump-hosts-description">
-                        {description}
-                    </span>
+                    </h4>
+                    <p>{description}</p>
                 </div>
-            </div>
-
-            <div className="hook-reorder">
                 <button
                     type="button"
                     className="hook-swap-btn"
@@ -36,27 +31,28 @@ const HookGroup = ({ icon, title, description, steps, onStepsChange, values, onV
                 >
                     <Icon path={mdiSwapVertical} size={0.9} />
                 </button>
-                <div className="hook-list">
-                    {steps.map((step) => (
-                        <div key={step} className="hook-item">
-                            <span className={`hook-badge hook-badge--${step}`}>
-                                {step === 'local' ? t('servers.dialog.settings.hooks.localBadge') : t('servers.dialog.settings.hooks.remoteBadge')}
-                            </span>
-                            <div className="hook-input">
-                                <input
-                                    type="text"
-                                    className="hook-textarea"
-                                    spellCheck={false}
-                                    maxLength={2000}
-                                    aria-label={`${title} - ${step === 'local' ? t('servers.dialog.settings.hooks.localBadge') : t('servers.dialog.settings.hooks.remoteBadge')}`}
-                                    value={values[step] || ""}
-                                    placeholder={placeholders[step]}
-                                    onChange={(e) => onValueChange(step, e.target.value)}
-                                />
-                            </div>
+            </div>
+
+            <div className="hook-list">
+                {steps.map((step) => (
+                    <div key={step} className="hook-item">
+                        <span className={`hook-badge hook-badge--${step}`}>
+                            {step === 'local' ? t('servers.dialog.settings.hooks.localBadge') : t('servers.dialog.settings.hooks.remoteBadge')}
+                        </span>
+                        <div className="hook-input">
+                            <input
+                                type="text"
+                                className="hook-textarea"
+                                spellCheck={false}
+                                maxLength={2000}
+                                aria-label={`${title} - ${step === 'local' ? t('servers.dialog.settings.hooks.localBadge') : t('servers.dialog.settings.hooks.remoteBadge')}`}
+                                value={values[step] || ""}
+                                placeholder={placeholders[step]}
+                                onChange={(e) => onValueChange(step, e.target.value)}
+                            />
                         </div>
-                    ))}
-                </div>
+                    </div>
+                ))}
             </div>
 
             {engineHint && <p className="hook-engine-hint">{engineHint}</p>}

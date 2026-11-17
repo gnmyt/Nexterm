@@ -1,11 +1,12 @@
 import "./styles.sass";
-import { useKeymaps } from "@/common/contexts/KeymapContext.jsx";
+import { useKeymaps, keyFromEvent } from "@/common/contexts/KeymapContext.jsx";
 import { useEffect, useState } from "react";
 import Button from "@/common/components/Button";
 import { mdiRestore, mdiMagnify, mdiRobotOutline, mdiCodeArray, mdiKeyboard, mdiBroadcast, mdiContentCopy, mdiContentPaste, mdiFullscreen, mdiFlash, mdiKey, mdiCheckCircleOutline, mdiAutoFix, mdiContentSave } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
 
 const KEYMAP_ICONS = {
     "search": mdiMagnify,
@@ -49,8 +50,8 @@ const KeybindRecorder = ({ action, currentKey, enabled, onUpdate, onReset }) => 
             if (e.altKey) parts.push("alt");
             if (e.metaKey) parts.push("meta");
 
-            const key = e.key.toLowerCase();
-            if (!["control", "shift", "alt", "meta"].includes(key)) {
+            const key = keyFromEvent(e);
+            if (!["control", "shift", "alt", "meta", "dead"].includes(key)) {
                 parts.push(key);
             }
 
@@ -145,7 +146,7 @@ export const Keymaps = () => {
         <div className="keymaps-page">
             <div className="keymaps-header">
                 <div className="header-text">
-                    <h2>{t("settings.keymaps.title")}</h2>
+                    <SettingsHeading>{t("settings.keymaps.title")}</SettingsHeading>
                     <p>{t("settings.keymaps.description")}</p>
                 </div>
                 <Button text={t("settings.keymaps.resetAll")} icon={mdiRestore} onClick={handleResetAll} />

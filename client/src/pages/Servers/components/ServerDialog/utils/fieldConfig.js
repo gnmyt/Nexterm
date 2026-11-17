@@ -1,4 +1,4 @@
-import { mdiInformationOutline, mdiAccountKeyOutline, mdiCogOutline } from "@mdi/js";
+import { mdiInformationOutline, mdiAccountKeyOutline, mdiLanConnect, mdiTuneVariant, mdiMonitorDashboard, mdiKeyboardOutline } from "@mdi/js";
 
 export const getFieldConfig = (type, protocol) => {
     if (type === "server") {
@@ -8,7 +8,6 @@ export const getFieldConfig = (type, protocol) => {
                     showProtocol: false,
                     showIpPort: true,
                     showIdentities: true,
-                    showSettings: true,
                     showMonitoring: true,
                     showKeyboardLayout: false,
                     showTerminalSettings: true,
@@ -21,7 +20,6 @@ export const getFieldConfig = (type, protocol) => {
                     showProtocol: false,
                     showIpPort: true,
                     showIdentities: false,
-                    showSettings: true,
                     showMonitoring: false,
                     showKeyboardLayout: false,
                     showTerminalSettings: true,
@@ -32,7 +30,6 @@ export const getFieldConfig = (type, protocol) => {
                     showProtocol: false,
                     showIpPort: true,
                     showIdentities: true,
-                    showSettings: true,
                     showMonitoring: false,
                     showKeyboardLayout: true,
                     showDisplaySettings: true,
@@ -48,7 +45,6 @@ export const getFieldConfig = (type, protocol) => {
                     showProtocol: false,
                     showIpPort: true,
                     showIdentities: true,
-                    showSettings: true,
                     showMonitoring: false,
                     showKeyboardLayout: false,
                     showDisplaySettings: true,
@@ -61,7 +57,6 @@ export const getFieldConfig = (type, protocol) => {
                     showProtocol: false,
                     showIpPort: true,
                     showIdentities: true,
-                    showSettings: true,
                     showMonitoring: false,
                     showKeyboardLayout: false,
                     showDisplaySettings: true,
@@ -74,7 +69,6 @@ export const getFieldConfig = (type, protocol) => {
                     showProtocol: false,
                     showIpPort: false,
                     showIdentities: false,
-                    showSettings: false,
                     showMonitoring: false,
                     showKeyboardLayout: false,
                 };
@@ -83,7 +77,6 @@ export const getFieldConfig = (type, protocol) => {
                     showProtocol: false,
                     showIpPort: true,
                     showIdentities: true,
-                    showSettings: true,
                     showMonitoring: false,
                     showKeyboardLayout: false,
                     showTerminalSettings: false,
@@ -96,7 +89,6 @@ export const getFieldConfig = (type, protocol) => {
                     showProtocol: false,
                     showIpPort: true,
                     showIdentities: true,
-                    showSettings: true,
                     showMonitoring: false,
                     showKeyboardLayout: false,
                     showTerminalSettings: false,
@@ -108,7 +100,6 @@ export const getFieldConfig = (type, protocol) => {
                     showProtocol: true,
                     showIpPort: true,
                     showIdentities: true,
-                    showSettings: true,
                     showMonitoring: true,
                     showKeyboardLayout: true,
                     allowedAuthTypes: ["password", "ssh", "both"],
@@ -117,12 +108,22 @@ export const getFieldConfig = (type, protocol) => {
         }
     }
 
+    if (type === "integration") {
+        return {
+            showProtocol: false,
+            showIpPort: true,
+            showIdentities: false,
+            showCredentials: true,
+            showMonitoring: true,
+            showKeyboardLayout: false,
+        };
+    }
+
     if (type === "pve-shell" || type === "pve-lxc") {
         return {
             showProtocol: false,
             showIpPort: false,
             showIdentities: false,
-            showSettings: false,
             showMonitoring: false,
             showKeyboardLayout: false,
         };
@@ -133,7 +134,6 @@ export const getFieldConfig = (type, protocol) => {
             showProtocol: false,
             showIpPort: false,
             showIdentities: false,
-            showSettings: true,
             showMonitoring: false,
             showKeyboardLayout: false,
             showDisplaySettings: true,
@@ -145,27 +145,25 @@ export const getFieldConfig = (type, protocol) => {
         showProtocol: true,
         showIpPort: true,
         showIdentities: true,
-        showSettings: true,
         showMonitoring: true,
         showKeyboardLayout: false,
     };
 };
 
-export const getAvailableTabs = (type, protocol) => {
+export const getSections = (type, protocol) => {
     const config = getFieldConfig(type, protocol);
-    const tabs = [];
+    const sections = [{ key: "general", label: "servers.dialog.sections.general", icon: mdiInformationOutline }];
 
-    tabs.push({ key: "details", label: "servers.dialog.tabs.details", icon: mdiInformationOutline });
+    if (config.showIpPort) sections.push({ key: "connection", label: "servers.dialog.sections.connection", icon: mdiLanConnect });
+    if (config.showIdentities) sections.push({ key: "identities", label: "servers.dialog.sections.identities", icon: mdiAccountKeyOutline });
+    if (config.showCredentials) sections.push({ key: "credentials", label: "servers.dialog.sections.credentials", icon: mdiAccountKeyOutline });
+    if (config.showTerminalSettings) sections.push({ key: "terminal", label: "servers.dialog.settings.terminal.title", icon: mdiKeyboardOutline });
+    if (config.showKeyboardLayout || config.showDisplaySettings || config.showRdpSecurity || config.showAudioSettings || config.showPerformanceSettings)
+        sections.push({ key: "display", label: "servers.dialog.settings.display.title", icon: mdiMonitorDashboard });
+    if (config.showMonitoring || config.showWakeOnLan || config.showConnectionHooks)
+        sections.push({ key: "options", label: "servers.dialog.sections.options", icon: mdiTuneVariant });
 
-    if (config.showIdentities) {
-        tabs.push({ key: "identities", label: "servers.dialog.tabs.identities", icon: mdiAccountKeyOutline });
-    }
-
-    if (config.showSettings && (config.showMonitoring || config.showKeyboardLayout || config.showDisplaySettings || config.showAudioSettings || config.showWakeOnLan || config.showTerminalSettings || config.showConnectionHooks)) {
-        tabs.push({ key: "settings", label: "servers.dialog.tabs.settings", icon: mdiCogOutline });
-    }
-
-    return tabs;
+    return sections;
 };
 
 export const validateRequiredFields = (type, protocol, name, config) => {
@@ -176,6 +174,8 @@ export const validateRequiredFields = (type, protocol, name, config) => {
     if (fieldConfig.showIpPort && (!config.ip || !config.port)) return false;
 
     if (fieldConfig.showProtocol && !config.protocol) return false;
+
+    if (fieldConfig.showCredentials && (!config.username || !config.password)) return false;
 
     return true;
 };

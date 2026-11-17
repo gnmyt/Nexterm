@@ -10,10 +10,9 @@ import { getSessionOwnerLabel } from "@/common/utils/avatar.js";
 import { useTranslation } from "react-i18next";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { patchRequest } from "@/common/utils/RequestUtil.js";
 import { DropIndicator } from "../DropIndicator";
 import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
-import { useInheritancePolicyMove } from "@/pages/Servers/components/InheritancePolicyDialog/useInheritancePolicyMove.jsx";
+import { useMove } from "../../useMove.js";
 
 const SCROLL_SPEED = 24;
 const SCROLL_START_PAUSE_MS = 2000;
@@ -154,13 +153,13 @@ const ServerNote = ({ text, mode, isHovered }) => {
 };
 
 export const ServerObject = ({ id, name, position, folderId, organizationId, nestedLevel, icon, type, connectToServer, status, disabled = false, accessBlocked = false, tags = [], hibernatedSessionCount = 0 }) => {
-    const { loadServers, getServerById } = useContext(ServerContext);
+    const { getServerById } = useContext(ServerContext);
     const { getLiveSessionsForEntry } = useLiveSessions();
     const { t } = useTranslation();
     const { serverNoteScrollMode } = usePreferences();
     const [dropPlacement, setDropPlacement] = useState(null);
     const [isServerHovered, setIsServerHovered] = useState(false);
-    const { runMove, policyDialog } = useInheritancePolicyMove();
+    const move = useMove();
     const elementRef = useRef(null);
 
     const isIntegrationEntry = Boolean(type?.startsWith("pve-"));
@@ -191,13 +190,12 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
             if (item.id === id) return;
             
             try {
-                await runMove((inheritancePolicy) => patchRequest(`entries/${item.id}/reposition`, {
+                await move(`entries/${item.id}/reposition`, {
                     targetId: id,
                     placement: dropPlacement || 'after',
                     folderId: folderId,
                     organizationId: organizationId,
-                    ...(inheritancePolicy ? { inheritancePolicy } : {}),
-                }), loadServers);
+                });
             } catch (error) {
                 console.error("Failed to reposition entry", error);
             }
@@ -282,6 +280,5 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
             )}
             <DropIndicator show={isOver && dropPlacement === 'after'} placement="after" />
         </div>
-        {policyDialog}
     </>;
 };

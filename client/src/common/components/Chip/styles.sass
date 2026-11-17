@@ -4,23 +4,25 @@
   display: inline-flex
   align-items: center
   gap: 0.5rem
-  padding: 0.5rem 0.75rem
-  background-color: colors.$lighter-background
-  border: 1px solid colors.$dark-gray
+  padding: 0.4375rem 0.75rem
+  background-color: colors.$dark-gray
+  border: 1px solid colors.$border
   border-radius: 0.5rem
   color: colors.$white
-  font-size: 0.875rem
+  font-size: 0.85rem
+  font-weight: 500
   cursor: pointer
   transition: all 0.15s ease
   user-select: none
 
   &:hover
-    border-color: colors.$primary
-    background-color: colors.$dark-gray
+    border-color: colors.$subtext
+    background-color: colors.$gray
 
   &.selected
     background-color: colors.$primary-opacity
     border-color: colors.$primary
+    color: colors.$white
 
   &.disabled
     opacity: 0.5

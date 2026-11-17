@@ -210,7 +210,7 @@ export const SelectBox = ({ options, selected, setSelected, id, disabled = false
     };
     
     return (
-        <div className={`select-box ${disabled ? 'disabled' : ''} ${multiple ? 'select-box--multiple' : ''}`} ref={selectBoxRef}>
+        <div className={`select-box ${disabled ? 'disabled' : ''} ${multiple ? 'select-box--multiple' : ''} ${isOpen ? 'open' : ''}`} ref={selectBoxRef}>
             <div className="select-box__selected" onClick={() => !disabled && setIsOpen(!isOpen)}>
                 <div className={`select-box__selected-content ${!hasIconProperty && !multiple ? 'icon-only' : ''}`}>
                     {renderSelectedContent()}

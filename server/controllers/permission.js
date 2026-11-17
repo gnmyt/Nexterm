@@ -25,6 +25,13 @@ const grantsBeyondCaller = (caller, permissions) =>
     !caller?.isAdmin && Object.entries(permissions || {})
         .some(([permission, value]) => value === "allow" && !caller?.permissions?.includes(permission));
 
+// Joining a group grants its permissions, so it is held to the same ceiling as a direct grant
+const groupsGrantBeyondCaller = async (caller, groupIds) => {
+    if (caller?.isAdmin || !groupIds.length) return false;
+    const rows = await GroupPermission.findAll({ where: { groupId: { [Op.in]: groupIds }, value: "allow" } });
+    return grantsBeyondCaller(caller, Object.fromEntries(rows.map((row) => [row.permission, row.value])));
+};
+
 const ADMIN_GROUP_FORBIDDEN = { code: 403, message: "Only administrators can manage the administrator group" };
 const GRANT_FORBIDDEN = { code: 403, message: "You can only grant permissions that you hold yourself" };
 
@@ -156,6 +163,7 @@ module.exports.addGroupMember = async (groupId, accountId, caller) => {
     const group = await PermissionGroup.findByPk(groupId);
     if (!group) return { code: 404, message: "Group not found" };
     if (group.isAdmin && !caller?.isAdmin) return ADMIN_GROUP_FORBIDDEN;
+    if (await groupsGrantBeyondCaller(caller, [group.id])) return GRANT_FORBIDDEN;
 
     const account = await Account.findByPk(accountId);
     if (!account) return { code: 404, message: "Account not found" };
@@ -212,6 +220,10 @@ module.exports.setUserGroups = async (accountId, groupIds, caller) => {
 
     if (!willBeAdmin && (await isAccountAdmin(accountId)) && (await countAdmins()) <= 1)
         return { code: 400, message: "You cannot remove the last administrator" };
+
+    const currentIds = new Set((await GroupMember.findAll({ where: { accountId } })).map((m) => m.groupId));
+    const addedIds = keepIds.filter((id) => !currentIds.has(id));
+    if (await groupsGrantBeyondCaller(caller, addedIds)) return GRANT_FORBIDDEN;
 
     await sequelize.transaction(async (transaction) => {
         await GroupMember.destroy({ where: { accountId }, transaction });

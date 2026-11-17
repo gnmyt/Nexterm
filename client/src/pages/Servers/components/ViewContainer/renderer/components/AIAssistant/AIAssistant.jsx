@@ -11,6 +11,7 @@ import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 import Button from "@/common/components/Button";
 import FloatingWindow from "@/common/components/FloatingWindow";
+import TextArea from "@/common/components/TextArea";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 import MessageContent from "./components/MessageContent";
 import "./styles.sass";
@@ -126,6 +127,12 @@ const ToolCard = memo(({ message, onConfirm, acceptHint }) => {
         </div>
     );
 });
+
+const autoGrow = (el) => {
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+};
 
 export const AIAssistant = ({ session, onClose }) => {
     const { t } = useTranslation();
@@ -285,6 +292,8 @@ export const AIAssistant = ({ session, onClose }) => {
         if (ready) inputRef.current?.focus();
     }, [ready]);
 
+    useEffect(() => { if (!input) autoGrow(inputRef.current); }, [input]);
+
     const sendPrompt = () => {
         const content = input.trim();
         if (!content || running || !ready) return;
@@ -381,8 +390,8 @@ export const AIAssistant = ({ session, onClose }) => {
             </div>
 
             <div className="ai-assistant-input">
-                <textarea ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)}
-                          onKeyDown={handleKeyDown} rows={1} disabled={!ready}
+                <TextArea ref={inputRef} value={input} setValue={setInput} onChange={(e) => autoGrow(e.target)}
+                          onKeyDown={handleKeyDown} rows={1} resize="none" disabled={!ready}
                           placeholder={ready ? t("servers.aiAssistant.placeholder") : t("servers.aiAssistant.connecting")} />
                 {running ? (
                     <Button type="danger" icon={mdiStop} onClick={stop} title={t("servers.aiAssistant.stop")} />

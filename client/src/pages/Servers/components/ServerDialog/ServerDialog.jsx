@@ -1,34 +1,35 @@
-import { DialogProvider } from "@/common/components/Dialog";
-import "./styles.sass";
 import { useContext, useEffect, useState, useCallback, useRef, useMemo } from "react";
-import DetailsPage from "@/pages/Servers/components/ServerDialog/pages/DetailsPage.jsx";
-import Button from "@/common/components/Button";
-import TabSwitcher from "@/common/components/TabSwitcher";
 import { getRequest, patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
-import IdentityPage from "@/pages/Servers/components/ServerDialog/pages/IdentityPage.jsx";
-import SettingsPage from "@/pages/Servers/components/ServerDialog/pages/SettingsPage.jsx";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
-import { getAvailableTabs, validateRequiredFields, getFieldConfig } from "./utils/fieldConfig.js";
-import Icon from "@mdi/react";
+import { getSections, validateRequiredFields, getFieldConfig } from "./utils/fieldConfig.js";
+import { withConfigDefaults } from "./utils/configDefaults.js";
+import { useUnsavedChanges } from "@/common/hooks/useUnsavedChanges.js";
 import * as mdiIcons from "@mdi/js";
+import GeneralSection from "./sections/GeneralSection.jsx";
+import ConnectionSection from "./sections/ConnectionSection.jsx";
+import IdentitiesSection, { buildIdentityPayload } from "./sections/IdentitiesSection.jsx";
+import TerminalSection from "./sections/TerminalSection.jsx";
+import DisplaySection from "./sections/DisplaySection.jsx";
+import OptionsSection from "./sections/OptionsSection.jsx";
+import CredentialsSection from "./sections/CredentialsSection.jsx";
+import SectionedDialog from "@/common/components/SectionedDialog";
+import "./styles.sass";
 
 const PROTOCOL_DEFAULT_PORTS = { ssh: "22", telnet: "23", rdp: "3389", vnc: "5900", spice: "5930", sftp: "22", ftp: "21", ftps: "21" };
 const PROTOCOL_DEFAULT_ICONS = { ssh: "mdiConsole", telnet: "mdiConsole", rdp: "mdiMicrosoftWindows", vnc: "mdiMonitor", spice: "mdiMonitor", sftp: "mdiFolderNetwork", ftp: "mdiFolderNetwork", ftps: "mdiFolderNetwork", demo: "mdiFlaskOutline" };
+const PROTOCOL_HEADER_ICONS = { ssh: "mdiConsole", telnet: "mdiConsole", rdp: "mdiMonitor", vnc: "mdiDesktopClassic", spice: "mdiMonitor", sftp: "mdiFolderNetwork", ftp: "mdiFolderNetwork", ftps: "mdiFolderNetwork", demo: "mdiFlaskOutline" };
+const INTEGRATION_PROTOCOL = "pve";
+const PASSWORD_MASK = "********";
 
 export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizationId, editServerId, initialProtocol }) => {
     const { t } = useTranslation();
 
     const { loadServers } = useContext(ServerContext);
-    const { loadIdentities } = useContext(IdentityContext);
+    const { loadIdentities, identities: knownIdentities } = useContext(IdentityContext);
     const { sendToast } = useToast();
-
-    const getProtocolIcon = (protocol, type) => {
-        if (type?.startsWith('pve')) return "mdiServerNetwork";
-        return { ssh: "mdiConsole", telnet: "mdiConsole", rdp: "mdiMonitor", vnc: "mdiDesktopClassic", spice: "mdiMonitor", sftp: "mdiFolderNetwork", ftp: "mdiFolderNetwork", ftps: "mdiFolderNetwork", demo: "mdiFlaskOutline" }[protocol] || "mdiServerNetwork";
-    };
 
     const [name, setName] = useState("");
     const [icon, setIcon] = useState(null);
@@ -39,15 +40,43 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     const [monitoringEnabled, setMonitoringEnabled] = useState(false);
     const [entryType, setEntryType] = useState("server");
     const [localOverrideKeys, setLocalOverrideKeys] = useState([]);
-
+    const isIntegration = initialProtocol === INTEGRATION_PROTOCOL;
     const [identityUpdates, setIdentityUpdates] = useState({});
 
-    const [activeTab, setActiveTab] = useState(0);
-    
-    const initialValues = useRef({ name: '', icon: null, config: {}, identities: '[]', monitoringEnabled: false, localOverrideKeys: '[]' });
+    const dialogRef = useRef(null);
+
+    const effectiveIdentities = useCallback((ids, updates) => {
+        const pick = (source, update) => ({
+            name: update?.name ?? source?.name,
+            username: update?.username ?? source?.username,
+            authType: update?.authType ?? source?.authType ?? source?.type,
+            scope: update?.scope ?? source?.scope,
+            organizationId: update?.organizationId ?? source?.organizationId,
+            password: update?.passwordTouched ? update.password : undefined,
+            sshKey: update?.sshKey ?? undefined,
+            passphrase: update?.passphraseTouched ? update.passphrase : undefined,
+        });
+        const linked = [...(ids || [])].sort().map(id => ({ id, ...pick(knownIdentities?.find(i => i.id === id), updates?.[id]) }));
+        const added = Object.keys(updates || {}).filter(k => k.startsWith("new-")).sort().map(k => ({ id: k, ...updates[k] }));
+        return [...linked, ...added];
+    }, [knownIdentities]);
+
+    const normalizeDraft = useCallback((draft) => ({
+        name: draft.name,
+        icon: draft.icon,
+        config: withConfigDefaults(draft.config),
+        monitoringEnabled: draft.monitoringEnabled,
+        identities: effectiveIdentities(draft.identities, draft.identityUpdates),
+        localOverrideKeys: draft.localOverrideKeys || [],
+    }), [effectiveIdentities]);
+
+    const draft = useMemo(() => ({ name, icon, config, monitoringEnabled, identities, identityUpdates, localOverrideKeys }),
+        [name, icon, config, monitoringEnabled, identities, identityUpdates, localOverrideKeys]);
+    const { isDirty, markClean, reset: resetDirty } = useUnsavedChanges(draft, { normalize: normalizeDraft });
 
     const fieldConfig = getFieldConfig(entryType, config.protocol);
-    const tabs = getAvailableTabs(entryType, config.protocol);
+    const sections = useMemo(() => getSections(entryType, config.protocol), [entryType, config.protocol]);
+    const sectionKeys = useMemo(() => sections.map(s => s.key), [sections]);
     const explicitOverrideKeys = useMemo(() => new Set(localOverrideKeys), [localOverrideKeys]);
     const overrides = useMemo(() => Object.keys(config).filter((key) =>
         key !== "protocol"
@@ -56,64 +85,15 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             || JSON.stringify(config[key]) !== JSON.stringify(inheritedConfig[key]))
     ), [config, inheritedConfig, explicitOverrideKeys]);
 
-    const normalizeIdentity = (identity) => {
-        const normalized = { ...identity };
-        if (normalized.username === "") normalized.username = undefined;
-
-        if (!identity.passwordTouched && normalized.password === "") normalized.password = undefined;
-        if (!identity.passphraseTouched && normalized.passphrase === "") normalized.passphrase = undefined;
-        
-        if (normalized.sshKey === null) normalized.sshKey = undefined;
-        return normalized;
-    };
-
-    const buildIdentityPayload = (identity) => {
-        const payload = {
-            name: identity.name,
-            username: identity.authType === 'password-only' ? undefined : identity.username,
-            type: identity.authType,
-        };
-
-        if (identity.organizationId) {
-            payload.organizationId = identity.organizationId;
-        }
-        
-        const hasPassphrase = typeof identity.passphrase === "string" && identity.passphrase.length > 0;
-
-        if (identity.authType === 'password' || identity.authType === 'password-only') {
-            if (identity.passwordTouched || identity.password) {
-                payload.password = identity.password;
-            }
-        } else if (identity.authType === 'both') {
-            if (identity.passwordTouched || identity.password) {
-                payload.password = identity.password;
-            }
-            payload.sshKey = identity.sshKey;
-            if (hasPassphrase) {
-                payload.passphrase = identity.passphrase;
-            }
-        } else {
-            payload.sshKey = identity.sshKey;
-            if (hasPassphrase) {
-                payload.passphrase = identity.passphrase;
-            }
-        }
-        
-        return payload;
-    };
-
     const updateIdentities = async () => {
-        const allIdentityIds = new Set();
-
-        identities.forEach(id => allIdentityIds.add(id));
+        const allIdentityIds = new Set(identities);
 
         for (const identityId of Object.keys(identityUpdates)) {
-            const identity = normalizeIdentity(identityUpdates[identityId]);
+            const identity = identityUpdates[identityId];
 
             if (identityId.startsWith("new-")) {
-                const payload = buildIdentityPayload(identity);
                 try {
-                    const result = await putRequest("identities", payload);
+                    const result = await putRequest("identities", buildIdentityPayload(identity));
                     if (result.id) allIdentityIds.add(result.id);
                 } catch (error) {
                     sendToast("Error", error.message || t("servers.messages.createIdentityFailed"));
@@ -123,9 +103,8 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             } else if (identity.linked) {
                 allIdentityIds.add(parseInt(identityId));
             } else {
-                const payload = buildIdentityPayload(identity);
                 try {
-                    await patchRequest("identities/" + identityId, payload);
+                    await patchRequest("identities/" + identityId, buildIdentityPayload(identity));
                     allIdentityIds.add(parseInt(identityId));
                 } catch (error) {
                     sendToast("Error", error.message || t("servers.messages.updateIdentityFailed"));
@@ -140,26 +119,11 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
 
     const buildConfig = () => {
         const finalConfig = { ...config };
-        
-        if (fieldConfig.showMonitoring) {
-            finalConfig.monitoringEnabled = monitoringEnabled;
-        } else {
-            delete finalConfig.monitoringEnabled;
-        }
-        
-        if (!fieldConfig.showIpPort) {
-            delete finalConfig.ip;
-            delete finalConfig.port;
-        }
-
-        if (entryType !== "server") {
-            delete finalConfig.protocol;
-        }
-
-        if (!fieldConfig.showKeyboardLayout) {
-            delete finalConfig.keyboardLayout;
-        }
-
+        if (fieldConfig.showMonitoring) finalConfig.monitoringEnabled = monitoringEnabled;
+        else delete finalConfig.monitoringEnabled;
+        if (!fieldConfig.showIpPort) { delete finalConfig.ip; delete finalConfig.port; }
+        if (entryType !== "server") delete finalConfig.protocol;
+        if (!fieldConfig.showKeyboardLayout) delete finalConfig.keyboardLayout;
         if (!fieldConfig.showConnectionHooks) {
             delete finalConfig.preLocalCommand;
             delete finalConfig.preRemoteCommand;
@@ -168,7 +132,6 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             delete finalConfig.afterRemoteCommand;
             delete finalConfig.afterOrder;
         }
-        
         return finalConfig;
     };
 
@@ -191,22 +154,17 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     );
 
     const serverIdentities = useMemo(() => [...identities, ...inheritedIdentities.filter((identityId) => !identities.includes(identityId))], [identities, inheritedIdentities]);
+    const inheritance = useMemo(() => ({ inheritedConfig, overrides, onReset: resetOverride }), [inheritedConfig, overrides, resetOverride]);
 
     const createServer = async () => {
         try {
             const serverIdentityIds = await updateIdentities();
             if (serverIdentityIds === null) return;
-
             loadIdentities();
 
             const result = await putRequest("entries", {
-                name,
-                icon,
-                config: buildLocalConfig(),
-                folderId: currentFolderId,
-                organizationId: currentOrganizationId,
-                identities: serverIdentityIds,
-                type: "server"
+                name, icon, config: buildLocalConfig(), folderId: currentFolderId, organizationId: currentOrganizationId,
+                identities: serverIdentityIds, type: "server",
             });
 
             loadServers();
@@ -225,11 +183,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             const serverIdentityIds = await updateIdentities();
             if (serverIdentityIds === null) return;
 
-            await patchRequest("entries/" + editServerId, {
-                name, icon,
-                config: buildLocalConfig(),
-                identities: serverIdentityIds,
-            });
+            await patchRequest("entries/" + editServerId, { name, icon, config: buildLocalConfig(), identities: serverIdentityIds });
 
             loadServers();
             sendToast("Success", t("servers.messages.serverUpdated"));
@@ -240,41 +194,87 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
         }
     };
 
+    const saveIntegration = async () => {
+        const payload = {
+            name, ip: config.ip, port: config.port, username: config.username, monitoringEnabled,
+            password: editServerId && config.password === PASSWORD_MASK ? undefined : config.password,
+        };
+        try {
+            const response = editServerId
+                ? await patchRequest(`integrations/${editServerId}`, payload)
+                : await putRequest("integrations", { ...payload, folderId: currentFolderId, organizationId: currentOrganizationId });
+            if (response?.code) {
+                sendToast("Error", response.message);
+                return;
+            }
+            sendToast("Success", t(editServerId ? "servers.proxmoxDialog.messages.updated" : "servers.proxmoxDialog.messages.created"));
+            loadServers();
+            onClose();
+        } catch (error) {
+            sendToast("Error", error.message || t(editServerId ? "servers.proxmoxDialog.messages.updateFailed" : "servers.proxmoxDialog.messages.createFailed"));
+            console.error(error);
+        }
+    };
+
     const handleSubmit = useCallback(() => {
         if (!validateRequiredFields(entryType, config.protocol, name, config)) {
             sendToast("Error", t("servers.messages.fillRequiredFields"));
+            const missingCredentials = fieldConfig.showCredentials && name && config.ip && config.port;
+            dialogRef.current?.scrollTo(missingCredentials ? "credentials" : fieldConfig.showIpPort && name ? "connection" : "general");
             return;
         }
+        if (isIntegration) return saveIntegration();
         editServerId ? patchServer() : createServer();
-    }, [name, icon, editServerId, identityUpdates, currentFolderId, config, monitoringEnabled, entryType, t]);
+    }, [name, icon, editServerId, identities, identityUpdates, currentFolderId, config, inheritedConfig, localOverrideKeys, monitoringEnabled, entryType, isIntegration, t]);
 
     useEffect(() => {
         if (!open) return;
         let cancelled = false;
 
-        if (editServerId) {
+        resetDirty();
+
+        if (isIntegration) {
+            setIcon(null);
+            setIdentities([]);
+            setLocalOverrideKeys([]);
+            setInheritedConfig({});
+            setInheritedIdentities([]);
+            setEntryType("integration");
+            if (editServerId) {
+                getRequest(`integrations/${editServerId}`).then((integration) => {
+                    const loaded = { ip: integration.ip, port: String(integration.port ?? ""), username: integration.username, password: PASSWORD_MASK };
+                    setName(integration.name);
+                    setConfig(loaded);
+                    setMonitoringEnabled(Boolean(integration.monitoringEnabled));
+                    markClean({ name: integration.name, icon: null, config: loaded, monitoringEnabled: Boolean(integration.monitoringEnabled), identities: [], identityUpdates: {} });
+                }).catch(err => console.error(err));
+            } else {
+                const initialConfig = { port: "8006" };
+                setName("");
+                setConfig(initialConfig);
+                setMonitoringEnabled(false);
+                markClean({ name: "", icon: null, config: initialConfig, monitoringEnabled: false, identities: [], identityUpdates: {} });
+            }
+        } else if (editServerId) {
             getRequest("entries/" + editServerId).then((server) => {
                 if (cancelled) return;
                 setName(server.name);
-                const savedOverrideKeys = Object.keys(server.localConfig || {}).filter((key) => key !== "protocol");
+                const savedOverrideKeys = Object.keys(server.localConfig).filter((key) => key !== "protocol");
                 setLocalOverrideKeys(savedOverrideKeys);
                 setIcon(server.icon || null);
-                setIdentities(server.localIdentities || []);
+                setIdentities(server.localIdentities);
                 setEntryType(server.type || "server");
 
                 const parsedConfig = server.config || {};
                 setConfig(parsedConfig);
-                setInheritedConfig(server.inheritedConfig || {});
-                setInheritedIdentities(server.inheritedIdentities || []);
+                setInheritedConfig(server.inheritedConfig);
+                setInheritedIdentities(server.inheritedIdentities);
                 setMonitoringEnabled(Boolean(parsedConfig.monitoringEnabled ?? true));
-                initialValues.current = {
-                    name: server.name,
-                    icon: server.icon || null,
-                    config: JSON.stringify(parsedConfig),
-                    identities: JSON.stringify(server.localIdentities || []),
+                markClean({
+                    name: server.name, icon: server.icon || null, config: parsedConfig,
                     monitoringEnabled: Boolean(parsedConfig.monitoringEnabled ?? true),
-                    localOverrideKeys: JSON.stringify(savedOverrideKeys),
-                };
+                    identities: server.localIdentities, identityUpdates: {}, localOverrideKeys: savedOverrideKeys,
+                });
             });
         } else {
             setLocalOverrideKeys([]);
@@ -284,153 +284,96 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             setEntryType("server");
             setInheritedConfig({});
             setInheritedIdentities([]);
-            
-            if (initialProtocol) {
-                let initialConfig = { protocol: initialProtocol };
-                if (getFieldConfig("server", initialProtocol).showIpPort) {
-                    initialConfig.port = PROTOCOL_DEFAULT_PORTS[initialProtocol] || "";
-                }
 
-                setConfig(initialConfig);
-                const defaultIcon = PROTOCOL_DEFAULT_ICONS[initialProtocol] || null;
+            const initialConfig = {};
+            let defaultIcon = null;
+            if (initialProtocol) {
+                initialConfig.protocol = initialProtocol;
+                if (getFieldConfig("server", initialProtocol).showIpPort) initialConfig.port = PROTOCOL_DEFAULT_PORTS[initialProtocol] || "";
+                defaultIcon = PROTOCOL_DEFAULT_ICONS[initialProtocol] || null;
                 setIcon(defaultIcon);
-                initialValues.current = { 
-                    name: '', 
-                    icon: defaultIcon, 
-                    config: JSON.stringify(initialConfig), 
-                    identities: '[]',
-                    monitoringEnabled: false,
-                    localOverrideKeys: '[]',
-                };
-            } else {
-                setConfig({});
-                initialValues.current = { name: '', icon: null, config: '{}', identities: '[]', monitoringEnabled: false, localOverrideKeys: '[]' };
             }
+            setConfig(initialConfig);
             setMonitoringEnabled(false);
+            const cleanDraft = { name: "", icon: defaultIcon, config: initialConfig, monitoringEnabled: false, identities: [], identityUpdates: {}, localOverrideKeys: [] };
 
             if (currentFolderId) {
+                const withInherited = (inherited, current) => {
+                    const base = { ...current };
+                    if (inherited.port !== undefined && String(base.port) === PROTOCOL_DEFAULT_PORTS[base.protocol]) delete base.port;
+                    return { ...inherited, ...base };
+                };
                 getRequest("folders/" + currentFolderId + "?protocol=" + (initialProtocol || "")).then((folder) => {
                     if (cancelled) return;
-                    const inherited = folder.config || {};
-                    setConfig((current) => {
-                        const base = { ...current };
-                        // An untouched protocol default must not override the folder's inherited port
-                        if (inherited.port !== undefined && String(base.port) === PROTOCOL_DEFAULT_PORTS[base.protocol]) delete base.port;
-                        const next = { ...inherited, ...base };
-                        initialValues.current = {
-                            ...initialValues.current,
-                            config: JSON.stringify(next),
-                            identities: '[]',
-                        };
-                        return next;
-                    });
+                    const inherited = folder.config;
+                    setConfig((current) => withInherited(inherited, current));
                     setIdentities([]);
                     setInheritedConfig(inherited);
-                    setInheritedIdentities(folder.identities || []);
+                    setInheritedIdentities(folder.identities);
+                    markClean({ ...cleanDraft, config: withInherited(inherited, initialConfig) });
+                }).catch(() => {
+                    if (!cancelled) markClean(cleanDraft);
                 });
+            } else {
+                markClean(cleanDraft);
             }
         }
 
         setIdentityUpdates({});
-        setActiveTab(0);
+        dialogRef.current?.scrollToTop();
         return () => { cancelled = true; };
-    }, [open, editServerId, initialProtocol, currentFolderId, fieldConfig.showIpPort]);
+    }, [open, editServerId, initialProtocol, isIntegration, currentFolderId]);
 
     useEffect(() => {
         if (!open) return;
 
         const submitOnEnter = (event) => {
-            if (event.key === "Enter" && event.target?.tagName !== "TEXTAREA" && event.target?.tagName !== "BUTTON") {
-                handleSubmit();
-            }
+            if (event.key !== "Enter") return;
+            if (event.target?.tagName === "TEXTAREA" || event.target?.tagName === "BUTTON") return;
+            if (event.target?.closest?.(".icon-chooser__dropdown, .select-box")) return;
+            handleSubmit();
         };
 
         document.addEventListener("keydown", submitOnEnter);
-
-        return () => {
-            document.removeEventListener("keydown", submitOnEnter);
-        };
+        return () => document.removeEventListener("keydown", submitOnEnter);
     }, [open, handleSubmit]);
 
-    const refreshIdentities = () => {
-        if (!editServerId) return;
-        getRequest("entries/" + editServerId).then((server) => setIdentities(server.localIdentities || []));
-    };
+    const headerIcon = isIntegration || entryType?.startsWith("pve") ? "mdiServerNetwork" : (PROTOCOL_HEADER_ICONS[config.protocol] || "mdiServerNetwork");
+    const title = isIntegration
+        ? (editServerId ? (name || t("servers.proxmoxDialog.title.edit")) : t("servers.proxmoxDialog.title.import"))
+        : editServerId
+            ? (name || t("servers.dialog.editServer"))
+            : config.protocol ? t("servers.dialog.addProtocolServer", { protocol: config.protocol.toUpperCase() }) : t("servers.dialog.addServer");
+    const subtitle = editServerId ? (isIntegration ? t("servers.proxmoxDialog.title.edit") : t("servers.dialog.editServer")) : null;
 
-    const isDirty = name !== initialValues.current.name || 
-                     icon !== initialValues.current.icon ||
-                     JSON.stringify(config) !== initialValues.current.config ||
-                     JSON.stringify(identities) !== initialValues.current.identities ||
-                     monitoringEnabled !== initialValues.current.monitoringEnabled ||
-                     JSON.stringify(localOverrideKeys) !== initialValues.current.localOverrideKeys ||
-                     Object.keys(identityUpdates).length > 0;
-
-    const tabSwitcherTabs = useMemo(() => tabs.map((tab, index) => ({
-        key: index.toString(),
-        label: t(tab.label),
-        icon: tab.icon
-    })), [tabs, t]);
+    const has = (key) => sectionKeys.includes(key);
 
     return (
-        <DialogProvider open={open} onClose={onClose} isDirty={isDirty}>
-            <div className="server-dialog">
-                <div className="server-dialog-header">
-                    <div className="dialog-icon">
-                        <Icon path={mdiIcons[getProtocolIcon(config.protocol, entryType)] || mdiIcons.mdiServerNetwork} size={1} />
-                    </div>
-                    <div className="server-dialog-title">
-                        <h2>
-                            {editServerId 
-                                ? t("servers.dialog.editServer") 
-                                : config.protocol 
-                                    ? t("servers.dialog.addProtocolServer", { protocol: config.protocol.toUpperCase() })
-                                    : t("servers.dialog.addServer")
-                            }
-                        </h2>
-                        {entryType === "server" && config.protocol && (
-                            <span className="protocol-badge">{config.protocol.toUpperCase()}</span>
-                        )}
-                        {entryType?.startsWith('pve') && (
-                            <span className="protocol-badge">
-                                {entryType === 'pve-shell' ? 'PVE SHELL' : 
-                                 entryType === 'pve-lxc' ? 'PVE LXC' : 
-                                 entryType === 'pve-qemu' ? 'PVE QEMU' : 'PVE'}
-                            </span>
-                        )}
-                    </div>
-                </div>
-
-                {tabs.length > 1 && (
-                    <div className="server-dialog-tabs">
-                        <TabSwitcher
-                            tabs={tabSwitcherTabs}
-                            activeTab={activeTab.toString()}
-                            onTabChange={(tabKey) => setActiveTab(parseInt(tabKey))}
-                            variant="dialog"
-                        />
-                    </div>
-                )}
-
-                <form className="server-dialog-content" onSubmit={(e) => e.preventDefault()} autoComplete="on">
-                    {activeTab === 0 && <DetailsPage name={name} setName={setName}
-                                                     icon={icon} setIcon={setIcon}
-                                                     config={config} setConfig={setConfig}
-                                                     fieldConfig={fieldConfig} overrides={overrides} onReset={resetOverride} inheritedConfig={inheritedConfig} />}
-                    {activeTab === 1 && tabs[1]?.key === "identities" &&
-                        <IdentityPage setIdentityUpdates={setIdentityUpdates}
-                                      identityUpdates={identityUpdates} setIdentities={setIdentities}
-                                      currentOrganizationId={currentOrganizationId} allowedAuthTypes={fieldConfig.allowedAuthTypes}
-                                      serverName={name} specificIdentities={identities} serverIdentities={serverIdentities} />}
-                    {tabs.find((tab, idx) => idx === activeTab && tab.key === "settings") && 
-                        <SettingsPage config={config} setConfig={setConfig}
-                                      monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled}
-                                      fieldConfig={fieldConfig} editServerId={editServerId} overrides={overrides} onReset={resetOverride} inheritedConfig={inheritedConfig} />}
-                </form>
-
-                <Button className="server-dialog-button" onClick={handleSubmit}
-                        text={editServerId ? t("servers.dialog.actions.save") : t("servers.dialog.actions.create")} />
-            </div>
-
-        </DialogProvider>
+        <SectionedDialog ref={dialogRef} open={open} onClose={onClose} isDirty={isDirty} inheritance={inheritance}
+                         icon={mdiIcons[headerIcon] || mdiIcons.mdiServerNetwork} title={title} subtitle={subtitle} sections={sections}
+                         onSubmit={handleSubmit}
+                         submitLabel={isIntegration
+                             ? t(editServerId ? "servers.proxmoxDialog.actions.edit" : "servers.proxmoxDialog.actions.import")
+                             : t(editServerId ? "servers.dialog.actions.save" : "servers.dialog.actions.create")}>
+            <GeneralSection name={name} setName={setName} icon={icon} setIcon={setIcon} config={config} setConfig={setConfig}
+                            showIcon={!isIntegration} showEngine={!isIntegration}
+                            namePlaceholder={isIntegration ? t("servers.proxmoxDialog.placeholders.name") : undefined} />
+            {has("connection") && <ConnectionSection config={config} setConfig={setConfig} fieldConfig={fieldConfig} editServerId={editServerId} />}
+            {has("credentials") && <CredentialsSection config={config} setConfig={setConfig} description={t("servers.proxmoxDialog.credentialsDescription")} />}
+            {has("identities") && (
+                <IdentitiesSection serverIdentities={serverIdentities} specificIdentities={identities} setIdentityUpdates={setIdentityUpdates}
+                                   identityUpdates={identityUpdates} setIdentities={setIdentities}
+                                   currentOrganizationId={currentOrganizationId} allowedAuthTypes={fieldConfig.allowedAuthTypes}
+                                   serverName={name} />
+            )}
+            {has("terminal") && <TerminalSection config={config} setConfig={setConfig} />}
+            {has("display") && <DisplaySection config={config} setConfig={setConfig} fieldConfig={fieldConfig} />}
+            {has("options") && (
+                <OptionsSection config={config} setConfig={setConfig} fieldConfig={fieldConfig}
+                                monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled}
+                                monitoringLabel={isIntegration ? t("servers.proxmoxDialog.fields.monitoring") : undefined}
+                                monitoringDescription={isIntegration ? t("servers.proxmoxDialog.monitoringDescription") : undefined} />
+            )}
+        </SectionedDialog>
     );
 };

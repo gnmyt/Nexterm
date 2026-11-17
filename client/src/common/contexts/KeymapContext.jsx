@@ -15,6 +15,15 @@ export const isMac = () =>
         ? navigator.userAgentData.platform === "macOS"
         : /Mac/i.test(navigator.userAgent);
 
+// With Option held, macOS reports composed characters or "Dead" in event.key, so take the key from the physical code instead
+export const keyFromEvent = (event) => {
+    if (event.altKey && event.code) {
+        const match = /^(?:Key|Digit)(.)$/.exec(event.code);
+        if (match) return match[1].toLowerCase();
+    }
+    return event.key.toLowerCase();
+};
+
 const parseKeybind = (keybind) => {
     if (!keybind) return null;
     
@@ -35,7 +44,7 @@ export const matchesKeybind = (event, parsedKeybind) => {
     const mac = isMac();
 
     // key
-    if (event.key.toLowerCase() !== parsedKeybind.key) return false;
+    if (keyFromEvent(event) !== parsedKeybind.key) return false;
 
     // ctrl / cmd handling
     if (parsedKeybind.ctrl) {
@@ -126,6 +135,8 @@ export const KeymapProvider = ({ children }) => {
             .split("+")
             .map(k => {
                 if (mac && k === "ctrl") return "⌘";
+                if (mac && k === "alt") return "⌥";
+                if (mac && k === "shift") return "⇧";
                 if (k === "meta") return mac ? "⌘" : "META";
                 return k.toUpperCase();
             })

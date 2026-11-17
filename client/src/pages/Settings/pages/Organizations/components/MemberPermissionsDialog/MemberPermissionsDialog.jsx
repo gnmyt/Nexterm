@@ -1,11 +1,16 @@
-import "./styles.sass";
 import { useEffect, useState } from "react";
-import { DialogProvider } from "@/common/components/Dialog";
-import Button from "@/common/components/Button";
+import { mdiAccountKeyOutline, mdiShieldKeyOutline } from "@mdi/js";
 import { getRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { useUnsavedChanges } from "@/common/hooks/useUnsavedChanges.js";
+import SectionedDialog, { SectionBlock } from "@/common/components/SectionedDialog";
 import PermissionMatrix from "@/common/components/PermissionMatrix";
 import { useTranslation } from "react-i18next";
+
+const SECTIONS = [{ key: "overrides", label: "settings.permissions.overridesTab", icon: mdiAccountKeyOutline }];
+
+const normalizeOverrides = (overrides) =>
+    Object.fromEntries(Object.entries(overrides).filter(([, value]) => value !== "neutral"));
 
 export const MemberPermissionsDialog = ({ open, onClose, organizationId, member, onSaved }) => {
     const { t } = useTranslation();
@@ -16,15 +21,27 @@ export const MemberPermissionsDialog = ({ open, onClose, organizationId, member,
     const [inherited, setInherited] = useState([]);
     const [saving, setSaving] = useState(false);
 
+    const { isDirty, markClean, reset: resetDirty } = useUnsavedChanges(overrides, { normalize: normalizeOverrides });
+
     useEffect(() => {
         if (!open || !organizationId || !member) return;
+        let cancelled = false;
+
+        setCatalog(null);
+        resetDirty();
         getRequest(`organizations/${organizationId}/members/${member.accountId}/permissions`)
             .then((res) => {
+                if (cancelled) return;
+                const initial = res.overrides || {};
                 setCatalog(res.catalog);
-                setOverrides(res.overrides || {});
+                setOverrides(initial);
                 setInherited(res.inherited || []);
+                markClean(initial);
             })
-            .catch(() => sendToast("Error", t("settings.permissions.loadError")));
+            .catch(() => {
+                if (!cancelled) sendToast("Error", t("settings.permissions.loadError"));
+            });
+        return () => { cancelled = true; };
     }, [open, organizationId, member]);
 
     const setOverride = (perm, value) => setOverrides((prev) => ({ ...prev, [perm]: value }));
@@ -44,22 +61,14 @@ export const MemberPermissionsDialog = ({ open, onClose, organizationId, member,
     };
 
     return (
-        <DialogProvider open={open} onClose={onClose}>
-            <div className="member-permissions-dialog">
-                <div className="mpd-header">
-                    <h2>{t("settings.permissions.managePermissions")}</h2>
-                    {member && <p>{member.name} <span>{member.username}</span></p>}
-                </div>
-
-                <div className="mpd-body">
-                    <PermissionMatrix catalog={catalog} values={overrides} onChange={setOverride} inherited={inherited} />
-                </div>
-
-                <div className="mpd-actions">
-                    <Button text={t("common.actions.cancel")} type="secondary" onClick={onClose} />
-                    <Button text={saving ? t("common.actions.saving") : t("common.actions.save")} onClick={save} disabled={saving} />
-                </div>
-            </div>
-        </DialogProvider>
+        <SectionedDialog open={open} onClose={onClose} isDirty={isDirty} icon={mdiShieldKeyOutline}
+                         title={t("settings.permissions.managePermissions")}
+                         subtitle={member ? [member.name, member.username].filter(Boolean).join(" ") : undefined}
+                         sections={SECTIONS} ready={!!catalog} onSubmit={save} submitDisabled={saving || !catalog}
+                         submitLabel={saving ? t("common.actions.saving") : t("common.actions.save")}>
+            <SectionBlock id="overrides" icon={mdiAccountKeyOutline} title={t("settings.permissions.overridesTab")}>
+                <PermissionMatrix catalog={catalog} values={overrides} onChange={setOverride} inherited={inherited} />
+            </SectionBlock>
+        </SectionedDialog>
     );
 };

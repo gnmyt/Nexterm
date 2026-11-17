@@ -16,6 +16,8 @@ import OrganizationSessionSettings from "./components/OrganizationSessionSetting
 import ActionConfirmDialog from "@/common/components/ActionConfirmDialog";
 import { useTranslation } from "react-i18next";
 import "./styles.sass";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
+import EmptyState from "@/common/components/EmptyState";
 
 export const Organizations = () => {
     const { t } = useTranslation();
@@ -23,7 +25,7 @@ export const Organizations = () => {
     const { loadServers } = useContext(ServerContext);
     const { hasPermission } = useContext(UserContext);
 
-    const [organizations, setOrganizations] = useState([]);
+    const [organizations, setOrganizations] = useState(null);
     const [pendingInvitations, setPendingInvitations] = useState([]);
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [renameDialogOpen, setRenameDialogOpen] = useState(false);
@@ -154,19 +156,16 @@ export const Organizations = () => {
     return (
         <div className="organizations-page">
             <div className="org-header">
-                <h2>{t("settings.organizations.title")}</h2>
+                <SettingsHeading>{t("settings.organizations.title")}</SettingsHeading>
                 {hasPermission(Permission.ORGANIZATIONS_CREATE) && (
                     <Button text={t("settings.organizations.createOrganization")} icon={mdiPlus} onClick={() => setCreateDialogOpen(true)} />
                 )}
             </div>
 
             <div className="vertical-list">
-                {organizations.length === 0 ? (
-                    <div className="no-organizations">
-                        <Icon path={mdiDomain} />
-                        <h2>{t("settings.organizations.noOrganizations")}</h2>
-                        <p>{t("settings.organizations.noOrganizationsDescription")}</p>
-                    </div>
+                {organizations === null ? null : organizations.length === 0 ? (
+                    <EmptyState icon={mdiDomain} title={t("settings.organizations.noOrganizations")}
+                                description={t("settings.organizations.noOrganizationsDescription")} />
                 ) : organizations.map((org) => (
                     <div key={org.id}>
                         <div
@@ -244,7 +243,7 @@ export const Organizations = () => {
 
             {pendingInvitations.length > 0 && (
                 <div className="pending-invitations">
-                    <h2>{t("settings.organizations.pendingInvitations")}</h2>
+                    <SettingsHeading>{t("settings.organizations.pendingInvitations")}</SettingsHeading>
                     <div className="vertical-list">
                         {pendingInvitations.map((invite) => (
                             <div key={invite.id} className="item">
