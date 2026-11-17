@@ -691,6 +691,7 @@
       "sessionSyncAcrossDevicesDesc": "Die Sitzungen werden auf allen Geräten verfügbar sein und synchronisiert",
       "sessionSyncSameBrowserDesc": "Die Sitzungen werden für die aktuelle Benutzersitzung synchronisiert",
       "sessionSyncSameTabDesc": "Die Sitzungen werden innerhalb deines Browser-Tabs synchronisiert",
+      "showAgentSessionsDesc": "Show sessions opened by the AI assistant or MCP agents as view-only tabs",
       "twoFactorDialog": {
         "title": "2FA aktivieren",
         "description": "Scanne den Code mit deiner Authenticator-App oder gib den Code <span class=\"totp-code\">{{secret}}</span> manuell ein.",
@@ -795,8 +796,8 @@
         "folderManagementDescription": "Protokollierung der Erstellung, Änderung und Löschung von Ordnern",
         "scriptExecutionLabel": "Skript-Ausführung",
         "scriptExecutionDescription": "Protokollierung der Ausführung von Skripten und Automatisierungsaufgaben",
-        "aiOperationsLabel": "KI-Betrieb",
-        "aiOperationsDescription": "Befehle und Dateiänderungen protokollieren, die vom KI-Assistenten durchgeführt wurden",
+        "agentOperationsLabel": "AI Agent Operations",
+        "agentOperationsDescription": "Log commands, input, screenshots and file changes performed by the AI assistant and by agents connected through the MCP server",
         "actions": {
           "save": "Einstellungen speichern"
         },
@@ -1177,7 +1178,7 @@
     },
     "ai": {
       "title": "KI-Assistent Konfiguration",
-      "description": "Konfiguriere den KI-Assistenten, der Befehle ausführen und Dateien direkt über deine Server-Sitzungen verwalten kann.",
+      "description": "Configure the AI provider used by the assistant, which can operate your servers through its own sessions.",
       "loading": "AI-Einstellungen laden...",
       "enable": {
         "title": "KI-Assistent aktivieren",
@@ -1190,10 +1191,6 @@
       "model": {
         "title": "Modell",
         "description": "Wähle ein KI-Model, das der Assistent verwenden soll"
-      },
-      "requireConfirmation": {
-        "title": "Bestätigung vor jeder Aktion",
-        "description": "Erfordert Benutzer, um jeden Befehl und jede Datei-Änderung, die der Assistent ausführen will, zu bestätigen"
       },
       "apiKey": {
         "title": "API-Schlüssel",
@@ -1296,10 +1293,12 @@
     },
     "identities": {
       "title": "SSH-Schlüssel und Anmeldeinformationen",
-      "description": "Verwalte deine SSH-Schlüssel und Anmeldedaten für Serververbindungen",
+      "description": "Identities you can link to any server. Server-specific ones live in that server's settings.",
       "createIdentity": "Identität erstellen",
       "personal": "Persönlich",
       "noUsername": "Kein Nutzername",
+      "notInUse": "Not in use",
+      "notInUseHint": "Not linked to any server or folder",
       "sshKey": "SSH-Schlüssel",
       "password": "Passwort",
       "editIdentity": "Identität bearbeiten",
@@ -1367,6 +1366,7 @@
         "success": "Synchronisiert",
         "error": "Fehler",
         "pending": "Ausstehend",
+        "syncing": "Syncing",
         "disabled": "Deaktiviert"
       },
       "dialog": {
@@ -1697,8 +1697,6 @@
       "folderUpdated": "Folder updated successfully",
       "createFailed": "Server kann nicht erstellt werden",
       "updateFailed": "Server kann nicht aktualisiert werden",
-      "createIdentityFailed": "Identität kann nicht erstellt werden",
-      "updateIdentityFailed": "Identität kann nicht aktualisiert werden",
       "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination."
     },
     "dialog": {
@@ -1795,10 +1793,6 @@
         }
       },
       "identities": {
-        "organizationIdentities": "Organisation Identitäten",
-        "personalIdentities": "Persönliche Identitäten",
-        "orgDescription": "Wird mit allen Mitgliedern der Organisation geteilt. Jeder kann diese Identitäten nutzen.",
-        "personalDescription": "Nur für dich sichtbar. Andere Mitglieder der Organisation können sie nicht sehen.",
         "identityName": "Identität Name",
         "username": "Benutzername",
         "authentication": "Authentifizierung",
@@ -1809,15 +1803,19 @@
         "both": "Schlüssel+Pass",
         "sshPrivateKey": "Privater SSH-Schlüssel",
         "passphrase": "Passphrase (optional)",
-        "new": "Neu",
+        "add": "Add identity",
+        "linkGlobal": "Link global identity · {{count}}",
+        "empty": "No identities yet.",
         "removeIdentity": "Identität entfernen",
         "unlinkIdentity": "Identität entkoppeln",
         "moveToOrg": "Zur Organisation wechseln",
-        "selectOrganization": "Organisation auswählen",
-        "availableToLink": "Verfügbar für Link",
         "noUsername": "Kein Nutzername",
-        "noOrgIdentities": "Keine Organisationsidentitäten. Erstelle eine, um sie mit allen Mitgliedern zu teilen.",
-        "noPersonalIdentities": "Keine persönlichen Identitäten. Erstelle eine für deinen privaten Gebrauch."
+        "globalToggle": "Use on other servers",
+        "globalInUse": "This identity is used by {{count}} servers. Unlink it from the others first.",
+        "shareToggle": "Share with organization",
+        "inheritedHint": "Inherited from the folder settings.",
+        "onlyMe": "Only me",
+        "onlyMeHint": "Only you can see and use this identity."
       },
       "sections": {
         "general": "General",
@@ -2098,13 +2096,34 @@
         "downloaded": "Habe „{{name}}“ von einem Remote-Server heruntergeladen"
       }
     },
+    "automatedSession": {
+      "viewOnlyAi": "The AI assistant is working in this session. You can watch, but not type.",
+      "viewOnlyMcp": "An external agent (MCP) is working in this session. You can watch, but not type."
+    },
     "aiAssistant": {
       "title": "KI-Assistent",
       "open": "KI-Assistent",
-      "empty": "Bitte den Mitarbeiter, diesen Server zu überprüfen oder auszutauschen. Er kann über die Verbindung direkt Befehle ausführen und Dateien lesen oder bearbeiten.",
+      "empty": "Ask the assistant to inspect or change your servers. It opens its own sessions to the servers you add below, runs commands, edits files and can even operate remote desktops.",
+      "addServer": "Add server",
+      "removeServer": "Remove server",
+      "searchServers": "Search servers...",
+      "noMatches": "No matching servers",
+      "current": "current",
+      "openSessions": "{{count}} open session(s)",
+      "approval": {
+        "ask": "Ask before actions",
+        "askDescription": "Commands, input and file changes wait for your approval",
+        "allow": "Allow all",
+        "allowDescription": "Runs tool calls without asking",
+        "readonly": "Read-only",
+        "readonlyDescription": "Only inspects servers; anything that changes them is denied"
+      },
       "placeholder": "Schreib dem Assistenten eine Nachricht...",
       "connecting": "Wird verbunden...",
       "send": "Senden",
+      "copyMessage": "Copy message",
+      "copied": "Copied",
+      "editMessage": "Edit message",
       "stop": "Stopp",
       "connectionError": "Die Verbindung zum Assistenten wurde unterbrochen.",
       "reconnecting": "Verbindung unterbrochen. Wird neu verbunden...",
@@ -2117,19 +2136,65 @@
       "continuePrompt": "Der Assistent hielt nach einer langen Treppenstufe inne. Weiter?",
       "continue": "Weiter",
       "compacted": "Frühere Nachrichten wurden zusammengefasst, um Platz für den Kontext zu schaffen.",
+      "retryPrompt": "The last step failed. Retry from where it stopped?",
+      "retry": "Retry",
+      "questionOther": "Or type another answer...",
+      "questionAnswer": "Type your answer...",
+      "questionSend": "Answer",
+      "questionPickOne": "Pick one or type an answer",
+      "questionPickMany": "Pick any that apply",
+      "exitCode": "exit {{code}}",
+      "truncated": "[truncated]",
+      "toolSummary": {
+        "recursive": "{{path}} (recursive)",
+        "doubleClick": "{{target}} ×2"
+      },
       "tools": {
-        "runCommand": "Befehl ausführen",
-        "readFile": "Datei lesen",
-        "writeFile": "Datei schreiben",
-        "editFile": "Datei bearbeiten",
-        "listDirectory": "Verzeichnis auflisten",
-        "statPath": "Pfad prüfen",
-        "makeDirectory": "Verzeichnis erstellen",
-        "deleteFile": "Datei löschen",
-        "removeDirectory": "Verzeichnis löschen",
-        "movePath": "Verschieben",
-        "changePermissions": "Berechtigungen ändern",
-        "findDirectories": "Verzeichnisse suchen"
+        "list_entries": "List servers",
+        "get_entry": "Inspect server",
+        "list_folders": "List folders",
+        "list_organizations": "List organizations",
+        "list_identities": "List identities",
+        "list_snippets": "List snippets",
+        "list_scripts": "List scripts",
+        "list_tags": "List tags",
+        "list_users": "List users",
+        "get_permissions": "Check permissions",
+        "get_monitoring": "Read monitoring",
+        "list_sessions": "List sessions",
+        "open_session": "Open session",
+        "get_session": "Inspect session",
+        "close_session": "Close session",
+        "close_all_sessions": "Close all sessions",
+        "terminal_run": "Run command",
+        "terminal_send": "Send input",
+        "terminal_read": "Read terminal",
+        "terminal_resize": "Resize terminal",
+        "run_command": "Run command",
+        "exec_command": "Run command",
+        "file_list": "List directory",
+        "file_stat": "Inspect path",
+        "file_read": "Read file",
+        "file_write": "Write file",
+        "file_edit": "Edit file",
+        "file_mkdir": "Create directory",
+        "file_delete": "Delete",
+        "file_move": "Move",
+        "file_chmod": "Change permissions",
+        "file_search_dirs": "Find directories",
+        "desktop_screenshot": "Screenshot",
+        "desktop_info": "Inspect desktop",
+        "desktop_click": "Click",
+        "desktop_mouse_move": "Move mouse",
+        "desktop_drag": "Drag",
+        "desktop_scroll": "Scroll",
+        "desktop_type": "Type text",
+        "desktop_key": "Press keys",
+        "desktop_resize": "Resize desktop",
+        "desktop_clipboard_set": "Set clipboard",
+        "desktop_clipboard_get": "Read clipboard",
+        "batch": "Run several actions",
+        "ask_user": "Question"
       }
     },
     "commandSuggestion": {
