@@ -30,7 +30,7 @@ import dev.gnm.nexterm.guacamole.GuacamoleCanvas
 import dev.gnm.nexterm.guacamole.GuacamoleViewport
 
 @Composable
-fun GuacamoleSessionView(session: AppSession, toolsOpen: Boolean, onCloseTools: () -> Unit) {
+fun GuacamoleSessionView(session: AppSession, toolsOpen: Boolean, onCloseTools: () -> Unit, modifier: Modifier = Modifier) {
     val viewport = session.guacamole?.viewport?.watch()?.value ?: return
     val hasFrame by viewport.state.hasFrame.watch()
     val error by viewport.state.client.error.watch()
@@ -42,7 +42,7 @@ fun GuacamoleSessionView(session: AppSession, toolsOpen: Boolean, onCloseTools: 
     val focusManager = LocalFocusManager.current
     val ime = LocalSoftwareKeyboardController.current
 
-    Box(Modifier.fillMaxSize().background(Color.Black).systemBarsPadding().imePadding()) {
+    Box(modifier.fillMaxSize().background(Color.Black).systemBarsPadding().imePadding()) {
         GuacamoleCanvas(viewport, Modifier.fillMaxSize())
         if (!session.isViewOnly) BasicTextField(
             text, { text = it; keyboard.onTextFieldChanged(it) },
@@ -52,8 +52,8 @@ fun GuacamoleSessionView(session: AppSession, toolsOpen: Boolean, onCloseTools: 
         )
         ConnectionLoader(!hasFrame && error == null && connection != ConnectionState.DISCONNECTED)
         error?.let { Box(Modifier.align(Alignment.TopCenter)) { ErrorBanner("Error: $it", viewport.state.client::clearError) } }
-        session.agent?.let { ViewOnlyBanner(it.viewOnlyMessage, Modifier.align(Alignment.BottomCenter)) }
-        if (connection == ConnectionState.DISCONNECTED) DisconnectedOverlay { nx.sessions.reconnect(session) }
+        session.viewOnlyMessage?.let { ViewOnlyBanner(it, Modifier.align(Alignment.BottomCenter)) }
+        if (connection == ConnectionState.DISCONNECTED) DisconnectedOverlay { nx.sessions.reconnect(session.sessionId) }
     }
     if (toolsOpen) GuacToolSheet(viewport, session.isViewOnly, onCloseTools) {
         if (imeFocused) focusManager.clearFocus() else { focus.requestFocus(); ime?.show() }

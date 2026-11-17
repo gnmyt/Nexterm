@@ -17,12 +17,14 @@ import dev.gnm.nexterm.state.MonitoringController
 import dev.gnm.nexterm.state.AccountManager
 import dev.gnm.nexterm.state.ServerListController
 import dev.gnm.nexterm.state.SnippetManager
+import dev.gnm.nexterm.state.ScriptManager
+import dev.gnm.nexterm.state.StateStream
+import dev.gnm.nexterm.state.ClientIds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 
@@ -33,23 +35,31 @@ class Nexterm private constructor(appVersion: String) {
     val accounts = AccountManager(settings, ApiClient.createHttpClient(), AppInfo.userAgent(appVersion), scope)
     private val api = accounts.api
     val snippets = SnippetManager(api)
+    val scripts = ScriptManager(api)
     val ai = AIManager(api)
+    private val ids = ClientIds(settings)
+    val stream = StateStream(api, ids, scope) { account -> accounts.removeAccount(account.id) }
 
     val themeSettings = ThemeSettings(settings)
     val terminalSettings = TerminalSettings(settings)
     val sftpSettings = SftpSettings(settings)
     val folderState = FolderStateStore(settings)
 
-    val sessions = SessionManager(api, settings, accounts, sftpSettings, terminalSettings, scope)
+    val sessions = SessionManager(api, ids, accounts, sftpSettings, terminalSettings, stream, scripts, scope)
 
     init {
         scope.launch {
-            accounts.activeAccount.map { it?.id }.distinctUntilChanged().collect { id ->
-                if (id != null) {
+            accounts.activeAccount.distinctUntilChanged { a, b -> a?.id == b?.id }.collect { account ->
+                if (account != null) {
+                    sessions.disconnectAll()
+                    stream.start(account)
                     launch { snippets.loadSnippets(true) }
+                    launch { scripts.load() }
                     launch { ai.loadSettings() }
                     launch { sessions.restoreSessions() }
                 } else {
+                    stream.stop()
+                    scripts.clear()
                     snippets.clear()
                     ai.clear()
                     sessions.disconnectAll()
@@ -60,7 +70,7 @@ class Nexterm private constructor(appVersion: String) {
 
     fun newDeviceSetupFlow(): DeviceSetupFlow = DeviceSetupFlow(api, accounts, childScope(), 5_000)
 
-    fun newServerList(): ServerListController = ServerListController(api, folderState, childScope())
+    fun newServerList(): ServerListController = ServerListController(api, folderState, stream, sessions, scripts, childScope())
 
     fun newMonitoring(): MonitoringController = MonitoringController(api, childScope(), 60_000)
 

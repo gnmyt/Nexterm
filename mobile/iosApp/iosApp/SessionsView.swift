@@ -11,6 +11,7 @@ struct ActiveSessionView: View {
     @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var snippets = false
     @State private var ai = false
+    @State private var paused = FlowState(nx.sessions.hibernated, or: [HibernatedSession]())
 
     var body: some View {
         let fullscreen = app.fullscreen.value
@@ -63,12 +64,40 @@ struct ActiveSessionView: View {
                 .tag(x.sessionId)
             }
         }
-        Section {
-            if sizeClass == .compact {
-                Button("Back to Servers", systemImage: "server.rack") { app.tab = .servers }
+        if !paused.value.isEmpty {
+            Section("Hibernated") {
+                ForEach(paused.value, id: \.sessionId) { p in
+                    Button {
+                        Task {
+                            do { _ = try await nx.sessions.resume(sessionId: p.sessionId) } catch { app.show(error.localizedDescription) }
+                        }
+                    } label: {
+                        Label {
+                            Text(p.server.name)
+                            Text(p.subtitle)
+                        } icon: {
+                            Image(systemName: "moon.zzz")
+                        }
+                    }
+                }
             }
-            Button("Close Session", systemImage: "xmark", role: .destructive) {
-                Task { try? await nx.sessions.closeSession(sessionId: s.sessionId) }
+        }
+        Section {
+            ForEach(s.actions, id: \.self) { action in
+                Button(action.label, systemImage: sfSymbol(action.iconKey), role: action.isDestructive ? .destructive : nil) {
+                    Task {
+                        do {
+                            if let message = try await nx.sessions.perform(session: s, action: action) { app.show(message) }
+                        } catch {
+                            app.show(error.localizedDescription)
+                        }
+                    }
+                }
+            }
+        }
+        if sizeClass == .compact {
+            Section {
+                Button("Back to Servers", systemImage: "server.rack") { app.tab = .servers }
             }
         }
     }
@@ -78,10 +107,14 @@ private struct SessionContent: View {
     let session: AppSession
 
     var body: some View {
-        if let terminal = session.terminal {
+        if let terminal = session.terminal, let run = session.script {
+            ScriptSessionView(session: session, terminal: terminal, run: run)
+        } else if let terminal = session.terminal {
             TerminalSessionView(session: session, terminal: terminal)
         } else if let browser = session.sftp {
             SftpView(session: session, browser: browser)
+        } else if let control = session.browser {
+            BrowserSessionView(session: session, browser: control)
         } else {
             GuacamoleSessionView(session: session)
         }

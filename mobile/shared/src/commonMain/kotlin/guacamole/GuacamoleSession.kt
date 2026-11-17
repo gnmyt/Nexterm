@@ -1,5 +1,6 @@
 package dev.gnm.nexterm.guacamole
 
+import dev.gnm.nexterm.session.BrowserControl
 import dev.gnm.nexterm.session.ConnectionState
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineScope
@@ -18,6 +19,7 @@ class GuacamoleSession internal constructor(
     private val webSocketUrl: String,
     private val connectData: String,
     val viewOnly: Boolean = false,
+    private val browser: BrowserControl? = null,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var clientJob: Job? = null
@@ -40,6 +42,10 @@ class GuacamoleSession internal constructor(
         _state.value = ConnectionState.CONNECTING
         val newClient = GuacClient(webSocketUrl, http, userAgent, viewOnly)
         client = newClient
+        if (browser != null) {
+            newClient.onPipe = { name, text -> if (name == BrowserControl.PIPE) browser.handle(text) }
+            browser.send = { newClient.sendPipe(BrowserControl.PIPE, "application/json", it) }
+        }
         _viewport.value = GuacamoleViewport(GuacamoleDisplayState(newClient))
         clientJob = scope.launch {
             newClient.state.collect {

@@ -35,6 +35,8 @@ data class Server(
     val tags: List<Tag> = emptyList(),
     val wakeOnLanEnabled: Flag = false,
     val macAddress: String? = null,
+    val renderer: String? = null,
+    val organizationId: Int? = null,
 ) : Entry() {
     val entryId: Int? get() = id?.toIntOrNull()
     val isPve: Boolean get() = type.startsWith("pve-")
@@ -44,11 +46,17 @@ data class Server(
     val isStopped: Boolean get() = if (status != null) status == "stopped" || status == "offline" else online == false
     val hasIdentities: Boolean get() = identities.isNotEmpty()
     val protocolLower: String? get() = protocol?.lowercase()
-    val isGuacamole: Boolean get() = protocolLower == "rdp" || protocolLower == "vnc"
+    val isFileTransfer: Boolean get() = isServer && (protocolLower in FILE_PROTOCOLS || renderer == "sftp")
+    val isGuacamole: Boolean get() = !isFileTransfer && (protocolLower in DESKTOP_PROTOCOLS || type == "pve-qemu" || renderer == "guac")
+    val isCredentialless: Boolean get() = protocolLower == "telnet" || protocolLower == "demo"
+    val isShell: Boolean get() = isServer && protocolLower == "ssh"
     val displayIp: String? get() = ip.takeIf { it.isNotEmpty() && it != "N/A" }
     val subtitle: String?
         get() = if (isPve && status != null) displayIp?.let { "$status · $it" } ?: status else displayIp
 }
+
+private val FILE_PROTOCOLS = setOf("sftp", "ftp", "ftps")
+private val DESKTOP_PROTOCOLS = setOf("rdp", "vnc", "demo")
 
 @Serializable
 data class ServerFolder(

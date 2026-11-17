@@ -49,7 +49,18 @@ fun iconFor(key: String): ImageVector = when (key) {
     "tablet" -> Icons.Outlined.Tablet
     "laptop" -> Icons.Outlined.Laptop
     "format-list-bulleted" -> Icons.AutoMirrored.Outlined.List
-    "lan-connect" -> Icons.Outlined.Link
+    "lan-connect" -> Icons.Outlined.Cable
+    "broadcast" -> Icons.Outlined.Cast
+    "restore" -> Icons.Outlined.Restore
+    "web" -> Icons.Outlined.Language
+    "script-text-outline" -> Icons.Outlined.IntegrationInstructions
+    "power" -> Icons.Outlined.Power
+    "play" -> Icons.Outlined.PlayArrow
+    "stop" -> Icons.Outlined.Stop
+    "content-duplicate" -> Icons.Outlined.ContentCopy
+    "refresh" -> Icons.Outlined.Refresh
+    "power-sleep" -> Icons.Outlined.Bedtime
+    "close" -> Icons.Outlined.Close
     "lan-disconnect" -> Icons.Outlined.LinkOff
     "keyboard-outline" -> Icons.Outlined.Keyboard
     "text-box-outline" -> Icons.AutoMirrored.Outlined.Article

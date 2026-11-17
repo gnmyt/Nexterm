@@ -32,10 +32,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.gnm.nexterm.session.AppSession
 import dev.gnm.nexterm.session.ConnectionType
+import dev.gnm.nexterm.session.HibernatedSession
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-private enum class SessionSheet { SWITCHER, SNIPPETS, AI, TOOLS }
+private enum class SessionSheet { SWITCHER, SNIPPETS, AI, TOOLS, ACTIONS }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,6 +45,8 @@ fun ActiveSessionsScreen(onExit: () -> Unit) {
     val active by nx.sessions.activeSession.watch()
     val aiAvailable by nx.ai.isAvailable.watch()
     val fullscreen by nx.sessions.fullscreen.watch()
+    val paused by nx.sessions.hibernated.watch()
+    val toaster = LocalToaster.current
     val view = LocalView.current
     DisposableEffect(fullscreen) {
         val bars = WindowInsetsControllerCompat((view.context as Activity).window, view)
@@ -63,7 +66,9 @@ fun ActiveSessionsScreen(onExit: () -> Unit) {
             when (session.type) {
                 ConnectionType.TERMINAL -> TerminalSessionView(session)
                 ConnectionType.SFTP -> SftpSessionView(session)
-                ConnectionType.GUACAMOLE -> GuacamoleSessionView(session, sheet == SessionSheet.TOOLS) { sheet = null }
+                ConnectionType.GUACAMOLE -> GuacamoleSessionView(session, sheet == SessionSheet.TOOLS, { sheet = null })
+                ConnectionType.BROWSER -> BrowserSessionView(session, sheet == SessionSheet.TOOLS) { sheet = null }
+                ConnectionType.SCRIPT -> ScriptSessionView(session)
             }
         }
         var offset by remember { mutableStateOf(Offset.Zero) }
@@ -90,18 +95,35 @@ fun ActiveSessionsScreen(onExit: () -> Unit) {
             if (session.hasToolMenu) PillButton(Icons.Outlined.HomeRepairService) { sheet = SessionSheet.TOOLS }
             if (session.supportsAI && aiAvailable) PillButton(Icons.Outlined.AutoAwesome) { sheet = SessionSheet.AI }
             PillButton(if (fullscreen) Icons.Outlined.FullscreenExit else Icons.Outlined.Fullscreen) { nx.sessions.setFullscreen(!fullscreen) }
+            PillButton(Icons.Outlined.MoreVert) { sheet = SessionSheet.ACTIONS }
         }
     }
 
     when (sheet) {
         SessionSheet.SWITCHER -> ModalBottomSheet({ sheet = null }) {
-            SessionSwitcher(sessions, session.sessionId,
+            SessionSwitcher(sessions, paused, session.sessionId,
                 onSelect = { nx.sessions.setActive(it); sheet = null },
+                onResume = { id ->
+                    sheet = null
+                    scope.launch { try { nx.sessions.resume(id) } catch (e: Exception) { toaster.show(e.message ?: "Failed to resume session") } }
+                },
                 onClose = { id -> scope.launch { nx.sessions.closeSession(id); if (nx.sessions.sessions.value.isEmpty()) sheet = null } },
                 onExit = { sheet = null; nx.sessions.setFullscreen(false); onExit() })
         }
         SessionSheet.SNIPPETS -> SnippetsSheet({ sheet = null }) { session.terminal?.send(it) }
         SessionSheet.AI -> AiAssistantSheet(session) { sheet = null }
+        SessionSheet.ACTIONS -> ModalBottomSheet({ sheet = null }) {
+            SheetHeader(iconFor(session.type.iconKey), session.server.name, session.type.label)
+            HorizontalDivider()
+            session.actions.forEach { action ->
+                SheetItem(iconFor(action.iconKey), action.label, if (action.isDestructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant) {
+                    sheet = null
+                    scope.launch {
+                        try { nx.sessions.perform(session, action)?.let(toaster::show) } catch (e: Exception) { toaster.show(e.message ?: "Something went wrong") }
+                    }
+                }
+            }
+        }
         SessionSheet.TOOLS, null -> Unit
     }
 }
@@ -113,7 +135,10 @@ private fun PillButton(icon: ImageVector, onClick: () -> Unit) {
 }
 
 @Composable
-private fun SessionSwitcher(sessions: List<AppSession>, activeId: String, onSelect: (String) -> Unit, onClose: (String) -> Unit, onExit: () -> Unit) {
+private fun SessionSwitcher(
+    sessions: List<AppSession>, paused: List<HibernatedSession>, activeId: String,
+    onSelect: (String) -> Unit, onResume: (String) -> Unit, onClose: (String) -> Unit, onExit: () -> Unit,
+) {
     SheetHeader(Icons.Outlined.Layers, "Sessions", null) { Text("${sessions.size}") }
     HorizontalDivider()
     LazyColumn(Modifier.heightIn(max = 400.dp)) {
@@ -122,10 +147,22 @@ private fun SessionSwitcher(sessions: List<AppSession>, activeId: String, onSele
             ListItem(
                 headlineContent = { Text(s.server.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 supportingContent = { Text(if (s.isViewOnly) "${s.type.label} · View only" else s.type.label) },
-                leadingContent = { Icon(iconFor(s.type.iconKey), null) },
+                leadingContent = { Icon(if (s.isViewOnly) Icons.Outlined.Visibility else iconFor(s.type.iconKey), null) },
                 trailingContent = { IconButton({ onClose(s.sessionId) }) { Icon(Icons.Outlined.Close, "Close session") } },
                 colors = if (isActive) ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.secondaryContainer) else transparentListItem,
                 modifier = Modifier.clickable { onSelect(s.sessionId) },
+            )
+        }
+    }
+    if (paused.isNotEmpty()) {
+        SectionHeader("Hibernated")
+        paused.forEach { p ->
+            ListItem(
+                headlineContent = { Text(p.server.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                supportingContent = { Text(p.subtitle) },
+                leadingContent = { Icon(Icons.Outlined.Bedtime, null) },
+                trailingContent = { TextButton({ onResume(p.sessionId) }) { Text("Resume") } },
+                colors = transparentListItem,
             )
         }
     }

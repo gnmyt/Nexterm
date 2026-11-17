@@ -52,7 +52,7 @@ struct SftpView: View {
             .refreshable { browser.refresh() }
             .overlay {
                 if !connected.value || state.value == ConnectionState.disconnected {
-                    SessionStateOverlay(state: state.value, ready: false) { nx.sessions.reconnect(session: session) }
+                    SessionStateOverlay(state: state.value, ready: false) { nx.sessions.reconnect(sessionId: session.sessionId) }
                 } else if loading.value && entries.value.isEmpty {
                     ProgressView()
                 } else if entries.value.isEmpty && !loading.value {

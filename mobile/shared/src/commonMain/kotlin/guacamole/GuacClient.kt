@@ -34,6 +34,8 @@ class GuacClient internal constructor(url: String, http: HttpClient, userAgent: 
     }
 
     private val streams = HashMap<Int, GuacInputStream>()
+    private var nextOutputStream = 0
+    internal var onPipe: ((name: String, text: String) -> Unit)? = null
     private var currentTimestamp = 0L
     private var keepAliveJob: Job? = null
     @Volatile
@@ -144,6 +146,14 @@ class GuacClient internal constructor(url: String, http: HttpClient, userAgent: 
         tunnel.sendMessage("size", width, height)
     }
 
+    internal fun sendPipe(name: String, mimetype: String, text: String) {
+        if (!isConnected || viewOnly) return
+        val index = nextOutputStream++
+        tunnel.sendMessage("pipe", index, mimetype, name)
+        text.encodeToByteArray().asList().chunked(PIPE_CHUNK_BYTES).forEach { tunnel.sendMessage("blob", index, Base64.encode(it.toByteArray())) }
+        tunnel.sendMessage("end", index)
+    }
+
     fun sendAck(streamIndex: Int, message: String, code: Int) {
         if (!isConnected) return
         tunnel.sendMessage("ack", streamIndex, message, code)
@@ -218,7 +228,16 @@ class GuacClient internal constructor(url: String, http: HttpClient, userAgent: 
             "blob" -> streams[i(0)]?.onBlob?.invoke(a[1])
             "end" -> streams.remove(i(0))?.onEnd?.invoke()
             "audio", "video" -> drainStream(i(0))
-            "clipboard", "file", "pipe", "argv" -> sendAck(i(0), "Unsupported", GuacStatus.UNSUPPORTED)
+            "pipe" -> {
+                val handler = onPipe
+                val name = a[2]
+                if (handler == null) sendAck(i(0), "Unsupported", GuacStatus.UNSUPPORTED)
+                else {
+                    receiveBytes(i(0)) { handler(name, it.decodeToString()) }
+                    sendAck(i(0), "OK", GuacStatus.SUCCESS)
+                }
+            }
+            "clipboard", "file", "argv" -> sendAck(i(0), "Unsupported", GuacStatus.UNSUPPORTED)
             "body" -> sendAck(i(1), "Receipt of body unsupported", GuacStatus.UNSUPPORTED)
             "error" -> {
                 _error.value = a[0]
@@ -232,6 +251,7 @@ class GuacClient internal constructor(url: String, http: HttpClient, userAgent: 
         const val KEEP_ALIVE_MILLIS = 5_000L
         const val KEEP_ALIVE_TICK_MILLIS = 500L
         const val TRANSFER_NOOP = 0x5
+        const val PIPE_CHUNK_BYTES = 4096
 
         fun decodeBase64(data: String): ByteArray? = try {
             Base64.decode(data)

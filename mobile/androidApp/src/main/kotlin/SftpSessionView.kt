@@ -130,7 +130,7 @@ fun SftpSessionView(session: AppSession) {
                         }
                     }
                 }
-                if (connection == ConnectionState.DISCONNECTED) DisconnectedOverlay { nx.sessions.reconnect(session) }
+                if (connection == ConnectionState.DISCONNECTED) DisconnectedOverlay { nx.sessions.reconnect(session.sessionId) }
             }
         }
     }

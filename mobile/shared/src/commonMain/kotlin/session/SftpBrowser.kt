@@ -77,6 +77,8 @@ class SftpBrowser internal constructor(
     private val token: String,
     private val settings: SftpSettings,
     private val scope: CoroutineScope,
+    onEnded: () -> Unit = {},
+    onLost: (fatal: Boolean) -> Unit = {},
 ) {
     private val _ready = MutableStateFlow(false)
     private val requestLock = Mutex()
@@ -110,6 +112,8 @@ class SftpBrowser internal constructor(
             if (err != null) _error.value = "Connection error: $err"
             pending?.completeExceptionally(NextermException(err?.let { "Connection error: $it" } ?: "Connection closed"))
         },
+        onEnded = onEnded,
+        onLost = onLost,
     )
 
     val currentPath: StateFlow<String> = _currentPath.asStateFlow()

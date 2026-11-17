@@ -6,6 +6,11 @@ private struct QuickTarget {
     let type: ConnectionType
 }
 
+private struct ScriptTarget {
+    let server: Server
+    let identityId: KotlinInt?
+}
+
 struct ServersView: View {
     private let list = app.servers
     @State private var loading = FlowState(app.servers.isLoading, or: true)
@@ -15,6 +20,10 @@ struct ServersView: View {
     @State private var selectedTags = FlowState(app.servers.selectedTags) { Set(($0 as? NSSet)?.compactMap { ($0 as? NSNumber)?.int32Value } ?? []) }
     @State private var expanded = FlowState(app.servers.expandedIds, or: Set<String>())
     @State private var total = FlowState(app.servers.totalServers, or: Int32(0))
+    @State private var recent = FlowState(app.servers.recent, or: [Server]())
+    @State private var paused = FlowState(nx.sessions.hibernated, or: [HibernatedSession]())
+    @State private var revision = FlowState(app.servers.menuRevision, or: Int32(0))
+    @State private var scriptTarget: ScriptTarget?
     @State private var search = ""
     @State private var pending: ConnectRequest?
     @State private var reason = ""
@@ -26,9 +35,16 @@ struct ServersView: View {
     var body: some View {
         NavigationSplitView(columnVisibility: Binding(get: { app.fullscreen.value ? .detailOnly : columns }, set: { if !app.fullscreen.value { columns = $0 } }),
                             preferredCompactColumn: .constant(.sidebar)) {
+            let pausedIds = Set(paused.value.compactMap { $0.server.id })
+            let _ = revision.value
             List {
+                if !recent.value.isEmpty && !entries.value.isEmpty {
+                    Section("Recent") {
+                        ForEach(recent.value, id: \.self) { ServerNode(server: $0, paused: pausedIds.contains($0.id ?? ""), act: act) }
+                    }
+                }
                 Section {
-                    ForEach(entries.value, id: \.self) { EntryNode(entry: $0, expanded: expanded.value, act: act) }
+                    ForEach(entries.value, id: \.self) { EntryNode(entry: $0, expanded: expanded.value, paused: pausedIds, act: act) }
                 } header: {
                     if total.value > 0 { Text(list.onlineSummary()) }
                 }
@@ -73,6 +89,11 @@ struct ServersView: View {
             .sheet(isPresented: isSet($quick)) {
                 if let q = quick { QuickConnectSheet(server: q.server) { start(list.request(server: q.server, type: q.type, identity: $0)) } }
             }
+            .sheet(isPresented: isSet($scriptTarget)) {
+                if let t = scriptTarget {
+                    ScriptPickerSheet(server: t.server) { start(list.scriptRequest(server: t.server, identityId: t.identityId, script: $0)) }
+                }
+            }
             .disabled(connecting)
         } detail: {
             if sizeClass != .compact { ActiveSessionView() }
@@ -99,18 +120,28 @@ struct ServersView: View {
         }
     }
 
-    private func act(_ s: Server, _ action: ServerAction?) {
-        let step = list.plan(server: s, action: action)
+    private func act(_ intent: ServerIntent) {
+        let step = list.plan(intent: intent)
         if let m = step as? ConnectStep.Message {
             app.show(m.text)
-        } else if step is ConnectStep.Wake {
-            Task {
-                do { app.show(try await list.wake(server: s)) } catch { app.show(error.localizedDescription) }
-            }
         } else if let q = step as? ConnectStep.QuickConnect {
             quick = QuickTarget(server: q.server, type: q.type)
         } else if let c = step as? ConnectStep.Connect {
             start(c.request)
+        } else if let p = step as? ConnectStep.PickScript {
+            scriptTarget = ScriptTarget(server: p.server, identityId: p.identityId)
+        } else if let e = step as? ConnectStep.Execute {
+            connecting = true
+            Task {
+                do {
+                    let result = try await list.execute(intent: e.intent)
+                    if let message = result.message { app.show(message) }
+                    if result.openedSession && sizeClass == .compact { app.tab = .sessions }
+                } catch {
+                    app.show(error.localizedDescription)
+                }
+                connecting = false
+            }
         }
     }
 
@@ -140,50 +171,113 @@ struct ServersView: View {
 private struct EntryNode: View {
     let entry: Entry
     let expanded: Set<String>
-    let act: (Server, ServerAction?) -> Void
+    let paused: Set<String>
+    let act: (ServerIntent) -> Void
 
     var body: some View {
         if let folder = entry as? ServerFolder {
             let row = ServerListRow.FolderRow(folder: folder, depth: 0, isExpanded: expanded.contains(folder.id ?? ""))
             DisclosureGroup(isExpanded: Binding(get: { row.isExpanded }, set: { _ in app.servers.toggleFolder(folderId: folder.id) })) {
                 ForEach((folder.allServers as [Entry]) + (folder.allFolders as [Entry]), id: \.self) {
-                    EntryNode(entry: $0, expanded: expanded, act: act)
+                    EntryNode(entry: $0, expanded: expanded, paused: paused, act: act)
                 }
             } label: {
                 Row(title: folder.name, subtitle: row.subtitle, icon: sfSymbol(row.iconKey), color: roleColor(row.colorRole.name))
             }
         } else if let server = entry as? Server {
-            let row = ServerListRow.ServerRow(server: server, depth: 0)
-            let actions = ConnectionRules.shared.secondaryActions(server: server)
-            Button { act(server, nil) } label: {
+            ServerNode(server: server, paused: paused.contains(server.id ?? ""), act: act)
+        }
+    }
+}
+
+private struct ServerNode: View {
+    let server: Server
+    let paused: Bool
+    let act: (ServerIntent) -> Void
+
+    var body: some View {
+        let row = ServerListRow.ServerRow(server: server, depth: 0)
+        Button { act(app.servers.primaryIntent(server: server)) } label: {
+            HStack {
                 Row(title: server.name, subtitle: server.subtitle, icon: sfSymbol(row.iconKey), color: roleColor(row.colorRole.name))
-                    .badge(server.tags.isEmpty ? nil : Text(server.tags.map(\.name).joined(separator: ", ")))
-            }
-            .tint(server.isStopped ? .secondary : .primary)
-            .swipeActions(edge: .trailing) {
-                if actions.contains(ServerAction.sftp) {
-                    Button(ServerAction.sftp.label, systemImage: ServerAction.sftp.symbol) { act(server, ServerAction.sftp) }.tint(.accentColor)
+                if paused {
+                    Spacer()
+                    Image(systemName: "moon.zzz").foregroundStyle(.secondary).accessibilityLabel("Hibernated session")
                 }
             }
-            .swipeActions(edge: .leading) {
-                if actions.contains(ServerAction.wakeOnLan) {
-                    Button(ServerAction.wakeOnLan.label, systemImage: ServerAction.wakeOnLan.symbol) { act(server, ServerAction.wakeOnLan) }.tint(.green)
-                }
+            .badge(server.tags.isEmpty ? nil : Text(server.tags.map(\.name).joined(separator: ", ")))
+        }
+        .tint(server.isStopped ? .secondary : .primary)
+        .swipeActions(edge: .trailing) {
+            if ConnectionRules.shared.supportsSftp(server: server) {
+                Button("File Browser", systemImage: "folder") { act(ServerIntent.Connect(server: server, type: .sftp, identityId: nil)) }.tint(.accentColor)
             }
-            .contextMenu {
-                Button(ConnectionRules.shared.supportsSftp(server: server) ? "Open Terminal" : "Connect",
-                       systemImage: ConnectionRules.shared.supportsSftp(server: server) ? "terminal" : "bolt.horizontal") { act(server, nil) }
-                ForEach(actions, id: \.self) { action in
-                    Button(action.label, systemImage: action.symbol) { act(server, action) }
+        }
+        .swipeActions(edge: .leading) {
+            if server.canWakeOnLan {
+                Button("Wake-On-LAN", systemImage: "power") { act(ServerIntent.Wake(server: server)) }.tint(.green)
+            }
+        }
+        .contextMenu {
+            ForEach(Array(app.servers.menu(server: server).enumerated()), id: \.offset) { _, item in
+                if item.hasOptions {
+                    Menu {
+                        ForEach(Array(item.options.enumerated()), id: \.offset) { _, option in
+                            Button(option.label) { act(option.intent) }
+                        }
+                    } label: {
+                        Label(item.label, systemImage: sfSymbol(item.action.iconKey))
+                    }
+                } else {
+                    Button(item.label, systemImage: sfSymbol(item.action.iconKey), role: item.action.isDestructive ? .destructive : nil) { act(item.intent) }
                 }
             }
         }
     }
 }
 
-private extension ServerAction {
-    var symbol: String {
-        self == ServerAction.sftp ? "folder" : self == ServerAction.quickConnect ? "cursorarrow.click" : "power"
+private struct ScriptPickerSheet: View {
+    let server: Server
+    let run: (Script) -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var scripts: [Script]?
+    @State private var query = ""
+
+    var body: some View {
+        let shown = (scripts ?? []).filter { $0.matches(query: query) }
+        NavigationStack {
+            List(shown, id: \.self) { script in
+                Button {
+                    dismiss()
+                    run(script)
+                } label: {
+                    HStack {
+                        Row(title: script.name, subtitle: script.description_, icon: "scroll")
+                        if script.isFromSource {
+                            Spacer()
+                            Image(systemName: "icloud.and.arrow.down").foregroundStyle(.secondary).accessibilityLabel("From a source")
+                        }
+                    }
+                }
+                .tint(.primary)
+            }
+            .overlay {
+                if scripts == nil {
+                    ProgressView()
+                } else if scripts?.isEmpty == true {
+                    ContentUnavailableView("No Scripts", systemImage: "scroll", description: Text("No scripts match this server's operating system"))
+                } else if shown.isEmpty {
+                    ContentUnavailableView.search(text: query)
+                }
+            }
+            .searchable(text: $query, prompt: "Search scripts")
+            .task { scripts = (try? await app.servers.scriptsFor(server: server)) ?? [] }
+            .navigationTitle("Run Script")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
+        }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
     }
 }
 

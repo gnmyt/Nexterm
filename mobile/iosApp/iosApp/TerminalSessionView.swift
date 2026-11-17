@@ -23,11 +23,11 @@ struct TerminalSessionView: View {
             .background { if !session.isViewOnly { KeyCapture(active: $keyboard, controller: terminal.controller) } }
             .background(.black, ignoresSafeAreaEdges: [])
             .safeAreaInset(edge: .bottom, spacing: 0) {
-                if let agent = session.agent { ViewOnlyBanner(text: agent.viewOnlyMessage) }
+                if let message = session.viewOnlyMessage { ViewOnlyBanner(text: message) }
             }
             .overlay {
                 SessionStateOverlay(state: state.value, ready: received.value || error.value != nil) {
-                    nx.sessions.reconnect(session: session)
+                    nx.sessions.reconnect(sessionId: session.sessionId)
                 }
             }
             .errorAlert(error.value) { terminal.clearError() }

@@ -21,6 +21,9 @@ class TerminalConnection internal constructor(
     attachesToExistingShell: Boolean,
     settings: TerminalSettings,
     val viewOnly: Boolean = false,
+    private val script: ScriptRun? = null,
+    onEnded: () -> Unit = {},
+    onLost: (fatal: Boolean) -> Unit = {},
 ) {
     private val _receivedData = MutableStateFlow(false)
     private val _error = MutableStateFlow<String?>(null)
@@ -51,10 +54,15 @@ class TerminalConnection internal constructor(
                 val text = frame.readText()
                 _receivedData.value = true
                 val data = if (text.startsWith("\u0002")) text.substring(1) else text
-                emulator.write(data)
+                emulator.write(script?.filter(data) ?: data)
             }
         },
         onDown = { err -> if (err != null) _error.value = "Connection error: $err" },
+        onEnded = { if (script != null) script.finish(failed = false) else onEnded() },
+        onLost = { fatal ->
+            script?.finish(failed = true)
+            onLost(fatal)
+        },
     )
 
     val state: StateFlow<ConnectionState> = socket.state
@@ -63,6 +71,7 @@ class TerminalConnection internal constructor(
     val controller = TerminalController(emulator, settings, scope)
 
     init {
+        script?.send = ::sendControl
         socket.start()
     }
 
@@ -83,6 +92,8 @@ class TerminalConnection internal constructor(
     }
 
     fun reconnect() = socket.reconnect()
+
+    internal fun sendControl(data: String) = sendRaw(data)
 
     fun clearError() {
         _error.value = null

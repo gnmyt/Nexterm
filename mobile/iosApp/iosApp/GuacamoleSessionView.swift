@@ -18,11 +18,11 @@ struct GuacamoleSessionView: View {
             if let vp = viewport.value { GuacamoleDisplay(viewport: vp, viewOnly: session.isViewOnly).id(ObjectIdentifier(vp)) }
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            if let agent = session.agent { ViewOnlyBanner(text: agent.viewOnlyMessage) }
+            if let message = session.viewOnlyMessage { ViewOnlyBanner(text: message) }
         }
         .overlay {
             if state.value == ConnectionState.disconnected {
-                SessionStateOverlay(state: state.value, ready: false) { nx.sessions.reconnect(session: session) }
+                SessionStateOverlay(state: state.value, ready: false) { nx.sessions.reconnect(sessionId: session.sessionId) }
             }
         }
     }

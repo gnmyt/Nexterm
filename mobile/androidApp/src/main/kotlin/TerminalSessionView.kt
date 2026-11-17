@@ -29,7 +29,7 @@ import dev.gnm.nexterm.terminal.TerminalController
 import dev.gnm.nexterm.terminal.TerminalKey
 
 @Composable
-fun TerminalSessionView(session: AppSession) {
+fun TerminalSessionView(session: AppSession, header: @Composable () -> Unit = {}) {
     val terminal = session.terminal ?: return
     val received by terminal.receivedData.watch()
     val error by terminal.error.watch()
@@ -38,14 +38,15 @@ fun TerminalSessionView(session: AppSession) {
     var focused by remember { mutableStateOf(false) }
 
     Column(Modifier.fillMaxSize().background(Color.Black).systemBarsPadding().imePadding()) {
+        header()
         error?.let { ErrorBanner(it, terminal::clearError) }
         Box(Modifier.weight(1f).fillMaxWidth()) {
             if (!session.isViewOnly) TerminalInput(terminal.controller, onFocus = { focused = it }, onReady = { input = it })
             TerminalSurface(terminal.controller, onTap = { input?.showKeyboard() }, Modifier.fillMaxSize())
             ConnectionLoader(!received && error == null && state != ConnectionState.DISCONNECTED)
-            if (state == ConnectionState.DISCONNECTED) DisconnectedOverlay { nx.sessions.reconnect(session) }
+            if (state == ConnectionState.DISCONNECTED) DisconnectedOverlay { nx.sessions.reconnect(session.sessionId) }
         }
-        session.agent?.let { ViewOnlyBanner(it.viewOnlyMessage) }
+        session.viewOnlyMessage?.let { ViewOnlyBanner(it) }
         if (focused && !session.isViewOnly) KeyToolbar(terminal.controller)
     }
 }
