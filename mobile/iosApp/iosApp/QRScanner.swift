@@ -22,12 +22,18 @@ struct QRScannerSheet: View {
                                            description: Text("Allow camera access in Settings to scan QR codes."))
                 }
             }
+            .safeAreaInset(edge: .bottom) {
+                Text(hint)
+                    .font(.footnote)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .padding()
+            }
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
-                ToolbarItem(placement: .status) { Text(hint).font(.footnote).multilineTextAlignment(.center) }
-            }
+            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
         }
     }
 }
