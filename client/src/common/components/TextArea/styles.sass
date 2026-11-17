@@ -1,0 +1,45 @@
+@use "@/common/styles/colors"
+@use "@/common/styles/fonts"
+
+.textarea
+  display: block
+  width: 100%
+  padding: 0.75rem 0.875rem
+  border: 1px solid colors.$gray
+  background-color: colors.$dark-gray
+  color: colors.$white
+  box-sizing: border-box
+  border-radius: 0.625rem
+  font-size: 0.95rem
+  font-family: inherit
+  font-weight: 500
+  line-height: 1.5
+  resize: vertical
+  min-height: 6rem
+  outline: none
+  transition: border-color 0.15s ease, box-shadow 0.15s ease
+
+  &::placeholder
+    color: colors.$subtext
+    opacity: 0.8
+
+  &:hover
+    border-color: colors.$subtext
+
+  &:focus
+    border-color: colors.$primary
+    box-shadow: colors.$focus-ring
+
+  &:disabled
+    opacity: 0.6
+    cursor: not-allowed
+
+  &--mono
+    font-family: fonts.$mono
+    font-size: 0.85rem
+    font-weight: 400
+    line-height: 1.55
+    tab-size: 4
+
+  &--fixed
+    resize: none
