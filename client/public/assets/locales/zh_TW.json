@@ -448,25 +448,35 @@
     "page": {
       "title": "伺服器監控",
       "subtitle": "即時伺服器統計和健康監控",
-      "searchPlaceholder": "搜尋伺服器..."
+      "searchPlaceholder": "搜尋伺服器...",
+      "filters": {
+        "all": "All ({{count}})",
+        "online": "Online ({{count}})",
+        "issues": "Issues ({{count}})"
+      }
     },
     "errors": {
-      "loadFailed": "載入監控資料失敗"
+      "loadFailed": "載入監控資料失敗",
+      "loadFailedDescription": "The monitoring data could not be retrieved. Check your connection and try again.",
+      "retry": "Retry"
     },
     "grid": {
-      "loading": "載入監測資料...",
       "noServers": {
         "title": "找不到伺服器",
         "subtitle": "沒有可用的 SSH 伺服器可供監控。\n新增一些伺服器以開始監控它們。"
       },
+      "noResults": {
+        "title": "No matching servers",
+        "subtitle": "No monitored server matches your search."
+      },
       "metrics": {
-        "cpuUsage": "CPU 使用量",
-        "memoryUsage": "記憶體使用量",
         "loadAverage": "平均負載",
         "processes": "程序",
         "uptime": "正常運行時間",
         "nodes": "節點",
-        "vms": "虛擬機器/容器"
+        "vms": "虛擬機器/容器",
+        "cpu": "CPU",
+        "memory": "Memory"
       },
       "status": {
         "serverOffline": "伺服器離線",
@@ -476,7 +486,16 @@
         "errorMessage": "無法與伺服器建立連線。",
         "unknownMessage": "無法確定伺服器狀態。",
         "lastSeen": "最近瀏覽: {{time}}",
-        "noRecentActivity": "最近沒有活動"
+        "noRecentActivity": "最近沒有活動",
+        "waitingForData": "Waiting for data",
+        "pendingMessage": "Monitoring data will appear after the next monitoring cycle.",
+        "labels": {
+          "online": "Online",
+          "offline": "Offline",
+          "error": "Error",
+          "pending": "Pending",
+          "unknown": "Unknown"
+        }
       },
       "uptime": {
         "unknown": "未知",
@@ -495,7 +514,6 @@
       },
       "tabs": {
         "overview": "概述",
-        "charts": "圖表",
         "storage": "儲存",
         "network": "網路",
         "processes": "製程",
@@ -515,12 +533,11 @@
         },
         "performance": {
           "title": "績效指標",
-          "cpuUsage": "CPU 使用量",
-          "memoryUsage": "記憶體使用量",
           "loadAverage": "平均負載",
           "processes": "主動製程",
           "total": "總計： {{value}}",
-          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}"
+          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}",
+          "memory": "Memory"
         },
         "uptime": {
           "format": {
@@ -538,33 +555,67 @@
       },
       "storage": {
         "title": "磁碟使用量",
-        "used": "已使用： {{value}}",
-        "available": "可用： {{value}}",
-        "total": "總計： {{value}}",
-        "type": "類型： {{value}}",
         "noData": "沒有可用的磁碟使用量資料",
-        "noPartitions": "無安裝隔板"
+        "noPartitions": "無安裝隔板",
+        "usedOf": "{{used}} of {{total}} used",
+        "free": "{{value}} free",
+        "filesystems": "Filesystems",
+        "disks": "Disks",
+        "on": "{{volume}} on {{partition}}",
+        "swap": "Swap",
+        "unmounted": "Not mounted",
+        "unallocated": "Unallocated",
+        "inodes": "Inodes",
+        "inodesDetail": "{{used}} of {{total}}",
+        "health": {
+          "passed": "Healthy",
+          "warning": "Warning",
+          "failed": "Failing",
+          "denied": "SMART needs root",
+          "temperature": "Temperature",
+          "powerOn": "Power-on time",
+          "wear": "Wear",
+          "reallocated": "Reallocated sectors",
+          "pending": "Pending sectors",
+          "mediaErrors": "Media errors",
+          "years": "{{value}} years",
+          "days": "{{value}} days",
+          "hours": "{{value}} hours",
+          "failedTitle": "Disk failure predicted",
+          "failedMessage": "{{disks}} failed its SMART self-assessment. Back up the data and replace the disk."
+        }
       },
       "network": {
-        "title": "網路介面",
-        "rxBytes": "RX 位元組",
-        "txBytes": "TX 位元組",
-        "mac": "MAC 位址",
         "speed": "速度",
-        "noData": "沒有可用的網路介面資料"
+        "noData": "沒有可用的網路介面資料",
+        "download": "Download",
+        "upload": "Upload",
+        "interface": "Interface",
+        "address": "Address",
+        "gateway": "Gateway",
+        "interfaces": "Interfaces",
+        "virtual": "Virtual interfaces",
+        "defaultRoute": "Default route",
+        "up": "Up",
+        "down": "Down",
+        "errors": "{{count}} errors",
+        "dropped": "{{count}} dropped",
+        "copy": "Copy {{address}}",
+        "total": "{{value}} total"
       },
       "processes": {
-        "title": "執行過程",
         "searchPlaceholder": "搜尋流程...",
         "showing": "顯示 {{count}} 的 {{total}} 程序",
         "noData": "無製程資料可用。製程資料將在下一個監測週期後出現。",
-        "noResults": "沒有符合您搜尋條件的程序。"
+        "noResults": "沒有符合您搜尋條件的程序。",
+        "columns": {
+          "command": "Command",
+          "cpu": "CPU",
+          "mem": "Memory"
+        }
       },
       "pve": {
         "clusterInfo": "叢集資訊",
-        "resources": "資源使用",
-        "virtualMachines": "虛擬機器",
-        "totalNodes": "節點總數",
         "onlineNodes": "線上節點",
         "totalCPU": "總 CPU",
         "totalMemory": "總記憶體",
