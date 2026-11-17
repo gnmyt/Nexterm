@@ -1,4 +1,12 @@
 const Joi = require("joi");
+const { createIdentityValidation, updateIdentityValidation } = require("./identity");
+
+const identityId = (item) => typeof item === "number" ? item : item.id;
+const identities = Joi.array().items(
+    Joi.number().integer(),
+    createIdentityValidation.keys({ global: Joi.boolean() }),
+    updateIdentityValidation.keys({ id: Joi.number().integer().required(), global: Joi.boolean() }),
+).unique((a, b) => identityId(a) !== undefined && identityId(a) === identityId(b)).optional();
 
 const configValidation = Joi.object({
     protocol: Joi.string().valid("ssh", "telnet", "rdp", "vnc", "sftp", "ftp", "ftps", "demo").optional(),
@@ -22,7 +30,7 @@ module.exports.createServerValidation = Joi.object({
     icon: Joi.string().optional(),
     type: Joi.string().valid("server").optional().default("server"),
     renderer: Joi.string().optional(),
-    identities: Joi.array().items(Joi.number()).optional(),
+    identities,
     config: configValidation.fork(["protocol"], (schema) => schema.required()).required()
 });
 
@@ -31,7 +39,7 @@ module.exports.updateServerValidation = Joi.object({
     icon: Joi.string().optional(),
     type: Joi.string().valid("server", "pve-shell", "pve-lxc", "pve-qemu").optional(),
     renderer: Joi.string().optional(),
-    identities: Joi.array().items(Joi.number()).optional(),
+    identities,
     config: configValidation
 });
 

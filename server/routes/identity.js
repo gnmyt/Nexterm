@@ -16,7 +16,7 @@ const app = Router();
  * @return {array} 200 - List of user identities with scope indication (personal/organization)
  */
 app.get("/list", async (req, res) => {
-    res.json(await listIdentities(req.user.id));
+    res.json(await listIdentities(req.user.id, { withUsage: true }));
 });
 
 /**
