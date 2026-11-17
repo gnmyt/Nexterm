@@ -48,9 +48,7 @@
     },
     "confirmDialog": {
       "title": "Bist du dir sicher?",
-      "defaultText": "Diese Aktion kann nicht rückgängig gemacht werden.",
-      "unsavedChangesTitle": "Nicht gespeicherte Änderungen",
-      "unsavedChangesText": "Du hast ungespeicherte Änderungen. Bist du sicher, dass du schließen willst?"
+      "defaultText": "Diese Aktion kann nicht rückgängig gemacht werden."
     },
     "loginDialog": {
       "title": "Nexterm",
@@ -63,7 +61,14 @@
       "backToLogin": "Zurück zu Login",
       "authenticating": "Authentifiziere...",
       "noAccount": "Hast du noch kein Konto?",
-      "haveAccount": "Hast du schon ein Konto?"
+      "haveAccount": "Hast du schon ein Konto?",
+      "welcome": "Welcome back",
+      "subtitle": "Sign in to continue to Nexterm.",
+      "registrationSubtitle": "Create your account to get started.",
+      "firstTimeSubtitle": "Create the first administrator account for this instance.",
+      "twoFactorTitle": "Two-factor authentication",
+      "twoFactorDescription": "Enter the code from your authenticator app.",
+      "qrTitle": "Sign in with the app"
     },
     "deviceLink": {
       "title": "Gerät verbinden",
@@ -157,8 +162,6 @@
     "quickAction": {
       "placeholder": "Suche nach Servern, Snippets, oder navigiere...",
       "noResults": "Keine Ergebnisse gefunden",
-      "navigation": "Navigation",
-      "settings": "Einstellungen",
       "navigate": "Navigiere",
       "select": "Wähle",
       "close": "Schließen",
@@ -214,6 +217,11 @@
       "organizationDeleteError": "Organisation kann nicht gelöscht werden",
       "leftOrganization": "Du hast die Organisation verlassen",
       "leaveOrganizationError": "Beim Verlassen der Organisation ist ein Fehler aufgetreten"
+    },
+    "unsavedChanges": {
+      "title": "Unsaved changes",
+      "text": "Discard them, or keep editing and save when you're done.",
+      "keepEditing": "Keep editing"
     }
   },
   "audit": {
@@ -1546,7 +1554,8 @@
       "deleteConfirm": "Dadurch wird die Benutzergruppe „{{name}}“ endgültig gelöscht und von allen Mitgliedern entfernt.",
       "inheritsAllow": "Vererbung: Erlaubt",
       "inheritsDeny": "Vererbung: Verweigert"
-    }
+    },
+    "search": "Search settings"
   },
   "tunnel": {
     "title": "Port-Weiterleitung",
@@ -1580,25 +1589,6 @@
   "servers": {
     "addServerNote": "Rechtsklick zum Hinzufügen eines neuen Servers",
     "searchPlaceholder": "Suche",
-    "inheritancePolicy": {
-      "title": "Apply inheritance",
-      "description": "Choose how existing objects should handle these inherited settings.",
-      "impact": "{{count}} existing objects are affected.",
-      "retain": {
-        "title": "Retain existing",
-        "description": "Keep current values as local overrides."
-      },
-      "adopt": {
-        "title": "Adopt folder settings",
-        "description": "Replace current values with the inherited folder settings."
-      },
-      "moveTitle": "Apply destination inheritance?",
-      "moveDescription": "Choose whether moved objects adopt the destination folder settings or retain their current values.",
-      "moveFailed": "Unable to move object",
-      "identitiesRemoved": "Some identities were removed because they are unavailable in the destination.",
-      "enableTitle": "Enable inheritance?",
-      "enableDescription": "Choose what existing objects should do when these folder settings are saved."
-    },
     "time": {
       "justNow": "Gerade eben",
       "minuteAgo": "vor {{count}} Minute",
@@ -1708,17 +1698,13 @@
       "createFailed": "Server kann nicht erstellt werden",
       "updateFailed": "Server kann nicht aktualisiert werden",
       "createIdentityFailed": "Identität kann nicht erstellt werden",
-      "updateIdentityFailed": "Identität kann nicht aktualisiert werden"
+      "updateIdentityFailed": "Identität kann nicht aktualisiert werden",
+      "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination."
     },
     "dialog": {
       "addServer": "Server hinzufügen",
       "addProtocolServer": "{{protocol}} Server hinzufügen",
       "editServer": "Server bearbeiten",
-      "tabs": {
-        "details": "Details",
-        "identities": "Identitäten",
-        "settings": "Einstellungen"
-      },
       "actions": {
         "save": "Speichern",
         "create": "Erstellen"
@@ -1764,7 +1750,6 @@
           "description": "Erlaube es, diesen Server aus der Ferne über seine MAC-Adresse zu wecken"
         },
         "rdpSecurity": {
-          "title": "Sicherheit",
           "description": "Authentifizierungsmethode für die Verbindung zum entfernten Windows-Rechner. Verwende NLA in Umgebungen, in denen NTLM deaktiviert ist (z. B. bei der Gruppe „Geschützte Benutzer“).",
           "method": "Sicherheitsmethode"
         },
@@ -1807,8 +1792,7 @@
           "backspace": "Rücktaste",
           "delete": "löschen",
           "functionKeys": "Funktionstasten"
-        },
-        "noSettings": "Keine weiteren Einstellungen für diesen Typ verfügbar."
+        }
       },
       "identities": {
         "organizationIdentities": "Organisation Identitäten",
@@ -1834,7 +1818,16 @@
         "noUsername": "Kein Nutzername",
         "noOrgIdentities": "Keine Organisationsidentitäten. Erstelle eine, um sie mit allen Mitgliedern zu teilen.",
         "noPersonalIdentities": "Keine persönlichen Identitäten. Erstelle eine für deinen privaten Gebrauch."
-      }
+      },
+      "sections": {
+        "general": "General",
+        "connection": "Connection",
+        "identities": "Identities",
+        "options": "Options",
+        "credentials": "Credentials"
+      },
+      "useInherited": "Use inherited value",
+      "reset": "Reset"
     },
     "proxmoxDialog": {
       "title": {
@@ -1842,9 +1835,6 @@
         "edit": "Proxmox VE bearbeiten"
       },
       "fields": {
-        "name": "Name",
-        "serverIp": "Server-IP",
-        "port": "Port",
         "username": "Benutzername",
         "password": "Passwort",
         "nodeName": "Name der Node (optional)",
@@ -1853,8 +1843,6 @@
       "monitoringDescription": "Erfasse clusterweite Prozessor-, Arbeitsspeicher- und Storage-Metriken",
       "placeholders": {
         "name": "Name",
-        "serverIp": "Server-IP",
-        "port": "Port",
         "username": "Benutzername (z. B. root@pam)",
         "password": "Passwort",
         "specificNode": "Spezifischer Node-Name"
@@ -1868,7 +1856,8 @@
         "updated": "Proxmox-Integration erfolgreich aktualisiert",
         "createFailed": "Die Proxmox-Integration konnte nicht erstellt werden",
         "updateFailed": "Aktualisierung der Proxmox-Integration fehlgeschlagen"
-      }
+      },
+      "credentialsDescription": "Proxmox user with API access, e.g. root@pam or a dedicated API user."
     },
     "connectionReasonDialog": {
       "title": "Grund für Verbindungsaufbau erforderlich",
@@ -2196,6 +2185,14 @@
     "liveSessions": {
       "activeOn": "Live-Sessions: {{users}}",
       "unknownUser": "Unbekannter Nutzer"
+    },
+    "folderSettings": {
+      "name": "Folder name",
+      "nameRequired": "Folder name is required",
+      "loadFailed": "Unable to load folder settings",
+      "protocol": "Defaults for",
+      "protocolHint": "Servers in this folder use what you set below unless they set their own value. Each protocol has its own defaults.",
+      "unset": "Remove from folder"
     }
   },
   "support": {
@@ -2227,7 +2224,8 @@
     "connectDevice": "Gerät verbinden",
     "recentConnections": "Letzte Verbindungen",
     "getStarted": "Erste Schritte",
-    "getStartedHint": "Füge einen Server in der Seitenleiste hinzu, um mit der Verwaltung deiner Infrastruktur zu beginnen."
+    "getStartedHint": "Füge einen Server in der Seitenleiste hinzu, um mit der Verwaltung deiner Infrastruktur zu beginnen.",
+    "hibernated": "Hibernated"
   },
   "downloadApps": {
     "title": "Apps herunterladen",
@@ -2238,6 +2236,10 @@
       "linux": "Linux",
       "android": "Android",
       "ios": "iOS"
-    }
+    },
+    "recommended": "Recommended",
+    "versionUnavailable": "The server version could not be determined, so direct downloads are unavailable. You can still browse the releases on GitHub.",
+    "sourceHint": "Downloads are served from the GitHub releases.",
+    "allReleases": "All releases"
   }
 }
