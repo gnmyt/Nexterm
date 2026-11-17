@@ -15,6 +15,7 @@ const { hasResourcePermission } = require("../utils/permission");
 const { Permission } = require("../permissions/registry");
 const logger = require("../utils/logger");
 const { ZipArchive } = require("archiver");
+const { isGuestExpired } = require("../utils/demoMode");
 
 const app = Router();
 const THUMB_EXTS = new Set(["jpg", "jpeg", "png", "gif", "webp", "bmp"]);
@@ -130,6 +131,7 @@ const validateSession = async (sessionToken, sessionId) => {
     ]);
 
     if (!user) return { error: "User not found", status: 401 };
+    if (isGuestExpired(user)) return { error: "Your demo session has expired", status: 401 };
     if (!serverSession) return { error: "Session not found", status: 404 };
     if (serverSession.accountId !== user.id) return { error: "Unauthorized", status: 403 };
 

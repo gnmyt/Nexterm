@@ -1,6 +1,7 @@
 const Session = require("../models/Session");
 const Account = require("../models/Account");
 const stateBroadcaster = require("../lib/StateBroadcaster");
+const { isGuestExpired } = require("../utils/demoMode");
 
 module.exports = async (ws, req) => {
     const { sessionToken, tabId, browserId } = req.query;
@@ -13,6 +14,7 @@ module.exports = async (ws, req) => {
 
     const user = await Account.findByPk(session.accountId);
     if (!user) return ws.close(4004, "Account not found");
+    if (isGuestExpired(user)) return ws.close(4003, "Your demo session has expired");
 
     const conn = { ws, tabId: tabId || null, browserId: browserId || null, sessionId: session.id };
     stateBroadcaster.register(user.id, session.id, ws, tabId || null, browserId || null);
