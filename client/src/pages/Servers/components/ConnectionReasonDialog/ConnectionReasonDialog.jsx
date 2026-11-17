@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { DialogProvider } from "@/common/components/Dialog";
 import Button from "@/common/components/Button";
 import "./styles.sass";
+import TextArea from "@/common/components/TextArea";
 
 const ConnectionReasonDialog = ({ isOpen, onClose, onConnect, serverName }) => {
     const { t } = useTranslation();
@@ -40,9 +41,8 @@ const ConnectionReasonDialog = ({ isOpen, onClose, onConnect, serverName }) => {
                         }} />
                     </label>
 
-                    <textarea value={reason} onChange={(e) => setReason(e.target.value)} onKeyDown={handleKeyPress}
-                              placeholder={t('servers.connectionReasonDialog.placeholder')} className="reason-input" autoFocus
-                              rows={3} maxLength={500} id="reason" />
+                    <TextArea value={reason} setValue={setReason} onKeyDown={handleKeyPress} rows={3} maxLength={500} id="reason"
+                              placeholder={t('servers.connectionReasonDialog.placeholder')} autoFocus />
 
                     <div className="character-count">
                         {t('servers.connectionReasonDialog.characterCount', { count: reason.length })}
