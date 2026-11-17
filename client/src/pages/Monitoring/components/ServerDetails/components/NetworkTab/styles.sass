@@ -1,0 +1,230 @@
+@use "@/common/styles/colors"
+@use "@/common/styles/breakpoints"
+
+.net-toggle
+  padding: 0
+  background: none
+  border: none
+  cursor: pointer
+  font-family: inherit
+  text-align: left
+  outline: none
+
+  > svg
+    width: 1.125rem
+    height: 1.125rem
+    margin-left: auto
+    color: colors.$subtext
+    transition: transform 0.15s ease
+
+  &.open > svg
+    transform: rotate(180deg)
+
+  &:hover > svg, &:focus-visible > svg
+    color: colors.$white
+
+.net-summary
+  display: flex
+  flex-direction: column
+  gap: 1rem
+
+  &__rates
+    display: grid
+    grid-template-columns: 1fr 1fr
+    gap: 1.25rem
+
+    > div
+      display: flex
+      flex-direction: column
+      gap: 0.25rem
+      min-width: 0
+
+  &__label
+    display: flex
+    align-items: center
+    gap: 0.25rem
+    color: colors.$subtext
+    font-size: 0.8rem
+    font-weight: 500
+
+    svg
+      width: 0.875rem
+      height: 0.875rem
+
+  &__value
+    color: colors.$white
+    font-size: 1.75rem
+    font-weight: 600
+    line-height: 1.15
+    letter-spacing: -0.02em
+    font-variant-numeric: tabular-nums
+    white-space: nowrap
+
+    @media (max-width: breakpoints.$small)
+      font-size: 1.375rem
+
+  dd
+    user-select: text
+
+.net-interface
+  display: flex
+  flex-direction: column
+  gap: 0.625rem
+  padding: 1rem 0
+  min-width: 0
+
+  &--down .mon-row-head__name
+    color: colors.$subtext
+
+  .mon-status
+    margin-left: auto
+
+  &__addresses
+    display: flex
+    flex-wrap: wrap
+    gap: 0.375rem
+
+  &__rates
+    display: grid
+    grid-template-columns: 1fr 1fr
+    gap: 0.5rem 1.25rem
+
+    @media (max-width: breakpoints.$small)
+      grid-template-columns: 1fr
+
+  &__meta
+    display: flex
+    flex-wrap: wrap
+    gap: 0.25rem 1rem
+    color: colors.$subtext
+    font-size: 0.75rem
+    font-weight: 500
+    font-variant-numeric: tabular-nums
+
+    .alert
+      color: colors.$warning
+
+.net-address
+  display: inline-flex
+  align-items: center
+  gap: 0.375rem
+  max-width: 100%
+  padding: 0.2rem 0.5rem
+  border: 1px solid transparent
+  border-radius: 0.375rem
+  background-color: colors.$primary-opacity
+  color: colors.$white
+  font-size: 0.75rem
+  font-weight: 600
+  cursor: pointer
+  outline: none
+  overflow-wrap: anywhere
+  text-align: left
+  transition: border-color 0.15s ease
+
+  svg
+    width: 0.75rem
+    height: 0.75rem
+    flex-shrink: 0
+    opacity: 0.6
+
+  &--muted
+    background-color: colors.$dark-gray
+    border-color: colors.$border
+    color: colors.$subtext
+
+  &:hover, &:focus-visible
+    border-color: colors.$primary
+
+    svg
+      opacity: 1
+
+.net-rate
+  display: flex
+  align-items: baseline
+  gap: 0.375rem
+  min-width: 0
+  font-size: 0.8rem
+  font-weight: 500
+  font-variant-numeric: tabular-nums
+
+  svg
+    align-self: center
+    width: 0.875rem
+    height: 0.875rem
+    color: colors.$subtext
+    flex-shrink: 0
+
+  &__label
+    color: colors.$subtext
+
+  &__value
+    color: colors.$white
+    font-size: 0.9rem
+    font-weight: 600
+    white-space: nowrap
+
+  &__total
+    margin-left: auto
+    color: colors.$subtext
+    font-size: 0.75rem
+    white-space: nowrap
+
+.mon-card--list.net-compact-list
+  padding-top: 0.25rem
+  padding-bottom: 0.25rem
+
+.net-compact
+  display: grid
+  grid-template-columns: auto minmax(0, 1.2fr) minmax(0, 1fr) 6rem 6rem
+  align-items: center
+  gap: 0.625rem
+  padding: 0.5rem 0
+  font-size: 0.8rem
+  font-weight: 500
+  font-variant-numeric: tabular-nums
+
+  @media (max-width: breakpoints.$small)
+    grid-template-columns: auto minmax(0, 1fr) 5.5rem 5.5rem
+
+    .net-compact__address
+      display: none
+
+  &__dot
+    width: 0.5rem
+    height: 0.5rem
+    border-radius: 50%
+    background-color: colors.$gray
+
+    &.up
+      background-color: colors.$success
+
+  &__name
+    color: colors.$white
+    font-weight: 600
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
+
+  &--down &__name
+    color: colors.$subtext
+
+  &__address
+    color: colors.$subtext
+    font-size: 0.75rem
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
+
+  &__rate
+    display: flex
+    align-items: center
+    justify-content: flex-end
+    gap: 0.25rem
+    color: colors.$white
+    white-space: nowrap
+
+    svg
+      width: 0.75rem
+      height: 0.75rem
+      color: colors.$subtext
