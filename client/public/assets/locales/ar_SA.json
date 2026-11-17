@@ -691,6 +691,7 @@
       "sessionSyncAcrossDevicesDesc": "ستكون الجلسات متاحة عبر الأجهزة ومزامنتها",
       "sessionSyncSameBrowserDesc": "ستتم مزامنة الجلسات لجلسة المستخدم الحالية",
       "sessionSyncSameTabDesc": "ستتم مزامنة الجلسات داخل علامة تبويب المتصفح الخاص بك",
+      "showAgentSessionsDesc": "Show sessions opened by the AI assistant or MCP agents as view-only tabs",
       "twoFactorDialog": {
         "title": "تمكين 2FA",
         "description": "امسح الرمز ... <span class=\"totp-code\">{{secret}}</span> ...",
@@ -795,8 +796,8 @@
         "folderManagementDescription": "إنشاء سجلات إنشاء المجلدات وتعديلها وحذفها",
         "scriptExecutionLabel": "تنفيذ البرنامج النصي",
         "scriptExecutionDescription": "تسجيل تنفيذ البرامج النصية ومهام الأتمتة",
-        "aiOperationsLabel": "عمليات الذكاء الاصطناعي",
-        "aiOperationsDescription": "تسجيل الأوامر والتغييرات التي أجراها المساعد الذكي على الملفات",
+        "agentOperationsLabel": "AI Agent Operations",
+        "agentOperationsDescription": "Log commands, input, screenshots and file changes performed by the AI assistant and by agents connected through the MCP server",
         "actions": {
           "save": "حفظ الإعدادات"
         },
@@ -1177,7 +1178,7 @@
     },
     "ai": {
       "title": "إعداد مساعد الذكاء الاصطناعي",
-      "description": "قم بتكوين المساعد الذكي الذي يمكنه تنفيذ الأوامر وإدارة الملفات مباشرةً عبر جلسات الخادم الخاصة بك.",
+      "description": "Configure the AI provider used by the assistant, which can operate your servers through its own sessions.",
       "loading": "جارٍ تحميل إعدادات الذكاء الاصطناعي...",
       "enable": {
         "title": "تمكين مساعد الذكاء الاصطناعي",
@@ -1190,10 +1191,6 @@
       "model": {
         "title": "النموذج",
         "description": "اختر نموذج الذكاء الاصطناعي الذي يجب أن يستخدمه المساعد"
-      },
-      "requireConfirmation": {
-        "title": "تأكد قبل كل إجراء",
-        "description": "إلزام المستخدمين بالموافقة على كل أمر وتغيير في الملف يرغب المساعد في إجرائه"
       },
       "apiKey": {
         "title": "مفتاح API",
@@ -1296,10 +1293,12 @@
     },
     "identities": {
       "title": "مفاتيح SSH والبيانات الاعتمادية",
-      "description": "إدارة مفاتيح SSH وبيانات الدخول الخاصة بك لاتصالات الخادم",
+      "description": "Identities you can link to any server. Server-specific ones live in that server's settings.",
       "createIdentity": "إنشاء هوية",
       "personal": "شخصي",
       "noUsername": "لا يوجد اسم مستخدم",
+      "notInUse": "Not in use",
+      "notInUseHint": "Not linked to any server or folder",
       "sshKey": "مفتاح SSH",
       "password": "كلمة المرور",
       "editIdentity": "تحرير الهوية",
@@ -1367,6 +1366,7 @@
         "success": "مزامنة",
         "error": "خطأ",
         "pending": "قيد الانتظار",
+        "syncing": "Syncing",
         "disabled": "معاق"
       },
       "dialog": {
@@ -1697,8 +1697,6 @@
       "folderUpdated": "Folder updated successfully",
       "createFailed": "فشل في إنشاء الخادم",
       "updateFailed": "فشل في تحديث الخادم",
-      "createIdentityFailed": "فشل في إنشاء الهوية",
-      "updateIdentityFailed": "فشل في تحديث الهوية",
       "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination."
     },
     "dialog": {
@@ -1795,10 +1793,6 @@
         }
       },
       "identities": {
-        "organizationIdentities": "هويات المنظمة",
-        "personalIdentities": "الهويات الشخصية",
-        "orgDescription": "مشتركة مع جميع أعضاء المؤسسة. يمكن للجميع استخدام هذه الهويات.",
-        "personalDescription": "مرئية لك فقط. لا يمكن لأعضاء المؤسسة الآخرين رؤيتها.",
         "identityName": "اسم الهوية",
         "username": "اسم المستخدم",
         "authentication": "المصادقة",
@@ -1809,15 +1803,19 @@
         "both": "مفتاح + تمرير",
         "sshPrivateKey": "مفتاح SSH الخاص",
         "passphrase": "عبارة المرور (اختياري)",
-        "new": "جديد",
+        "add": "Add identity",
+        "linkGlobal": "Link global identity · {{count}}",
+        "empty": "No identities yet.",
         "removeIdentity": "إزالة الهوية",
         "unlinkIdentity": "إلغاء ربط الهوية",
         "moveToOrg": "الانتقال إلى المنظمة",
-        "selectOrganization": "اختر المنظمة",
-        "availableToLink": "متاح للربط",
         "noUsername": "لا يوجد اسم مستخدم",
-        "noOrgIdentities": "لا توجد هويات للمؤسسة. أنشئ واحدة لمشاركتها مع جميع الأعضاء.",
-        "noPersonalIdentities": "لا توجد هويات شخصية. أنشئ واحدة لاستخدامك الخاص."
+        "globalToggle": "Use on other servers",
+        "globalInUse": "This identity is used by {{count}} servers. Unlink it from the others first.",
+        "shareToggle": "Share with organization",
+        "inheritedHint": "Inherited from the folder settings.",
+        "onlyMe": "Only me",
+        "onlyMeHint": "Only you can see and use this identity."
       },
       "sections": {
         "general": "General",
@@ -2098,13 +2096,34 @@
         "downloaded": "تم تنزيل ملف «{{name}}» من جهاز بعيد"
       }
     },
+    "automatedSession": {
+      "viewOnlyAi": "The AI assistant is working in this session. You can watch, but not type.",
+      "viewOnlyMcp": "An external agent (MCP) is working in this session. You can watch, but not type."
+    },
     "aiAssistant": {
       "title": "مساعد الذكاء الاصطناعي",
       "open": "المساعد الذكي",
-      "empty": "اطلب من المساعد فحص هذا الخادم أو استبداله. يمكنه تنفيذ الأوامر وقراءة الملفات أو تعديلها مباشرة عبر الاتصال.",
+      "empty": "Ask the assistant to inspect or change your servers. It opens its own sessions to the servers you add below, runs commands, edits files and can even operate remote desktops.",
+      "addServer": "Add server",
+      "removeServer": "Remove server",
+      "searchServers": "Search servers...",
+      "noMatches": "No matching servers",
+      "current": "current",
+      "openSessions": "{{count}} open session(s)",
+      "approval": {
+        "ask": "Ask before actions",
+        "askDescription": "Commands, input and file changes wait for your approval",
+        "allow": "Allow all",
+        "allowDescription": "Runs tool calls without asking",
+        "readonly": "Read-only",
+        "readonlyDescription": "Only inspects servers; anything that changes them is denied"
+      },
       "placeholder": "أرسل رسالة إلى المساعد...",
       "connecting": "جاري الاتصال...",
       "send": "إرسال",
+      "copyMessage": "Copy message",
+      "copied": "Copied",
+      "editMessage": "Edit message",
       "stop": "توقف",
       "connectionError": "انقطع الاتصال بالمساعد.",
       "reconnecting": "انقطع الاتصال. يجري إعادة الاتصال...",
@@ -2117,19 +2136,65 @@
       "continuePrompt": "توقف المساعد بعد سلسلة طويلة من الخطوات. هل نواصل؟",
       "continue": "تابع",
       "compacted": "تم تلخيص الرسائل السابقة لتوضيح السياق.",
+      "retryPrompt": "The last step failed. Retry from where it stopped?",
+      "retry": "Retry",
+      "questionOther": "Or type another answer...",
+      "questionAnswer": "Type your answer...",
+      "questionSend": "Answer",
+      "questionPickOne": "Pick one or type an answer",
+      "questionPickMany": "Pick any that apply",
+      "exitCode": "exit {{code}}",
+      "truncated": "[truncated]",
+      "toolSummary": {
+        "recursive": "{{path}} (recursive)",
+        "doubleClick": "{{target}} ×2"
+      },
       "tools": {
-        "runCommand": "تشغيل الأمر",
-        "readFile": "قراءة الملف",
-        "writeFile": "كتابة ملف",
-        "editFile": "تحرير الملف",
-        "listDirectory": "قائمة الدليل",
-        "statPath": "فحص المسار",
-        "makeDirectory": "إنشاء مجلد",
-        "deleteFile": "حذف الملف",
-        "removeDirectory": "إزالة المجلد",
-        "movePath": "تحريك",
-        "changePermissions": "تغيير الأذونات",
-        "findDirectories": "البحث عن الدلائل"
+        "list_entries": "List servers",
+        "get_entry": "Inspect server",
+        "list_folders": "List folders",
+        "list_organizations": "List organizations",
+        "list_identities": "List identities",
+        "list_snippets": "List snippets",
+        "list_scripts": "List scripts",
+        "list_tags": "List tags",
+        "list_users": "List users",
+        "get_permissions": "Check permissions",
+        "get_monitoring": "Read monitoring",
+        "list_sessions": "List sessions",
+        "open_session": "Open session",
+        "get_session": "Inspect session",
+        "close_session": "Close session",
+        "close_all_sessions": "Close all sessions",
+        "terminal_run": "Run command",
+        "terminal_send": "Send input",
+        "terminal_read": "Read terminal",
+        "terminal_resize": "Resize terminal",
+        "run_command": "Run command",
+        "exec_command": "Run command",
+        "file_list": "List directory",
+        "file_stat": "Inspect path",
+        "file_read": "Read file",
+        "file_write": "Write file",
+        "file_edit": "Edit file",
+        "file_mkdir": "Create directory",
+        "file_delete": "Delete",
+        "file_move": "Move",
+        "file_chmod": "Change permissions",
+        "file_search_dirs": "Find directories",
+        "desktop_screenshot": "Screenshot",
+        "desktop_info": "Inspect desktop",
+        "desktop_click": "Click",
+        "desktop_mouse_move": "Move mouse",
+        "desktop_drag": "Drag",
+        "desktop_scroll": "Scroll",
+        "desktop_type": "Type text",
+        "desktop_key": "Press keys",
+        "desktop_resize": "Resize desktop",
+        "desktop_clipboard_set": "Set clipboard",
+        "desktop_clipboard_get": "Read clipboard",
+        "batch": "Run several actions",
+        "ask_user": "Question"
       }
     },
     "commandSuggestion": {
