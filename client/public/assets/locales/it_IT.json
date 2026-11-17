@@ -448,25 +448,35 @@
     "page": {
       "title": "Monitoraggio del server",
       "subtitle": "Statistiche e monitoraggio dello stato di salute del server in tempo reale",
-      "searchPlaceholder": "Server di ricerca..."
+      "searchPlaceholder": "Server di ricerca...",
+      "filters": {
+        "all": "All ({{count}})",
+        "online": "Online ({{count}})",
+        "issues": "Issues ({{count}})"
+      }
     },
     "errors": {
-      "loadFailed": "Non è riuscito a caricare i dati di monitoraggio"
+      "loadFailed": "Non è riuscito a caricare i dati di monitoraggio",
+      "loadFailedDescription": "The monitoring data could not be retrieved. Check your connection and try again.",
+      "retry": "Retry"
     },
     "grid": {
-      "loading": "Caricamento dei dati di monitoraggio...",
       "noServers": {
         "title": "Nessun server trovato",
         "subtitle": "Non ci sono server SSH disponibili per il monitoraggio.\nAggiungi alcuni server per iniziare a monitorarli."
       },
+      "noResults": {
+        "title": "No matching servers",
+        "subtitle": "No monitored server matches your search."
+      },
       "metrics": {
-        "cpuUsage": "Utilizzo della CPU",
-        "memoryUsage": "Utilizzo della memoria",
         "loadAverage": "Media di carico",
         "processes": "Processi",
         "uptime": "Tempo di attività",
         "nodes": "Nodi",
-        "vms": "Macchine virtuali/Contenitori"
+        "vms": "Macchine virtuali/Contenitori",
+        "cpu": "CPU",
+        "memory": "Memory"
       },
       "status": {
         "serverOffline": "Server offline",
@@ -476,7 +486,16 @@
         "errorMessage": "Impossibile stabilire la connessione al server.",
         "unknownMessage": "Non è stato possibile determinare lo stato del server.",
         "lastSeen": "Ultima volta che è stato visto: {{time}}",
-        "noRecentActivity": "Nessuna attività recente"
+        "noRecentActivity": "Nessuna attività recente",
+        "waitingForData": "Waiting for data",
+        "pendingMessage": "Monitoring data will appear after the next monitoring cycle.",
+        "labels": {
+          "online": "Online",
+          "offline": "Offline",
+          "error": "Error",
+          "pending": "Pending",
+          "unknown": "Unknown"
+        }
       },
       "uptime": {
         "unknown": "Sconosciuto",
@@ -495,7 +514,6 @@
       },
       "tabs": {
         "overview": "Panoramica",
-        "charts": "Grafici",
         "storage": "Immagazzinamento",
         "network": "Rete",
         "processes": "Processi",
@@ -515,12 +533,11 @@
         },
         "performance": {
           "title": "Metriche di prestazione",
-          "cpuUsage": "Utilizzo della CPU",
-          "memoryUsage": "Utilizzo della memoria",
           "loadAverage": "Media di carico",
           "processes": "Processi attivi",
           "total": "Totale: {{value}}",
-          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}"
+          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}",
+          "memory": "Memory"
         },
         "uptime": {
           "format": {
@@ -538,33 +555,67 @@
       },
       "storage": {
         "title": "Utilizzo del disco",
-        "used": "Usato: {{value}}",
-        "available": "Disponibile: {{value}}",
-        "total": "Totale: {{value}}",
-        "type": "Tipo: {{value}}",
         "noData": "Non sono disponibili dati sull'utilizzo del disco",
-        "noPartitions": "Nessuna partizione montata"
+        "noPartitions": "Nessuna partizione montata",
+        "usedOf": "{{used}} of {{total}} used",
+        "free": "{{value}} free",
+        "filesystems": "Filesystems",
+        "disks": "Disks",
+        "on": "{{volume}} on {{partition}}",
+        "swap": "Swap",
+        "unmounted": "Not mounted",
+        "unallocated": "Unallocated",
+        "inodes": "Inodes",
+        "inodesDetail": "{{used}} of {{total}}",
+        "health": {
+          "passed": "Healthy",
+          "warning": "Warning",
+          "failed": "Failing",
+          "denied": "SMART needs root",
+          "temperature": "Temperature",
+          "powerOn": "Power-on time",
+          "wear": "Wear",
+          "reallocated": "Reallocated sectors",
+          "pending": "Pending sectors",
+          "mediaErrors": "Media errors",
+          "years": "{{value}} years",
+          "days": "{{value}} days",
+          "hours": "{{value}} hours",
+          "failedTitle": "Disk failure predicted",
+          "failedMessage": "{{disks}} failed its SMART self-assessment. Back up the data and replace the disk."
+        }
       },
       "network": {
-        "title": "Interfacce di rete",
-        "rxBytes": "Byte RX",
-        "txBytes": "Byte TX",
-        "mac": "Indirizzo MAC",
         "speed": "Velocità",
-        "noData": "Non sono disponibili dati sull'interfaccia di rete"
+        "noData": "Non sono disponibili dati sull'interfaccia di rete",
+        "download": "Download",
+        "upload": "Upload",
+        "interface": "Interface",
+        "address": "Address",
+        "gateway": "Gateway",
+        "interfaces": "Interfaces",
+        "virtual": "Virtual interfaces",
+        "defaultRoute": "Default route",
+        "up": "Up",
+        "down": "Down",
+        "errors": "{{count}} errors",
+        "dropped": "{{count}} dropped",
+        "copy": "Copy {{address}}",
+        "total": "{{value}} total"
       },
       "processes": {
-        "title": "Processi in esecuzione",
         "searchPlaceholder": "Processi di ricerca...",
         "showing": "Mostra {{count}} dei processi di {{total}}",
         "noData": "Non sono disponibili dati di processo. I dati di processo saranno visualizzati dopo il prossimo ciclo di monitoraggio.",
-        "noResults": "Nessun processo corrisponde ai tuoi criteri di ricerca."
+        "noResults": "Nessun processo corrisponde ai tuoi criteri di ricerca.",
+        "columns": {
+          "command": "Command",
+          "cpu": "CPU",
+          "mem": "Memory"
+        }
       },
       "pve": {
         "clusterInfo": "Informazioni sul cluster",
-        "resources": "Utilizzo delle risorse",
-        "virtualMachines": "Macchine virtuali",
-        "totalNodes": "Nodi totali",
         "onlineNodes": "Nodi online",
         "totalCPU": "CPU totale",
         "totalMemory": "Memoria totale",
