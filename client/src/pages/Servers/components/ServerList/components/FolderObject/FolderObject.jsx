@@ -6,13 +6,13 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { patchRequest } from "@/common/utils/RequestUtil.js";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { useDrag, useDrop } from "react-dnd";
-import { useInheritancePolicyMove } from "@/pages/Servers/components/InheritancePolicyDialog/useInheritancePolicyMove.jsx";
+import { useMove } from "../../useMove.js";
 
 export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen, renameState, setRenameStateId, organizationId, folderType }) => {
     const inputRef = useRef();
 
     const { loadServers } = useContext(ServerContext);
-    const { runMove, policyDialog } = useInheritancePolicyMove();
+    const move = useMove();
     const [nameState, setNameState] = useState(name || "");
 
     useEffect(() => {
@@ -41,20 +41,18 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
             if (item.id === id || !acceptsDrop(item)) return { id };
             try {
                 if (item.type === "server") {
-                    await runMove((inheritancePolicy) => patchRequest(`entries/${item.id}/reposition`, {
+                    await move(`entries/${item.id}/reposition`, {
                         targetId: null,
                         placement: 'after',
                         folderId: id,
                         organizationId: organizationId,
-                        ...(inheritancePolicy ? { inheritancePolicy } : {}),
-                    }), loadServers);
+                    });
                     return { id };
                 }
 
-                await runMove((inheritancePolicy) => patchRequest(`folders/${item.id}`, {
+                await move(`folders/${item.id}`, {
                     parentId: item.id !== id ? id : undefined,
-                    ...(inheritancePolicy ? { inheritancePolicy } : {}),
-                }), loadServers);
+                });
             } catch (error) {
                 console.error("Failed to drop item", error.message);
             }
@@ -103,6 +101,5 @@ export const FolderObject = ({ id, name, nestedLevel, position, onClick, isOpen,
             {renameState && <input type="text" ref={inputRef} value={nameState} onBlur={changeName}
                                    onChange={(e) => setNameState(e.target.value)} />}
         </div>
-        {policyDialog}
     </>;
 };

@@ -47,7 +47,7 @@ import {
 } from "@mdi/js";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import { useDrop, useDragLayer } from "react-dnd";
-import { deleteRequest, patchRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
+import { deleteRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import TagFilterMenu from "./components/ServerSearch/components/TagFilterMenu";
 import ProxmoxLogo from "./assets/proxmox.jsx";
 import TagsSubmenu from "./components/TagsSubmenu";
@@ -58,7 +58,7 @@ import ActionConfirmDialog from "@/common/components/ActionConfirmDialog";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { Permission } from "@/common/utils/permissions.js";
 import FolderInheritanceDialog from "@/pages/Servers/components/FolderInheritanceDialog/FolderInheritanceDialog.jsx";
-import { useInheritancePolicyMove } from "@/pages/Servers/components/InheritancePolicyDialog/useInheritancePolicyMove.jsx";
+import { useMove } from "./useMove.js";
 
 const flattenEntries = (entries, path = []) => entries.flatMap(entry =>
     entry.type === "folder" || entry.type === "organization"
@@ -99,7 +99,6 @@ const applyRenameState = folderId => entry =>
 export const ServerList = ({
     setServerDialogOpen,
     setCurrentFolderId,
-    setProxmoxDialogOpen,
     setSSHConfigImportDialogOpen,
     setEditServerId,
     connectToServer,
@@ -149,7 +148,7 @@ export const ServerList = ({
     const [deleteConfirmDialog, setDeleteConfirmDialog] = useState({ open: false, name: "", id: null, isFolder: false });
     const [inheritanceFolderId, setInheritanceFolderId] = useState(null);
     const closeInheritanceSettings = useCallback(() => setInheritanceFolderId(null), []);
-    const { runMove, policyDialog } = useInheritancePolicyMove();
+    const move = useMove();
 
     const contextMenu = useContextMenu();
 
@@ -262,20 +261,18 @@ export const ServerList = ({
 
             try {
                 if (item.type === "server") {
-                    await runMove((inheritancePolicy) => patchRequest(`entries/${item.id}/reposition`, {
+                    await move(`entries/${item.id}/reposition`, {
                         targetId: null,
                         placement: "after",
                         folderId: null,
-                        ...(inheritancePolicy ? { inheritancePolicy } : {}),
-                    }), loadServers);
+                    });
                     return {};
                 }
 
                 if (item.type === "folder") {
-                    await runMove((inheritancePolicy) => patchRequest(`folders/${item.id}`, {
+                    await move(`folders/${item.id}`, {
                         parentId: null,
-                        ...(inheritancePolicy ? { inheritancePolicy } : {}),
-                    }), loadServers);
+                    });
                     return {};
                 }
             } catch (error) {
@@ -386,7 +383,7 @@ export const ServerList = ({
     };
 
     const createServer = (protocol) => { setFolderContext(); setServerDialogOpen(protocol); };
-    const createPVEServer = () => { setFolderContext(); setProxmoxDialogOpen(); };
+    const createPVEServer = () => createServer("pve");
     const openSSHConfigImport = () => { setFolderContext(); setSSHConfigImportDialogOpen(); };
 
     const getIdentity = (id = null) => identities?.find(i => i.id === (id || server?.identities[0]));
@@ -410,7 +407,7 @@ export const ServerList = ({
         const integrationId = server?.integrationId;
         if (integrationId) {
             setEditServerId(integrationId);
-            setProxmoxDialogOpen();
+            setServerDialogOpen("pve");
         }
     };
 
@@ -436,7 +433,7 @@ export const ServerList = ({
         const integrationId = contextFolder?.integrationId;
         if (!integrationId) return;
         setEditServerId(integrationId);
-        setProxmoxDialogOpen();
+        setServerDialogOpen("pve");
     };
 
     const removeIntegration = () => {
@@ -735,7 +732,7 @@ export const ServerList = ({
                                         />
                                         <ContextMenuItem
                                             icon={mdiContentDuplicate}
-                                            label={t("servers.contextMenu.folderSettings", "Folder Settings")}
+                                            label={t("servers.contextMenu.folderSettings")}
                                             onClick={() => setInheritanceFolderId(contextClickedId)}
                                         />
                                         <ContextMenuSeparator />
@@ -1042,7 +1039,6 @@ export const ServerList = ({
                         open={Boolean(inheritanceFolderId)}
                         onClose={closeInheritanceSettings}
                         folderId={inheritanceFolderId}
-                        organizationId={contextFolder?.organizationId || null}
                     />
 
                     <ScriptsMenu
@@ -1058,7 +1054,6 @@ export const ServerList = ({
             )}
             {!isMobile && !isCollapsed && <div className={`resizer${isResizing ? " is-resizing" : ""}`} onMouseDown={startResizing} />}
         </div>
-        {policyDialog}
         </>
     );
 };
