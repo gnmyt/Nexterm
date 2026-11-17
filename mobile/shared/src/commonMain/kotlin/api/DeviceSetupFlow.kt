@@ -65,6 +65,31 @@ class DeviceSetupFlow internal constructor(
         }
     }
 
+    @Throws(CancellationException::class)
+    suspend fun startDemo() {
+        _state.update { it.copy(isLoading = true, error = null) }
+        if (!tryConnect(AppInfo.DEMO_BASE_URL)) {
+            _state.update { it.copy(error = "The demo server is not reachable right now", isLoading = false) }
+            return
+        }
+        val base = _state.value.baseUrl ?: return
+        val error = try {
+            val r = (codes ?: return).post("/auth/demo", auth = false)
+            val token = r.json().asObject()?.str("token")
+            if (r.isOk && token != null) {
+                accounts.loginWithToken(token, base, "Nexterm Demo")
+                _state.update { it.copy(step = DeviceSetupStep.DONE, isLoading = false) }
+                return
+            }
+            r.json().asObject()?.str("message") ?: "Could not start a demo session"
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Throwable) {
+            "Connection error: ${e.message ?: e}"
+        }
+        _state.update { it.copy(error = error, isLoading = false) }
+    }
+
     fun showCode() {
         _state.update { it.copy(step = DeviceSetupStep.CODE) }
         startPolling()

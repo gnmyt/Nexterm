@@ -88,6 +88,9 @@ fun DeviceSetupScreen(isAddingServer: Boolean, onDone: () -> Unit, onBack: () ->
                     }, tall, enabled = !state.isLoading) {
                         Icon(Icons.Outlined.QrCodeScanner, null, Modifier.size(ButtonDefaults.IconSize)); Text("Scan QR Code", Modifier.padding(start = 8.dp))
                     }
+                    TextButton({ scope.launch { flow.startDemo() } }, Modifier.align(Alignment.CenterHorizontally).padding(top = 24.dp), enabled = !state.isLoading) {
+                        Text("Try the demo", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
                 }
                 DeviceSetupStep.AUTH_CHOICE -> {
                     Hint("Choose how to authenticate with the server.")
