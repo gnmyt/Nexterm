@@ -52,6 +52,108 @@
     width: 40%
     max-width: 480px
     min-width: 320px
+    display: flex
+    flex-direction: column
+    gap: 1.5rem
+    position: relative
+    isolation: isolate
+
+    &::before
+      content: ""
+      position: absolute
+      inset: -18% -14%
+      z-index: -1
+      pointer-events: none
+      background: radial-gradient(ellipse 55% 45% at 30% 25%, colors.$primary-opacity, transparent 70%), radial-gradient(ellipse 50% 50% at 75% 75%, colors.$primary-opacity, transparent 70%)
+      filter: blur(48px)
+      opacity: 0.9
+      animation: welcome-glow 14s ease-in-out infinite alternate
+
+  .welcome-search
+    display: flex
+    align-items: center
+    width: 100%
+    max-width: 480px
+    height: var(--search-control-size, 2.75rem)
+    box-sizing: border-box
+    border: 1px solid colors.$gray
+    border-radius: 0.7rem
+    background-color: color-mix(in srgb, var(--lighter-background) 70%, transparent)
+    backdrop-filter: blur(16px)
+    color: colors.$subtext
+    transition: border-color 0.2s ease
+
+    &:has(.welcome-search-trigger:hover), &:has(.welcome-search-trigger:focus-visible)
+      border-color: colors.$primary
+
+    button
+      border: none
+      background: none
+      font: inherit
+      color: inherit
+      cursor: pointer
+
+      &:focus-visible
+        outline: none
+        box-shadow: colors.$focus-ring
+
+    .welcome-search-trigger
+      flex: 1
+      min-width: 0
+      height: 100%
+      display: flex
+      align-items: center
+      gap: 0.75rem
+      padding: 0 0.65rem 0 0.75rem
+      border-radius: 0.7rem
+      text-align: left
+      cursor: text
+
+    .welcome-search-icon
+      width: 1.4rem
+      height: 1.4rem
+      flex-shrink: 0
+
+    .welcome-search-placeholder
+      flex: 1
+      min-width: 0
+      font-size: 0.95rem
+      font-weight: 500
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
+
+    kbd
+      flex-shrink: 0
+      padding: 0.175rem 0.425rem
+      border: 1px solid colors.$gray
+      border-radius: 0.5rem
+      font-family: inherit
+      font-size: 9pt
+      color: colors.$subtext
+
+    > div
+      display: flex
+      align-items: center
+      height: 100%
+      padding: 0 0.3rem 0 0.35rem
+      border-left: 1px solid colors.$gray
+
+    .welcome-search-ai
+      display: grid
+      place-items: center
+      width: 2.1rem
+      height: 2.1rem
+      border-radius: 0.5rem
+      transition: background-color 0.15s ease, color 0.15s ease
+
+      svg
+        width: 1.25rem
+        height: 1.25rem
+
+      &:hover, &:focus-visible
+        background-color: colors.$dark-gray
+        color: colors.$primary
 
   .loading-state
     display: flex
@@ -94,7 +196,8 @@
       flex-direction: column
       border: 1px solid colors.$border
       border-radius: 0.75rem
-      background-color: colors.$lighter-background
+      background-color: color-mix(in srgb, var(--lighter-background) 70%, transparent)
+      backdrop-filter: blur(16px)
       overflow: hidden
 
     .empty-hint
@@ -198,6 +301,16 @@
         transform: translateX(-4px)
         transition: opacity 0.12s ease, transform 0.12s ease, color 0.12s ease
 
+@keyframes welcome-glow
+  from
+    transform: translate(-3%, -2%) scale(1)
+  to
+    transform: translate(3%, 2%) scale(1.06)
+
+@media (prefers-reduced-motion: reduce)
+  .welcome-panel .welcome-right::before
+    animation: none
+
 @keyframes spin
   to
     transform: rotate(360deg)
@@ -229,5 +342,5 @@
       max-width: 100%
       min-width: 0
 
-    .recent-connections
+    .recent-connections, .welcome-search
       max-width: 100%
