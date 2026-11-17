@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@ai-sdk/anthropic@^4.0.104":
-  version "4.0.104"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/anthropic/-/anthropic-4.0.104.tgz#d3181d5a7927b2d42063538edc098ffa3123a19c"
-  integrity sha512-8Es3QS7oeNH72O5LbeZMS+AP0Jf7bYJR80GgrOEZ0yGA6A4hnJ+QgFiIeUrzqSiVlqDTTNCk73NxXW2iwqSQuQ==
+"@ai-sdk/anthropic@^4.0.105":
+  version "4.0.105"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/anthropic/-/anthropic-4.0.105.tgz#809ce6510e297806289122aee1aab8e6015f2711"
+  integrity sha512-i6kmv6y+FGTBxOPtLRrb5I+92WcFFGubhd33CD0JeaSyFOnLJ8my4a9olkAgyR9fACHMzxFBmoEHd0uO4i72bA==
   dependencies:
     "@ai-sdk/provider" "4.0.38"
     "@ai-sdk/provider-utils" "5.0.81"
