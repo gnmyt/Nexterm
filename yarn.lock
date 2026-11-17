@@ -3613,10 +3613,10 @@ oniguruma-to-es@^3.1.0:
     regex "^6.0.1"
     regex-recursion "^6.0.2"
 
-openid-client@^6.8.9:
-  version "6.8.9"
-  resolved "https://registry.yarnpkg.com/openid-client/-/openid-client-6.8.9.tgz#78eecccc01bebe1a7661e06b7b17b7b1bf460729"
-  integrity sha512-6mXMRNJxDOf6BflEWLXul1UwzLFz++9Ofz1PYwPwwsJsyXBsbfkO+Jo255SW1qnFNLYz4EJWHz42X4OJJrya/g==
+openid-client@^6.9.0:
+  version "6.9.0"
+  resolved "https://registry.yarnpkg.com/openid-client/-/openid-client-6.9.0.tgz#8ebdba3e00d65d32888b4aab0e00e62a6755cf6b"
+  integrity sha512-2IvamJR8PAnWHngaCsGGA8TYfcLI2egvuqa9cOQYHIISwIUhxJwwwcCnkgVX95fzZ6J0TAna0aVGUMOxnPeRqg==
   dependencies:
     jose "^6.2.15"
     oauth4webapi "^3.8.8"
