@@ -81,7 +81,7 @@ fun ActiveSessionsScreen(onExit: () -> Unit) {
         ) {
             val cs = MaterialTheme.colorScheme
             Row(Modifier.clickable { sheet = SessionSheet.SWITCHER }.padding(start = 12.dp, end = 6.dp, top = 7.dp, bottom = 7.dp), verticalAlignment = Alignment.CenterVertically) {
-                Icon(iconFor(session.type.iconKey), null, Modifier.size(14.dp), cs.primary)
+                Icon(if (session.isViewOnly) Icons.Outlined.Visibility else iconFor(session.type.iconKey), null, Modifier.size(14.dp), cs.primary)
                 Text(session.server.name, Modifier.padding(start = 5.dp).widthIn(max = 80.dp), fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 if (sessions.size > 1) Badge(Modifier.padding(start = 4.dp), cs.primary) { Text("${sessions.size}") }
                 Icon(Icons.Outlined.KeyboardArrowUp, null, Modifier.padding(start = 2.dp).size(14.dp), cs.outline)
@@ -121,7 +121,7 @@ private fun SessionSwitcher(sessions: List<AppSession>, activeId: String, onSele
             val isActive = s.sessionId == activeId
             ListItem(
                 headlineContent = { Text(s.server.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                supportingContent = { Text(s.type.label) },
+                supportingContent = { Text(if (s.isViewOnly) "${s.type.label} · View only" else s.type.label) },
                 leadingContent = { Icon(iconFor(s.type.iconKey), null) },
                 trailingContent = { IconButton({ onClose(s.sessionId) }) { Icon(Icons.Outlined.Close, "Close session") } },
                 colors = if (isActive) ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.secondaryContainer) else transparentListItem,

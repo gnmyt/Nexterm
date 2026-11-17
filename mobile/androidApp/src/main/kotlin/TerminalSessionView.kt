@@ -40,12 +40,13 @@ fun TerminalSessionView(session: AppSession) {
     Column(Modifier.fillMaxSize().background(Color.Black).systemBarsPadding().imePadding()) {
         error?.let { ErrorBanner(it, terminal::clearError) }
         Box(Modifier.weight(1f).fillMaxWidth()) {
-            TerminalInput(terminal.controller, onFocus = { focused = it }, onReady = { input = it })
+            if (!session.isViewOnly) TerminalInput(terminal.controller, onFocus = { focused = it }, onReady = { input = it })
             TerminalSurface(terminal.controller, onTap = { input?.showKeyboard() }, Modifier.fillMaxSize())
             ConnectionLoader(!received && error == null && state != ConnectionState.DISCONNECTED)
             if (state == ConnectionState.DISCONNECTED) DisconnectedOverlay { nx.sessions.reconnect(session) }
         }
-        if (focused) KeyToolbar(terminal.controller)
+        session.agent?.let { ViewOnlyBanner(it.viewOnlyMessage) }
+        if (focused && !session.isViewOnly) KeyToolbar(terminal.controller)
     }
 }
 

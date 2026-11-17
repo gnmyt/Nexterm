@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.Laptop
+import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.*
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -123,6 +124,17 @@ fun ErrorBanner(text: String, onDismiss: (() -> Unit)? = null) = ListItem(
     colors = ListItemDefaults.colors(
         containerColor = MaterialTheme.colorScheme.errorContainer, headlineColor = MaterialTheme.colorScheme.onErrorContainer,
         leadingIconColor = MaterialTheme.colorScheme.onErrorContainer, trailingIconColor = MaterialTheme.colorScheme.onErrorContainer,
+    ),
+)
+
+@Composable
+fun ViewOnlyBanner(text: String, modifier: Modifier = Modifier) = ListItem(
+    headlineContent = { Text(text, style = MaterialTheme.typography.bodySmall) },
+    leadingContent = { Icon(Icons.Outlined.Visibility, null, Modifier.size(18.dp)) },
+    modifier = modifier,
+    colors = ListItemDefaults.colors(
+        containerColor = MaterialTheme.colorScheme.secondaryContainer, headlineColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        leadingIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
     ),
 )
 

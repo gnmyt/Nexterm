@@ -1,8 +1,11 @@
 package dev.gnm.nexterm.app
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Article
 import androidx.compose.material.icons.automirrored.outlined.DriveFileMove
+import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.automirrored.outlined.InsertDriveFile
+import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -45,5 +48,15 @@ fun iconFor(key: String): ImageVector = when (key) {
     "cellphone" -> Icons.Outlined.Smartphone
     "tablet" -> Icons.Outlined.Tablet
     "laptop" -> Icons.Outlined.Laptop
+    "format-list-bulleted" -> Icons.AutoMirrored.Outlined.List
+    "lan-connect" -> Icons.Outlined.Link
+    "lan-disconnect" -> Icons.Outlined.LinkOff
+    "keyboard-outline" -> Icons.Outlined.Keyboard
+    "text-box-outline" -> Icons.AutoMirrored.Outlined.Article
+    "monitor-screenshot" -> Icons.Outlined.Screenshot
+    "cursor-default-click" -> Icons.Outlined.AdsClick
+    "mouse" -> Icons.Outlined.Mouse
+    "clipboard-text-outline" -> Icons.Outlined.ContentPaste
+    "help-circle-outline" -> Icons.AutoMirrored.Outlined.HelpOutline
     else -> Icons.Outlined.Dns
 }
