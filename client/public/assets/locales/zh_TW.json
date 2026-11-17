@@ -691,6 +691,7 @@
       "sessionSyncAcrossDevicesDesc": "會話可跨裝置使用並同步處理",
       "sessionSyncSameBrowserDesc": "會話將同步處理目前使用者的會話",
       "sessionSyncSameTabDesc": "會話會同步顯示在您的瀏覽器標籤中",
+      "showAgentSessionsDesc": "Show sessions opened by the AI assistant or MCP agents as view-only tabs",
       "twoFactorDialog": {
         "title": "啟用 2FA",
         "description": "使用驗證器應用程式掃描驗證碼或手動輸入 <span class=\"totp-code\">{{secret}}</span>手動輸入。",
@@ -795,8 +796,8 @@
         "folderManagementDescription": "記錄資料夾的建立、修改和刪除",
         "scriptExecutionLabel": "腳本執行",
         "scriptExecutionDescription": "記錄腳本和自動化任務的執行",
-        "aiOperationsLabel": "AI 運維",
-        "aiOperationsDescription": "記錄 AI 助理執行的指令及檔案變更",
+        "agentOperationsLabel": "AI Agent Operations",
+        "agentOperationsDescription": "Log commands, input, screenshots and file changes performed by the AI assistant and by agents connected through the MCP server",
         "actions": {
           "save": "儲存設定"
         },
@@ -1177,7 +1178,7 @@
     },
     "ai": {
       "title": "AI 助理設定",
-      "description": "設定這款 AI 助理，使其能直接透過您的伺服器連線執行指令並管理檔案。",
+      "description": "Configure the AI provider used by the assistant, which can operate your servers through its own sessions.",
       "loading": "載入 AI 設定...",
       "enable": {
         "title": "啟用 AI 助理",
@@ -1190,10 +1191,6 @@
       "model": {
         "title": "型號",
         "description": "選擇助理應使用的 AI 模型"
-      },
-      "requireConfirmation": {
-        "title": "每次執行動作前請先確認",
-        "description": "要求使用者必須核准助理欲執行的每項指令及檔案變更"
       },
       "apiKey": {
         "title": "API 金鑰",
@@ -1296,10 +1293,12 @@
     },
     "identities": {
       "title": "SSH 金鑰與憑證",
-      "description": "管理用於伺服器連線的 SSH 金鑰和登入憑證",
+      "description": "Identities you can link to any server. Server-specific ones live in that server's settings.",
       "createIdentity": "建立身分",
       "personal": "個人",
       "noUsername": "無用戶名",
+      "notInUse": "Not in use",
+      "notInUseHint": "Not linked to any server or folder",
       "sshKey": "SSH 金鑰",
       "password": "密碼",
       "editIdentity": "編輯身分",
@@ -1367,6 +1366,7 @@
         "success": "同步",
         "error": "錯誤",
         "pending": "待定",
+        "syncing": "Syncing",
         "disabled": "殘障"
       },
       "dialog": {
@@ -1697,8 +1697,6 @@
       "folderUpdated": "Folder updated successfully",
       "createFailed": "建立伺服器失敗",
       "updateFailed": "更新伺服器失敗",
-      "createIdentityFailed": "建立身分失敗",
-      "updateIdentityFailed": "更新身分失敗",
       "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination."
     },
     "dialog": {
@@ -1795,10 +1793,6 @@
         }
       },
       "identities": {
-        "organizationIdentities": "組織身分",
-        "personalIdentities": "個人身分",
-        "orgDescription": "與所有組織成員共用。每個人都可以使用這些身分。",
-        "personalDescription": "僅對您可見。其他組織成員無法看到。",
         "identityName": "身份名稱",
         "username": "使用者名稱",
         "authentication": "驗證",
@@ -1809,15 +1803,19 @@
         "both": "鑰匙+密碼",
         "sshPrivateKey": "SSH 私密金鑰",
         "passphrase": "密碼（可選）",
-        "new": "新款",
+        "add": "Add identity",
+        "linkGlobal": "Link global identity · {{count}}",
+        "empty": "No identities yet.",
         "removeIdentity": "移除身分",
         "unlinkIdentity": "解除連結身分",
         "moveToOrg": "移至組織",
-        "selectOrganization": "選擇機構",
-        "availableToLink": "可連結",
         "noUsername": "無用戶名",
-        "noOrgIdentities": "沒有組織識別。建立一個與所有成員分享。",
-        "noPersonalIdentities": "無個人身分。建立一個供您私人使用。"
+        "globalToggle": "Use on other servers",
+        "globalInUse": "This identity is used by {{count}} servers. Unlink it from the others first.",
+        "shareToggle": "Share with organization",
+        "inheritedHint": "Inherited from the folder settings.",
+        "onlyMe": "Only me",
+        "onlyMeHint": "Only you can see and use this identity."
       },
       "sections": {
         "general": "General",
@@ -2098,13 +2096,34 @@
         "downloaded": "從遠端下載了「{{name}}」"
       }
     },
+    "automatedSession": {
+      "viewOnlyAi": "The AI assistant is working in this session. You can watch, but not type.",
+      "viewOnlyMcp": "An external agent (MCP) is working in this session. You can watch, but not type."
+    },
     "aiAssistant": {
       "title": "AI 助理",
       "open": "AI 助理",
-      "empty": "請請助理檢查或更換這台伺服器。它可透過此連線直接執行指令，並讀取或編輯檔案。",
+      "empty": "Ask the assistant to inspect or change your servers. It opens its own sessions to the servers you add below, runs commands, edits files and can even operate remote desktops.",
+      "addServer": "Add server",
+      "removeServer": "Remove server",
+      "searchServers": "Search servers...",
+      "noMatches": "No matching servers",
+      "current": "current",
+      "openSessions": "{{count}} open session(s)",
+      "approval": {
+        "ask": "Ask before actions",
+        "askDescription": "Commands, input and file changes wait for your approval",
+        "allow": "Allow all",
+        "allowDescription": "Runs tool calls without asking",
+        "readonly": "Read-only",
+        "readonlyDescription": "Only inspects servers; anything that changes them is denied"
+      },
       "placeholder": "傳訊給助理……",
       "connecting": "正在連線中...",
       "send": "傳送",
+      "copyMessage": "Copy message",
+      "copied": "Copied",
+      "editMessage": "Edit message",
       "stop": "停止",
       "connectionError": "與助理的連線已中斷。",
       "reconnecting": "連線中斷。正在重新連線...",
@@ -2117,19 +2136,65 @@
       "continuePrompt": "助理在跑了一長串台階後停了下來。要繼續嗎？",
       "continue": "繼續",
       "compacted": "為節省篇幅，已將先前訊息進行彙整。",
+      "retryPrompt": "The last step failed. Retry from where it stopped?",
+      "retry": "Retry",
+      "questionOther": "Or type another answer...",
+      "questionAnswer": "Type your answer...",
+      "questionSend": "Answer",
+      "questionPickOne": "Pick one or type an answer",
+      "questionPickMany": "Pick any that apply",
+      "exitCode": "exit {{code}}",
+      "truncated": "[truncated]",
+      "toolSummary": {
+        "recursive": "{{path}} (recursive)",
+        "doubleClick": "{{target}} ×2"
+      },
       "tools": {
-        "runCommand": "執行指令",
-        "readFile": "讀取檔案",
-        "writeFile": "寫入檔案",
-        "editFile": "編輯檔案",
-        "listDirectory": "列出目錄",
-        "statPath": "檢查路徑",
-        "makeDirectory": "建立目錄",
-        "deleteFile": "刪除檔案",
-        "removeDirectory": "刪除目錄",
-        "movePath": "移動",
-        "changePermissions": "變更權限",
-        "findDirectories": "尋找目錄"
+        "list_entries": "List servers",
+        "get_entry": "Inspect server",
+        "list_folders": "List folders",
+        "list_organizations": "List organizations",
+        "list_identities": "List identities",
+        "list_snippets": "List snippets",
+        "list_scripts": "List scripts",
+        "list_tags": "List tags",
+        "list_users": "List users",
+        "get_permissions": "Check permissions",
+        "get_monitoring": "Read monitoring",
+        "list_sessions": "List sessions",
+        "open_session": "Open session",
+        "get_session": "Inspect session",
+        "close_session": "Close session",
+        "close_all_sessions": "Close all sessions",
+        "terminal_run": "Run command",
+        "terminal_send": "Send input",
+        "terminal_read": "Read terminal",
+        "terminal_resize": "Resize terminal",
+        "run_command": "Run command",
+        "exec_command": "Run command",
+        "file_list": "List directory",
+        "file_stat": "Inspect path",
+        "file_read": "Read file",
+        "file_write": "Write file",
+        "file_edit": "Edit file",
+        "file_mkdir": "Create directory",
+        "file_delete": "Delete",
+        "file_move": "Move",
+        "file_chmod": "Change permissions",
+        "file_search_dirs": "Find directories",
+        "desktop_screenshot": "Screenshot",
+        "desktop_info": "Inspect desktop",
+        "desktop_click": "Click",
+        "desktop_mouse_move": "Move mouse",
+        "desktop_drag": "Drag",
+        "desktop_scroll": "Scroll",
+        "desktop_type": "Type text",
+        "desktop_key": "Press keys",
+        "desktop_resize": "Resize desktop",
+        "desktop_clipboard_set": "Set clipboard",
+        "desktop_clipboard_get": "Read clipboard",
+        "batch": "Run several actions",
+        "ask_user": "Question"
       }
     },
     "commandSuggestion": {
