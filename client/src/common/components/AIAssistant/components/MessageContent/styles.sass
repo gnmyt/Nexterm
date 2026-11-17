@@ -32,16 +32,6 @@
     font-family: fonts.$mono
     font-size: 0.8rem
     color: colors.$white
-    scrollbar-width: thin
-    scrollbar-color: colors.$gray transparent
-
-    &::-webkit-scrollbar
-      width: 4px
-      height: 4px
-
-    &::-webkit-scrollbar-thumb
-      background-color: colors.$gray
-      border-radius: 10px
 
   .md-heading
     margin: 0.2rem 0 0
@@ -80,40 +70,30 @@
   .md-quote
     margin: 0
     padding: 0.1rem 0.75rem
-    border-left: 3px solid colors.$gray
+    border-left: 2px solid colors.$gray
     color: colors.$subtext
 
   .md-hr
     margin: 0.2rem 0
     border: none
-    border-top: 1px solid colors.$gray
+    border-top: 1px solid colors.$border
 
   .md-table-wrap
     overflow-x: auto
-    scrollbar-width: thin
-    scrollbar-color: colors.$gray transparent
-
-    &::-webkit-scrollbar
-      width: 4px
-      height: 4px
-
-    &::-webkit-scrollbar-thumb
-      background-color: colors.$gray
-      border-radius: 10px
 
   .md-table
     border-collapse: collapse
     width: 100%
-    font-size: 0.82rem
+    font-size: 0.8rem
 
     th, td
       padding: 0.35rem 0.6rem
-      border: 1px solid colors.$gray
+      border: 1px solid colors.$border
       text-align: left
       white-space: nowrap
 
     th
-      background: colors.$darker-gray
+      background: colors.$dark-gray
       font-weight: 600
       color: colors.$white
 

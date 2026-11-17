@@ -10,9 +10,27 @@ export const useAI = () => {
     return context;
 };
 
+const MODE_KEY = "nexterm.ai.approvalMode";
+export const APPROVAL_MODES = ["ask", "allow", "readonly"];
+
 export const AIProvider = ({ children }) => {
     const [available, setAvailable] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [assistantOpen, setAssistantOpen] = useState(false);
+    const [approvalMode, setApprovalModeState] = useState(() => {
+        try {
+            const stored = localStorage.getItem(MODE_KEY);
+            return APPROVAL_MODES.includes(stored) ? stored : "ask";
+        } catch {
+            return "ask";
+        }
+    });
+
+    const setApprovalMode = useCallback((mode) => {
+        if (!APPROVAL_MODES.includes(mode)) return;
+        setApprovalModeState(mode);
+        try { localStorage.setItem(MODE_KEY, mode); } catch { /* ignore */ }
+    }, []);
 
     const loadAISettings = useCallback(async () => {
         try {
@@ -28,13 +46,22 @@ export const AIProvider = ({ children }) => {
 
     const isAIAvailable = useCallback(() => available, [available]);
 
+    const openAssistant = useCallback(() => setAssistantOpen(true), []);
+    const closeAssistant = useCallback(() => setAssistantOpen(false), []);
+    const toggleAssistant = useCallback(() => setAssistantOpen((open) => !open), []);
+
     useEffect(() => {
         loadAISettings();
     }, [loadAISettings]);
 
     const value = useMemo(
-        () => ({ available, loading, isAIAvailable, loadAISettings }),
-        [available, loading, isAIAvailable, loadAISettings],
+        () => ({
+            available, loading, isAIAvailable, loadAISettings,
+            assistantOpen, openAssistant, closeAssistant, toggleAssistant,
+            approvalMode, setApprovalMode,
+        }),
+        [available, loading, isAIAvailable, loadAISettings, assistantOpen, openAssistant, closeAssistant, toggleAssistant,
+            approvalMode, setApprovalMode],
     );
 
     return (

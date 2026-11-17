@@ -45,7 +45,7 @@ class StateBroadcaster {
             case STATE_TYPES.ENTRIES:
                 return require("../controllers/entry").listEntries(accountId);
             case STATE_TYPES.IDENTITIES:
-                return require("../controllers/identity").listIdentities(accountId);
+                return require("../controllers/identity").listIdentities(accountId, { withUsage: true });
             case STATE_TYPES.SNIPPETS:
                 const memberships = await OrganizationMember.findAll({ where: { accountId, status: "active" } });
                 return require("../controllers/snippet").listAllAccessibleSnippets(accountId, memberships.map(m => m.organizationId));

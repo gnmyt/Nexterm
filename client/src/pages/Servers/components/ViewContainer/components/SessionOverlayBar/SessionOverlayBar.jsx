@@ -46,7 +46,8 @@ export const SessionOverlayBar = ({ session, controls, fullscreenEnabled, onFull
             </div>
             {controls && (
                 <ContextMenu isOpen={menu.isOpen} position={menu.position} onClose={menu.close} trigger={menu.triggerRef}>
-                    <RemoteDesktopMenuItems controls={controls} onOpenShortcuts={() => setShortcutsOpen(true)} />
+                    <RemoteDesktopMenuItems controls={controls} onOpenShortcuts={() => setShortcutsOpen(true)}
+                                            viewOnly={session.automated} />
                 </ContextMenu>
             )}
             <KeyboardShortcutsMenu visible={shortcutsOpen} onClose={() => setShortcutsOpen(false)}

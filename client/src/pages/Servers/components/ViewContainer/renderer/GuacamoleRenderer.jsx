@@ -19,6 +19,7 @@ import {
     setDeviceScaleOverride, toDisplayHeight, toDisplayWidth, watchDeviceScale,
 } from "@/common/utils/displayScale.js";
 import "./styles/guacamole.sass";
+import "./styles/automated-session.sass";
 
 const SIZE_RESEND_INTERVAL = 5000;
 const SIZE_CONFIRM_INTERVAL = 500;
@@ -69,7 +70,8 @@ const GuacamoleRenderer = ({
     const scaleRef = useRef(1);
     const offsetRef = useRef({ x: 0, y: 0 });
 
-    const ownsSession = !isShared && pinnedMonitor === null;
+    const isAutomated = session.automated;
+    const ownsSession = !isShared && !isAutomated && pinnedMonitor === null;
     const initialMonitor = pinnedMonitor ?? 0;
 
     const [ready, setReady] = useState(false);
@@ -880,7 +882,7 @@ const GuacamoleRenderer = ({
             zoom,
             minZoom: ZOOM_MIN,
             maxZoom: ZOOM_MAX,
-            readOnly: isShared,
+            readOnly: isShared || isAutomated,
             allowMonitors: pinnedMonitor === null,
             selectMonitor,
             addMonitor,
@@ -947,6 +949,7 @@ const GuacamoleRenderer = ({
                     <h2>{t("servers.remoteDesktop.dropOverlay")}</h2>
                 </div>
             </div>
+            {isAutomated && <div className="automated-session-frame" aria-hidden="true" />}
             <ConnectionLoader onReady={(loader) => {
                 connectionLoaderRef.current = loader;
             }} />

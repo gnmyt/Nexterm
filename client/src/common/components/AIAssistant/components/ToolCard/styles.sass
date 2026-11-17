@@ -1,84 +1,6 @@
 @use "@/common/styles/colors"
 @use "@/common/styles/fonts"
 
-.ai-assistant-window
-  min-width: 22.5rem
-
-  .floating-window__title .target
-    font-size: 0.72rem
-    font-weight: 600
-    color: colors.$subtext
-    background: colors.$gray
-    padding: 0.15rem 0.5rem
-    border-radius: 0.375rem
-    overflow: hidden
-    text-overflow: ellipsis
-    white-space: nowrap
-
-.ai-assistant-messages
-  flex: 1
-  min-height: 0
-  overflow-y: auto
-  display: flex
-  flex-direction: column
-  gap: 0.875rem
-  padding: 1rem 1.125rem
-
-  > *
-    flex-shrink: 0
-
-.ai-assistant-empty
-  margin: auto
-  display: flex
-  flex-direction: column
-  align-items: center
-  gap: 0.5rem
-  color: colors.$subtext
-  text-align: center
-
-  svg
-    width: 1.5rem
-    height: 1.5rem
-    padding: 0.75rem
-    box-sizing: content-box
-    border-radius: 0.875rem
-    background: colors.$dark-gray
-    color: colors.$subtext
-    margin-bottom: 0.25rem
-
-  p
-    margin: 0
-    font-size: 0.85rem
-    font-weight: 500
-    line-height: 1.45
-    max-width: 20rem
-
-.message
-  font-size: 0.875rem
-  font-weight: 500
-  line-height: 1.55
-
-  &.user
-    align-self: flex-end
-    max-width: 85%
-    background: colors.$gray
-    border: 1px solid colors.$border
-    color: colors.$white
-    padding: 0.55rem 0.8rem
-    border-radius: 0.75rem 0.75rem 0.25rem 0.75rem
-
-  &.assistant
-    align-self: stretch
-    color: colors.$white
-
-  &.system
-    align-self: center
-    font-size: 0.8rem
-    color: colors.$subtext
-
-    &.error
-      color: colors.$error
-
 .tool-card
   align-self: stretch
   background: colors.$dark-gray
@@ -256,67 +178,6 @@
     &.folder
       color: colors.$white
 
-.ai-continue
-  display: flex
-  align-items: center
-  justify-content: space-between
-  gap: 0.5rem
-  padding: 0.625rem 0.75rem
-  border: 1px solid colors.$border
-  border-radius: 0.625rem
-  background: colors.$dark-gray
-  font-size: 0.8rem
-  font-weight: 500
-  color: colors.$white
-  flex-wrap: wrap
-
-.ai-typing
-  display: flex
-  gap: 0.3rem
-  padding: 0.25rem 0.1rem
-
-  span
-    width: 0.4rem
-    height: 0.4rem
-    border-radius: 50%
-    background: colors.$subtext
-    animation: aiBounce 1.2s infinite ease-in-out
-
-    &:nth-child(2)
-      animation-delay: 0.15s
-
-    &:nth-child(3)
-      animation-delay: 0.3s
-
-.ai-assistant-input
-  display: flex
-  align-items: flex-end
-  gap: 0.5rem
-  padding: 0.75rem
-  border-top: 1px solid colors.$border
-  background: colors.$lighter-background
-  flex-shrink: 0
-
-  .textarea
-    flex: 1
-    min-height: 2.6rem
-    max-height: 11rem
-    padding: 0.6rem 0.75rem
-    overflow-y: auto
-    border-radius: 0.75rem
-    font-size: 0.875rem
-    line-height: 1.45
-
-  .btn
-    flex-shrink: 0
-    width: 2.6rem
-    height: 2.6rem
-    padding: 0
-
-    svg
-      width: 1.2rem
-      height: 1.2rem
-
 .ai-spinner
   width: 1rem
   height: 1rem
@@ -330,10 +191,9 @@
   to
     transform: rotate(360deg)
 
-@keyframes aiBounce
-  0%, 60%, 100%
-    transform: translateY(0)
-    opacity: 0.4
-  30%
-    transform: translateY(-0.3rem)
-    opacity: 1
+.tool-result .screenshot
+  display: block
+  max-width: 100%
+  border-radius: 0.4rem
+  border: 1px solid colors.$dark-gray
+  margin: 0.25rem 0

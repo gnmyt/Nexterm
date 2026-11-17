@@ -22,6 +22,15 @@ module.exports = db.define(
             },
             onDelete: "CASCADE",
         },
+        entryId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: "entries",
+                key: "id",
+            },
+            onDelete: "CASCADE",
+        },
         name: {
             type: Sequelize.STRING,
             allowNull: false,

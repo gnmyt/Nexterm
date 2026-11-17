@@ -23,7 +23,6 @@ export const AI = () => {
         authMethod: "api_key",
         subscriptionConnected: false,
         subscriptionProvider: null,
-        requireConfirmation: true,
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -126,7 +125,6 @@ export const AI = () => {
                 model: settings.model || null,
                 apiUrl: settings.apiUrl || null,
                 authMethod: settings.authMethod,
-                requireConfirmation: settings.requireConfirmation,
             };
 
             if (updateData.provider === "") updateData.provider = null;
@@ -369,15 +367,6 @@ export const AI = () => {
                                 )}
                             </>
                         )}
-
-                        <div className="setting-item">
-                            <div className="setting-label">
-                                <h4>{t("settings.ai.requireConfirmation.title")}</h4>
-                                <p>{t("settings.ai.requireConfirmation.description")}</p>
-                            </div>
-                            <ToggleSwitch onChange={(value) => handleInputChange("requireConfirmation", value)}
-                                          id="ai-require-confirmation" checked={settings.requireConfirmation} />
-                        </div>
                     </>
                 )}
             </div>

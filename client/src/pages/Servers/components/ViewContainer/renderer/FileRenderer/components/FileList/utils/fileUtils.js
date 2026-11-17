@@ -1,29 +1,9 @@
-import {
-    mdiArchive, mdiFile, mdiFileDocument, mdiImage, mdiMovie, mdiMusicNote,
-} from "@mdi/js";
-
 export const THUMBNAIL_EXTENSIONS = ["jpg", "jpeg", "png", "gif", "webp", "bmp"];
 
 export const PREVIEWABLE_EXTENSIONS = [
     "jpg", "jpeg", "png", "gif", "bmp", "webp", "svg",
     "mp4", "webm", "ogg", "mov", "mp3", "wav", "flac", "m4a", "pdf",
 ];
-
-export const FILE_ICONS = {
-    jpg: mdiImage, jpeg: mdiImage, png: mdiImage, gif: mdiImage, bmp: mdiImage, webp: mdiImage, svg: mdiImage,
-    mp3: mdiMusicNote, wav: mdiMusicNote, flac: mdiMusicNote, ogg: mdiMusicNote, m4a: mdiMusicNote,
-    mp4: mdiMovie, avi: mdiMovie, mov: mdiMovie, mkv: mdiMovie, webm: mdiMovie,
-    txt: mdiFileDocument, log: mdiFileDocument, md: mdiFileDocument, json: mdiFileDocument, xml: mdiFileDocument,
-    zip: mdiArchive, rar: mdiArchive, "7z": mdiArchive, tar: mdiArchive, gz: mdiArchive,
-};
-
-export const FILE_COLORS = {
-    jpg: "#ff6b6b", jpeg: "#ff6b6b", png: "#ff6b6b", gif: "#ff6b6b", bmp: "#ff6b6b", webp: "#ff6b6b", svg: "#ff6b6b",
-    mp3: "#51cf66", wav: "#51cf66", flac: "#51cf66", ogg: "#51cf66", m4a: "#51cf66",
-    mp4: "#ffa500", avi: "#ffa500", mov: "#ffa500", mkv: "#ffa500", webm: "#ffa500",
-    txt: "#74c0fc", log: "#74c0fc", md: "#74c0fc", json: "#74c0fc", xml: "#74c0fc",
-    zip: "#ffd43b", rar: "#ffd43b", "7z": "#ffd43b", tar: "#ffd43b", gz: "#ffd43b",
-};
 
 export const OPERATIONS = {
     READY: 0x0, LIST_FILES: 0x1, CREATE_FILE: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6,
@@ -38,15 +18,13 @@ export const isThumbnailSupported = (filename) => THUMBNAIL_EXTENSIONS.includes(
 
 export const isPreviewable = (filename) => PREVIEWABLE_EXTENSIONS.includes(getExtension(filename));
 
-export const getIconByFileEnding = (ending) => FILE_ICONS[ending] || mdiFile;
-
-export const getIconColor = (item) => item.type === "folder" ? "" : (FILE_COLORS[getExtension(item.name)] || "#adb5bd");
-
 export const convertUnits = (bytes) => {
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-    if (bytes === 0) return "0 Byte";
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return Math.round(bytes / Math.pow(1024, i)) + " " + sizes[i];
+    if (!bytes) return "0 B";
+    const sizes = ["B", "KB", "MB", "GB", "TB", "PB"];
+    const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), sizes.length - 1);
+    const value = bytes / Math.pow(1024, i);
+    const rounded = i === 0 || value >= 10 ? Math.round(value) : Math.round(value * 10) / 10;
+    return `${rounded.toLocaleString()} ${sizes[i]}`;
 };
 
 // Join a directory path with a child name, avoiding a double slash when the

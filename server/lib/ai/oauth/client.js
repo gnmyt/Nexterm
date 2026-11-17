@@ -119,16 +119,24 @@ const createOAuthClient = (config) => {
         return persistTokens(settings.id, id, tokens, { accountId, expiresAt: computeExpiry(tokens) });
     };
 
+    const validToken = (settings) => {
+        const expiresAt = Number(settings?.oauthExpiresAt) || 0;
+        const stillValid = settings?.oauthAccessToken && expiresAt > Date.now() + TOKEN_REFRESH_MARGIN_MS;
+        return stillValid ? { accessToken: settings.oauthAccessToken, expiresAt, accountId: settings.oauthAccountId } : null;
+    };
+
+    let refreshing = null;
+
     const ensureFreshToken = async (settings) => {
-        if (!settings.oauthRefreshToken) throw new Error(`${label} subscription is not connected.`);
+        const current = validToken(settings);
+        if (current) return current;
 
-        const expiresAt = Number(settings.oauthExpiresAt) || 0;
-        const stillValid = settings.oauthAccessToken && expiresAt > Date.now() + TOKEN_REFRESH_MARGIN_MS;
-        if (stillValid) {
-            return { accessToken: settings.oauthAccessToken, expiresAt, accountId: settings.oauthAccountId };
-        }
-
-        return refresh(settings);
+        refreshing ??= (async () => {
+            const latest = await AISettings.findOne();
+            if (!latest?.oauthRefreshToken) throw new Error(`${label} subscription is not connected.`);
+            return validToken(latest) || refresh(latest);
+        })().finally(() => { refreshing = null; });
+        return refreshing;
     };
 
     const disconnect = async () => {

@@ -11,7 +11,9 @@ const { Permission } = require("../permissions/registry");
 const { Op } = require("sequelize");
 const Identity = require("../models/Identity");
 const OrganizationMember = require("../models/OrganizationMember");
-const { listIdentities } = require("./identity");
+const Credential = require("../models/Credential");
+const FolderIdentityProfile = require("../models/FolderIdentityProfile");
+const { listIdentities, createIdentityInTransaction, updateIdentityInTransaction } = require("./identity");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
 const logger = require("../utils/logger");
 const { sendWakeOnLan } = require("../utils/wol");
@@ -53,7 +55,6 @@ const validateEntryAccess = async (accountId, entry, errorMessage = "You don't h
 };
 
 
-
 const HOOK_CONFIG_KEYS = ["preLocalCommand", "preRemoteCommand", "preOrder", "afterLocalCommand", "afterRemoteCommand", "afterOrder"];
 
 const validateHookProtocol = (config, effectiveProtocol) => {
@@ -66,7 +67,64 @@ const validateHookProtocol = (config, effectiveProtocol) => {
     return { valid: true };
 };
 
-module.exports.createEntry = async (accountId, configuration) => {
+const lifecycleError = (result) => {
+    const error = new Error(result.message);
+    error.lifecycleError = { code: result.code, message: result.message };
+    return error;
+};
+
+const identityIdOf = (item) => typeof item === "number" ? item : item.id;
+
+const saveIdentities = async (accountId, entryId, organizationId, items, transaction) => {
+    const identityIds = [];
+    const events = [];
+    for (const item of items) {
+        if (typeof item === "number") {
+            identityIds.push(item);
+            continue;
+        }
+        const { id, global, ...config } = item;
+        if (!id) {
+            if (config.organizationId && config.organizationId !== organizationId) {
+                throw lifecycleError({ code: 400, message: "New identities must be in the same organization as the server" });
+            }
+            const identity = await createIdentityInTransaction(accountId, config, transaction, global ? null : entryId);
+            if (identity.code) throw lifecycleError(identity);
+            identityIds.push(identity.id);
+            events.push({ action: AUDIT_ACTIONS.IDENTITY_CREATE, identity, config });
+            continue;
+        }
+
+        const result = await updateIdentityInTransaction(accountId, id, config, transaction);
+        if (result.code) throw lifecycleError(result);
+        if (global === false) {
+            const usedElsewhere = await EntryIdentity.count({ where: { identityId: id, entryId: { [Op.ne]: entryId } }, transaction })
+                || await FolderIdentityProfile.count({ where: { identityId: id }, transaction });
+            if (usedElsewhere) {
+                throw lifecycleError({ code: 400, message: "This identity is still used by other servers or folders. Unlink it there before limiting it to this server." });
+            }
+        }
+        if (global !== undefined) await Identity.update({ entryId: global ? null : entryId }, { where: { id }, transaction });
+        identityIds.push(id);
+        events.push({ action: AUDIT_ACTIONS.IDENTITY_UPDATE, identity: result.identity, config });
+    }
+    return { identityIds, events };
+};
+
+const logIdentityEvents = async (accountId, events) => {
+    for (const { action, identity, config } of events) {
+        await createAuditLog({
+            action,
+            accountId,
+            organizationId: identity.organizationId || null,
+            resource: RESOURCE_TYPES.IDENTITY,
+            resourceId: identity.id,
+            details: { identityName: config.name || identity.name, identityType: config.type || identity.type },
+        });
+    }
+};
+
+module.exports.createEntry = async (accountId, { identities = [], ...configuration }) => {
     let folder = null;
     if (configuration.folderId) {
         folder = await validateFolderAccess(accountId, configuration.folderId, Permission.RESOURCES_MANAGE);
@@ -86,10 +144,8 @@ module.exports.createEntry = async (accountId, configuration) => {
         configuration.renderer = PROTOCOL_RENDERERS[effectiveConfig.protocol] ?? configuration.renderer;
     }
 
-    if (configuration.identities && configuration.identities.length > 0) {
-        const validationResult = await validateIdentityIds(accountId, configuration.identities, organizationId);
-        if (!validationResult.valid) return validationResult.error;
-    }
+    const identityValidation = await validateIdentityIds(accountId, identities.map(identityIdOf).filter(Boolean), organizationId);
+    if (!identityValidation.valid) return identityValidation.error;
 
     if (configuration.config?.jumpHosts !== undefined) {
         const validationResult = await validateJumpHostIds(accountId, configuration.config.jumpHosts, {
@@ -113,22 +169,29 @@ module.exports.createEntry = async (accountId, configuration) => {
         return { code: 403, message: "You don't have permission to manage resources" };
     }
 
-    const entry = await Entry.create({
-        ...configuration,
-        accountId: organizationId ? null : accountId,
-        organizationId: organizationId,
-        folderId: configuration.folderId || null,
-    });
+    let entry;
+    let identityEvents = [];
+    try {
+        await sequelize.transaction(async (transaction) => {
+            entry = await Entry.create({
+                ...configuration,
+                accountId: organizationId ? null : accountId,
+                organizationId: organizationId,
+                folderId: configuration.folderId || null,
+            }, { transaction });
 
-    if (configuration.identities && configuration.identities.length > 0) {
-        for (let i = 0; i < configuration.identities.length; i++) {
-            await EntryIdentity.create({
-                entryId: entry.id,
-                identityId: configuration.identities[i],
-                isDefault: i === 0,
-            });
-        }
+            const saved = await saveIdentities(accountId, entry.id, organizationId, identities, transaction);
+            identityEvents = saved.events;
+            for (let i = 0; i < saved.identityIds.length; i++) {
+                await EntryIdentity.create({ entryId: entry.id, identityId: saved.identityIds[i], isDefault: i === 0 }, { transaction });
+            }
+        });
+    } catch (error) {
+        if (error.lifecycleError) return error.lifecycleError;
+        throw error;
     }
+
+    await logIdentityEvents(accountId, identityEvents);
 
     await createAuditLog({
         action: AUDIT_ACTIONS.ENTRY_CREATE,
@@ -146,6 +209,7 @@ module.exports.createEntry = async (accountId, configuration) => {
 
     logger.info(`Entry created`, { entryId: entry.id, name: entry.name, type: entry.type });
 
+    if (identityEvents.length) stateBroadcaster.broadcast("IDENTITIES", { accountId, organizationId: entry.organizationId });
     stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: entry.organizationId });
 
     return entry;
@@ -170,12 +234,13 @@ module.exports.deleteEntry = async (accountId, entryId) => {
 
     logger.info(`Entry deleted`, { entryId, name: entry.name });
 
+    stateBroadcaster.broadcast("IDENTITIES", { accountId, organizationId: entry.organizationId });
     stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: entry.organizationId });
 
     return { success: true };
 };
 
-module.exports.editEntry = async (accountId, entryId, configuration) => {
+module.exports.editEntry = async (accountId, entryId, { identities, ...configuration }) => {
     const entry = await Entry.findByPk(entryId);
     const accessCheck = await validateEntryAccess(accountId, entry, "You don't have permission to edit this entry", Permission.RESOURCES_MANAGE);
 
@@ -195,37 +260,14 @@ module.exports.editEntry = async (accountId, entryId, configuration) => {
         configuration.renderer = PROTOCOL_RENDERERS[configuration.config.protocol] ?? configuration.renderer;
     }
 
-    if (configuration.identities) {
-        const scope = await getEntryScope(entry);
-        const validationResult = await validateIdentityIds(accountId, configuration.identities, scope.organizationId);
+    const scope = await getEntryScope(entry);
+
+    if (identities) {
+        const validationResult = await validateIdentityIds(accountId, identities.map(identityIdOf).filter(Boolean), scope.organizationId, entry.id);
         if (!validationResult.valid) return validationResult.error;
-
-        const accessibleIdentities = await listIdentities(accountId);
-        const accessibleIdentityIds = new Set(accessibleIdentities.map(i => i.id));
-
-        const existingEntryIdentities = await EntryIdentity.findAll({ where: { entryId } });
-        const toDelete = existingEntryIdentities.filter(ei => accessibleIdentityIds.has(ei.identityId)).map(ei => ei.identityId);
-        if (toDelete.length > 0) {
-            await EntryIdentity.destroy({ where: { entryId, identityId: { [Op.in]: toDelete } } });
-        }
-
-        if (configuration.identities.length > 0) {
-            const remainingIdentities = await EntryIdentity.findAll({ where: { entryId } });
-            const hasDefault = remainingIdentities.some(ei => ei.isDefault);
-            
-            for (let i = 0; i < configuration.identities.length; i++) {
-                await EntryIdentity.create({
-                    entryId,
-                    identityId: configuration.identities[i],
-                    isDefault: !hasDefault && i === 0,
-                });
-            }
-        }
-        delete configuration.identities;
     }
 
     if (configuration.config?.jumpHosts !== undefined) {
-        const scope = await getEntryScope(entry);
         const existingJumpHosts = new Set(entry.config?.jumpHosts || []);
         const jumpHosts = configuration.config.jumpHosts;
         const addedJumpHosts = Array.isArray(jumpHosts) ? jumpHosts.filter((jumpHostId) => !existingJumpHosts.has(jumpHostId)) : jumpHosts;
@@ -271,9 +313,43 @@ module.exports.editEntry = async (accountId, entryId, configuration) => {
         }
     }
 
-    delete configuration.organizationId;
+    const accessibleIdentityIds = identities ? new Set((await listIdentities(accountId)).map(i => i.id)) : null;
+    let identityEvents = [];
 
-    await Entry.update(configuration, { where: { id: entryId } });
+    try {
+        await sequelize.transaction(async (transaction) => {
+            if (identities) {
+                const saved = await saveIdentities(accountId, entry.id, scope.organizationId, identities, transaction);
+                identityEvents = saved.events;
+
+                const existingEntryIdentities = await EntryIdentity.findAll({ where: { entryId: entry.id }, transaction });
+                const toDelete = existingEntryIdentities.filter(ei => accessibleIdentityIds.has(ei.identityId)).map(ei => ei.identityId);
+                if (toDelete.length > 0) {
+                    await EntryIdentity.destroy({ where: { entryId: entry.id, identityId: { [Op.in]: toDelete } }, transaction });
+                }
+
+                const unlinkedIds = toDelete.filter((identityId) => !saved.identityIds.includes(identityId));
+                await Identity.destroy({ where: { id: { [Op.in]: unlinkedIds }, entryId: entry.id }, transaction });
+
+                const remainingIdentities = await EntryIdentity.findAll({ where: { entryId: entry.id }, transaction });
+                const hasDefault = remainingIdentities.some(ei => ei.isDefault);
+                for (let i = 0; i < saved.identityIds.length; i++) {
+                    await EntryIdentity.create({
+                        entryId: entry.id,
+                        identityId: saved.identityIds[i],
+                        isDefault: !hasDefault && i === 0,
+                    }, { transaction });
+                }
+            }
+
+            await Entry.update(configuration, { where: { id: entry.id }, transaction });
+        });
+    } catch (error) {
+        if (error.lifecycleError) return error.lifecycleError;
+        throw error;
+    }
+
+    await logIdentityEvents(accountId, identityEvents);
 
     await createAuditLog({
         action: AUDIT_ACTIONS.ENTRY_UPDATE,
@@ -284,6 +360,7 @@ module.exports.editEntry = async (accountId, entryId, configuration) => {
         details: configuration
     });
 
+    if (identities) stateBroadcaster.broadcast("IDENTITIES", { accountId, organizationId: scope.organizationId });
     stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: entry.organizationId });
 
     return { success: true };
@@ -503,20 +580,36 @@ module.exports.duplicateEntry = async (accountId, entryId) => {
 
     const identities = await EntryIdentity.findAll({ where: { entryId }, order: [['isDefault', 'DESC']] });
 
-    const newEntry = await Entry.create({
-        ...entry,
-        id: undefined,
-        disabled: false,
-        name: entry.name + " (Copy)",
-    });
+    const boundIdentities = new Map((await Identity.findAll({ where: { entryId: entry.id } })).map((identity) => [identity.id, identity]));
+    const boundCredentials = boundIdentities.size
+        ? await Credential.findAll({ where: { identityId: { [Op.in]: [...boundIdentities.keys()] } } })
+        : [];
 
-    for (const identity of identities) {
-        await EntryIdentity.create({
-            entryId: newEntry.id,
-            identityId: identity.identityId,
-            isDefault: identity.isDefault,
-        });
-    }
+    let newEntry;
+    await sequelize.transaction(async (transaction) => {
+        newEntry = await Entry.create({
+            ...entry,
+            id: undefined,
+            disabled: false,
+            name: entry.name + " (Copy)",
+        }, { transaction });
+
+        for (const link of identities) {
+            let identityId = link.identityId;
+            const bound = boundIdentities.get(identityId);
+            if (bound) {
+                const copy = await Identity.create({
+                    name: bound.name, type: bound.type, username: bound.username,
+                    accountId: bound.accountId, organizationId: bound.organizationId, entryId: newEntry.id,
+                }, { transaction });
+                for (const credential of boundCredentials.filter((c) => c.identityId === bound.id && c.secret)) {
+                    await Credential.create({ identityId: copy.id, type: credential.type, secret: credential.secret }, { transaction });
+                }
+                identityId = copy.id;
+            }
+            await EntryIdentity.create({ entryId: newEntry.id, identityId, isDefault: link.isDefault }, { transaction });
+        }
+    });
 
     await createAuditLog({
         action: AUDIT_ACTIONS.ENTRY_CREATE,
@@ -529,6 +622,7 @@ module.exports.duplicateEntry = async (accountId, entryId) => {
 
     logger.info(`Entry duplicated`, { originalEntryId: entryId, newEntryId: newEntry.id, name: newEntry.name });
 
+    if (boundIdentities.size) stateBroadcaster.broadcast("IDENTITIES", { accountId, organizationId: entry.organizationId });
     stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: entry.organizationId });
 
     return newEntry;

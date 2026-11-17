@@ -36,6 +36,7 @@ const DraggableTab = ({
         .filter(participant => participant.accountId !== user?.id);
 
     const isNotes = session.type === "notes";
+    const isAutomated = session.automated;
 
     const [{ isDragging }, drag] = useDrag({
         type: "TAB",
@@ -74,7 +75,7 @@ const DraggableTab = ({
         <div ref={(node) => drag(drop(node))} onClick={() => setActiveSessionId(session.id)}
             onContextMenu={handleContextMenu}
             onAuxClick={handleAuxClick}
-            className={`server-tab ${session.id === activeSessionId ? "server-tab-active" : ""} ${isDragging ? "dragging" : ""} ${isOver ? "drop-target" : ""}`}
+            className={`server-tab ${session.id === activeSessionId ? "server-tab-active" : ""} ${isAutomated ? "server-tab-automated" : ""} ${isDragging ? "dragging" : ""} ${isOver ? "drop-target" : ""}`}
             style={{ opacity: isDragging ? 0.5 : 1 }}>
             <div className={`progress-circle ${!showProgress ? "no-progress" : ""}`}>
                 {showProgress && (
