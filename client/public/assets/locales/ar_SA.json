@@ -48,9 +48,7 @@
     },
     "confirmDialog": {
       "title": "هل أنت متأكد؟",
-      "defaultText": "لا يمكن التراجع عن هذا الإجراء.",
-      "unsavedChangesTitle": "التغييرات غير المحفوظة",
-      "unsavedChangesText": "لديك تغييرات غير محفوظة. هل أنت متأكد أنك تريد الإغلاق؟"
+      "defaultText": "لا يمكن التراجع عن هذا الإجراء."
     },
     "loginDialog": {
       "title": "نيكسترِم",
@@ -63,7 +61,14 @@
       "backToLogin": "العودة إلى تسجيل الدخول",
       "authenticating": "توثيق...",
       "noAccount": "ليس لديك حساب؟",
-      "haveAccount": "هل لديك حساب بالفعل؟"
+      "haveAccount": "هل لديك حساب بالفعل؟",
+      "welcome": "Welcome back",
+      "subtitle": "Sign in to continue to Nexterm.",
+      "registrationSubtitle": "Create your account to get started.",
+      "firstTimeSubtitle": "Create the first administrator account for this instance.",
+      "twoFactorTitle": "Two-factor authentication",
+      "twoFactorDescription": "Enter the code from your authenticator app.",
+      "qrTitle": "Sign in with the app"
     },
     "deviceLink": {
       "title": "جهاز الارتباط",
@@ -157,8 +162,6 @@
     "quickAction": {
       "placeholder": "ابحث في الخوادم أو المقتطفات أو التنقل...",
       "noResults": "لم يتم العثور على نتائج",
-      "navigation": "الملاحة",
-      "settings": "الإعدادات",
       "navigate": "التنقل",
       "select": "اختر",
       "close": "إغلاق",
@@ -214,6 +217,11 @@
       "organizationDeleteError": "فشل في حذف المؤسسة",
       "leftOrganization": "لقد غادرت المؤسسة",
       "leaveOrganizationError": "فشل في مغادرة المؤسسة"
+    },
+    "unsavedChanges": {
+      "title": "Unsaved changes",
+      "text": "Discard them, or keep editing and save when you're done.",
+      "keepEditing": "Keep editing"
     }
   },
   "audit": {
@@ -1546,7 +1554,8 @@
       "deleteConfirm": "سيؤدي هذا إلى حذف الدور «{{name}}» نهائيًا وإزالته من جميع الأعضاء.",
       "inheritsAllow": "الميراث: مسموح به",
       "inheritsDeny": "يرث: مرفوض"
-    }
+    },
+    "search": "Search settings"
   },
   "tunnel": {
     "title": "الميناء إلى الأمام",
@@ -1580,25 +1589,6 @@
   "servers": {
     "addServerNote": "انقر بزر الماوس الأيمن لإضافة خادم جديد",
     "searchPlaceholder": "بحث",
-    "inheritancePolicy": {
-      "title": "Apply inheritance",
-      "description": "Choose how existing objects should handle these inherited settings.",
-      "impact": "{{count}} existing objects are affected.",
-      "retain": {
-        "title": "Retain existing",
-        "description": "Keep current values as local overrides."
-      },
-      "adopt": {
-        "title": "Adopt folder settings",
-        "description": "Replace current values with the inherited folder settings."
-      },
-      "moveTitle": "Apply destination inheritance?",
-      "moveDescription": "Choose whether moved objects adopt the destination folder settings or retain their current values.",
-      "moveFailed": "Unable to move object",
-      "identitiesRemoved": "Some identities were removed because they are unavailable in the destination.",
-      "enableTitle": "Enable inheritance?",
-      "enableDescription": "Choose what existing objects should do when these folder settings are saved."
-    },
     "time": {
       "justNow": "الآن فقط",
       "minuteAgo": "{{count}} منذ دقيقة",
@@ -1708,17 +1698,13 @@
       "createFailed": "فشل في إنشاء الخادم",
       "updateFailed": "فشل في تحديث الخادم",
       "createIdentityFailed": "فشل في إنشاء الهوية",
-      "updateIdentityFailed": "فشل في تحديث الهوية"
+      "updateIdentityFailed": "فشل في تحديث الهوية",
+      "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination."
     },
     "dialog": {
       "addServer": "إضافة خادم",
       "addProtocolServer": "إضافة {{protocol}} خادم",
       "editServer": "تحرير الخادم",
-      "tabs": {
-        "details": "التفاصيل",
-        "identities": "الهويات",
-        "settings": "الإعدادات"
-      },
       "actions": {
         "save": "حفظ",
         "create": "إنشاء"
@@ -1764,7 +1750,6 @@
           "description": "السماح بإيقاظ هذا الخادم عن بُعد باستخدام عنوان MAC الخاص به"
         },
         "rdpSecurity": {
-          "title": "الأمن",
           "description": "طريقة المصادقة المستخدمة للاتصال بجهاز Windows البعيد. استخدم NLA في البيئات التي يكون فيها NTLM معطلاً (مثل مجموعة «المستخدمين المحميين»).",
           "method": "طريقة الأمان"
         },
@@ -1807,8 +1792,7 @@
           "backspace": "مسافة للخلف",
           "delete": "حذف",
           "functionKeys": "مفاتيح الوظائف"
-        },
-        "noSettings": "لا تتوفر إعدادات إضافية لهذا النوع من الإدخال."
+        }
       },
       "identities": {
         "organizationIdentities": "هويات المنظمة",
@@ -1834,7 +1818,16 @@
         "noUsername": "لا يوجد اسم مستخدم",
         "noOrgIdentities": "لا توجد هويات للمؤسسة. أنشئ واحدة لمشاركتها مع جميع الأعضاء.",
         "noPersonalIdentities": "لا توجد هويات شخصية. أنشئ واحدة لاستخدامك الخاص."
-      }
+      },
+      "sections": {
+        "general": "General",
+        "connection": "Connection",
+        "identities": "Identities",
+        "options": "Options",
+        "credentials": "Credentials"
+      },
+      "useInherited": "Use inherited value",
+      "reset": "Reset"
     },
     "proxmoxDialog": {
       "title": {
@@ -1842,9 +1835,6 @@
         "edit": "تحرير Proxmox VE"
       },
       "fields": {
-        "name": "الاسم",
-        "serverIp": "IP الخادم",
-        "port": "المنفذ",
         "username": "اسم المستخدم",
         "password": "كلمة المرور",
         "nodeName": "اسم العقدة (اختياري)",
@@ -1853,8 +1843,6 @@
       "monitoringDescription": "جمع مقاييس وحدة المعالجة المركزية والذاكرة والتخزين على مستوى المجموعة",
       "placeholders": {
         "name": "الاسم",
-        "serverIp": "IP الخادم",
-        "port": "المنفذ",
         "username": "اسم المستخدم (مثال: root@pam)",
         "password": "كلمة المرور",
         "specificNode": "اسم عقدة محدد"
@@ -1868,7 +1856,8 @@
         "updated": "تم تحديث تكامل Proxmox بنجاح",
         "createFailed": "فشل في إنشاء تكامل Proxmox",
         "updateFailed": "فشل تحديث تكامل Proxmox"
-      }
+      },
+      "credentialsDescription": "Proxmox user with API access, e.g. root@pam or a dedicated API user."
     },
     "connectionReasonDialog": {
       "title": "سبب الاتصال مطلوب",
@@ -2196,6 +2185,14 @@
     "liveSessions": {
       "activeOn": "الجلسات المباشرة: {{users}}",
       "unknownUser": "مستخدم مجهول"
+    },
+    "folderSettings": {
+      "name": "Folder name",
+      "nameRequired": "Folder name is required",
+      "loadFailed": "Unable to load folder settings",
+      "protocol": "Defaults for",
+      "protocolHint": "Servers in this folder use what you set below unless they set their own value. Each protocol has its own defaults.",
+      "unset": "Remove from folder"
     }
   },
   "support": {
@@ -2227,7 +2224,8 @@
     "connectDevice": "توصيل الجهاز",
     "recentConnections": "الاتصالات الحديثة",
     "getStarted": "ابدأ الآن",
-    "getStartedHint": "أضف خادمًا من الشريط الجانبي لبدء إدارة بنيتك الأساسية."
+    "getStartedHint": "أضف خادمًا من الشريط الجانبي لبدء إدارة بنيتك الأساسية.",
+    "hibernated": "Hibernated"
   },
   "downloadApps": {
     "title": "تنزيل التطبيقات",
@@ -2238,6 +2236,10 @@
       "linux": "لينكس",
       "android": "أندرويد",
       "ios": "iOS"
-    }
+    },
+    "recommended": "Recommended",
+    "versionUnavailable": "The server version could not be determined, so direct downloads are unavailable. You can still browse the releases on GitHub.",
+    "sourceHint": "Downloads are served from the GitHub releases.",
+    "allReleases": "All releases"
   }
 }
