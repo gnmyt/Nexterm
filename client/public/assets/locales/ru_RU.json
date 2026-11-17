@@ -48,9 +48,7 @@
     },
     "confirmDialog": {
       "title": "Вы уверены?",
-      "defaultText": "Это действие нельзя отменить.",
-      "unsavedChangesTitle": "Несохраненные изменения",
-      "unsavedChangesText": "У вас есть несохраненные изменения. Вы уверены, что хотите отменить действие?"
+      "defaultText": "Это действие нельзя отменить."
     },
     "loginDialog": {
       "title": "Nexterm",
@@ -63,7 +61,14 @@
       "backToLogin": "Назад к входу",
       "authenticating": "Аутентификация...",
       "noAccount": "У тебя ещё нет аккаунта?",
-      "haveAccount": "У тебя уже есть аккаунт?"
+      "haveAccount": "У тебя уже есть аккаунт?",
+      "welcome": "Welcome back",
+      "subtitle": "Sign in to continue to Nexterm.",
+      "registrationSubtitle": "Create your account to get started.",
+      "firstTimeSubtitle": "Create the first administrator account for this instance.",
+      "twoFactorTitle": "Two-factor authentication",
+      "twoFactorDescription": "Enter the code from your authenticator app.",
+      "qrTitle": "Sign in with the app"
     },
     "deviceLink": {
       "title": "Привязать устройство",
@@ -157,8 +162,6 @@
     "quickAction": {
       "placeholder": "Поиск серверов, сниппетов или навигация...",
       "noResults": "Результаты не найдены",
-      "navigation": "Навигация",
-      "settings": "Настройки",
       "navigate": "Перейдите по ссылке",
       "select": "Выберите",
       "close": "Закрыть",
@@ -214,6 +217,11 @@
       "organizationDeleteError": "Не удалось удалить организацию",
       "leftOrganization": "Вы покинули организацию",
       "leaveOrganizationError": "Не удалось покинуть организацию"
+    },
+    "unsavedChanges": {
+      "title": "Unsaved changes",
+      "text": "Discard them, or keep editing and save when you're done.",
+      "keepEditing": "Keep editing"
     }
   },
   "audit": {
@@ -1546,7 +1554,8 @@
       "deleteConfirm": "Это приведёт к окончательному удалению роли «{{name}}» и исключению из неё всех участников.",
       "inheritsAllow": "Наследование: разрешено",
       "inheritsDeny": "Наследуется: Отклонено"
-    }
+    },
+    "search": "Search settings"
   },
   "tunnel": {
     "title": "Порт Форвард",
@@ -1580,25 +1589,6 @@
   "servers": {
     "addServerNote": "Щелкни правой кнопкой мыши, чтобы добавить новый сервер",
     "searchPlaceholder": "Поиск",
-    "inheritancePolicy": {
-      "title": "Apply inheritance",
-      "description": "Choose how existing objects should handle these inherited settings.",
-      "impact": "{{count}} existing objects are affected.",
-      "retain": {
-        "title": "Retain existing",
-        "description": "Keep current values as local overrides."
-      },
-      "adopt": {
-        "title": "Adopt folder settings",
-        "description": "Replace current values with the inherited folder settings."
-      },
-      "moveTitle": "Apply destination inheritance?",
-      "moveDescription": "Choose whether moved objects adopt the destination folder settings or retain their current values.",
-      "moveFailed": "Unable to move object",
-      "identitiesRemoved": "Some identities were removed because they are unavailable in the destination.",
-      "enableTitle": "Enable inheritance?",
-      "enableDescription": "Choose what existing objects should do when these folder settings are saved."
-    },
     "time": {
       "justNow": "Только что",
       "minuteAgo": "{{count}} мин назад",
@@ -1708,17 +1698,13 @@
       "createFailed": "Не удалось создать сервер",
       "updateFailed": "Не удалось обновить сервер",
       "createIdentityFailed": "Не удалось создать учётные данные",
-      "updateIdentityFailed": "Не удалось обновить учётные данные"
+      "updateIdentityFailed": "Не удалось обновить учётные данные",
+      "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination."
     },
     "dialog": {
       "addServer": "Добавить сервер",
       "addProtocolServer": "Добавить сервер {{protocol}}",
       "editServer": "Изменить сервер",
-      "tabs": {
-        "details": "Основное",
-        "identities": "Учётные данные",
-        "settings": "Настройки"
-      },
       "actions": {
         "save": "Сохранить",
         "create": "Создать"
@@ -1764,7 +1750,6 @@
           "description": "Разреши разбудить этот сервер удаленно, используя его MAC-адрес"
         },
         "rdpSecurity": {
-          "title": "Безопасность",
           "description": "Метод аутентификации, используемый для подключения к удалённому компьютеру под управлением Windows. Используй NLA в тех случаях, когда NTLM отключен (например, в группе «Защищённые пользователи»).",
           "method": "Метод обеспечения безопасности"
         },
@@ -1807,8 +1792,7 @@
           "backspace": "Backspace",
           "delete": "Удалить",
           "functionKeys": "Функциональные клавиши"
-        },
-        "noSettings": "Дополнительные настройки для этого типа подключения отсутствуют."
+        }
       },
       "identities": {
         "organizationIdentities": "Организационные учётные данные",
@@ -1834,7 +1818,16 @@
         "noUsername": "Без имени пользователя",
         "noOrgIdentities": "Нет организационных учётных данных. Создайте, чтобы делиться со всеми участниками.",
         "noPersonalIdentities": "Нет личных учётных данных. Создайте для личного использования."
-      }
+      },
+      "sections": {
+        "general": "General",
+        "connection": "Connection",
+        "identities": "Identities",
+        "options": "Options",
+        "credentials": "Credentials"
+      },
+      "useInherited": "Use inherited value",
+      "reset": "Reset"
     },
     "proxmoxDialog": {
       "title": {
@@ -1842,9 +1835,6 @@
         "edit": "Изменить Proxmox VE"
       },
       "fields": {
-        "name": "Название",
-        "serverIp": "IP-адрес сервера",
-        "port": "Порт",
         "username": "Имя пользователя",
         "password": "Пароль",
         "nodeName": "Имя узла (необязательно)",
@@ -1853,8 +1843,6 @@
       "monitoringDescription": "Собирай показатели процессора, памяти и хранилища в масштабах всего кластера.",
       "placeholders": {
         "name": "Название",
-        "serverIp": "IP-адрес сервера",
-        "port": "Порт",
         "username": "Имя пользователя (напр. root@pam)",
         "password": "Пароль",
         "specificNode": "Имя конкретного узла"
@@ -1868,7 +1856,8 @@
         "updated": "Интеграция с Proxmox успешно обновлена",
         "createFailed": "Не удалось создать интеграцию с Proxmox",
         "updateFailed": "Не удалось обновить интеграцию Proxmox"
-      }
+      },
+      "credentialsDescription": "Proxmox user with API access, e.g. root@pam or a dedicated API user."
     },
     "connectionReasonDialog": {
       "title": "Требуется указать причину подключения",
@@ -2196,6 +2185,14 @@
     "liveSessions": {
       "activeOn": "Прямые эфиры: {{users}}",
       "unknownUser": "Неизвестный пользователь"
+    },
+    "folderSettings": {
+      "name": "Folder name",
+      "nameRequired": "Folder name is required",
+      "loadFailed": "Unable to load folder settings",
+      "protocol": "Defaults for",
+      "protocolHint": "Servers in this folder use what you set below unless they set their own value. Each protocol has its own defaults.",
+      "unset": "Remove from folder"
     }
   },
   "support": {
@@ -2227,7 +2224,8 @@
     "connectDevice": "Подключи устройство",
     "recentConnections": "Последние связи",
     "getStarted": "Начни",
-    "getStartedHint": "Добавь сервер с боковой панели, чтобы начать управлять своей инфраструктурой."
+    "getStartedHint": "Добавь сервер с боковой панели, чтобы начать управлять своей инфраструктурой.",
+    "hibernated": "Hibernated"
   },
   "downloadApps": {
     "title": "Скачать приложения",
@@ -2238,6 +2236,10 @@
       "linux": "Linux",
       "android": "Android",
       "ios": "iOS"
-    }
+    },
+    "recommended": "Recommended",
+    "versionUnavailable": "The server version could not be determined, so direct downloads are unavailable. You can still browse the releases on GitHub.",
+    "sourceHint": "Downloads are served from the GitHub releases.",
+    "allReleases": "All releases"
   }
 }
