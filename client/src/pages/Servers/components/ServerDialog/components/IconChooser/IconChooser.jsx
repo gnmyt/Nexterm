@@ -121,10 +121,10 @@ export const IconChooser = ({ selected, setSelected }) => {
     }, [isOpen]);
 
     return (
-        <div className="icon-chooser" ref={chooserRef}>
+        <div className={`icon-chooser${isOpen ? " open" : ""}`} ref={chooserRef}>
             <div className="icon-chooser__trigger" onClick={() => setIsOpen(!isOpen)}>
                 <Icon path={selectedIcon?.path || mdi.mdiServerOutline} size={1} />
-                <Icon path={mdiChevronDown} size={0.8} className="icon-chooser__chevron" />
+                <Icon path={mdiChevronDown} className="icon-chooser__chevron" />
             </div>
 
             {isOpen && createPortal(
