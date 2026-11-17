@@ -3,10 +3,15 @@
 
 $columns: minmax(12rem, 1fr) 5.5rem 6.5rem 9rem 1.75rem
 
+$selected: color-mix(in srgb, colors.$primary 20%, transparent)
+$selected-strong: color-mix(in srgb, colors.$primary 28%, transparent)
+
 .file-list
   display: flex
   flex-direction: column
   overflow-y: auto
+  overflow-x: hidden
+  container: file-list / inline-size
   flex: 1
   min-height: 0
   padding: 0
@@ -32,7 +37,7 @@ $columns: minmax(12rem, 1fr) 5.5rem 6.5rem 9rem 1.75rem
     grid-template-columns: $columns
     background-color: colors.$terminal
     align-items: center
-    height: 1.75rem
+    height: 2rem
     padding: 0 0.75rem
     border-bottom: 1px solid colors.$gray
     position: sticky
@@ -47,14 +52,22 @@ $columns: minmax(12rem, 1fr) 5.5rem 6.5rem 9rem 1.75rem
       gap: 0.25rem
       min-width: 0
       height: 100%
-      font-size: 0.68rem
+      position: relative
+      font-size: 0.75rem
       font-weight: 600
       color: colors.$subtext
-      text-transform: uppercase
-      letter-spacing: 0.06em
       white-space: nowrap
       cursor: pointer
       transition: color 0.1s ease
+
+      & + .header-cell:not(.header-actions)::before
+        content: ""
+        position: absolute
+        left: -0.5rem
+        top: 0.45rem
+        bottom: 0.45rem
+        width: 1px
+        background-color: colors.$gray
 
       &:hover
         color: colors.$white
@@ -170,14 +183,14 @@ $columns: minmax(12rem, 1fr) 5.5rem 6.5rem 9rem 1.75rem
       .dots-menu
         opacity: 1
 
-    &.focused
+    &.focused:not(.selected)
       box-shadow: inset 0 0 0 1px colors.$primary
 
     &.selected
-      background-color: colors.$gray
+      background-color: $selected
 
-      .dots-menu
-        opacity: 1
+      &:hover, &.focused
+        background-color: $selected-strong
 
     &.dragging
       opacity: 0.4
@@ -218,6 +231,13 @@ $columns: minmax(12rem, 1fr) 5.5rem 6.5rem 9rem 1.75rem
       .folder-icon
         color: colors.$primary
         opacity: 0.85
+
+      .type-icon
+        color: colors.$subtext
+
+      .brand-icon
+        padding: 0.125rem
+        box-sizing: border-box
 
       .expand-toggle, .expand-spacer
         width: 1rem
@@ -364,9 +384,12 @@ $columns: minmax(12rem, 1fr) 5.5rem 6.5rem 9rem 1.75rem
       &.selected
         background-color: transparent
 
+        &:hover, &.focused
+          background-color: transparent
+
       &.selected .file-name > svg, &.selected .file-thumbnail
-        background-color: colors.$gray
-        box-shadow: inset 0 0 0 1px colors.$subtext
+        background-color: $selected-strong
+        box-shadow: inset 0 0 0 1px colors.$primary
 
       &.drop-target .file-name > svg
         background-color: colors.$primary-opacity
@@ -397,6 +420,9 @@ $columns: minmax(12rem, 1fr) 5.5rem 6.5rem 9rem 1.75rem
 
         .folder-icon
           opacity: 0.9
+
+        > svg.brand-icon
+          padding: 1.6rem
 
         .file-thumbnail
           width: 100%
@@ -564,6 +590,32 @@ $columns: minmax(12rem, 1fr) 5.5rem 6.5rem 9rem 1.75rem
   .drag-count
     display: none
 
+$list-mode: ".file-list:not(.grid):not(.compact)"
+
+@container file-list (max-width: 41rem)
+  #{$list-mode}
+    .file-list-header, .file-item
+      grid-template-columns: minmax(10rem, 1fr) 5.5rem 9rem 1.75rem
+
+    .header-permissions, .file-permissions
+      display: none
+
+@container file-list (max-width: 32rem)
+  #{$list-mode}
+    .file-list-header, .file-item
+      grid-template-columns: minmax(8rem, 1fr) 5.5rem 1.75rem
+
+    .header-date, .file-date
+      display: none
+
+@container file-list (max-width: 22rem)
+  #{$list-mode}
+    .file-list-header, .file-item
+      grid-template-columns: minmax(0, 1fr) 1.75rem
+
+    .header-size, .file-size
+      display: none
+
 @media (max-width: breakpoints.$mobile)
   .file-list
     .file-list-header
@@ -602,6 +654,9 @@ $columns: minmax(12rem, 1fr) 5.5rem 6.5rem 9rem 1.75rem
 
           > svg
             padding: 1rem
+
+          > svg.brand-icon
+            padding: 1.25rem
 
         .dots-menu
           opacity: 1

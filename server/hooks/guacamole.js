@@ -14,6 +14,17 @@ const sizedMonitorOf = (msgStr) => {
     return match ? Number.parseInt(match[1], 10) : 0;
 };
 
+const DISPLAY_SIZE = /\.size,\d+\.(\d+),\d+\.(\d+)/;
+
+const rememberDisplaySize = (sessionId, msgStr) => {
+    const match = msgStr.match(DISPLAY_SIZE);
+    if (!match) return;
+    const width = Number.parseInt(match[1], 10);
+    const height = Number.parseInt(match[2], 10);
+    const session = SessionManager.get(sessionId);
+    if (session && width > 0 && height > 0) session.displaySize = { width, height };
+};
+
 const handleGuacJoin = async (ws, sessionId, ctx, pinnedMonitor = null) => {
     const isShared = !!ctx.isShared;
     const canWrite = createWriteGuard(ctx, sessionId);
@@ -80,7 +91,7 @@ const handleGuacJoin = async (ws, sessionId, ctx, pinnedMonitor = null) => {
     SessionManager.addWebSocket(sessionId, ws, isShared, buildParticipant(ctx));
 
     if (pinnedMonitor !== null) SessionManager.pinMonitor(sessionId, ws, pinnedMonitor);
-    else if (!isShared || canWrite()) SessionManager.claimActiveWs(sessionId, ws);
+    else if (canWrite()) SessionManager.claimActiveWs(sessionId, ws);
 
     const pingInterval = setInterval(() => {
         if (ws.readyState === ws.OPEN) ws.ping();
@@ -89,7 +100,7 @@ const handleGuacJoin = async (ws, sessionId, ctx, pinnedMonitor = null) => {
     ws.on("message", (msg) => {
         const msgStr = msg.toString();
 
-        if (isShared && !canWrite()) return;
+        if (!canWrite()) return;
 
         const sizedMonitor = sizedMonitorOf(msgStr);
         if (msgStr.includes(".key,")) SessionManager.markTyping(sessionId, ws);
@@ -107,6 +118,7 @@ const handleGuacJoin = async (ws, sessionId, ctx, pinnedMonitor = null) => {
                 || SessionManager.isMonitorPinnedByOther(sessionId, ws, sizedMonitor))) return;
         }
 
+        if (sizedMonitor === 0) rememberDisplaySize(sessionId, msgStr);
         SessionManager.updateActivity(sessionId, { touchLoginSession: !isShared });
         joinClient.send(msgStr);
     });

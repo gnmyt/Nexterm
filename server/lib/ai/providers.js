@@ -165,9 +165,9 @@ const anthropicProvider = {
 };
 
 const CODEX_BASE_URL = "https://chatgpt.com/backend-api/codex";
-const CODEX_CLIENT_VERSION = "0.99.0";
+const CODEX_CLIENT_VERSION = "0.169.0";
 const CODEX_USER_AGENT = `codex_cli_rs/${CODEX_CLIENT_VERSION} (Nexterm)`;
-const CODEX_FALLBACK_MODELS = ["gpt-5-codex", "gpt-5", "codex-mini-latest"];
+const CODEX_FALLBACK_MODELS = ["gpt-5.6-luna", "gpt-5.6-terra", "gpt-6-luna"];
 const codexOAuth = getOAuthClient("openai_codex");
 
 const codexHeaders = (accessToken, accountId, sessionId) => {
@@ -237,7 +237,9 @@ const codexProvider = {
             });
             if (response.ok) {
                 const data = await response.json();
-                const slugs = (data.models || data.data || []).map((m) => m.slug || m.id).filter(Boolean);
+                const slugs = (data.models || data.data || [])
+                    .filter((m) => m.visibility !== "hide")
+                    .map((m) => m.slug || m.id).filter(Boolean);
                 if (slugs.length) return { list: [...new Set(slugs)].sort((a, b) => a.localeCompare(b)) };
             }
         } catch {}

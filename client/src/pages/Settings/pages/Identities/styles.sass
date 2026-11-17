@@ -105,14 +105,32 @@
               font-size: 0.85rem
               word-break: break-word
 
-            .identity-type
-              background-color: colors.$primary-opacity
-              color: colors.$primary
+            .identity-tags
+              display: flex
+              flex-wrap: wrap
+              gap: 0.375rem
+
+            .identity-type,
+            .identity-unused
               padding: 0.25rem 0.625rem
               border-radius: 0.75rem
               font-size: 0.75rem
               font-weight: 600
-              display: inline-block
+
+            .identity-type
+              background-color: colors.$primary-opacity
+              color: colors.$primary
+
+            .identity-unused
+              display: inline-flex
+              align-items: center
+              gap: 0.25rem
+              background-color: colors.$dark-gray
+              color: colors.$subtext
+
+              svg
+                width: 0.85rem
+                height: 0.85rem
 
         .identity-actions
           display: flex

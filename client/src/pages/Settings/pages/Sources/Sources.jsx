@@ -54,6 +54,14 @@ export const Sources = () => {
         loadSources();
     }, [loadSources]);
 
+    const anySyncing = !!sources?.some(source => source.syncing);
+
+    useEffect(() => {
+        if (!anySyncing) return;
+        const interval = setInterval(loadSources, 2000);
+        return () => clearInterval(interval);
+    }, [anySyncing, loadSources]);
+
     const openCreateDialog = () => {
         setEditSource(null);
         setFormData({ name: "", url: "", enabled: true });
@@ -151,12 +159,14 @@ export const Sources = () => {
 
     const getStatusClass = (source) => {
         if (!source.enabled) return "disabled";
+        if (source.syncing) return "syncing";
         if (!source.lastSyncStatus) return "pending";
         return source.lastSyncStatus;
     };
 
     const getStatusLabel = (source) => {
         if (!source.enabled) return t("settings.sources.status.disabled");
+        if (source.syncing) return t("settings.sources.status.syncing");
         if (!source.lastSyncStatus) return t("settings.sources.status.pending");
         if (source.lastSyncStatus === "success") return t("settings.sources.status.success");
         return t("settings.sources.status.error");
@@ -207,9 +217,10 @@ export const Sources = () => {
                                     </div>
                                 </div>
                                 <div className="source-actions">
-                                    <Button icon={syncing[source.id] ? mdiLoading : mdiSync} spin={!!syncing[source.id]}
+                                    <Button icon={syncing[source.id] || source.syncing ? mdiLoading : mdiSync}
+                                            spin={!!(syncing[source.id] || source.syncing)}
                                             onClick={() => handleSync(source.id)}
-                                            disabled={syncing[source.id] || !source.enabled}
+                                            disabled={syncing[source.id] || source.syncing || !source.enabled}
                                             title={t("settings.sources.sync")} />
                                     {!source.isDefault && (
                                         <Button icon={mdiPencil} onClick={() => openEditDialog(source)} title={t("settings.sources.edit")} />

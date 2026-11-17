@@ -15,6 +15,7 @@ export const FloatingWindow = ({
     className = "", icon, title, titleExtra, actions, onClose, initialSize, children,
 }) => {
     const { t } = useTranslation();
+    const iconSpec = typeof icon === "string" ? { path: icon } : icon;
     const {
         windowRef, headerRef, isMaximized, focusWindow, handleMouseDown, handleResizeStart,
         toggleMaximize, getWindowStyle, getWindowClasses,
@@ -27,7 +28,10 @@ export const FloatingWindow = ({
              onClick={(e) => e.stopPropagation()} onContextMenu={(e) => e.stopPropagation()}>
             <div ref={headerRef} className="floating-window__header" onMouseDown={handleMouseDown}>
                 <div className="floating-window__title">
-                    {icon && <Icon path={icon} />}
+                    {iconSpec?.path && (
+                        <Icon path={iconSpec.path} className={iconSpec.brand ? "floating-window__icon--brand" : undefined}
+                              style={{ color: iconSpec.color }} />
+                    )}
                     <h2>{title}</h2>
                     {titleExtra}
                 </div>

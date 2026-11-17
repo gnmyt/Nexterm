@@ -1,33 +1,52 @@
-import { mdiAccountCircleOutline, mdiFileUploadOutline, mdiLockOutline, mdiPlus, mdiTrashCan, mdiLinkOff, mdiLink, mdiAccountGroup, mdiAccount, mdiAccountArrowRight, mdiAccountKeyOutline } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiFileUploadOutline, mdiLockOutline, mdiPlus, mdiTrashCan, mdiLinkOff, mdiLink, mdiAccountGroup, mdiAccountLockOutline, mdiAccountArrowRight, mdiAccountKeyOutline, mdiEarth, mdiKeyVariant, mdiFolderOutline } from "@mdi/js";
 import Input from "@/common/components/IconInput";
 import SelectBox from "@/common/components/SelectBox";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
+import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import Icon from "@mdi/react";
 import Button from "@/common/components/Button";
 import { useTranslation } from "react-i18next";
-import { SectionBlock } from "@/common/components/SectionedDialog";
+import { SectionBlock, SettingRow } from "@/common/components/SectionedDialog";
 import Field from "@/common/components/Field";
+import Tooltip from "@/common/components/Tooltip";
+import { useToast } from "@/common/contexts/ToastContext.jsx";
 
-export const buildIdentityPayload = (identity) => {
+const isNewId = (id) => !id || String(id).startsWith("new-");
+
+export const buildIdentityPayload = (identity, fallbackName = "") => {
+    const authType = identity.authType || identity.type;
+    const username = authType === "password-only" ? undefined : (identity.username || undefined);
     const payload = {
-        name: identity.name,
-        username: identity.authType === "password-only" ? undefined : (identity.username || undefined),
-        type: identity.authType,
+        name: identity.name?.trim() || username || fallbackName,
+        username,
+        type: authType,
     };
     if (identity.organizationId) payload.organizationId = identity.organizationId;
 
-    const usesPassword = identity.authType !== "ssh";
-    const usesKey = identity.authType === "ssh" || identity.authType === "both";
+    const usesPassword = authType !== "ssh";
+    const usesKey = authType === "ssh" || authType === "both";
     if (usesPassword && (identity.passwordTouched || identity.password)) payload.password = identity.password;
     if (usesKey && identity.sshKey) payload.sshKey = identity.sshKey;
     if (usesKey && identity.passphrase) payload.passphrase = identity.passphrase;
     return payload;
 };
 
-const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, orgId, allowedAuthTypes, canUnlink }) => {
+export const buildServerIdentities = (identityIds, identityUpdates, knownIdentities, serverName) => identityIds.map((id) => {
+    const draft = identityUpdates[id];
+    if (!draft) return id;
+    if (isNewId(id)) return { ...buildIdentityPayload(draft, serverName), global: draft.global };
+    const saved = knownIdentities?.find(known => known.id === id);
+    return {
+        id,
+        ...buildIdentityPayload({ ...saved, authType: saved?.type, ...draft }, serverName),
+        ...(draft.global === undefined ? {} : { global: draft.global }),
+    };
+});
+
+const Identity = ({ identity, onPatch, onDelete, onMoveToOrg, orgId, allowedAuthTypes, isInherited, isGlobal, onToggleGlobal, fallbackName }) => {
     const { t } = useTranslation();
-    const isNew = !identity.id || String(identity.id).startsWith("new-");
+    const isNew = isNewId(identity.id);
     const isOrg = identity.scope === "organization";
     const [name, setName] = useState(identity.name || "");
     const [username, setUsername] = useState(identity.username || "");
@@ -59,8 +78,8 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
 
     useEffect(() => {
         if (!edited.current) return;
-        onUpdate({
-            id: identity.id, name, username, authType, scope: identity.scope, organizationId: identity.organizationId,
+        onPatch(identity.id, {
+            name, username, authType,
             ...(authType === "password" || authType === "password-only"
                 ? { password, passwordTouched: pwTouched || isNew || password !== "" }
                 : authType === "both"
@@ -72,23 +91,27 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
     const showUsername = authType !== "password-only";
     const usesPassword = authType === "password" || authType === "password-only" || authType === "both";
     const usesKey = authType === "ssh" || authType === "both";
+    const deletesIdentity = isNew || Boolean(identity.entryId);
+
+    const isPrivate = Boolean(orgId) && !isOrg;
+    const scopeIcon = isInherited ? mdiFolderOutline : isPrivate ? mdiAccountLockOutline : isGlobal && onToggleGlobal ? mdiEarth : mdiKeyVariant;
+    const scopeHint = isInherited ? t("servers.dialog.identities.inheritedHint") : isPrivate ? t("servers.dialog.identities.onlyMeHint") : null;
 
     return (
-        <div className={`server-identity${isOrg ? " server-identity--org" : ""}`}>
+        <div className="server-identity">
             <div className="server-identity__header">
-                <span className="server-identity__scope" title={isOrg ? t("servers.dialog.identities.organizationIdentities") : t("servers.dialog.identities.personalIdentities")}>
-                    <Icon path={isOrg ? mdiAccountGroup : mdiAccount} />
-                </span>
-                <div className="server-identity__name">
-                    <Input icon={mdiAccountCircleOutline} value={name} setValue={touch(setName)} placeholder={t("servers.dialog.identities.identityName")} />
-                </div>
-                {isNew && <span className="server-badge">{t("servers.dialog.identities.new")}</span>}
-                {!isOrg && !isNew && isOrgContext && orgId && onMoveToOrg && (
+                <Tooltip text={scopeHint} disabled={!scopeHint} delay={500} asChild>
+                    <span className="server-identity__icon"><Icon path={scopeIcon} /></span>
+                </Tooltip>
+                <input className="server-identity__title" type="text" autoComplete="off" value={name} onChange={(e) => touch(setName)(e.target.value)}
+                       placeholder={username || fallbackName || t("servers.dialog.identities.identityName")}
+                       aria-label={t("servers.dialog.identities.identityName")} />
+                {!isOrg && !isNew && orgId && onMoveToOrg && (
                     <Button icon={mdiAccountArrowRight} title={t("servers.dialog.identities.moveToOrg")} onClick={() => onMoveToOrg(identity.id, orgId)} />
                 )}
-                {canUnlink && (
-                    <Button type="danger" icon={isNew ? mdiTrashCan : mdiLinkOff} onClick={() => onDelete(identity.id)}
-                            title={t(isNew ? "servers.dialog.identities.removeIdentity" : "servers.dialog.identities.unlinkIdentity")} />
+                {!isInherited && (
+                    <Button type="danger" icon={deletesIdentity ? mdiTrashCan : mdiLinkOff} onClick={() => onDelete(identity.id)}
+                            title={t(deletesIdentity ? "servers.dialog.identities.removeIdentity" : "servers.dialog.identities.unlinkIdentity")} />
                 )}
             </div>
             <div className="server-identity__fields">
@@ -118,6 +141,20 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
                     </div>
                 )}
             </div>
+            {(onToggleGlobal || (isNew && orgId)) && (
+                <div className="sd-settings server-identity__options">
+                    {isNew && orgId && (
+                        <SettingRow id={`identity-share-${identity.id}`} icon={mdiAccountGroup} checked={isOrg}
+                                    label={t("servers.dialog.identities.shareToggle")}
+                                    onChange={(share) => onPatch(identity.id, share ? { scope: "organization", organizationId: orgId } : { scope: "personal", organizationId: null })} />
+                    )}
+                    {onToggleGlobal && (
+                        <SettingRow id={`identity-global-${identity.id}`} icon={mdiEarth} checked={isGlobal}
+                                    label={t("servers.dialog.identities.globalToggle")}
+                                    onChange={(global) => onToggleGlobal(identity, global)} />
+                    )}
+                </div>
+            )}
         </div>
     );
 };
@@ -131,91 +168,99 @@ const getAuthTypeLabel = (type, t) => {
     }
 };
 
-const IdentityGroup = ({ title, icon, description, identities, available, onUpdate, onDelete, onMoveToOrg, onLink, onAdd, isOrgContext, orgId, emptyText, t, allowedAuthTypes, specificIdentities }) => (
-    <div className="sd-subsection">
-        <div className="sd-subsection__header">
-            <div>
-                <h4><Icon path={icon} />{title}</h4>
-                <p>{description}</p>
-            </div>
-            <Button type="secondary" size="small" text={t("servers.dialog.identities.new")} icon={mdiPlus} onClick={onAdd} />
-        </div>
+const countIdentityUsage = (entries, counts = new Map()) => {
+    (entries || []).forEach((entry) => {
+        if (entry.entries) countIdentityUsage(entry.entries, counts);
+        else (entry.identities || []).forEach((id) => counts.set(id, (counts.get(id) || 0) + 1));
+    });
+    return counts;
+};
 
-        {identities.length > 0 && (
-            <div className="server-identity-list">
-                {identities.map((i) => <Identity key={i.id} identity={i} onUpdate={onUpdate} onDelete={onDelete} onMoveToOrg={onMoveToOrg} isOrgContext={isOrgContext} orgId={orgId} allowedAuthTypes={allowedAuthTypes}
-                                                       canUnlink={!i.id || String(i.id).startsWith("new-") || specificIdentities.includes(i.id)} />)}
-            </div>
-        )}
-
-        {available.length > 0 && (
-            <div className="server-linkable">
-                <span className="server-linkable__label">{t("servers.dialog.identities.availableToLink")} · {available.length}</span>
-                <div className="server-linkable__list">
-                    {available.map((i) => (
-                        <button type="button" key={i.id} className="server-linkable__item" onClick={() => onLink(i.id)}>
-                            <Icon path={mdiLink} />
-                            <span className="server-linkable__name">{i.name}</span>
-                            <span className="server-linkable__user">{i.username || t("servers.dialog.identities.noUsername")}</span>
-                            <span className="server-badge server-badge--muted">{getAuthTypeLabel(i.authType || i.type, t)}</span>
-                        </button>
-                    ))}
-                </div>
-            </div>
-        )}
-
-        {identities.length === 0 && available.length === 0 && <p className="sd-muted">{emptyText}</p>}
-    </div>
-);
-
-export const IdentityFields = ({ serverIdentities, specificIdentities = serverIdentities, setIdentityUpdates, identityUpdates, setIdentities, currentOrganizationId, allowedAuthTypes, serverName, allowMove = true, ownsNewIdentities = false }) => {
+export const IdentityFields = ({ serverIdentities, specificIdentities = serverIdentities, setIdentityUpdates, identityUpdates, setIdentities, currentOrganizationId, allowedAuthTypes, serverName, allowMove = true, bindable = false }) => {
     const { t } = useTranslation();
-    const { identities, personalIdentities, getOrganizationIdentities, moveIdentityToOrganization } = useContext(IdentityContext);
+    const { sendToast } = useToast();
+    const { identities, moveIdentityToOrganization } = useContext(IdentityContext);
+    const { servers } = useContext(ServerContext);
+    const [showLinkable, setShowLinkable] = useState(false);
 
-    const orgIdentities = currentOrganizationId ? getOrganizationIdentities(currentOrganizationId) : [];
-    const linkedIds = new Set(serverIdentities.map(String));
-    const working = [
-        ...serverIdentities.map(id => ({ ...(identities?.find(i => i.id === id) || { id }), ...(identityUpdates[id] || {}) })),
-        ...(ownsNewIdentities ? [] : Object.keys(identityUpdates).filter(k => k.startsWith("new-") && !linkedIds.has(k)).map(k => ({ id: k, ...identityUpdates[k] }))),
-    ];
-    const linkedOrg = working.filter(i => i.scope === "organization");
-    const linkedPersonal = working.filter(i => i.scope === "personal");
+    const usage = useMemo(() => countIdentityUsage(servers), [servers]);
+    const working = serverIdentities.map(id => ({ ...(identities?.find(i => i.id === id) || { id }), ...(identityUpdates[id] || {}) }));
 
-    const filterByAllowedAuthTypes = (list) => allowedAuthTypes ? list.filter(i => allowedAuthTypes.includes(i.authType || i.type)) : list;
-    const availableOrg = filterByAllowedAuthTypes(orgIdentities.filter(i => !serverIdentities.includes(i.id)));
-    const availablePersonal = filterByAllowedAuthTypes(personalIdentities?.filter(i => !serverIdentities.includes(i.id)) || []);
+    const linkable = (identities || []).filter(i => !i.entryId && !serverIdentities.includes(i.id)
+        && (i.scope === "personal" || i.organizationId === currentOrganizationId)
+        && (!allowedAuthTypes || allowedAuthTypes.includes(i.type)));
 
-    const handleUpdate = (u) => setIdentityUpdates(prev => ({ ...prev, [u.id]: u }));
+    const patch = (id, changes) => setIdentityUpdates(prev => ({ ...prev, [id]: { ...prev[id], ...changes } }));
     const handleDelete = (id) => {
         setIdentities(prev => prev.filter(i => i !== id));
         setIdentityUpdates(prev => { const n = { ...prev }; delete n[id]; return n; });
     };
+    const toggleGlobal = (identity, global) => {
+        if (!global && !isNewId(identity.id) && usage.get(identity.id) > 1) {
+            sendToast("Error", t("servers.dialog.identities.globalInUse", { count: usage.get(identity.id) }));
+            return;
+        }
+        patch(identity.id, { global });
+    };
     const handleLink = (id) => setIdentities(prev => [...prev, id]);
     const handleMove = async (id, orgId) => {
         const result = await moveIdentityToOrganization(id, orgId);
-        if (result.success) setIdentityUpdates(prev => ({ ...prev, [id]: { ...prev[id], scope: "organization", organizationId: orgId } }));
+        if (result.success) patch(id, { scope: "organization", organizationId: orgId });
     };
-    const defaultAuthType = allowedAuthTypes?.[0] || "password";
-    const addNew = (forOrg) => {
+    const addNew = () => {
         const temporaryId = `new-${crypto.randomUUID()}`;
-        if (ownsNewIdentities) setIdentities(prev => [...prev, temporaryId]);
+        setIdentities(prev => [...prev, temporaryId]);
         setIdentityUpdates(prev => ({
-            ...prev, [temporaryId]: { name: serverName || "", username: "", authType: defaultAuthType, password: "", scope: forOrg ? "organization" : "personal", organizationId: forOrg ? currentOrganizationId : null }
+            ...prev,
+            [temporaryId]: {
+                name: "", username: "", authType: allowedAuthTypes?.[0] || "password", password: "", global: !bindable,
+                scope: currentOrganizationId ? "organization" : "personal", organizationId: currentOrganizationId || null,
+            },
         }));
     };
 
-    const shared = { onUpdate: handleUpdate, onDelete: handleDelete, onMoveToOrg: allowMove ? handleMove : null, onLink: handleLink, t, allowedAuthTypes, specificIdentities };
-
     return (
         <>
-            {currentOrganizationId && (
-                <IdentityGroup title={t("servers.dialog.identities.organizationIdentities")} icon={mdiAccountGroup} description={t("servers.dialog.identities.orgDescription")}
-                    identities={linkedOrg} available={availableOrg} onAdd={() => addNew(true)} isOrgContext={true} orgId={currentOrganizationId}
-                    emptyText={t("servers.dialog.identities.noOrgIdentities")} {...shared} />
+            {working.length > 0 ? (
+                <div className="server-identity-list">
+                    {working.map((identity) => {
+                        const isInherited = !isNewId(identity.id) && !specificIdentities.includes(identity.id);
+                        return (
+                            <Identity key={identity.id} identity={identity} onPatch={patch} onDelete={handleDelete}
+                                      onMoveToOrg={allowMove ? handleMove : null} orgId={currentOrganizationId} allowedAuthTypes={allowedAuthTypes}
+                                      isInherited={isInherited} fallbackName={serverName}
+                                      isGlobal={identity.global ?? !identity.entryId}
+                                      onToggleGlobal={bindable && !isInherited ? toggleGlobal : null} />
+                        );
+                    })}
+                </div>
+            ) : (
+                <p className="sd-muted">{t("servers.dialog.identities.empty")}</p>
             )}
-            <IdentityGroup title={t("servers.dialog.identities.personalIdentities")} icon={mdiAccount} description={t("servers.dialog.identities.personalDescription")}
-                identities={linkedPersonal} available={availablePersonal} onAdd={() => addNew(false)} isOrgContext={!!currentOrganizationId} orgId={currentOrganizationId}
-                emptyText={t("servers.dialog.identities.noPersonalIdentities")} {...shared} />
+
+            <div className="server-identity-actions">
+                <Button type="secondary" size="small" text={t("servers.dialog.identities.add")} icon={mdiPlus} onClick={addNew} />
+                {linkable.length > 0 && (
+                    <Button type="secondary" size="small" icon={mdiLink} onClick={() => setShowLinkable(open => !open)}
+                            text={t("servers.dialog.identities.linkGlobal", { count: linkable.length })} />
+                )}
+            </div>
+
+            {showLinkable && linkable.length > 0 && (
+                <div className="server-linkable">
+                    {linkable.map((i) => (
+                        <button type="button" key={i.id} className="server-linkable__item" onClick={() => handleLink(i.id)}>
+                            <Icon path={mdiLink} />
+                            <span className="server-linkable__name">{i.name}</span>
+                            <span className="server-linkable__user">{i.username || t("servers.dialog.identities.noUsername")}</span>
+                            {currentOrganizationId && i.scope === "personal" && (
+                                <span className="server-badge server-badge--muted">{t("servers.dialog.identities.onlyMe")}</span>
+                            )}
+                            <span className="server-badge server-badge--muted">{getAuthTypeLabel(i.type, t)}</span>
+                        </button>
+                    ))}
+                </div>
+            )}
         </>
     );
 };

@@ -36,6 +36,10 @@ const removeUnavailableEntryIdentities = async (entryIds, organizationId, allowe
     for (const link of removed) {
         await EntryIdentity.destroy({ where: { entryId: link.entryId, identityId: link.identityId }, transaction });
     }
+    const removedIds = [...new Set(removed.map((link) => link.identityId))];
+    if (removedIds.length) {
+        await Identity.update({ entryId: null }, { where: { id: { [Op.in]: removedIds }, entryId: { [Op.in]: entryIds } }, transaction });
+    }
     return removed.length;
 };
 

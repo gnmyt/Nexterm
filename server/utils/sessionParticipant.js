@@ -8,10 +8,11 @@ const buildParticipant = (ctx) => ({
     avatarHash: ctx.user?.avatarHash || null,
     kind: !ctx.isShared ? "owner" : ctx.isOrgJoin ? "organization" : "link",
     authSessionId: ctx.session?.id || null,
-    writable: !ctx.isShared ? true : ctx.shareWritable === true,
+    writable: ctx.serverSession?.automated ? false : !ctx.isShared ? true : ctx.shareWritable === true,
 });
 
 const createWriteGuard = (ctx, sessionId) => {
+    if (ctx.serverSession?.automated) return () => false;
     if (!ctx.isShared) return () => true;
     if (ctx.isOrgJoin) return () => ctx.shareWritable === true;
     return () => SessionManager.get(sessionId)?.shareWritable === true;

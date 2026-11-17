@@ -11,7 +11,7 @@ const bindHandlers = (ws, conn, sessionId, config, isShared, canWrite) => {
     const { dataSocket, scriptLayer } = conn;
 
     const msgHandler = (data) => {
-        if (isShared && !canWrite()) return;
+        if (!canWrite()) return;
         const msg = data.toString();
 
         if (scriptLayer && msg.startsWith(SCRIPT_MAGIC)) return;
@@ -61,7 +61,7 @@ const handleSession = (ws, ctx, isShared) => {
     const canWrite = createWriteGuard(ctx, sessionId);
 
     SessionManager.addWebSocket(sessionId, ws, isShared, buildParticipant(ctx));
-    if (!isShared || canWrite()) SessionManager.setActiveWs(sessionId, ws);
+    if (canWrite()) SessionManager.setActiveWs(sessionId, ws);
 
     const { msgHandler, dataHandler, endData } = bindHandlers(ws, conn, sessionId, entry?.config, isShared, canWrite);
 
@@ -69,7 +69,7 @@ const handleSession = (ws, ctx, isShared) => {
         conn.scriptLayer.createMessageHandler(ws, canWrite);
     }
 
-    if (!isShared) {
+    if (!isShared && canWrite()) {
         const onResize = (data) => {
             const r = parseResizeMessage(data);
             if (r) {

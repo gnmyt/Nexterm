@@ -1,0 +1,35 @@
+@use "@/common/styles/colors"
+
+.question-card
+  .question-text
+    padding: 0 0.75rem 0.5rem
+    font-size: 0.88rem
+    line-height: 1.5
+    color: colors.$white
+
+    p
+      margin: 0
+
+  .question-composer
+    margin: 0 0.6rem 0.6rem
+    background: colors.$terminal
+
+    .question-choice
+      cursor: pointer
+      font-family: inherit
+
+      > svg
+        width: 0.8rem
+        height: 0.8rem
+
+      &:hover
+        border-color: colors.$primary
+
+  .question-answer
+    margin: 0 0.75rem 0.75rem
+    padding: 0.4rem 0.6rem
+    border-radius: 0.45rem
+    background: colors.$primary-opacity
+    border: 1px solid colors.$primary
+    font-size: 0.85rem
+    color: colors.$white

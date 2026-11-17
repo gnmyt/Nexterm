@@ -179,7 +179,7 @@ const FolderInheritanceDialog = ({ open, onClose, folderId }) => {
                 <IdentitiesSection serverIdentities={identities} specificIdentities={ownIdentities} setIdentities={setIdentities}
                                    identityUpdates={identityUpdates} setIdentityUpdates={setIdentityUpdates}
                                    currentOrganizationId={organizationId} allowedAuthTypes={fieldConfig.allowedAuthTypes}
-                                   allowMove={false} ownsNewIdentities />
+                                   allowMove={false} />
             )}
             {has("terminal") && <TerminalSection config={config} setConfig={setConfig} />}
             {has("display") && <DisplaySection config={config} setConfig={setConfig} fieldConfig={fieldConfig} />}

@@ -10,7 +10,7 @@ const bindHandlers = (ws, conn, sessionId, config, isShared, canWrite) => {
     const { dataSocket } = conn;
 
     const msgHandler = (data) => {
-        if (isShared && !canWrite()) return;
+        if (!canWrite()) return;
         const msg = data.toString();
         const resize = parseResizeMessage(msg);
         if (resize) {
@@ -56,7 +56,7 @@ module.exports = async (ws, ctx) => {
     const canWrite = createWriteGuard(ctx, sessionId);
 
     SessionManager.addWebSocket(sessionId, ws, isShared, buildParticipant(ctx));
-    if (!isShared || canWrite()) SessionManager.setActiveWs(sessionId, ws);
+    if (canWrite()) SessionManager.setActiveWs(sessionId, ws);
 
     const { msgHandler, dataHandler, endData } = bindHandlers(ws, conn, sessionId, entry?.config, isShared, canWrite);
 

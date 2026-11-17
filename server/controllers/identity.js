@@ -70,17 +70,26 @@ module.exports.getIdentityCredentials = async (identityId) => {
     return creds.reduce((acc, c) => ({ ...acc, [c.type]: c.secret }), {});
 };
 
-module.exports.listIdentities = async (accountId, { transaction = null } = {}) => {
+module.exports.listIdentities = async (accountId, { transaction = null, withUsage = false } = {}) => {
     const personal = await Identity.findAll({ where: { accountId, organizationId: null }, transaction });
     const memberships = await OrganizationMember.findAll({ where: { accountId, status: "active" }, transaction });
     const orgIds = memberships.map(m => m.organizationId);
     const org = orgIds.length ? await Identity.findAll({ where: { organizationId: { [Op.in]: orgIds } }, transaction }) : [];
     
-    const format = (i, scope) => ({ id: i.id, name: i.name, type: i.type, username: i.username, organizationId: i.organizationId, accountId: i.accountId, scope });
+    const ids = [...personal, ...org].map(i => i.id);
+    const usedIds = new Set();
+    if (withUsage && ids.length) {
+        const where = { identityId: { [Op.in]: ids } };
+        const options = { where, attributes: ["identityId"], group: ["identityId"], raw: true, transaction };
+        const [entryLinks, folderLinks] = await Promise.all([EntryIdentity.findAll(options), FolderIdentityProfile.findAll(options)]);
+        [...entryLinks, ...folderLinks].forEach(row => usedIds.add(row.identityId));
+    }
+
+    const format = (i, scope) => ({ id: i.id, name: i.name, type: i.type, username: i.username, organizationId: i.organizationId, accountId: i.accountId, entryId: i.entryId || null, ...(withUsage ? { inUse: usedIds.has(i.id) } : {}), scope });
     return [...personal.map(i => format(i, 'personal')), ...org.map(i => format(i, 'organization'))];
 };
 
-const createIdentityData = async (accountId, config, transaction = null) => {
+const createIdentityData = async (accountId, config, transaction = null, entryId = null) => {
     if (config.organizationId) {
         if (!(await hasOrganizationPermission(accountId, config.organizationId, Permission.IDENTITIES_MANAGE)))
             return { code: 403, message: "You don't have permission to manage this organization's identities" };
@@ -89,6 +98,7 @@ const createIdentityData = async (accountId, config, transaction = null) => {
     }
     const identity = await Identity.create({
         ...config, accountId: config.organizationId ? null : accountId, organizationId: config.organizationId || null,
+        entryId,
         password: undefined, sshKey: undefined, passphrase: undefined,
     }, { transaction });
     await syncCredentials(identity.id, config.type, config.password, config.sshKey, config.passphrase, transaction);
@@ -192,7 +202,8 @@ module.exports.moveIdentityToOrganization = async (accountId, identityId, organi
             return entryOrganizationId !== organizationId;
         }).map((entry) => entry.id);
 
-        await Identity.update({ accountId: null, organizationId }, { where: { id: identityId }, transaction });
+        const keepsEntry = identity.entryId && !invalidEntryIds.includes(identity.entryId);
+        await Identity.update({ accountId: null, organizationId, entryId: keepsEntry ? identity.entryId : null }, { where: { id: identityId }, transaction });
         const targetFolderIds = new Set(organizationFolders.map((folder) => folder.id));
         const invalidProfileRowIds = profileRows
             .filter((row) => !targetFolderIds.has(row.folderId))

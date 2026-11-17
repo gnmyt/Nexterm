@@ -701,6 +701,7 @@
       "sessionSyncAcrossDevicesDesc": "Sessions will be available across devices and synced",
       "sessionSyncSameBrowserDesc": "Sessions will synchronize for the current user session",
       "sessionSyncSameTabDesc": "Sessions will synchronize inside your browser tab",
+      "showAgentSessionsDesc": "Show sessions opened by the AI assistant or MCP agents as view-only tabs",
       "twoFactorDialog": {
         "title": "Enable 2FA",
         "description": "Scan the code with your authenticator app or enter <span class=\"totp-code\">{{secret}}</span> manually.",
@@ -814,8 +815,8 @@
         "folderManagementDescription": "Log creation, modification, and deletion of folders",
         "scriptExecutionLabel": "Script Execution",
         "scriptExecutionDescription": "Log execution of scripts and automation tasks",
-        "aiOperationsLabel": "AI Operations",
-        "aiOperationsDescription": "Log commands and file changes performed by the AI assistant",
+        "agentOperationsLabel": "AI Agent Operations",
+        "agentOperationsDescription": "Log commands, input, screenshots and file changes performed by the AI assistant and by agents connected through the MCP server",
         "actions": {
           "save": "Save Settings"
         },
@@ -1207,7 +1208,7 @@
     },
     "ai": {
       "title": "AI Assistant Configuration",
-      "description": "Configure the AI assistant that can run commands and manage files directly over your server sessions.",
+      "description": "Configure the AI provider used by the assistant, which can operate your servers through its own sessions.",
       "loading": "Loading AI settings...",
       "enable": {
         "title": "Enable AI Assistant",
@@ -1220,10 +1221,6 @@
       "model": {
         "title": "Model",
         "description": "Select the AI model the assistant should use"
-      },
-      "requireConfirmation": {
-        "title": "Confirm before each action",
-        "description": "Require users to approve every command and file change the assistant wants to make"
       },
       "apiKey": {
         "title": "API Key",
@@ -1326,10 +1323,12 @@
     },
     "identities": {
       "title": "SSH Keys & Credentials",
-      "description": "Manage your SSH keys and login credentials for server connections",
+      "description": "Identities you can link to any server. Server-specific ones live in that server's settings.",
       "createIdentity": "Create Identity",
       "personal": "Personal",
       "noUsername": "No username",
+      "notInUse": "Not in use",
+      "notInUseHint": "Not linked to any server or folder",
       "sshKey": "SSH Key",
       "password": "Password",
       "editIdentity": "Edit identity",
@@ -1397,6 +1396,7 @@
         "success": "Synced",
         "error": "Error",
         "pending": "Pending",
+        "syncing": "Syncing",
         "disabled": "Disabled"
       },
       "dialog": {
@@ -1750,8 +1750,6 @@
       "folderUpdated": "Folder updated successfully",
       "createFailed": "Failed to create server",
       "updateFailed": "Failed to update server",
-      "createIdentityFailed": "Failed to create identity",
-      "updateIdentityFailed": "Failed to update identity",
       "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination.",
       "serverDisabled": "Server \"{{name}}\" is disabled",
       "accessBlocked": "Access to \"{{name}}\" is restricted"
@@ -1868,10 +1866,6 @@
         "noSettings": "No additional settings available for this entry type."
       },
       "identities": {
-        "organizationIdentities": "Organization Identities",
-        "personalIdentities": "Personal Identities",
-        "orgDescription": "Shared with all organization members. Everyone can use these identities.",
-        "personalDescription": "Only visible to you. Other organization members cannot see these.",
         "identityName": "Identity Name",
         "username": "Username",
         "authentication": "Authentication",
@@ -1882,15 +1876,19 @@
         "both": "Key+Pass",
         "sshPrivateKey": "SSH Private Key",
         "passphrase": "Passphrase (optional)",
-        "new": "New",
+        "add": "Add identity",
+        "linkGlobal": "Link global identity · {{count}}",
+        "empty": "No identities yet.",
         "removeIdentity": "Remove identity",
         "unlinkIdentity": "Unlink identity",
         "moveToOrg": "Move to organization",
-        "selectOrganization": "Select Organization",
-        "availableToLink": "Available to Link",
         "noUsername": "No username",
-        "noOrgIdentities": "No organization identities. Create one to share with all members.",
-        "noPersonalIdentities": "No personal identities. Create one for your private use."
+        "globalToggle": "Use on other servers",
+        "globalInUse": "This identity is used by {{count}} servers. Unlink it from the others first.",
+        "shareToggle": "Share with organization",
+        "inheritedHint": "Inherited from the folder settings.",
+        "onlyMe": "Only me",
+        "onlyMeHint": "Only you can see and use this identity."
       },
       "sections": {
         "general": "General",
@@ -2186,13 +2184,34 @@
         "downloaded": "Downloaded \"{{name}}\" from remote"
       }
     },
+    "automatedSession": {
+      "viewOnlyAi": "The AI assistant is working in this session. You can watch, but not type.",
+      "viewOnlyMcp": "An external agent (MCP) is working in this session. You can watch, but not type."
+    },
     "aiAssistant": {
       "title": "AI Assistant",
       "open": "AI Assistant",
-      "empty": "Ask the assistant to inspect or change this server. It can run commands and read or edit files directly over the connection.",
+      "empty": "Ask the assistant to inspect or change your servers. It opens its own sessions to the servers you add below, runs commands, edits files and can even operate remote desktops.",
+      "addServer": "Add server",
+      "removeServer": "Remove server",
+      "searchServers": "Search servers...",
+      "noMatches": "No matching servers",
+      "current": "current",
+      "openSessions": "{{count}} open session(s)",
+      "approval": {
+        "ask": "Ask before actions",
+        "askDescription": "Commands, input and file changes wait for your approval",
+        "allow": "Allow all",
+        "allowDescription": "Runs tool calls without asking",
+        "readonly": "Read-only",
+        "readonlyDescription": "Only inspects servers; anything that changes them is denied"
+      },
       "placeholder": "Message the assistant...",
       "connecting": "Connecting...",
       "send": "Send",
+      "copyMessage": "Copy message",
+      "copied": "Copied",
+      "editMessage": "Edit message",
       "stop": "Stop",
       "connectionError": "Connection to the assistant was lost.",
       "reconnecting": "Connection lost. Reconnecting...",
@@ -2205,19 +2224,65 @@
       "continuePrompt": "The assistant paused after a long run of steps. Continue?",
       "continue": "Continue",
       "compacted": "Earlier messages were summarised to free up context.",
+      "retryPrompt": "The last step failed. Retry from where it stopped?",
+      "retry": "Retry",
+      "questionOther": "Or type another answer...",
+      "questionAnswer": "Type your answer...",
+      "questionSend": "Answer",
+      "questionPickOne": "Pick one or type an answer",
+      "questionPickMany": "Pick any that apply",
+      "exitCode": "exit {{code}}",
+      "truncated": "[truncated]",
+      "toolSummary": {
+        "recursive": "{{path}} (recursive)",
+        "doubleClick": "{{target}} ×2"
+      },
       "tools": {
-        "runCommand": "Run command",
-        "readFile": "Read file",
-        "writeFile": "Write file",
-        "editFile": "Edit file",
-        "listDirectory": "List directory",
-        "statPath": "Inspect path",
-        "makeDirectory": "Create directory",
-        "deleteFile": "Delete file",
-        "removeDirectory": "Remove directory",
-        "movePath": "Move",
-        "changePermissions": "Change permissions",
-        "findDirectories": "Find directories"
+        "list_entries": "List servers",
+        "get_entry": "Inspect server",
+        "list_folders": "List folders",
+        "list_organizations": "List organizations",
+        "list_identities": "List identities",
+        "list_snippets": "List snippets",
+        "list_scripts": "List scripts",
+        "list_tags": "List tags",
+        "list_users": "List users",
+        "get_permissions": "Check permissions",
+        "get_monitoring": "Read monitoring",
+        "list_sessions": "List sessions",
+        "open_session": "Open session",
+        "get_session": "Inspect session",
+        "close_session": "Close session",
+        "close_all_sessions": "Close all sessions",
+        "terminal_run": "Run command",
+        "terminal_send": "Send input",
+        "terminal_read": "Read terminal",
+        "terminal_resize": "Resize terminal",
+        "run_command": "Run command",
+        "exec_command": "Run command",
+        "file_list": "List directory",
+        "file_stat": "Inspect path",
+        "file_read": "Read file",
+        "file_write": "Write file",
+        "file_edit": "Edit file",
+        "file_mkdir": "Create directory",
+        "file_delete": "Delete",
+        "file_move": "Move",
+        "file_chmod": "Change permissions",
+        "file_search_dirs": "Find directories",
+        "desktop_screenshot": "Screenshot",
+        "desktop_info": "Inspect desktop",
+        "desktop_click": "Click",
+        "desktop_mouse_move": "Move mouse",
+        "desktop_drag": "Drag",
+        "desktop_scroll": "Scroll",
+        "desktop_type": "Type text",
+        "desktop_key": "Press keys",
+        "desktop_resize": "Resize desktop",
+        "desktop_clipboard_set": "Set clipboard",
+        "desktop_clipboard_get": "Read clipboard",
+        "batch": "Run several actions",
+        "ask_user": "Question"
       }
     },
     "commandSuggestion": {

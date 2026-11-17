@@ -11,7 +11,7 @@ const { hasOrganizationPermission } = require("../utils/permission");
 const isSharingEnabled = (organization) => organization?.sessionSettings?.enableLiveSessionSharing === true;
 
 const isJoinableSession = (session) =>
-    session.configuration?.type !== "sftp" && !session.configuration?.scriptId;
+    session.watchable && session.configuration?.type !== "sftp" && !session.configuration?.scriptId;
 
 const getSharingOrganizations = async (accountId) => {
     const memberships = await OrganizationMember.findAll({ where: { accountId, status: "active" } });
@@ -39,6 +39,8 @@ const serializeSession = (session, entry, owner, organization, writable) => ({
     protocol: entry?.type || null,
     icon: entry?.icon || null,
     startedAt: session.createdAt,
+    automated: session.automated,
+    origin: session.origin || null,
     owner: toAccountView(owner),
     participants: SessionManager.getParticipants(session.sessionId),
     writable,

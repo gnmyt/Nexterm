@@ -4,6 +4,7 @@ const { preferencesValidation } = require("../validations/preferences");
 const { createAccount, selfRegister, getFTSStatus, updateTOTP, updatePassword, updateName, updateSessionSync, updatePreferences, searchUsers, updateAvatar, removeAvatar } = require("../controllers/account");
 const speakeasy = require("speakeasy");
 const express = require("express");
+const stateBroadcaster = require("../lib/StateBroadcaster");
 const { authenticate, authenticateQuery } = require("../middlewares/auth");
 const { getAvatarPath, avatarExists, MAX_AVATAR_UPLOAD_SIZE, AVATAR_CONTENT_TYPE } = require("../utils/avatarService");
 const { validateSchema } = require("../utils/schema");
@@ -288,6 +289,8 @@ app.patch("/me/preferences", authenticate, async (req, res) => {
 
     const result = await updatePreferences(req.user.id, req.body);
     if (result?.code) return res.json(result);
+
+    if (req.body.sessions) stateBroadcaster.broadcast("CONNECTIONS", { accountId: req.user.id });
 
     res.json({ message: "Preferences successfully updated.", preferences: result });
 });

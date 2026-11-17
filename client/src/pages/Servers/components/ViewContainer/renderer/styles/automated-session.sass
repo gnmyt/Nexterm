@@ -1,0 +1,33 @@
+@use "@/common/styles/colors"
+
+.automated-session-frame
+  position: absolute
+  inset: 0
+  z-index: 20
+  pointer-events: none
+  overflow: hidden
+
+  &::before, &::after
+    content: ""
+    position: absolute
+    inset: 0
+    pointer-events: none
+
+  &::before
+    box-shadow: inset 0 0 18px 2px color-mix(in srgb, colors.$automation 45%, transparent)
+
+  &::after
+    box-shadow: inset 0 0 48px 10px color-mix(in srgb, colors.$automation 40%, transparent)
+    opacity: 0.25
+    animation: automated-session-pulse 2.8s ease-in-out infinite
+
+  @media (prefers-reduced-motion: reduce)
+    &::after
+      animation: none
+      opacity: 0.5
+
+@keyframes automated-session-pulse
+  0%, 100%
+    opacity: 0.25
+  50%
+    opacity: 1

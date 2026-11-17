@@ -57,11 +57,6 @@ const AISettings = db.define("ai_settings", {
         allowNull: true,
         defaultValue: "http://localhost:11434",
     },
-    requireConfirmation: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: true,
-        allowNull: false,
-    },
     createdAt: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW,

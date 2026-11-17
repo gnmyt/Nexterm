@@ -25,6 +25,7 @@ import ConnectionErrorBanner from "@/common/components/ConnectionErrorBanner";
 import { waitForTauri } from "@/common/utils/TauriUtil.js";
 import MobileNav from "@/common/components/MobileNav";
 import ThemeLoader from "@/common/components/ThemeLoader";
+import AIAssistant from "@/common/components/AIAssistant";
 import { patchRequest } from "@/common/utils/RequestUtil.js";
 
 const Sidebar = lazy(() => import("@/common/components/Sidebar"));
@@ -128,6 +129,7 @@ const AppContent = () => {
                                                             </div>
                                                         </div>
                                                         <MobileNav />
+                                                        <AIAssistant />
                                                     </div>
                                                 </QuickActionProvider>
                                             </SessionProvider>

@@ -40,10 +40,15 @@ const generalSchema = Joi.object({
     sidebarCollapsed: Joi.boolean(),
 }).unknown(false);
 
+const sessionsSchema = Joi.object({
+    showAgentSessions: Joi.boolean(),
+}).unknown(false);
+
 module.exports.preferencesValidation = Joi.object({
     terminal: terminalSchema,
     theme: themeSchema,
     files: filesSchema,
     remoteDesktop: remoteDesktopSchema,
     general: generalSchema,
+    sessions: sessionsSchema,
 }).unknown(false);

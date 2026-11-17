@@ -9,16 +9,20 @@ const isIdentityAllowedForScope = (identity, organizationId, accountIds) => {
     return accountIds instanceof Set ? accountIds.has(identity.accountId) : identity.accountId === accountIds;
 };
 
-const validateIdentityIds = async (accountId, identityIds, organizationId = null) => {
+const isIdentityAllowedForEntry = (identity, entryId) => !identity?.entryId || identity.entryId === entryId;
+
+const validateIdentityIds = async (accountId, identityIds, organizationId = null, entryId = null) => {
     if (!identityIds?.length) return { valid: true };
     const accessible = new Map((await listIdentities(accountId)).map((identity) => [identity.id, identity]));
     if (identityIds.some((identityId) => !isIdentityAllowedForScope(accessible.get(identityId), organizationId, accountId))) {
         return { valid: false, error: { code: 403, message: "One or more identities are not available in this resource scope" } };
     }
+    if (identityIds.some((identityId) => !isIdentityAllowedForEntry(accessible.get(identityId), entryId))) {
+        return { valid: false, error: { code: 400, message: "One or more identities are bound to another server. Make them global to reuse them." } };
+    }
     return { valid: true };
 };
 
-// Shared with validateEntryAccess in controllers/entry.js, so both resolve an entry's scope the same way
 const getEntryScope = async (entry) => {
     if (entry.folderId) {
         const folder = await Folder.findByPk(entry.folderId);
@@ -89,4 +93,4 @@ const validateJumpHostIds = async (accountId, jumpHostIds, options = {}) => {
     return { valid: true };
 };
 
-module.exports = { canAccessEntry, getEntryScope, isIdentityAllowedForScope, isSameSecurityScope, validateIdentityIds, validateJumpHostIds };
+module.exports = { canAccessEntry, getEntryScope, isIdentityAllowedForEntry, isIdentityAllowedForScope, isSameSecurityScope, validateIdentityIds, validateJumpHostIds };

@@ -7,7 +7,9 @@ export const ContextMenu = ({
     position, 
     onClose, 
     children,
-    trigger = null 
+    trigger = null,
+    placement = "below",
+    className = "",
 }) => {
     const menuRef = useRef(null);
     const [adjustedPosition, setAdjustedPosition] = useState(position);
@@ -52,10 +54,16 @@ export const ContextMenu = ({
         let { x, y } = position;
 
         x = Math.max(10, Math.min(x, innerWidth - menuRect.width - 10));
-        y = Math.max(10, Math.min(y, innerHeight - menuRect.height - 10));
 
+        if (placement === "above") {
+            const bottom = Math.max(10, innerHeight - y + 6);
+            setAdjustedPosition({ x, bottom });
+            return;
+        }
+
+        y = Math.max(10, Math.min(y, innerHeight - menuRect.height - 10));
         setAdjustedPosition({ x, y });
-    }, [isOpen, isPositioned, position]);
+    }, [isOpen, isPositioned, position, placement]);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -102,11 +110,10 @@ export const ContextMenu = ({
     const menu = (
         <div
             ref={menuRef}
-            className={`context-menu ${isOpen && isPositioned ? 'open' : 'closed'}`}
-            style={{
-                left: `${adjustedPosition.x}px`,
-                top: `${adjustedPosition.y}px`,
-            }}
+            className={`context-menu ${isOpen && isPositioned ? 'open' : 'closed'}${placement === "above" ? " above" : ""}${className ? ` ${className}` : ""}`}
+            style={adjustedPosition.bottom !== undefined
+                ? { left: `${adjustedPosition.x}px`, bottom: `${adjustedPosition.bottom}px`, top: "auto" }
+                : { left: `${adjustedPosition.x}px`, top: `${adjustedPosition.y}px` }}
             role="menu"
             aria-orientation="vertical"
             tabIndex={-1}
