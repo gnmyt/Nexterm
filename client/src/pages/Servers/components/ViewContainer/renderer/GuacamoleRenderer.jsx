@@ -3,7 +3,7 @@ import Guacamole from "guacamole-common-js";
 import Icon from "@mdi/react";
 import { mdiCloudUpload } from "@mdi/js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
+import { useKeymaps, matchesKeybind, isMac } from "@/common/contexts/KeymapContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { useTranslation } from "react-i18next";
@@ -293,6 +293,30 @@ const GuacamoleRenderer = ({
         sendShortcut([0xffe3, 0x0076]);
     };
 
+    const pasteText = (text) => {
+        if (!text) return;
+        const sync = sendClipboardToServer(text);
+        if (sync.pasteInFlight) return;
+        sync.pasteInFlight = true;
+        const sendShortcut = () => {
+            if (clipboardSyncRef.current === sync) sendClipboardShortcut();
+            queueMicrotask(() => sync.pasteInFlight = false);
+        };
+        if (sync.ready) sendShortcut();
+        else sync.promise.then(sendShortcut);
+    };
+
+    // macOS only fires a paste event for ⌘V, so Ctrl+V reads the clipboard itself
+    const pasteFromLocalClipboard = async () => {
+        let text = "";
+        try {
+            text = await navigator.clipboard.readText();
+        } catch {
+        }
+        if (text) pasteText(text);
+        else sendClipboardShortcut();
+    };
+
     const selectMonitor = (index) => {
         activeMonitorRef.current = index;
         setActiveMonitor(index);
@@ -561,22 +585,8 @@ const GuacamoleRenderer = ({
             }
             if (!ref.current?.contains(e.target)) return;
             if (!interceptPaste) return;
-            const text = e.clipboardData?.getData("text");
             e.preventDefault();
-            if (text) {
-                const sync = sendClipboardToServer(text);
-                if (sync.pasteInFlight) return;
-                sync.pasteInFlight = true;
-                const sendShortcut = () => {
-                    if (clipboardSyncRef.current === sync) sendClipboardShortcut();
-                    queueMicrotask(() => sync.pasteInFlight = false);
-                };
-                if (sync.ready) {
-                    sendShortcut();
-                    return;
-                }
-                sync.promise.then(sendShortcut);
-            }
+            pasteText(e.clipboardData?.getData("text"));
         };
         document.addEventListener("paste", onPaste, true);
         return () => {
@@ -722,6 +732,10 @@ const GuacamoleRenderer = ({
 
             if (interceptPaste && (e.ctrlKey || e.metaKey) && (e.key === "v" || e.key === "V")) {
                 e.stopImmediatePropagation();
+                if (isMac() && e.ctrlKey && !e.metaKey) {
+                    e.preventDefault();
+                    if (!e.repeat) pasteFromLocalClipboard();
+                }
             }
         };
         const handleKeyUp = (e) => {
