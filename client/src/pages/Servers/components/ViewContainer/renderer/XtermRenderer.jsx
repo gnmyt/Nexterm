@@ -22,6 +22,7 @@ import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 import { postRequest } from "@/common/utils/RequestUtil.js";
 import "@xterm/xterm/css/xterm.css";
 import "./styles/xterm.sass";
+import "./styles/automated-session.sass";
 
 const PASSWORD_PROMPT_REGEX = /^[^$#%>]*(password|passphrase)[^:\r\n]*:\s?$/i;
 const ANSI_ESCAPE_REGEX = /\x1b(?:\[[0-9;?]*[a-zA-Z]|\][^\x07\x1b]*(?:\x07|\x1b\\)?|[()][0-9A-B]|[a-zA-Z=><])/g;
@@ -60,6 +61,7 @@ const XtermRenderer = ({ session, disconnectFromServer, reconnectSession, reconn
     }, [effectiveFontSize]);
     const aiContext = useContext(AIContext);
     const isAIAvailable = aiContext?.isAIAvailable || (() => false);
+    const isAutomated = session.automated;
     const aiAvailableRef = useRef(false);
     useEffect(() => {
         aiAvailableRef.current = isAIAvailable();
@@ -691,6 +693,7 @@ const XtermRenderer = ({ session, disconnectFromServer, reconnectSession, reconn
 
 
         term.onData((data) => {
+            if (isAutomated) return;
             if (passwordPromptRef.current) hidePasswordHint();
             ws.send(data);
 
@@ -898,6 +901,7 @@ const XtermRenderer = ({ session, disconnectFromServer, reconnectSession, reconn
                     fontSize={effectiveFontSize}
                 />
             )}
+            {isAutomated && <div className="automated-session-frame" aria-hidden="true" />}
             {!isShared && isAIAvailable() && suggestion && suggestionAnchor && (
                 <CommandSuggestion
                     anchor={suggestionAnchor}
