@@ -55,7 +55,7 @@ const extractIdentity = (identityResult) => {
 
 const FILE_TRANSFER_PORTS = { sftp: 22, ftp: 21, ftps: 21 };
 
-const getEntryProtocol = (entry) => (entry.type === "server" ? entry.config?.protocol : entry.type);
+const getEntryProtocol = (entry) => (entry?.type === "server" ? entry.config?.protocol : entry?.type);
 
 const getHostPort = (entry, defaultPort = 22) => {
     const host = entry.config?.ip;
@@ -255,9 +255,9 @@ const getSFTPBackgroundClient = (sessionId, entry, accountId) =>
         suffix: "bg", clientKey: "backgroundClient", connectingKey: "_backgroundConnecting", label: "background",
     });
 
-const getSFTPAIClient = (sessionId, entry, accountId) =>
+const getSFTPAgentClient = (sessionId, entry, accountId) =>
     getAuxiliarySFTPClient(sessionId, entry, accountId, {
-        suffix: "ai", clientKey: "aiClient", connectingKey: "_aiConnecting", label: "ai",
+        suffix: "agent", clientKey: "agentClient", connectingKey: "_agentConnecting", label: "agent",
     });
 
 const getSessionPassword = async (sessionId, entry, accountId) => {
@@ -504,7 +504,7 @@ const prepareGuacamoleSession = async (sessionId, entry, identity, organizationI
     if (entry.type === "pve-qemu") {
         params = await buildPveQemuParams(entry);
     } else if (protocol === "rdp") {
-        params = await buildRdpParams(cfg, identity, session.accountId);
+        params = await buildRdpParams(cfg, identity, session.automated ? null : session.accountId);
         params.dpi = String(session.configuration.displayDpi || 96);
     } else if (protocol === "vnc") {
         params = await buildVncParams(cfg, identity);
@@ -529,17 +529,14 @@ const prepareGuacamoleSession = async (sessionId, entry, identity, organizationI
         controlPlane.registerRecordingSession(sessionId, session.auditLogId);
     }
 
+    const width = Number.parseInt(session.configuration.displayWidth, 10) || 1024;
+    const height = Number.parseInt(session.configuration.displayHeight, 10) || 768;
+
     const masterClient = new GuacdClient({
         sessionId,
         connectionSettings: {
-            connection: {
-                type: protocol,
-                width: session.configuration.displayWidth || 1024,
-                height: session.configuration.displayHeight || 768,
-                dpi: session.configuration.displayDpi || 96,
-                ...params,
-            },
-            enableAudio: entry.config?.enableAudio !== false,
+            connection: { type: protocol, width, height, dpi: session.configuration.displayDpi || 96, ...params },
+            enableAudio: !session.automated && entry.config?.enableAudio !== false,
         },
         recordingEnabled,
         auditLogId: session.auditLogId,
@@ -571,7 +568,8 @@ module.exports = {
     createSFTPConnectionForSession,
     getSFTPTransferClient,
     getSFTPBackgroundClient,
-    getSFTPAIClient,
+    getSFTPAgentClient,
+    getEntryProtocol,
     getSessionPassword,
     buildSSHParams,
     resolveJumpHosts,
