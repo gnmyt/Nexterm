@@ -4,6 +4,7 @@ import { mdiChevronLeft, mdiChevronRight, mdiInformationOutline } from "@mdi/js"
 import Button from "@/common/components/Button";
 import { useTranslation } from "react-i18next";
 import "./styles.sass";
+import EmptyState from "@/common/components/EmptyState";
 
 export const PaginatedTable = ({
                                    data = [],
@@ -26,13 +27,9 @@ export const PaginatedTable = ({
 
     if (data.length === 0 && !loading) {
         return (
-            <div className={`paginated-table-container ${className}`}>
-                <div className="no-data">
-                    <Icon path={emptyState.icon || mdiInformationOutline} />
-                    <h3>{emptyState.title || t("common.table.noData.title")}</h3>
-                    <p>{emptyState.subtitle || t("common.table.noData.subtitle")}</p>
-                </div>
-            </div>
+            <EmptyState className={`paginated-table-empty ${className}`} icon={emptyState.icon || mdiInformationOutline}
+                        title={emptyState.title || t("common.table.noData.title")}
+                        description={emptyState.subtitle || t("common.table.noData.subtitle")} />
         );
     }
 

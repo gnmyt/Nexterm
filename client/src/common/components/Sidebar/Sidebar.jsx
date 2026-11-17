@@ -1,6 +1,6 @@
 import "./styles.sass";
 import NextermLogo from "@/common/components/NextermLogo";
-import { mdiCog, mdiLogout, mdiAccountCogOutline, mdiStarOutline, mdiLifebuoy, mdiServerNetwork, mdiPlus, mdiClose } from "@mdi/js";
+import { mdiCog, mdiLogout, mdiStarOutline, mdiLifebuoy, mdiServerNetwork, mdiPlus, mdiClose } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useContext, useState, useRef, useEffect } from "react";
@@ -60,20 +60,32 @@ export const Sidebar = ({ onToggleCollapse }) => {
                 }} />}
             <div className="sidebar-top">
                 <Tooltip text={t('common.sidebar.collapseTitle')}>
-                    <div className="sidebar-logo nexterm-logo" onClick={onToggleCollapse}><NextermLogo size={48 * uiScale} /></div>
+                    <div className="sidebar-logo nexterm-logo" onClick={onToggleCollapse}><NextermLogo size={40 * uiScale} /></div>
                 </Tooltip>
+                <div className="sidebar-divider" />
                 <nav>
-                    {navigation.map((item, i) => (
-                        <Tooltip key={i} text={item.title}>
-                            <div onClick={() => navigate(item.path)} className={`nav-item${location.pathname.startsWith(item.path) ? " nav-item-active" : ""}`}><Icon path={item.icon} /></div>
-                        </Tooltip>
-                    ))}
+                    {navigation.map((item, i) => {
+                        const active = location.pathname.startsWith(item.path);
+                        return (
+                            <Tooltip key={i} text={item.title}>
+                                <div role="link" tabIndex={0} aria-current={active ? "page" : undefined}
+                                     onClick={() => navigate(item.path)}
+                                     onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate(item.path); } }}
+                                     className={`nav-item${active ? " nav-item-active" : ""}`}>
+                                    <Icon path={item.icon} />
+                                </div>
+                            </Tooltip>
+                        );
+                    })}
                 </nav>
             </div>
             <div className="sidebar-bottom">
                 <div className="user-account-area" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
                     <Tooltip text={user?.username || t('common.sidebar.account')} disabled={userMenuOpen}>
-                        <div className={`user-btn ${userMenuOpen ? 'active' : ''}`}><Icon path={mdiAccountCogOutline} /></div>
+                        <div className={`user-btn ${userMenuOpen ? 'active' : ''}`} tabIndex={0} role="button" aria-haspopup="menu" aria-expanded={userMenuOpen}
+                             onFocus={handleMouseEnter} onClick={() => setUserMenuOpen(open => !open)}>
+                            <LetterAvatar user={user} size="md" showTooltip={false} />
+                        </div>
                     </Tooltip>
                     <div className={`user-menu ${userMenuOpen ? 'open' : ''}`}>
                         <div className="user-menu-header">

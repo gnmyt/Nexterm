@@ -28,7 +28,7 @@ export const LetterAvatar = ({ user, overflow, size = "md", showTooltip = true, 
 
     const avatar = (
         <div className={`letter-avatar letter-avatar-${size} ${className}`}
-             style={{ backgroundColor: showImage ? undefined : getAvatarColor(getAvatarIdentifier(user)) }}>
+             style={showImage ? undefined : { "--avatar-color": getAvatarColor(getAvatarIdentifier(user)) }}>
             {showImage ? <img src={avatarUrl} alt={label || ""} onError={() => setFailed(true)} />
                 : <span>{getAvatarInitials(user)}</span>}
         </div>

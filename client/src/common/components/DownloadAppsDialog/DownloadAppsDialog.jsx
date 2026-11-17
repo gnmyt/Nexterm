@@ -1,12 +1,16 @@
 import "./styles.sass";
 import { DialogProvider } from "@/common/components/Dialog";
 import Icon from "@mdi/react";
-import { mdiMicrosoftWindows, mdiApple, mdiLinux, mdiAndroid, mdiDownload, mdiLoading, mdiGooglePlay, mdiAppleIos } from "@mdi/js";
+import {
+    mdiMicrosoftWindows, mdiApple, mdiLinux, mdiAndroid, mdiDownload, mdiLoading, mdiGooglePlay, mdiAppleIos,
+    mdiCellphoneLink, mdiOpenInNew, mdiGithub, mdiAlertCircleOutline,
+} from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { getRequest } from "@/common/utils/RequestUtil.js";
 import { GITHUB_URL } from "@/App.jsx";
 import { openExternalUrl } from "@/common/utils/TauriUtil.js";
+import Button from "@/common/components/Button";
 
 const PLATFORMS = [
     {
@@ -40,7 +44,7 @@ const PLATFORMS = [
         icon: mdiAndroid,
         useVersionInFilename: true,
         downloads: [
-            { label: "Google Play", arch: "Recommended", url: "https://play.google.com/store/apps/details?id=dev.gnm.nexterm", icon: mdiGooglePlay },
+            { label: "Google Play", recommended: true, url: "https://play.google.com/store/apps/details?id=dev.gnm.nexterm", icon: mdiGooglePlay },
             { label: "APK", arch: "Universal", file: "universal" },
             { label: "APK", arch: "ARM64", file: "arm64-v8a" },
             { label: "APK", arch: "ARM32", file: "armeabi-v7a" },
@@ -52,7 +56,7 @@ const PLATFORMS = [
         icon: mdiAppleIos,
         useVersionInFilename: true,
         downloads: [
-            { label: "App Store", arch: "Recommended", url: "https://apps.apple.com/app/nexterm/id6761635144", icon: mdiApple },
+            { label: "App Store", recommended: true, url: "https://apps.apple.com/app/nexterm/id6761635144", icon: mdiApple },
             { label: "IPA", arch: "Universal", file: "ipa" },
         ],
     },
@@ -85,6 +89,8 @@ export const DownloadAppsDialog = ({ open, onClose }) => {
         }
     }, [open]);
 
+    const releasesUrl = version ? `${GITHUB_URL}/releases/tag/v${version}` : `${GITHUB_URL}/releases`;
+
     const getDownloadUrl = (platform, download) => {
         if (!version) return null;
         if (platform.useVersionInFilename) {
@@ -102,66 +108,80 @@ export const DownloadAppsDialog = ({ open, onClose }) => {
             return;
         }
         const url = getDownloadUrl(platform, download);
-        if (url) {
-            openExternalUrl(url);
-        }
+        if (url) openExternalUrl(url);
     };
 
     const currentPlatform = PLATFORMS.find(p => p.id === selectedPlatform);
 
     return (
-        <DialogProvider open={open} onClose={onClose}>
-            <div className="download-apps-dialog">
-                <div className="dialog-header">
-                    <h2>{t("downloadApps.title")}</h2>
-                    <p>{t("downloadApps.subtitle")}</p>
+        <DialogProvider open={open} onClose={onClose} className="download-apps">
+            <div className="da">
+                <header className="da-header dialog-heading">
+                    <span className="da-header__icon"><Icon path={mdiCellphoneLink} /></span>
+                    <div className="da-header__text">
+                        <h2>{t("downloadApps.title")}</h2>
+                        <p>{t("downloadApps.subtitle")}</p>
+                    </div>
+                </header>
+
+                <div className="da-body">
+                    {loading ? (
+                        <div className="da-loading"><Icon path={mdiLoading} spin={1} /></div>
+                    ) : (
+                        <>
+                            <div className="da-platforms" role="tablist" aria-label={t("downloadApps.title")}>
+                                {PLATFORMS.map(platform => {
+                                    const selected = selectedPlatform === platform.id;
+                                    return (
+                                        <button key={platform.id} type="button" role="tab" aria-selected={selected}
+                                                className={`da-platform${selected ? " selected" : ""}`}
+                                                onClick={() => setSelectedPlatform(platform.id)}>
+                                            <span className="da-platform__icon"><Icon path={platform.icon} /></span>
+                                            <span className="da-platform__label">{t(`downloadApps.platforms.${platform.id}`)}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            {!version && (
+                                <p className="da-note">
+                                    <Icon path={mdiAlertCircleOutline} />
+                                    <span>{t("downloadApps.versionUnavailable")}</span>
+                                </p>
+                            )}
+
+                            {currentPlatform && (
+                                <div className="da-downloads" role="tabpanel">
+                                    {currentPlatform.downloads.map(download => {
+                                        const external = Boolean(download.url);
+                                        const unavailable = !external && !version;
+                                        return (
+                                            <button key={download.file || download.url || download.label} type="button"
+                                                    className="da-download" disabled={unavailable}
+                                                    onClick={() => handleDownload(currentPlatform, download)}>
+                                                <span className="da-download__icon"><Icon path={download.icon || mdiDownload} /></span>
+                                                <span className="da-download__text">
+                                                    <span className="da-download__label">
+                                                        {download.label}
+                                                        {download.recommended && <em className="da-download__badge">{t("downloadApps.recommended")}</em>}
+                                                    </span>
+                                                    {download.arch && <span className="da-download__meta">{download.arch}</span>}
+                                                </span>
+                                                <Icon path={external ? mdiOpenInNew : mdiDownload} className="da-download__action" />
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </>
+                    )}
                 </div>
 
-                {loading ? (
-                    <div className="loading-state">
-                        <Icon path={mdiLoading} spin />
-                    </div>
-                ) : (
-                    <>
-                        <div className="platform-grid">
-                            {PLATFORMS.map(platform => (
-                                <div
-                                    key={platform.id}
-                                    className={`platform-card${selectedPlatform === platform.id ? " selected" : ""}`}
-                                    onClick={() => setSelectedPlatform(platform.id)}
-                                >
-                                    <div className="platform-icon">
-                                        <Icon path={platform.icon} />
-                                    </div>
-                                    <span className="platform-name">
-                                        {t(`downloadApps.platforms.${platform.id}`)}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-
-                        {currentPlatform && (
-                            <div className="downloads-section">
-                                <div className="downloads-grid">
-                                    {currentPlatform.downloads.map(download => (
-                                        <button
-                                            key={download.file || download.url || download.label}
-                                            className={`download-btn${download.disabled ? " disabled" : ""}`}
-                                            onClick={() => !download.disabled && handleDownload(currentPlatform, download)}
-                                            disabled={download.disabled}
-                                        >
-                                            <Icon path={download.icon || mdiDownload} className="btn-icon" />
-                                            <div className="btn-text">
-                                                <span className="btn-format">{download.label}</span>
-                                                <span className="btn-arch">{download.arch}</span>
-                                            </div>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </>
-                )}
+                <footer className="da-footer">
+                    <span>{t("downloadApps.sourceHint")}</span>
+                    <Button type="secondary" size="small" icon={mdiGithub} text={t("downloadApps.allReleases")}
+                            onClick={() => openExternalUrl(releasesUrl)} />
+                </footer>
             </div>
         </DialogProvider>
     );

@@ -75,7 +75,7 @@ export const Tooltip = ({ children, text, disabled = false, delay = 0, asChild =
              onFocus={handleMouseEnter} onBlur={handleMouseLeave}>
             {children}
 
-            {isVisible && createPortal(
+            {isVisible && !disabled && createPortal(
                 <div ref={tooltipRef} className="tooltip" style={tooltipStyle}>
                     <div className="tooltip-content">
                         {text}
