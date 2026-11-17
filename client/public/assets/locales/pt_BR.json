@@ -68,7 +68,24 @@
       "firstTimeSubtitle": "Create the first administrator account for this instance.",
       "twoFactorTitle": "Two-factor authentication",
       "twoFactorDescription": "Enter the code from your authenticator app.",
-      "qrTitle": "Sign in with the app"
+      "qrTitle": "Sign in with the app",
+      "demo": {
+        "title": "Try Nexterm",
+        "subtitle": "Explore a live instance with simulated servers, no account needed.",
+        "start": "Start the demo",
+        "orSignIn": "or sign in to your account",
+        "failed": "Could not start a demo session"
+      }
+    },
+    "demo": {
+      "timeLeft": "Demo · {{time}} left",
+      "end": "End demo",
+      "endConfirmText": "End your demo session? Everything you created will be removed.",
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min",
+      "hours_one": "{{count}} hour",
+      "hours_other": "{{count}} hours",
+      "hoursMinutes": "{{hours}}h {{minutes}}m"
     },
     "deviceLink": {
       "title": "Vincular Dispositivo",
@@ -659,6 +676,10 @@
     },
     "account": {
       "title": "Conta",
+      "demo": {
+        "title": "Security",
+        "description": "Password, two-factor authentication, passkeys, API keys and profile pictures can't be changed while you're exploring as a guest."
+      },
       "avatar": {
         "label": "Foto",
         "upload": "Alterar foto do perfil",
@@ -2341,7 +2362,10 @@
     "recentConnections": "Conexões Recentes",
     "getStarted": "Começar",
     "getStartedHint": "Adicione um servidor na barra lateral para começar a gerenciar sua infraestrutura.",
-    "hibernated": "Hibernated"
+    "hibernated": "Hibernated",
+    "demo": {
+      "explore": "Start exploring"
+    }
   },
   "downloadApps": {
     "title": "Baixar Apps",
