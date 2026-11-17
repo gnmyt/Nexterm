@@ -118,6 +118,7 @@ private struct ToolCard: View {
         let m = message
         GroupBox {
             VStack(alignment: .leading, spacing: 8) {
+                if m.isQuestion { QuestionBody(message: m, chat: chat) }
                 if !m.summary.isEmpty { Text(m.summary).font(.caption.monospaced()).foregroundStyle(.secondary).textSelection(.enabled) }
                 ForEach([m.stdout, m.stderr, m.fileContent].compactMap { $0 }, id: \.self) { output in
                     ScrollView(.horizontal) { Text(output).font(.caption2.monospaced()).textSelection(.enabled) }
@@ -125,6 +126,11 @@ private struct ToolCard: View {
                 }
                 if !m.directoryEntries.isEmpty {
                     Text(m.directoryEntries.map(\.displayName).joined(separator: "\n")).font(.caption2.monospaced())
+                }
+                ForEach(Array(m.images.enumerated()), id: \.offset) { _, img in
+                    if let data = Data(base64Encoded: img.data, options: .ignoreUnknownCharacters), let image = UIImage(data: data) {
+                        Image(uiImage: image).resizable().scaledToFit()
+                    }
                 }
                 if let note = m.note {
                     Text(note).font(.caption).foregroundStyle(m.status == ToolStatus.error ? .red : .secondary)
@@ -150,6 +156,60 @@ private struct ToolCard: View {
                 }
             }
         }
+    }
+}
+
+private struct QuestionBody: View {
+    let message: ChatMessage
+    let chat: AIChatSession
+    @State private var text = ""
+    @State private var selected: [String] = []
+
+    var body: some View {
+        let m = message
+        VStack(alignment: .leading, spacing: 8) {
+            if let q = m.question { StructuredText(markdown: q).textual.textSelection(.enabled) }
+            if m.isAwaitingAnswer, let callId = m.callId {
+                ForEach(m.questionOptions, id: \.label) { o in
+                    let isSelected = selected.contains(o.label)
+                    Button {
+                        if !m.isMultiSelect { chat.answer(callId: callId, text: o.label) }
+                        else if isSelected { selected.removeAll { $0 == o.label } }
+                        else { selected.append(o.label) }
+                    } label: {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Label(o.label, systemImage: isSelected ? "checkmark.circle.fill" : (m.isMultiSelect ? "circle" : "arrow.right.circle"))
+                            if let d = o.description_ { Text(d).font(.caption).foregroundStyle(.secondary) }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .buttonStyle(.bordered)
+                }
+                if m.allowsFreeText || m.isMultiSelect {
+                    HStack {
+                        if m.allowsFreeText {
+                            TextField(m.questionOptions.isEmpty ? "Type your answer…" : "Something else…", text: $text, axis: .vertical)
+                                .lineLimit(1...4)
+                                .textFieldStyle(.roundedBorder)
+                                .onSubmit { submit(callId) }
+                        } else {
+                            Spacer()
+                        }
+                        Button("Send", systemImage: "arrow.up.circle.fill") { submit(callId) }
+                            .labelStyle(.iconOnly)
+                            .font(.title2)
+                            .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !(m.isMultiSelect && !selected.isEmpty))
+                    }
+                }
+            }
+            if let a = m.answer { Text(a).font(.callout).foregroundStyle(.tint) }
+        }
+    }
+
+    private func submit(_ callId: String) {
+        let typed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        if message.isMultiSelect { chat.answer(callId: callId, choices: typed.isEmpty ? selected : selected + [typed]) }
+        else if !typed.isEmpty { chat.answer(callId: callId, text: typed) }
     }
 }
 

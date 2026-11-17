@@ -56,9 +56,9 @@ struct ActiveSessionView: View {
             ForEach(app.sessions.value, id: \.sessionId) { x in
                 Label {
                     Text(x.server.name)
-                    Text(x.type.label)
+                    Text(x.isViewOnly ? "\(x.type.label) · View only" : x.type.label)
                 } icon: {
-                    Image(systemName: sfSymbol(x.type.iconKey))
+                    Image(systemName: x.isViewOnly ? "eye" : sfSymbol(x.type.iconKey))
                 }
                 .tag(x.sessionId)
             }

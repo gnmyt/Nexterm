@@ -19,9 +19,12 @@ struct TerminalSessionView: View {
     }
 
     var body: some View {
-        TerminalSurface(controller: terminal.controller, onTap: { keyboard = true })
-            .background(KeyCapture(active: $keyboard, controller: terminal.controller))
+        TerminalSurface(controller: terminal.controller, onTap: { if !session.isViewOnly { keyboard = true } })
+            .background { if !session.isViewOnly { KeyCapture(active: $keyboard, controller: terminal.controller) } }
             .background(.black, ignoresSafeAreaEdges: [])
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                if let agent = session.agent { ViewOnlyBanner(text: agent.viewOnlyMessage) }
+            }
             .overlay {
                 SessionStateOverlay(state: state.value, ready: received.value || error.value != nil) {
                     nx.sessions.reconnect(session: session)
@@ -29,9 +32,11 @@ struct TerminalSessionView: View {
             }
             .errorAlert(error.value) { terminal.clearError() }
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(keyboard ? "Hide Keyboard" : "Show Keyboard", systemImage: keyboard ? "keyboard.chevron.compact.down" : "keyboard") {
-                        keyboard.toggle()
+                if !session.isViewOnly {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button(keyboard ? "Hide Keyboard" : "Show Keyboard", systemImage: keyboard ? "keyboard.chevron.compact.down" : "keyboard") {
+                            keyboard.toggle()
+                        }
                     }
                 }
             }

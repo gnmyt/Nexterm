@@ -15,7 +15,10 @@ struct GuacamoleSessionView: View {
     var body: some View {
         ZStack {
             Color.black
-            if let vp = viewport.value { GuacamoleDisplay(viewport: vp).id(ObjectIdentifier(vp)) }
+            if let vp = viewport.value { GuacamoleDisplay(viewport: vp, viewOnly: session.isViewOnly).id(ObjectIdentifier(vp)) }
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if let agent = session.agent { ViewOnlyBanner(text: agent.viewOnlyMessage) }
         }
         .overlay {
             if state.value == ConnectionState.disconnected {
@@ -27,6 +30,7 @@ struct GuacamoleSessionView: View {
 
 private struct GuacamoleDisplay: View {
     let viewport: GuacamoleViewport
+    let viewOnly: Bool
     @State private var hasFrame: FlowState<Bool>
     @State private var error: FlowState<String?>
     @State private var ctrl: FlowState<Bool>
@@ -36,8 +40,9 @@ private struct GuacamoleDisplay: View {
     @State private var text = ""
     @FocusState private var typing: Bool
 
-    init(viewport: GuacamoleViewport) {
+    init(viewport: GuacamoleViewport, viewOnly: Bool) {
         self.viewport = viewport
+        self.viewOnly = viewOnly
         let kb = viewport.state.keyboard
         _hasFrame = State(initialValue: FlowState(viewport.state.hasFrame, or: false))
         _error = State(initialValue: FlowState(viewport.state.client.error, or: nil as String?))
@@ -52,31 +57,39 @@ private struct GuacamoleDisplay: View {
     var body: some View {
         ZStack {
             GuacCanvas(viewport: viewport)
-            TextField("", text: $text)
-                .focused($typing)
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled()
-                .frame(width: 1, height: 1)
-                .opacity(0.01)
-                .accessibilityHidden(true)
-                .onChange(of: text) { _, t in kb.onTextFieldChanged(text: t) }
-                .onSubmit {
-                    kb.sendKeyPress(keysym: GuacKeysym.shared.ENTER)
-                    kb.resetTextField()
-                    text = ""
-                    typing = true
-                }
+            if !viewOnly { keyInput }
             if !hasFrame.value && error.value == nil { ProgressView("Connecting…").controlSize(.large).tint(.white).foregroundStyle(.white) }
         }
         .errorAlert(error.value.map { "Error: \($0)" }) { viewport.state.client.clearError() }
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
-                Button(typing ? "Hide Keyboard" : "Show Keyboard", systemImage: typing ? "keyboard.chevron.compact.down" : "keyboard") {
-                    typing.toggle()
+                if viewOnly {
+                    Button("Fit to Screen", systemImage: "arrow.up.left.and.arrow.down.right") { viewport.fit() }
+                } else {
+                    Button(typing ? "Hide Keyboard" : "Show Keyboard", systemImage: typing ? "keyboard.chevron.compact.down" : "keyboard") {
+                        typing.toggle()
+                    }
+                    tools
                 }
-                tools
             }
         }
+    }
+
+    private var keyInput: some View {
+        TextField("", text: $text)
+            .focused($typing)
+            .textInputAutocapitalization(.never)
+            .autocorrectionDisabled()
+            .frame(width: 1, height: 1)
+            .opacity(0.01)
+            .accessibilityHidden(true)
+            .onChange(of: text) { _, t in kb.onTextFieldChanged(text: t) }
+            .onSubmit {
+                kb.sendKeyPress(keysym: GuacKeysym.shared.ENTER)
+                kb.resetTextField()
+                text = ""
+                typing = true
+            }
     }
 
     private var tools: some View {
