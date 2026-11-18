@@ -43,6 +43,7 @@ import dev.gnm.nexterm.model.FilesystemRow
 import dev.gnm.nexterm.model.HealthStatus
 import dev.gnm.nexterm.model.InfoRow
 import dev.gnm.nexterm.model.InterfaceRow
+import dev.gnm.nexterm.model.MemoryOverview
 import dev.gnm.nexterm.model.MonitoringDetails
 import dev.gnm.nexterm.model.MonitoringServer
 import dev.gnm.nexterm.model.MonitoringSnapshot
@@ -159,6 +160,7 @@ private fun InfoList(rows: List<InfoRow>) = Column {
 @OptIn(ExperimentalMaterial3Api::class)
 private fun LazyListScope.overview(server: MonitoringServer, details: MonitoringDetails, latest: MonitoringSnapshot, range: TimeRange, onRange: (TimeRange) -> Unit) {
     item { Panel { FactFlow(if (server.isPve) latest.clusterFacts else latest.overviewFacts, large = true) } }
+    latest.memoryOverview?.let { memory -> item { Memory(memory) } }
     item {
         Heading("Performance") {
             SingleChoiceSegmentedButtonRow {
@@ -171,6 +173,37 @@ private fun LazyListScope.overview(server: MonitoringServer, details: Monitoring
     items(details.charts(server.isPve), key = { it.title }) { series -> ChartPanel(series) }
     item { Heading(if (server.isPve) "Cluster Information" else "System Information") }
     item { Panel(spacing = 0) { InfoList(if (server.isPve) latest.clusterInfo else latest.systemInfo) } }
+}
+
+@Composable
+private fun memoryColor(shade: Int, percent: Double) = when (shade) {
+    0 -> usageColor(percent)
+    1 -> usageColor(percent).copy(alpha = 0.36f)
+    else -> MaterialTheme.colorScheme.surfaceContainerHighest
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun Memory(memory: MemoryOverview) = Panel {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text("Memory", style = MaterialTheme.typography.titleSmall)
+        Muted(memory.usedText, Modifier.weight(1f))
+        Text(Formatters.wholePercent(memory.percent), style = MaterialTheme.typography.titleSmall)
+    }
+    Row(Modifier.fillMaxWidth().height(8.dp).clip(CircleShape)) {
+        memory.segments.filter { it.weight > 0 }.forEach {
+            Box(Modifier.weight(it.weight.toFloat()).fillMaxHeight().background(memoryColor(it.shade, memory.percent)))
+        }
+    }
+    FlowRow(Modifier.fillMaxWidth(), Arrangement.spacedBy(16.dp), Arrangement.spacedBy(6.dp)) {
+        memory.segments.forEach { segment ->
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Box(Modifier.size(10.dp).background(memoryColor(segment.shade, memory.percent), RoundedCornerShape(3.dp)))
+                Muted(segment.label)
+                Text(segment.sizeText, style = MaterialTheme.typography.bodySmall)
+            }
+        }
+    }
 }
 
 @Composable
