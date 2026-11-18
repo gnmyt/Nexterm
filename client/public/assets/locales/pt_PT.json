@@ -1,0 +1,2496 @@
+{
+  "common": {
+    "error": "Erro",
+    "success": "Sucesso",
+    "loading": "A carregar...",
+    "saving": "A guardar...",
+    "close": "Fechar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "download": "Descarregar",
+    "maximize": "Maximizar",
+    "restore": "Restaurar",
+    "resize": "Redimensionar",
+    "actions": {
+      "cancel": "Cancelar",
+      "confirm": "Confirmar",
+      "discard": "Ignorar",
+      "login": "Iniciar sessão",
+      "register": "Registar-te",
+      "save": "Guardar",
+      "saving": "Salvar o «… »",
+      "download": "Descarregar",
+      "close": "Fechar",
+      "maximize": "Maximizar",
+      "restore": "Restaurar",
+      "back": "Voltar"
+    },
+    "iconChooser": {
+      "searchIcons": "Ícones de pesquisa...",
+      "searchResults": "Resultados da pesquisa",
+      "popularIcons": "Ícones populares",
+      "noResults": "Não foram encontrados ícones"
+    },
+    "labels": {
+      "username": "Nome de utilizador",
+      "password": "Palavra-passe",
+      "firstName": "Nome próprio",
+      "lastName": "Apelido",
+      "code": "Código",
+      "twoFACode": "Código de autenticação de duas etapas"
+    },
+    "placeholders": {
+      "username": "Nome de utilizador",
+      "password": "Palavra-passe",
+      "firstName": "Nome próprio",
+      "lastName": "Apelido",
+      "code": "Código"
+    },
+    "confirmDialog": {
+      "title": "Tens a certeza?",
+      "defaultText": "Esta ação não pode ser revertida."
+    },
+    "loginDialog": {
+      "title": "Nexterm",
+      "registrationTitle": "Inscrição",
+      "ssoOrContinueWith": "ou continua com",
+      "noAuthMethodsAvailable": "Não há métodos de autenticação disponíveis.",
+      "signInWithPasskey": "Iniciar sessão com o Passkey",
+      "signInWithQrCode": "Iniciar sessão com o código QR",
+      "qrScanDescription": "Lê este código QR com a aplicação móvel Nexterm para iniciares sessão imediatamente.",
+      "backToLogin": "Voltar ao início de sessão",
+      "authenticating": "A autenticar...",
+      "noAccount": "Ainda não tens uma conta?",
+      "haveAccount": "Já tens uma conta?",
+      "welcome": "Bem-vindo de volta",
+      "subtitle": "Inicia sessão para continuares no Nexterm.",
+      "registrationSubtitle": "Cria a tua conta para começares.",
+      "firstTimeSubtitle": "Cria a primeira conta de administrador para esta instância.",
+      "twoFactorTitle": "Autenticação de dois fatores",
+      "twoFactorDescription": "Introduz o código da tua aplicação de autenticação.",
+      "qrTitle": "Inicia sessão com a aplicação",
+      "demo": {
+        "title": "Experimenta o Nexterm",
+        "subtitle": "Explora uma instância ao vivo com servidores simulados, sem precisares de ter uma conta.",
+        "start": "Iniciar a demonstração",
+        "orSignIn": "ou entra na tua conta",
+        "failed": "Não foi possível iniciar uma sessão de demonstração"
+      }
+    },
+    "demo": {
+      "timeLeft": "Demonstração · {{time}} à esquerda",
+      "end": "Fim da demonstração",
+      "endConfirmText": "Queres terminar a tua sessão de demonstração? Tudo o que criaste vai ser apagado.",
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min",
+      "hours_one": "{{count}} hora",
+      "hours_other": "{{count}} horas",
+      "hoursMinutes": "{{hours}}h {{minutes}}m"
+    },
+    "deviceLink": {
+      "title": "Ligar o dispositivo",
+      "description": "Introduz o código que aparece no teu dispositivo para autorizar o acesso à tua conta.",
+      "qrTab": "Código QR",
+      "codeTab": "Código",
+      "qrDescription": "Lê este código QR com a aplicação móvel Nexterm para ligares o teu dispositivo.",
+      "codeLabel": "Código do dispositivo",
+      "continue": "Continuar",
+      "verifying": "A verificar...",
+      "confirmTitle": "Autorizar dispositivo",
+      "confirmDescription": "Um dispositivo está a pedir acesso à tua conta. Por favor, verifica os detalhes abaixo.",
+      "deviceInfo": "Informações sobre o dispositivo",
+      "type": "Tipo",
+      "ipAddress": "Endereço IP",
+      "userAgent": "Dispositivo",
+      "authorize": "Autorizar dispositivo",
+      "authorizing": "A autorizar...",
+      "deny": "Negar",
+      "invalidCode": "Código inválido ou expirado",
+      "authorizationFailed": "A autorização falhou",
+      "deviceAuthorized": "O dispositivo foi autorizado com sucesso",
+      "successTitle": "Dispositivo autorizado",
+      "successMessage": "Podes fechar este separador e voltar à aplicação.",
+      "clientTypes": {
+        "mobile": "Aplicação móvel",
+        "connector": "Conector para computador"
+      }
+    },
+    "connectorSetup": {
+      "title": "Conector Nexterm",
+      "serverUrl": "URL do servidor",
+      "serverUrlDescription": "Introduz a URL do teu servidor Nexterm para te ligares.",
+      "connect": "Ligar-se",
+      "connecting": "A ligar...",
+      "enterServerUrl": "Por favor, introduz o URL do servidor",
+      "connectionFailed": "Não foi possível estabelecer ligação com o servidor. Verifica o URL.",
+      "deviceLinkingNotSupported": "Este servidor não suporta a ligação de dispositivos. Atualiza o teu servidor Nexterm.",
+      "authMethodDescription": "Escolhe como queres autenticar-te no servidor.",
+      "showCode": "Mostrar código",
+      "showCodeDesc": "Mostrar um código para introduzir manualmente na interface web",
+      "openBrowser": "Autorizar",
+      "openBrowserDesc": "Abre o teu navegador para autorizar automaticamente",
+      "enterCodeDescription": "Introduz este código na interface web do Nexterm para autorizar este dispositivo.",
+      "copyCode": "Copiar código",
+      "codeCopied": "Código copiado para a área de transferência",
+      "copyFailed": "Não foi possível copiar o código",
+      "waitingForAuth": "À espera de autorização...",
+      "codeCreationFailed": "Não foi possível criar o código do dispositivo",
+      "authSuccess": "Autenticação bem-sucedida!"
+    },
+    "serverSwitcher": {
+      "title": "Servidores",
+      "addServer": "Adicionar servidor",
+      "removeServer": "Remover servidor",
+      "removeConfirmText": "Isto vai remover a ligação a {{server}}. Tens a certeza?"
+    },
+    "selectBox": {
+      "defaultOption": "Escolhe uma opção...",
+      "search": "Pesquisar...",
+      "noResults": "Não foram encontrados resultados"
+    },
+    "userSearch": {
+      "placeholder": "Procura um utilizador..."
+    },
+    "table": {
+      "noData": {
+        "title": "Não foram encontrados dados",
+        "subtitle": "Não há itens para mostrar."
+      },
+      "pagination": {
+        "showing": "A mostrar {{start}} para {{end}} de {{total}}",
+        "previous": "Anterior",
+        "next": "A seguir",
+        "pageInfo": "Página {{current}} de {{total}}"
+      }
+    },
+    "sidebar": {
+      "settings": "Definições",
+      "servers": "Servidores",
+      "monitoring": "Monitorização",
+      "snippets": "Trechos",
+      "audit": "Auditoria",
+      "account": "Conta",
+      "logout": "Sair",
+      "collapseTitle": "Ocultar a barra lateral",
+      "logoutConfirmText": "Isto vai fazer com que saias da conta {{username}} . Tens a certeza?",
+      "starOnGitHub": "Marca como favorito no GitHub",
+      "support": "Apoio"
+    },
+    "quickAction": {
+      "placeholder": "Pesquisar servidores, excertos ou navegar...",
+      "noResults": "Não foram encontrados resultados",
+      "navigate": "Navegar",
+      "select": "Selecionar",
+      "close": "Fechar",
+      "types": {
+        "server": "Servidor",
+        "snippet": "Trecho",
+        "navigation": "Vai para",
+        "settings": "Definições"
+      }
+    },
+    "errors": {
+      "loadingAuthProviders": "Erro ao carregar os fornecedores de autenticação: {{error}}",
+      "webSocketConnection": {
+        "title": "Falha na ligação WebSocket",
+        "message": "As ligações não estão disponíveis. Isto pode dever-se ao facto de o WebSocket não estar ativado no teu proxy reverso ou a restrições de rede."
+      },
+      "generalError": "Ocorreu um erro",
+      "invalidCredentials": "Nome de utilizador ou palavra-passe inválidos",
+      "invalidTwoFactor": "Código de autenticação de dois fatores inválido",
+      "internalAuthDisabled": "A autenticação interna está desativada",
+      "ssoLoginFailed": "Não foi possível iniciar o início de sessão SSO",
+      "passkeyLoginFailed": "A autenticação com chave de acesso falhou",
+      "passkeyCancelled": "A autenticação por chave de acesso foi cancelada",
+      "qrCodeExpired": "O código QR expirou. Tenta novamente.",
+      "connection": {
+        "title": "Falha na ligação",
+        "close": "Fechar separador",
+        "reconnect": "Reconectar",
+        "reconnectNow": "Reconectar",
+        "reconnecting": "Reconectar…",
+        "reconnectingIn": "Reconectar-se em {{seconds}}s",
+        "reconnectAttempt": "tenta {{count}} de {{max}}",
+        "hostUnreachable": "Não é possível aceder ao servidor remoto",
+        "refused": "Ligação recusada pelo anfitrião remoto",
+        "timeout": "O tempo de espera da ligação expirou",
+        "authenticationFailed": "A autenticação falhou",
+        "permissionDenied": "Permissão negada",
+        "failed": "Falha na ligação",
+        "closedUnexpectedly": "A ligação foi encerrada inesperadamente",
+        "error": "Ocorreu um erro de ligação",
+        "scriptClosedUnexpectedly": "A ligação do script foi encerrada inesperadamente",
+        "scriptError": "Ocorreu um erro de ligação do script",
+        "rdpSessionConflict": "A sessão foi desligada pelo servidor porque foi aberta outra ligação.",
+        "rdpSessionTimeout": "A sessão RDP foi desligada porque atingiu o limite de tempo da sessão.",
+        "rdpSessionClosed": "A sessão RDP foi encerrada pelo servidor remoto ou por um administrador."
+      },
+      "accountLinkRequired": "Já existe uma conta com este nome de utilizador. Pede a um administrador para permitir associá-la à tua conta."
+    },
+    "messages": {
+      "invitationAccepted": "Convite aceite",
+      "invitationDeclined": "Convite recusado",
+      "invitationError": "Não foi possível processar o convite",
+      "organizationDeleted": "A organização foi eliminada com sucesso",
+      "organizationDeleteError": "Não foi possível eliminar a organização",
+      "leftOrganization": "Já deixaste a organização",
+      "leaveOrganizationError": "Não foi possível sair da organização"
+    },
+    "unsavedChanges": {
+      "title": "Alterações não guardadas",
+      "text": "Ignora-as ou continua a editar e guarda quando terminares.",
+      "keepEditing": "Continua a editar"
+    }
+  },
+  "audit": {
+    "page": {
+      "title": "Registos de auditoria",
+      "subtitle": "Acompanha e monitoriza todas as atividades em toda a tua infraestrutura"
+    },
+    "errors": {
+      "failedToLoadData": "Não foi possível carregar os dados de auditoria",
+      "failedToLoadLogs": "Não foi possível carregar os registos de auditoria"
+    },
+    "filters": {
+      "title": "Filtros",
+      "activeCount": "{{count}} ativo",
+      "organization": "Organização",
+      "action": "Ação",
+      "resource": "Recurso",
+      "startDate": "Data de início",
+      "endDate": "Data de término",
+      "clearAll": "Limpar tudo",
+      "options": {
+        "allActions": "Todas as ações",
+        "allResources": "Todos os recursos",
+        "allOrganizations": "Todas as organizações (Pessoal + Org)",
+        "personalOnly": "Apenas para uso pessoal",
+        "categoryAll": "{{category}} (Todos)"
+      }
+    },
+    "table": {
+      "headers": {
+        "timestamp": "Data e hora",
+        "action": "Ação",
+        "actor": "Ator",
+        "resource": "Recurso",
+        "organization": "Organização",
+        "details": "Detalhes"
+      },
+      "noLogs": {
+        "title": "Não foram encontrados registos de auditoria",
+        "subtitle": "Tenta ajustar os teus filtros ou volta mais tarde."
+      },
+      "loading": "A carregar registos de auditoria...",
+      "expandedDetails": {
+        "connectionReason": "Motivo da ligação",
+        "userAgent": "Agente do utilizador",
+        "additionalDetails": "Mais detalhes"
+      },
+      "badges": {
+        "personal": "Pessoal",
+        "user": "Utilizador n.º{{id}}",
+        "organization": "Org #{{id}}"
+      },
+      "durationUnits": {
+        "seconds": "segundos",
+        "minutes": "minutos",
+        "hours": "horas"
+      }
+    },
+    "pagination": {
+      "showing": "A mostrar os registos de {{start}} para {{end}} de {{total}}",
+      "previous": "Anterior",
+      "next": "A seguir",
+      "pageInfo": "Página {{current}} de {{total}}"
+    }
+  },
+  "snippets": {
+    "page": {
+      "title": "Trechos",
+      "subtitle": "Gere os teus trechos de comando para teres acesso rápido nos terminais",
+      "addSnippet": "Adicionar trecho",
+      "personal": "Pessoal",
+      "selectOrganization": "Selecionar organização",
+      "tabs": {
+        "snippets": "Trechos",
+        "scripts": "Guiões"
+      }
+    },
+    "list": {
+      "empty": "Ainda não tens nenhum snippet. Cria o teu primeiro!",
+      "actions": {
+        "edit": "Editar trecho",
+        "delete": "Apagar trecho"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "Criar fragmento de código",
+        "edit": "Editar trecho"
+      },
+      "fields": {
+        "name": "Nome",
+        "description": "Descrição (opcional)",
+        "command": "Comando",
+        "osFilter": "Sistemas operativos compatíveis"
+      },
+      "placeholders": {
+        "name": "Nome do snippet",
+        "description": "O que é que este comando faz?",
+        "command": "Digita o teu comando",
+        "osFilter": "Todos os sistemas operativos"
+      },
+      "actions": {
+        "cancel": "Cancelar",
+        "create": "Criar",
+        "save": "Guardar"
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "O snippet foi criado com sucesso",
+        "updated": "O trecho foi atualizado com sucesso",
+        "deleted": "O trecho foi eliminado com sucesso"
+      },
+      "errors": {
+        "required": "O nome e o comando são obrigatórios",
+        "loadFailed": "Não foi possível carregar os dados do snippet",
+        "saveFailed": "Não foi possível guardar o trecho",
+        "deleteFailed": "Não foi possível eliminar o trecho",
+        "reorderFailed": "Não foi possível reordenar o trecho"
+      }
+    }
+  },
+  "scripts": {
+    "page": {
+      "title": "Guiões",
+      "subtitle": "Gere os teus scripts de automatização para tarefas do servidor",
+      "addScript": "Adicionar script",
+      "personal": "Pessoal",
+      "selectOrganization": "Selecionar organização",
+      "tabs": {
+        "snippets": "Trechos",
+        "scripts": "Guiões"
+      }
+    },
+    "execution": {
+      "progressPanel": {
+        "title": "Execução de scripts",
+        "noSteps": "Ainda não há passos",
+        "noStepsDescription": "As etapas vão aparecer aqui à medida que o script for sendo executado",
+        "steps": "Passos"
+      },
+      "dialogs": {
+        "enterValue": "Introduz o valor",
+        "selectOption": "Escolhe uma opção",
+        "confirm": "Confirmar",
+        "submit": "Enviar",
+        "cancel": "Cancelar",
+        "ok": "OK",
+        "yes": "Sim",
+        "no": "Não",
+        "copyCell": "Copiar célula",
+        "copyRow": "Copiar linha",
+        "copyTable": "Copiar tabela",
+        "close": "Fechar"
+      },
+      "status": {
+        "running": "Correr",
+        "completed": "Concluído",
+        "error": "Erro",
+        "pending": "Em espera"
+      }
+    },
+    "list": {
+      "empty": "Ainda não tens nenhum script. Cria o teu primeiro!",
+      "actions": {
+        "edit": "Editar script",
+        "delete": "Eliminar script"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "Criar script",
+        "edit": "Editar script"
+      },
+      "scriptDetails": "Detalhes do guião",
+      "scriptContent": "Conteúdo do guião",
+      "helpTip": "Usa as diretivas @NEXTERM: para funcionalidades interativas",
+      "fields": {
+        "name": "Nome",
+        "description": "Descrição",
+        "osFilter": "Sistemas operativos compatíveis"
+      },
+      "placeholders": {
+        "name": "Nome do script",
+        "description": "O que é que este script faz?",
+        "osFilter": "Todos os sistemas operativos"
+      },
+      "actions": {
+        "cancel": "Cancelar",
+        "create": "Criar",
+        "update": "Atualização",
+        "creating": "A criar...",
+        "updating": "A atualizar..."
+      },
+      "errors": {
+        "nameRequired": "É necessário indicar o nome do script",
+        "descriptionRequired": "É necessário descrever o script",
+        "contentRequired": "É necessário o conteúdo do script",
+        "createFailed": "Não foi possível criar o script",
+        "updateFailed": "Não foi possível atualizar o script"
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "O script foi criado com sucesso",
+        "updated": "O script foi atualizado com sucesso",
+        "deleted": "O script foi eliminado com sucesso",
+        "reordered": "O script foi reordenado com sucesso"
+      },
+      "errors": {
+        "loadFailed": "Não foi possível carregar os dados do script",
+        "deleteFailed": "Não foi possível eliminar o script",
+        "reorderFailed": "Não foi possível reordenar o script"
+      }
+    },
+    "menu": {
+      "searchPlaceholder": "Pesquisar scripts...",
+      "noScripts": "Não há scripts disponíveis. Cria alguns na secção «Scripts».",
+      "noMatch": "Não foram encontrados scripts que correspondam à tua pesquisa.",
+      "selectIdentity": "Selecionar identidade"
+    }
+  },
+  "monitoring": {
+    "page": {
+      "title": "Monitorização de servidores",
+      "subtitle": "Estatísticas do servidor em tempo real e monitorização do estado de funcionamento",
+      "searchPlaceholder": "Pesquisar servidores...",
+      "filters": {
+        "all": "Todos ({{count}})",
+        "online": "Online ({{count}})",
+        "issues": "Temas ({{count}})"
+      }
+    },
+    "errors": {
+      "loadFailed": "Não foi possível carregar os dados de monitorização",
+      "loadFailedDescription": "Não foi possível recuperar os dados de monitorização. Verifica a tua ligação e tenta novamente.",
+      "retry": "Tentar de novo"
+    },
+    "grid": {
+      "noServers": {
+        "title": "Não foram encontrados servidores",
+        "subtitle": "Não há servidores SSH disponíveis para monitorização.\nAdiciona alguns servidores para começares a monitorizá-los."
+      },
+      "noResults": {
+        "title": "Não há servidores correspondentes",
+        "subtitle": "Não há nenhum servidor monitorizado que corresponda à tua pesquisa."
+      },
+      "metrics": {
+        "loadAverage": "Média de carga",
+        "processes": "Processos",
+        "uptime": "Tempo de funcionamento",
+        "nodes": "Nós",
+        "vms": "MÁQUINAS VIRTUAIS/CONTENTORES",
+        "cpu": "CPU",
+        "memory": "Memória"
+      },
+      "status": {
+        "serverOffline": "Servidor fora de linha",
+        "connectionError": "Erro de ligação",
+        "statusUnknown": "Estado: Desconhecido",
+        "offlineMessage": "O servidor não está, neste momento, a responder aos pedidos de monitorização.",
+        "errorMessage": "Não foi possível estabelecer ligação com o servidor.",
+        "unknownMessage": "Não foi possível determinar o estado do servidor.",
+        "lastSeen": "Visto pela última vez: {{time}}",
+        "noRecentActivity": "Sem atividade recente",
+        "waitingForData": "À espera dos dados",
+        "pendingMessage": "Os dados de monitorização vão aparecer depois do próximo ciclo de monitorização.",
+        "labels": {
+          "online": "Online",
+          "offline": "Offline",
+          "error": "Erro",
+          "pending": "Em espera",
+          "unknown": "Desconhecido"
+        }
+      },
+      "uptime": {
+        "unknown": "Desconhecido",
+        "format": {
+          "days": "{{days}}d {{hours}}h {{minutes}}m",
+          "hours": "{{hours}}h {{minutes}}m",
+          "minutes": "{{minutes}}m"
+        }
+      }
+    },
+    "details": {
+      "timeRanges": {
+        "1h": "1 h",
+        "6h": "6h",
+        "24h": "24h"
+      },
+      "tabs": {
+        "overview": "Visão geral",
+        "storage": "Armazenamento",
+        "network": "Rede",
+        "processes": "Processos",
+        "nodes": "Nós"
+      },
+      "overview": {
+        "systemInfo": {
+          "title": "Informações do sistema",
+          "hostname": "Nome do anfitrião",
+          "os": "SO",
+          "version": "Versão",
+          "kernel": "Kernel",
+          "architecture": "Arquitetura",
+          "uptime": "Tempo de funcionamento",
+          "unknown": "Desconhecido",
+          "noData": "Não há informações do sistema disponíveis"
+        },
+        "memory": {
+          "title": "Memory",
+          "summary": "{{used}} of {{total}} ({{percent}}%)",
+          "used": "Used",
+          "cache": "Buffers / Cache",
+          "free": "Free"
+        },
+        "performance": {
+          "title": "Métricas de desempenho",
+          "loadAverage": "Média de carga",
+          "processes": "Processos ativos",
+          "total": "Total: {{value}}",
+          "loadDetail": "5 m: {{fiveMin}}, 15 m: {{fifteenMin}}",
+          "memory": "Memória"
+        },
+        "uptime": {
+          "format": {
+            "full": "{{days}} dias, {{hours}} horas, {{minutes}} minutos",
+            "hoursMinutes": "{{hours}} horas, {{minutes}} minutos",
+            "minutes": "{{minutes}} minutos"
+          }
+        }
+      },
+      "charts": {
+        "cpuUsage": "Utilização da CPU",
+        "memoryUsage": "Utilização da memória",
+        "processes": "Processos ativos",
+        "noData": "Não há dados disponíveis para o intervalo de tempo selecionado"
+      },
+      "storage": {
+        "title": "Utilização do disco",
+        "noData": "Não há dados disponíveis sobre a utilização do disco",
+        "noPartitions": "Não há partições montadas",
+        "usedOf": "{{used}} do site {{total}} , que foi usado",
+        "free": "{{value}} grátis",
+        "filesystems": "Sistemas de ficheiros",
+        "disks": "Discos",
+        "on": "{{volume}} em {{partition}}",
+        "swap": "Trocar",
+        "unmounted": "Não está montado",
+        "unallocated": "Não atribuído",
+        "inodes": "Inodes",
+        "inodesDetail": "{{used}} de {{total}}",
+        "health": {
+          "passed": "Saudável",
+          "warning": "Aviso",
+          "failed": "Falhar",
+          "denied": "O SMART precisa de acesso de root",
+          "temperature": "Temperatura",
+          "powerOn": "Tempo de arranque",
+          "wear": "Desgaste",
+          "reallocated": "Setores reatribuídos",
+          "pending": "Setores pendentes",
+          "mediaErrors": "Erros nos meios de comunicação",
+          "years": "{{value}} anos",
+          "days": "{{value}} dias",
+          "hours": "{{value}} horas",
+          "failedTitle": "Previsão de falha no disco",
+          "failedMessage": "{{disks}} Não passou na autoavaliação SMART. Faz uma cópia de segurança dos dados e substitui o disco."
+        }
+      },
+      "network": {
+        "speed": "Velocidade",
+        "noData": "Não há dados disponíveis sobre a interface de rede",
+        "download": "Descarregar",
+        "upload": "Carregar",
+        "interface": "Interface",
+        "address": "Morada",
+        "gateway": "Gateway",
+        "interfaces": "Interfaces",
+        "virtual": "Interfaces virtuais",
+        "defaultRoute": "Rota predefinida",
+        "up": "Para cima",
+        "down": "Para baixo",
+        "errors": "{{count}} erros",
+        "dropped": "{{count}} deixou cair",
+        "copy": "Copiar {{address}}",
+        "total": "{{value}} total"
+      },
+      "processes": {
+        "searchPlaceholder": "A procurar...",
+        "showing": "A mostrar {{count}} dos {{total}} processos",
+        "noData": "Não há dados de processo disponíveis. Os dados de processo vão aparecer após o próximo ciclo de monitorização.",
+        "noResults": "Não há processos que correspondam aos teus critérios de pesquisa.",
+        "columns": {
+          "command": "Comando",
+          "cpu": "CPU",
+          "mem": "Memória"
+        }
+      },
+      "pve": {
+        "clusterInfo": "Informações sobre o cluster",
+        "onlineNodes": "Nós online",
+        "totalCPU": "CPU total",
+        "totalMemory": "Memória total",
+        "totalStorage": "Armazenamento total",
+        "storageUsage": "Utilização do espaço de armazenamento",
+        "cores": "Núcleos",
+        "uptime": "Tempo de funcionamento",
+        "qemuVMs": "Máquinas virtuais QEMU",
+        "lxcContainers": "Contentores LXC",
+        "running": "{{count}} a correr",
+        "vmContainerCount": "Número de máquinas virtuais/contentores",
+        "cpu": "CPU",
+        "memory": "Memória",
+        "storage": "Armazenamento",
+        "nodeOffline": "Este nó está, neste momento, offline",
+        "noNodes": "Não há nós disponíveis"
+      }
+    }
+  },
+  "settings": {
+    "title": "Definições",
+    "userSettings": "CONFIGURAÇÕES DO UTILIZADOR",
+    "adminSettings": "CONFIGURAÇÕES DE ADMINISTRAÇÃO",
+    "pages": {
+      "account": "Conta",
+      "appearance": "Aparência",
+      "terminal": "Terminal",
+      "fileManager": "Gestor de ficheiros",
+      "keymaps": "Configurações de teclado",
+      "identities": "Identidades",
+      "sessions": "Sessões",
+      "organizations": "Organizações",
+      "users": "Utilizadores",
+      "authentication": "Autenticação",
+      "sources": "Fontes",
+      "ai": "IA",
+      "monitoring": "Monitorização",
+      "backup": "Armazenamento",
+      "engines": "Motores",
+      "permissions": "Funções e permissões",
+      "trustedCertificates": "Certificados de confiança"
+    },
+    "account": {
+      "title": "Conta",
+      "demo": {
+        "title": "Segurança",
+        "description": "A palavra-passe, a autenticação de dois fatores, as chaves de acesso, as chaves de API e as fotos de perfil não podem ser alteradas enquanto estiveres a navegar como convidado."
+      },
+      "avatar": {
+        "label": "Imagem",
+        "upload": "Alterar a foto de perfil",
+        "remove": "Remover",
+        "updated": "A tua foto de perfil foi atualizada",
+        "removed": "A tua foto de perfil foi removida",
+        "tooLarge": "A imagem selecionada tem mais de 10 MB",
+        "uploadFailed": "Não foi possível carregar a foto de perfil",
+        "removeFailed": "Não foi possível remover a foto de perfil"
+      },
+      "accountDetails": "Detalhes da conta",
+      "firstName": "Nome próprio",
+      "lastName": "Apelido",
+      "appearance": "Aparência",
+      "appearanceDescription": "Escolhe o teu tema preferido. O modo automático segue as definições do teu sistema e ajusta-se consoante a hora do dia.",
+      "themeAuto": "Auto",
+      "themeLight": "Luz",
+      "themeDark": "Escuro",
+      "themeDarkHint": "Carrega três vezes para ativar o modo OLED.",
+      "themeOled": "OLED",
+      "oledEnabled": "Modo OLED ativado",
+      "oledDisabled": "Modo OLED desativado",
+      "themeLabel": "Tema",
+      "accentColor": "Cor de destaque",
+      "sizeLabel": "Tamanho",
+      "sizeXS": "XS",
+      "sizeS": "S",
+      "sizeM": "M",
+      "sizeL": "L",
+      "sizeXL": "XL",
+      "twoFactor": "Autenticação de dois fatores",
+      "twoFactorActive": "Ativo",
+      "twoFactorInactive": "Inativo",
+      "twoFactorDescription": "Adiciona uma camada extra de segurança à tua conta ativando a autenticação de dois fatores.",
+      "enable2FA": "Ativar a autenticação de dois fatores",
+      "disable2FA": "Desativar a autenticação de dois fatores",
+      "changePassword": "Alterar palavra-passe",
+      "changePasswordDescription": "Escolhe aqui uma palavra-passe nova e segura para a tua conta.",
+      "changePasswordButton": "Alterar palavra-passe",
+      "language": "Língua",
+      "languageDescription": "Escolhe o idioma que preferires para a interface.",
+      "currentLanguage": "Idioma atual",
+      "missingLanguage": "Não encontras o teu idioma?",
+      "helpTranslateLink": "Ajuda a traduzir o Nexterm",
+      "syncLoginRequired": "Entra na tua conta para sincronizar as definições",
+      "appearanceSyncEnabled": "As definições de aparência vão agora sincronizar-se com a tua conta",
+      "appearanceSyncDisabled": "As definições de aparência já não vão ser sincronizadas",
+      "generalSyncEnabled": "As definições gerais vão agora sincronizar-se com a tua conta",
+      "generalSyncDisabled": "As definições gerais já não vão ser sincronizadas",
+      "customThemes": {
+        "title": "Temas personalizados",
+        "description": "Cria temas CSS personalizados ou escolhe entre os temas de origem sincronizados para personalizar a tua interface.",
+        "newTheme": "Novo tema",
+        "noThemesYet": "Ainda não há temas",
+        "noThemesDescription": "Cria um tema personalizado ou adiciona uma fonte para começares.",
+        "editTheme": "Editar tema",
+        "createTheme": "Criar tema",
+        "name": "Nome",
+        "themeName": "Nome do tema",
+        "descriptionLabel": "Descrição",
+        "optionalDescription": "Descrição opcional",
+        "saveChanges": "Guardar alterações",
+        "fromSource": "Da fonte",
+        "edit": "Editar",
+        "delete": "Apagar",
+        "deleteConfirm": "Tens a certeza de que queres eliminar o tema «{{name}}»?",
+        "failedToLoadTheme": "Não foi possível carregar o tema",
+        "nameAndCssRequired": "O nome e o CSS são obrigatórios",
+        "themeUpdated": "Tema atualizado",
+        "themeCreated": "Tema criado",
+        "failedToSaveTheme": "Não foi possível guardar o tema",
+        "themeDeleted": "Tema eliminado",
+        "failedToDeleteTheme": "Não foi possível eliminar o tema",
+        "failedToActivateTheme": "Não foi possível ativar o tema"
+      },
+      "sessionSynchronization": "Sincronização de sessões",
+      "sessionSyncDescription": "Controla a forma como as sessões do teu servidor são guardadas e sincronizadas entre dispositivos e separadores do navegador.",
+      "sessionSyncAcrossDevices": "Em todos os dispositivos",
+      "sessionSyncSameBrowser": "O mesmo navegador",
+      "sessionSyncSameTab": "Na mesma aba",
+      "sessionSyncAcrossDevicesDesc": "As sessões vão estar disponíveis em todos os dispositivos e vão ser sincronizadas",
+      "sessionSyncSameBrowserDesc": "As sessões vão sincronizar-se com a sessão atual do utilizador",
+      "sessionSyncSameTabDesc": "As sessões vão sincronizar-se na aba do teu navegador",
+      "showAgentSessionsDesc": "Mostrar as sessões abertas pelo assistente de IA ou pelos agentes do MCP como separadores só para visualização",
+      "twoFactorDialog": {
+        "title": "Ativar a autenticação de dois fatores",
+        "description": "Lê o código com a tua aplicação de autenticação ou introduz <span class=\"totp-code\">{{secret}}</span> manualmente.",
+        "codePlaceholder": "Introduz o código de autenticação de duas etapas",
+        "enableButton": "Ativar",
+        "messages": {
+          "setupFailed": "A configuração da autenticação de dois fatores falhou. Tenta novamente."
+        }
+      },
+      "passkeys": {
+        "sectionTitle": "Chaves de acesso",
+        "sectionDescription": "Usa as chaves de acesso para um início de sessão mais rápido e seguro, sem precisares de palavras-passe.",
+        "addButton": "Adicionar chave de acesso",
+        "addDialogTitle": "Adicionar chave de acesso",
+        "addDialogDescription": "Dá um nome à tua chave de acesso para te ajudar a identificá-la mais tarde.",
+        "namePlaceholder": "Nome da chave de acesso",
+        "enterName": "Introduz um nome para esta chave de acesso:",
+        "defaultName": "A minha chave de acesso",
+        "confirmDelete": "Tens a certeza de que queres eliminar esta senha?",
+        "createdAt": "Criado {{date}}",
+        "registerError": "Não foi possível registar a chave de acesso. Tenta novamente.",
+        "noPasskeys": "Ainda não há chaves de acesso registadas",
+        "rename": "Renomear",
+        "delete": "Apagar"
+      },
+      "apiKeys": {
+        "sectionTitle": "Chaves API",
+        "sectionDescription": "Cria chaves de API para aceder ao Nexterm programaticamente a partir de scripts e integrações.",
+        "addButton": "Criar chave API",
+        "createTitle": "Criar chave API",
+        "createDescription": "Dá um nome à tua chave. O token só vai aparecer uma vez depois de criado.",
+        "nameLabel": "Nome",
+        "namePlaceholder": "por exemplo, script de implementação",
+        "nameRequired": "O nome é obrigatório",
+        "expiryLabel": "Validade",
+        "expiryNever": "Nunca",
+        "expiry30": "30 dias",
+        "expiry90": "90 dias",
+        "expiry365": "1 ano",
+        "createButton": "Criar",
+        "createdTitle": "Chave API criada",
+        "createdWarning": "Copia este token agora. Por motivos de segurança, não vais conseguir vê-lo novamente.",
+        "tokenLabel": "Token",
+        "doneButton": "Pronto",
+        "createError": "Não foi possível criar a chave da API.",
+        "copyError": "Não foi possível copiar para a área de transferência.",
+        "confirmDelete": "Tens a certeza de que queres revogar esta chave API? Qualquer sistema que a utilize vai perder o acesso.",
+        "noKeys": "Ainda não há chaves API",
+        "lastUsed": "Última utilização {{date}}",
+        "neverUsed": "Nunca foi usado",
+        "expires": "Vence {{date}}",
+        "delete": "Apagar"
+      },
+      "remoteDesktop": "Área de Trabalho Remota",
+      "remoteDesktopDescription": "Escala de visualização predefinida para sessões de ambiente de trabalho remoto. As ligações podem substituir esta configuração, e a escala escolhida durante uma sessão fica guardada nesse dispositivo.",
+      "remoteDesktopScale": "Escala de visualização",
+      "remoteDesktopScaleAuto": "Automático (adaptar ao dispositivo)",
+      "remoteDesktopSyncEnabled": "As definições do ambiente de trabalho remoto vão agora sincronizar-se entre dispositivos",
+      "remoteDesktopSyncDisabled": "As definições do ambiente de trabalho remoto agora são guardadas apenas neste dispositivo"
+    },
+    "passwordChange": {
+      "title": "Alterar palavra-passe",
+      "description": "Uma palavra-passe forte contém caracteres especiais, números e letras, tanto maiúsculas como minúsculas.",
+      "newPassword": "Nova palavra-passe",
+      "confirmPassword": "Confirma a nova palavra-passe",
+      "changePasswordButton": "Alterar palavra-passe",
+      "currentPassword": "Palavra-passe atual",
+      "descriptionOwn": "Introduz a tua palavra-passe atual e escolhe uma nova. Vais ser desconectado em todos os outros dispositivos.",
+      "descriptionOther": "Escolhe uma nova palavra-passe para este utilizador. Ele vai ser desconectado em todos os dispositivos.",
+      "successOwn": "A tua palavra-passe foi alterada. A sessão noutros dispositivos foi encerrada.",
+      "successOther": "A palavra-passe foi alterada e o utilizador foi desconectado em todos os locais."
+    },
+    "organizations": {
+      "title": "As tuas organizações",
+      "createOrganization": "Criar organização",
+      "noOrganizations": "Ainda não tens nenhuma organização.",
+      "noOrganizationsDescription": "Cria uma para começares a colaborar com a tua equipa.",
+      "invite": "Convidar",
+      "delete": "Apagar",
+      "leave": "Saída",
+      "members": "Membros",
+      "auditSettings": {
+        "auditSettingsTab": "Definições de auditoria",
+        "sessionRecordingHeading": "Gravação da sessão",
+        "sessionRecordingDescription": "Grava sessões de terminal e de ambiente de trabalho remoto para reprodução",
+        "enableSessionRecordingLabel": "Ativar a gravação da sessão",
+        "enableSessionRecordingDescription": "Grava sessões SSH, Telnet, RDP e VNC para reproduzires mais tarde",
+        "recordingRetentionLabel": "Período de conservação dos registos (dias)",
+        "recordingRetentionDescription": "Durante quanto tempo guardar as gravações das sessões antes da eliminação automática (1-365 dias)",
+        "connectionRequirementsHeading": "Requisitos de ligação",
+        "connectionRequirementsDescription": "Controlar o comportamento e os requisitos da ligação",
+        "requireConnectionReasonLabel": "Exigir motivo da ligação",
+        "requireConnectionReasonDescription": "Exigir que os utilizadores indiquem um motivo quando se ligarem aos servidores",
+        "activityLoggingHeading": "Registo de atividades",
+        "activityLoggingDescription": "Escolhe que tipos de atividades queres registar",
+        "fileOperationsLabel": "Operações com ficheiros",
+        "fileOperationsDescription": "Carregamentos, transferências, eliminações e renomeações de ficheiros de registo através do SFTP",
+        "serverConnectionsLabel": "Ligações ao servidor",
+        "serverConnectionsDescription": "Registar as ligações e desligações SSH, SFTP e PVE",
+        "identityManagementLabel": "Gestão de identidades",
+        "identityManagementDescription": "Criação, modificação e eliminação de identidades SSH",
+        "passwordPasteLabel": "Colar palavra-passe",
+        "passwordPasteDescription": "Registar a utilização da ação «colar palavra-passe»",
+        "serverManagementLabel": "Gestão de servidores",
+        "serverManagementDescription": "Criação, modificação e eliminação de registos das configurações do servidor",
+        "folderManagementLabel": "Gestão de pastas",
+        "folderManagementDescription": "Registo da criação, modificação e eliminação de pastas",
+        "scriptExecutionLabel": "Execução de scripts",
+        "scriptExecutionDescription": "Registar a execução de scripts e tarefas de automatização",
+        "agentOperationsLabel": "Operações de Agentes de IA",
+        "agentOperationsDescription": "Registar comandos, entradas, capturas de ecrã e alterações em ficheiros efetuadas pelo assistente de IA e pelos agentes ligados através do servidor MCP",
+        "actions": {
+          "save": "Guardar definições"
+        },
+        "messages": {
+          "updated": "As definições de auditoria foram atualizadas com sucesso",
+          "updateFailed": "Não foi possível atualizar as definições de auditoria"
+        }
+      },
+      "pendingInvitations": "Convites pendentes",
+      "invitedBy": "Convidado por: {{name}}",
+      "deleteConfirmation": "Isto vai eliminar definitivamente a organização e remover todos os membros. Esta ação não pode ser desfeita.",
+      "leaveConfirmation": "Tens a certeza de que queres sair desta organização?",
+      "dialog": {
+        "title": "Criar organização",
+        "fields": {
+          "name": "Nome",
+          "namePlaceholder": "Nome da organização",
+          "description": "Descrição (opcional)",
+          "descriptionPlaceholder": "Breve descrição da tua organização"
+        },
+        "actions": {
+          "cancel": "Cancelar",
+          "create": "Criar"
+        },
+        "messages": {
+          "nameRequired": "É obrigatório indicar o nome da organização",
+          "createSuccess": "A organização foi criada com sucesso",
+          "createFailed": "Não foi possível criar a organização"
+        }
+      },
+      "sessionSettings": {
+        "sessionSettingsTab": "Sessões ao vivo",
+        "liveSharingHeading": "Partilha de sessões ao vivo",
+        "liveSharingDescription": "Controla a forma como as sessões em curso são partilhadas nesta organização.",
+        "enableLiveSessionSharingLabel": "Ativar a partilha de sessões em direto",
+        "enableLiveSessionSharingDescription": "Os membros precisam da permissão «Ver ou controlar sessões ao vivo».",
+        "actions": {
+          "save": "Guardar definições"
+        },
+        "messages": {
+          "updated": "As definições da sessão ao vivo foram atualizadas com sucesso",
+          "updateFailed": "Não foi possível atualizar as definições da sessão ao vivo"
+        }
+      }
+    },
+    "users": {
+      "title": "{{count}} utilizadores",
+      "createNewUser": "Criar novo utilizador",
+      "searchPlaceholder": "Pesquisar utilizadores...",
+      "twoFactorEnabled": "2FA ativada",
+      "twoFactorDisabled": "A autenticação de dois fatores está desativada",
+      "noUsers": "Não foram encontrados utilizadores",
+      "noUsersDescription": "Cria um novo utilizador para começares.",
+      "noSearchResults": "Não foram encontrados utilizadores",
+      "noSearchResultsDescription": "Tenta ajustar a tua pesquisa.",
+      "table": {
+        "user": "Utilizador",
+        "twoFactor": "2FA",
+        "roles": "Funções"
+      },
+      "contextMenu": {
+        "changePassword": "Alterar palavra-passe",
+        "deleteUser": "Apagar utilizador",
+        "loginAsUser": "Iniciar sessão como utilizador",
+        "deleteConfirm": "Isto vai eliminar definitivamente o utilizador e todos os dados associados.",
+        "managePermissions": "Gerir permissões",
+        "allowExternalLink": "Permitir a ligação SSO/LDAP",
+        "cancelExternalLink": "Cancelar a ligação SSO/LDAP",
+        "unlinkExternal": "Desvincular o início de sessão via SSO/LDAP"
+      }
+    },
+    "userDialog": {
+      "title": "Criar novo utilizador",
+      "firstName": "Nome próprio",
+      "lastName": "Apelido",
+      "username": "Nome de utilizador",
+      "password": "Palavra-passe",
+      "firstNamePlaceholder": "Nome próprio",
+      "lastNamePlaceholder": "Apelido",
+      "usernamePlaceholder": "Nome de utilizador",
+      "passwordPlaceholder": "Palavra-passe",
+      "create": "Criar",
+      "errorOccurred": "Ocorreu um erro"
+    },
+    "sessions": {
+      "title": "Sessões",
+      "lastActivity": "Última atividade: {{date}} de {{ip}}",
+      "currentSession": "Sessão atual",
+      "logout": "Sair",
+      "revoke": "Revogar",
+      "browserOn": "{{browser}} {{version}} em {{os}} {{osVersion}}"
+    },
+    "keymaps": {
+      "title": "Configurações de teclado",
+      "description": "Personaliza os atalhos de teclado para se adequarem ao teu fluxo de trabalho.",
+      "resetAll": "Reiniciar tudo",
+      "actions": {
+        "search": {
+          "title": "Pesquisar",
+          "description": "Abre o campo de pesquisa"
+        },
+        "quickaction": {
+          "title": "Ação rápida",
+          "description": "Abre o menu de ações rápidas"
+        },
+        "aimenu": {
+          "title": "Menu de IA",
+          "description": "Abre o menu de comandos da IA"
+        },
+        "aiaccepttool": {
+          "title": "IA Aceitar ação",
+          "description": "Aprova a ação pendente da ferramenta de IA no assistente"
+        },
+        "aicommand": {
+          "title": "Gerar comando",
+          "description": "Pede uma sugestão de comando no terminal"
+        },
+        "snippets": {
+          "title": "Trechos",
+          "description": "Abrir a caixa de diálogo dos trechos de código"
+        },
+        "keyboardshortcuts": {
+          "title": "Atalhos de teclado",
+          "description": "Abrir o menu de atalhos de teclado"
+        },
+        "broadcast": {
+          "title": "Modo de difusão",
+          "description": "Ativar ou desativar o modo de transmissão quando estiveres a usar a visualização dividida"
+        },
+        "copy": {
+          "title": "Copiar",
+          "description": "Copia o texto destacado no terminal para o teclado. É necessário que estejas no modo «Rato» ou «Teclado» nas definições do Terminal."
+        },
+        "paste": {
+          "title": "Colar",
+          "description": "Cola o texto da área de transferência no terminal. É necessário que estejas no modo «Smart Ctrl+C», «Rato» ou «Teclado» nas definições do Terminal."
+        },
+        "fullscreen": {
+          "title": "Ecrã inteiro",
+          "description": "Ativar/desativar o modo de ecrã inteiro"
+        },
+        "pasteidentitypassword": {
+          "title": "Colar a palavra-passe de identidade",
+          "description": "Cola a palavra-passe da identidade da ligação SSH atual"
+        }
+      },
+      "recorder": {
+        "pressKeys": "Carregue nas teclas...",
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "disabled": "Desativado",
+        "reset": "Reiniciar"
+      },
+      "messages": {
+        "updateSuccess": "A configuração de teclas foi atualizada com sucesso",
+        "updateFailed": "Não foi possível atualizar a combinação de teclas",
+        "resetSuccess": "Redefinir as teclas de atalho para os valores predefinidos",
+        "resetFailed": "Não foi possível redefinir a combinação de teclas",
+        "resetAllSuccess": "Todas as combinações de teclas voltam aos valores predefinidos",
+        "resetAllFailed": "Não foi possível redefinir as combinações de teclas"
+      }
+    },
+    "terminal": {
+      "title": "Terminal",
+      "syncLoginRequired": "Por favor, inicia sessão para sincronizar as definições do terminal",
+      "font": {
+        "title": "Tipo de letra",
+        "description": "Personaliza o tipo de letra e o tamanho do teu terminal.",
+        "fontFamily": "Família de tipos de letra",
+        "fontSize": "Tamanho da fonte",
+        "syncEnabled": "As definições de tipo de letra vão agora sincronizar-se com a tua conta",
+        "syncDisabled": "As definições das fontes já não vão ser sincronizadas"
+      },
+      "cursor": {
+        "title": "Cursor",
+        "description": "Personaliza o aspeto e o comportamento do cursor do teu terminal.",
+        "cursorStyle": "Estilo do cursor",
+        "cursorBlinking": "O cursor está a piscar",
+        "enabled": "Ativado",
+        "disabled": "Desativado",
+        "syncEnabled": "As definições do cursor vão agora sincronizar-se com a tua conta",
+        "syncDisabled": "As definições do cursor já não vão ser sincronizadas"
+      },
+      "input": {
+        "title": "Entrada",
+        "description": "Controla o comportamento dos atalhos de teclado no terminal.",
+        "copyPasteBehavior": "Comportamento da função «Copiar/Colar»",
+        "copyPasteBehaviorNone": "Nenhum",
+        "copyPasteBehaviorNoneHint": "Apenas «Copiar» e «Colar» no menu de contexto.",
+        "copyPasteBehaviorSmart": "Ctrl+C inteligente",
+        "copyPasteBehaviorSmartHint": "Copia de forma inteligente quando o texto estiver destacado; caso contrário, envia o comando Ctrl+C sem processar para o terminal.",
+        "copyPasteBehaviorKeyboard": "Teclado",
+        "copyPasteBehaviorKeyboardHint": "Utiliza os teus mapas de teclas definidos para fazer cópia/colagem",
+        "copyPasteBehaviorMouse": "Rato",
+        "copyPasteBehaviorMouseHint": "Seleciona para copiar, clica com o botão direito para colar. Usa Ctrl + clique com o botão direito para aceder ao menu de contexto.",
+        "copyPasteBehaviorMouseKeyboard": "Rato/Teclado",
+        "copyPasteBehaviorMouseKeyboardHint": "Ativa os modos de rato e teclado.",
+        "passwordPromptDetection": "Detecção da introdução da palavra-passe",
+        "autoReconnect": "Reconexão automática",
+        "enabled": "Ativado",
+        "disabled": "Desativado",
+        "syncEnabled": "As definições de entrada vão agora sincronizar-se com a tua conta",
+        "syncDisabled": "As definições de entrada já não vão ser sincronizadas"
+      },
+      "theme": {
+        "title": "Tema",
+        "description": "Escolhe um tema de cores para o teu terminal.",
+        "syncEnabled": "As definições do tema vão agora sincronizar-se com a tua conta",
+        "syncDisabled": "As definições do tema já não vão ser sincronizadas"
+      },
+      "preview": {
+        "text": "$ echo 'Olá, Nexterm!'\nOlá, Nexterm!\n$ "
+      }
+    },
+    "fileManager": {
+      "title": "Gestor de ficheiros",
+      "description": "Configura a forma como os ficheiros e as pastas são apresentados e geridos.",
+      "syncLoginRequired": "Por favor, inicia sessão para sincronizar as definições do gestor de ficheiros",
+      "syncEnabled": "As definições do gestor de ficheiros vão agora sincronizar-se com a tua conta",
+      "syncDisabled": "As definições do gestor de ficheiros já não vão ser sincronizadas",
+      "view": {
+        "title": "Ver",
+        "description": "Como é que os ficheiros e pastas aparecem quando abres o gestor de ficheiros."
+      },
+      "behavior": {
+        "title": "Comportamento",
+        "description": "O que acontece quando abres, apagas e deslocas ficheiros."
+      },
+      "defaultView": {
+        "title": "Modo de visualização predefinido",
+        "description": "Escolhe o layout predefinido ao abrir o gestor de ficheiros.",
+        "list": "Visualização em lista",
+        "listDescription": "Mostrar os ficheiros numa lista detalhada com colunas de tamanho e data",
+        "grid": "Visualização em grelha",
+        "gridDescription": "Mostrar ficheiros como ícones num layout em grelha com miniaturas",
+        "compact": "Visualização compacta",
+        "compactDescription": "Mostrar só os nomes em colunas compactas para caberem muitos ficheiros no ecrã",
+        "label": "Visualização predefinida"
+      },
+      "thumbnails": {
+        "title": "Miniaturas de imagens",
+        "description": "Mostrar miniaturas das imagens na visualização em grelha. Isto consome largura de banda adicional para gerar pré-visualizações.",
+        "enabled": "Mostrar miniaturas",
+        "enabledDescription": "Mostrar pré-visualizações das imagens numa grelha para uma identificação visual rápida",
+        "disabled": "Ocultar miniaturas",
+        "disabledDescription": "Mostrar apenas ícones de ficheiros para poupar largura de banda e melhorar o desempenho",
+        "label": "Miniaturas de imagens",
+        "show": "Mostrar",
+        "hide": "Ocultar"
+      },
+      "hiddenFiles": {
+        "title": "Ficheiros ocultos",
+        "description": "Controla a visibilidade dos ficheiros e pastas ocultos (cujos nomes começam por um ponto).",
+        "show": "Mostrar ficheiros ocultos",
+        "showDescription": "Mostrar todos os ficheiros, incluindo os ficheiros .dotfiles e os diretórios do sistema",
+        "hide": "Ocultar ficheiros ocultos",
+        "hideDescription": "Mostrar apenas ficheiros e pastas normais",
+        "label": "Ficheiros ocultos",
+        "showShort": "Mostrar",
+        "hideShort": "Ocultar"
+      },
+      "deleteConfirmation": {
+        "title": "Confirmação de eliminação",
+        "description": "Pedir confirmação antes de apagar ficheiros e pastas.",
+        "enabled": "Confirmar eliminações",
+        "enabledDescription": "Mostrar uma caixa de diálogo de confirmação antes de eliminar itens",
+        "disabled": "Apagar imediatamente",
+        "disabledDescription": "Apagar ficheiros sem pedir confirmação",
+        "label": "Antes de apagar",
+        "ask": "Pede confirmação",
+        "immediately": "Apaga já"
+      },
+      "dragDropAction": {
+        "title": "Ação de arrastar e largar",
+        "description": "Ação predefinida ao arrastar ficheiros para um novo local.",
+        "move": "Mover",
+        "copy": "Copiar",
+        "ask": "Pergunta",
+        "label": "Ao arrastar ficheiros"
+      },
+      "singleClickOpen": {
+        "title": "Abrir com um único clique",
+        "description": "Abre ficheiros e pastas com um único clique, em vez de os selecionares. Quando esta opção estiver desativada, basta clicar duas vezes para abrir.",
+        "single": "Um clique",
+        "double": "Clique duas vezes",
+        "label": "Itens em aberto com"
+      },
+      "sharedDrive": {
+        "title": "Unidade partilhada",
+        "description": "O que os computadores remotos conseguem ver deste computador através da unidade partilhada. As alterações aplicam-se às novas ligações.",
+        "mode": {
+          "title": "Partilhar",
+          "folder": "Uma pasta",
+          "disk": "Disco inteiro",
+          "off": "Nada",
+          "diskWarning": "Os computadores remotos podem ler, alterar e apagar todos os ficheiros deste computador."
+        },
+        "folder": {
+          "title": "Pasta partilhada",
+          "default": "Nexterm Partilhado na tua pasta pessoal",
+          "choose": "Escolhe uma pasta",
+          "reset": "Usar o valor predefinido"
+        },
+        "folderError": "Não foi possível preparar a pasta partilhada"
+      }
+    },
+    "authentication": {
+      "title": "{{count}} Provedores de autenticação",
+      "internalProviderName": "Autenticação interna",
+      "addProvider": "Adicionar prestador",
+      "addLdapProvider": "Adicionar LDAP",
+      "system": "Sistema",
+      "systemDescription": "Autenticação com nome de utilizador e palavra-passe",
+      "registration": {
+        "title": "Auto-registo",
+        "description": "Permite que os visitantes criem a sua própria conta a partir do ecrã de início de sessão"
+      },
+      "deleteConfirm": "Isto vai eliminar definitivamente este fornecedor de autenticação.",
+      "errors": {
+        "deleteProvider": "Erro ao eliminar o prestador",
+        "toggleProvider": "Erro ao alternar o fornecedor"
+      },
+      "providerDialog": {
+        "createTitle": "Adicionar provedor de autenticação",
+        "editTitle": "Editar provedor de autenticação",
+        "fields": {
+          "displayName": "Nome de exibição",
+          "displayNamePlaceholder": "por exemplo, SSO da empresa",
+          "issuerUrl": "URL do emissor",
+          "issuerUrlPlaceholder": "https://auth.company.com",
+          "clientId": "ID do cliente",
+          "clientIdPlaceholder": "ID do cliente",
+          "clientSecret": "Segredo do cliente",
+          "clientSecretPlaceholder": "Segredo do cliente",
+          "clientSecretPlaceholderEdit": "Deixa em branco para manter o que já existe",
+          "redirectUri": "URI de redirecionamento",
+          "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
+          "endSessionEndpoint": "Ponto final da sessão (opcional)",
+          "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
+          "scope": "Âmbito",
+          "scopePlaceholder": "perfil OpenID",
+          "usernameAttribute": "Atributo «Nome de utilizador»",
+          "usernameAttributePlaceholder": "nome_de_utilizador_preferido",
+          "firstNameAttribute": "Atributo «Nome próprio»",
+          "firstNameAttributePlaceholder": "nome_próprio",
+          "lastNameAttribute": "Atributo «Apelido»",
+          "lastNameAttributePlaceholder": "apelido"
+        },
+        "advanced": {
+          "show": "Mostrar definições avançadas",
+          "hide": "Ocultar definições avançadas"
+        },
+        "actions": {
+          "addProvider": "Adicionar prestador",
+          "saveChanges": "Guardar alterações"
+        },
+        "messages": {
+          "saveFailed": "Não foi possível guardar o fornecedor"
+        },
+        "groupSync": {
+          "title": "Sincronização de grupo",
+          "hint": "Adiciona automaticamente utilizadores às organizações e controla o acesso com base nas reivindicações de grupo do teu fornecedor de identidade.",
+          "groupsAttribute": "Grupos afirmam",
+          "groupsAttributePlaceholder": "grupos",
+          "requiredGroup": "Grupo obrigatório",
+          "requiredGroupPlaceholder": "nexterm-users",
+          "requiredGroupHint": "Se estiver definido, só os utilizadores cujo campo «claims» do grupo contenha este valor é que podem iniciar sessão.",
+          "mappings": "Mapeamentos da organização",
+          "mappingsHint": "Associa o valor de uma reivindicação de grupo a uma organização. A filiação é mantida sincronizada sempre que iniciares sessão.",
+          "mappingValuePlaceholder": "Valor do grupo",
+          "roleMember": "Membro",
+          "roleOwner": "Proprietário",
+          "addMapping": "Adicionar mapeamento"
+        }
+      },
+      "ldapDialog": {
+        "createTitle": "Adicionar fornecedor LDAP",
+        "editTitle": "Editar o provedor LDAP",
+        "fields": {
+          "displayName": "Nome de exibição",
+          "displayNamePlaceholder": "por exemplo, LDAP da empresa",
+          "host": "Anfitrião",
+          "hostPlaceholder": "ldap.company.com",
+          "port": "Porto",
+          "bindDN": "Definir DN",
+          "bindDNPlaceholder": "cn=admin,dc=empresa,dc=com",
+          "bindPassword": "Senha de ligação",
+          "bindPasswordPlaceholder": "Definir palavra-passe",
+          "bindPasswordPlaceholderEdit": "Deixa em branco para manter o que já existe",
+          "baseDN": "DN de base",
+          "baseDNPlaceholder": "dc=empresa,dc=com informar",
+          "userSearchFilter": "Filtro de pesquisa de utilizadores",
+          "userSearchFilterPlaceholder": "(uid={{username}}) ou (sAMAccountName={{username}})",
+          "useTLS": "Usa TLS/SSL",
+          "usernameAttribute": "Atributo «Nome de utilizador»",
+          "usernameAttributePlaceholder": "uid",
+          "emailAttribute": "Atributo de e-mail",
+          "emailAttributePlaceholder": "e-mail",
+          "firstNameAttribute": "Atributo «Nome próprio»",
+          "firstNameAttributePlaceholder": "nome próprio",
+          "lastNameAttribute": "Atributo «Apelido»",
+          "lastNameAttributePlaceholder": "sn informar"
+        },
+        "advanced": {
+          "show": "Mostrar definições avançadas",
+          "hide": "Ocultar definições avançadas"
+        },
+        "actions": {
+          "addProvider": "Adicionar prestador",
+          "saveChanges": "Guardar alterações",
+          "testConnection": "Testar ligação",
+          "testing": "A testar..."
+        },
+        "messages": {
+          "saveFailed": "Não foi possível guardar o fornecedor",
+          "saveFirst": "Guarda primeiro o provedor para testares a ligação",
+          "testSuccess": "Teste de ligação bem-sucedido",
+          "testFailed": "O teste de ligação falhou"
+        }
+      },
+      "sessions": {
+        "title": "Sessões",
+        "description": "Quando os dispositivos já autenticados, incluindo as aplicações móveis e de computador, têm de voltar a iniciar sessão.",
+        "idle": "Sair após um período de inatividade",
+        "lifetime": "Duração máxima da sessão",
+        "days_one": "{{count}} dia",
+        "days_other": "{{count}} dias",
+        "never": "Nunca",
+        "loadError": "Não foi possível carregar as definições da sessão",
+        "saveError": "Não foi possível guardar as definições da sessão"
+      }
+    },
+    "ai": {
+      "title": "Configuração do assistente de IA",
+      "description": "Configura o fornecedor de IA utilizado pelo assistente, que pode gerir os teus servidores através das suas próprias sessões.",
+      "loading": "A carregar as definições de IA...",
+      "enable": {
+        "title": "Ativar o Assistente de IA",
+        "description": "Permite que os utilizadores abram o assistente de IA durante as sessões no servidor"
+      },
+      "provider": {
+        "title": "Fornecedor de IA",
+        "description": "Escolhe o teu fornecedor de serviços de IA"
+      },
+      "model": {
+        "title": "Modelo",
+        "description": "Seleciona o modelo de IA que o assistente deve usar"
+      },
+      "apiKey": {
+        "title": "Chave API",
+        "setPlaceholder": "A chave API está definida (deixa em branco para manter a atual)",
+        "genericDescription": "Chave API utilizada para autenticar junto do fornecedor selecionado",
+        "genericPlaceholder": "Introduz a tua chave API do {{provider}}"
+      },
+      "authMethod": {
+        "title": "Autenticação",
+        "description": "Autentica-te com uma chave de API ou com a tua subscrição do fornecedor",
+        "apiKey": "Chave API",
+        "subscription": "Assinatura"
+      },
+      "subscription": {
+        "title": "{{provider}} Assinatura",
+        "description": "Inicia sessão com a tua subscrição do {{provider}} para usares os seus modelos sem precisares de uma chave API",
+        "connectedDescription": "A tua subscrição do {{provider}} está ativada",
+        "connect": "Ligar-se",
+        "connecting": "A ligar...",
+        "complete": "Concluir",
+        "disconnect": "Desligar",
+        "codePlaceholder": "Cola aqui o código de autorização",
+        "codePlaceholderUrl": "Cola aqui o URL (ou código) completo do callback",
+        "connectSuccess": "{{provider}} assinatura ativada",
+        "startError": "Não foi possível iniciar a autorização",
+        "exchangeError": "Não foi possível ligar a subscrição",
+        "disconnectError": "Não foi possível cancelar a subscrição"
+      },
+      "baseUrl": {
+        "title": "URL da API",
+        "description": "URL base do ponto de acesso compatível com a OpenAI do fornecedor",
+        "placeholder": "https://api.example.com/v1"
+      },
+      "selectProvider": "Escolhe um fornecedor...",
+      "selectModel": "Escolhe um modelo...",
+      "loadingModels": "A carregar modelos...",
+      "noModels": "Não há modelos disponíveis",
+      "saveSettings": "Guardar definições",
+      "testConnection": "Testar ligação",
+      "testing": "A testar...",
+      "saveSuccess": "As definições de IA foram guardadas com sucesso",
+      "testSuccess": "Teste de ligação à IA bem-sucedido",
+      "errors": {
+        "loadSettings": "Não foi possível carregar as definições de IA",
+        "saveSettings": "Não foi possível guardar as definições da IA",
+        "testConnection": "O teste de ligação à IA falhou"
+      }
+    },
+    "monitoring": {
+      "loading": "A carregar as definições de monitorização...",
+      "saveSettings": "Guardar definições",
+      "saveSuccess": "As definições de monitorização foram guardadas com sucesso",
+      "seconds": "segundos",
+      "hours": "horas",
+      "servers": "servidores",
+      "statusChecker": {
+        "title": "Verificador de estado",
+        "description": "Configura a forma como o Nexterm verifica o estado online/offline dos teus servidores.",
+        "enable": {
+          "title": "Ativar o Verificador de Estado",
+          "description": "Verifica automaticamente se os servidores estão online ou offline. Quando esta opção estiver desativada, todos os servidores serão marcados como online."
+        },
+        "interval": {
+          "title": "Intervalo de verificação",
+          "description": "Com que frequência verificar o estado do servidor (10-300 segundos)"
+        }
+      },
+      "dataCollection": {
+        "title": "Recolha de dados",
+        "description": "Configura a recolha de dados de monitorização para métricas de CPU, memória, disco e rede.",
+        "enable": {
+          "title": "Ativar monitorização",
+          "description": "Recolhe métricas detalhadas de desempenho dos servidores que têm a monitorização ativada."
+        },
+        "interval": {
+          "title": "Intervalo de recolha",
+          "description": "Com que frequência recolher os dados de monitorização (30-600 segundos)"
+        },
+        "retention": {
+          "title": "Retenção de dados",
+          "description": "Durante quanto tempo se devem guardar os dados de monitorização (1-24 horas)"
+        }
+      },
+      "advanced": {
+        "title": "Definições avançadas",
+        "description": "Ajusta o desempenho da monitorização e a utilização dos recursos.",
+        "timeout": {
+          "title": "Tempo limite de ligação",
+          "description": "Tempo máximo de espera pela resposta do servidor (5-120 segundos)"
+        },
+        "batchSize": {
+          "title": "Tamanho do lote",
+          "description": "Número de servidores a verificar em simultâneo (1-50)"
+        }
+      },
+      "errors": {
+        "loadSettings": "Não foi possível carregar as definições de monitorização",
+        "saveSettings": "Não foi possível guardar as definições de monitorização"
+      }
+    },
+    "identities": {
+      "title": "Chaves SSH e credenciais",
+      "description": "Podes associar identidades a qualquer servidor. As identidades específicas de cada servidor encontram-se nas definições desse servidor.",
+      "createIdentity": "Criar identidade",
+      "personal": "Pessoal",
+      "noUsername": "Sem nome de utilizador",
+      "notInUse": "Não está a ser utilizado",
+      "notInUseHint": "Não está associado a nenhum servidor nem a nenhuma pasta",
+      "sshKey": "Chave SSH",
+      "password": "Palavra-passe",
+      "editIdentity": "Editar identidade",
+      "deleteIdentity": "Apagar identidade",
+      "noIdentities": "Não foram encontradas identidades",
+      "noIdentitiesDescription": "Cria a tua primeira identidade para começares a estabelecer ligações ao servidor",
+      "deleteConfirm": "Tens a certeza de que queres eliminar «{{name}}»? Esta ação não pode ser desfeita e irá remover esta identidade de todos os servidores que a utilizam.",
+      "deleteSuccess": "A identidade foi eliminada com sucesso",
+      "deleteError": "Não foi possível eliminar a identidade",
+      "dialog": {
+        "createTitle": "Criar nova identidade",
+        "editTitle": "Editar identidade",
+        "fields": {
+          "name": "Nome da identidade",
+          "namePlaceholder": "Introduz o nome da identidade",
+          "username": "Nome de utilizador",
+          "usernamePlaceholder": "Nome de utilizador (opcional)",
+          "authType": "Tipo de autenticação",
+          "password": "Palavra-passe",
+          "passwordPlaceholder": "Introduz a palavra-passe",
+          "passwordPlaceholderEdit": "Deixa em branco para manter a palavra-passe atual",
+          "sshKey": "Chave privada SSH",
+          "passphrase": "Frase-passe (opcional)",
+          "passphrasePlaceholder": "Introduz a frase-passe (opcional)",
+          "passphrasePlaceholderEdit": "Deixa em branco para manter a senha atual"
+        },
+        "authTypes": {
+          "password": "Palavra-passe",
+          "password-only": "Sem nome de utilizador",
+          "ssh": "Chave SSH",
+          "both": "Chave+Senha"
+        },
+        "actions": {
+          "cancel": "Cancelar",
+          "create": "Criar identidade",
+          "update": "Atualizar identidade"
+        },
+        "messages": {
+          "nameRequired": "É obrigatório indicar o nome de identificação",
+          "passwordRequired": "É preciso introduzir a palavra-passe",
+          "sshKeyRequired": "É necessária uma chave SSH",
+          "createSuccess": "A identidade foi criada com sucesso",
+          "updateSuccess": "A identidade foi atualizada com sucesso",
+          "createFailed": "Não foi possível criar a identidade",
+          "updateFailed": "Não foi possível atualizar a identidade"
+        }
+      }
+    },
+    "sources": {
+      "title": "Fontes dos scripts e trechos de código",
+      "description": "Configura fontes externas para sincronizar automaticamente scripts e trechos de código.",
+      "loading": "A carregar fontes...",
+      "noSources": "Não há fontes configuradas",
+      "noSourcesDescription": "Adiciona fontes externas para sincronizar automaticamente scripts e trechos de código.",
+      "addSource": "Adicionar fonte",
+      "snippets": "trechos",
+      "scripts": "scripts",
+      "themes": "temas",
+      "neverSynced": "Nunca foi sincronizado",
+      "sync": "Sincronizar agora",
+      "edit": "Editar",
+      "delete": "Apagar",
+      "deleteConfirm": "Tens a certeza de que queres eliminar a fonte «{{name}}»? Todos os scripts e trechos sincronizados desta fonte também serão eliminados.",
+      "status": {
+        "success": "Sincronizado",
+        "error": "Erro",
+        "pending": "Em espera",
+        "syncing": "Sincronização",
+        "disabled": "Desativado"
+      },
+      "dialog": {
+        "createTitle": "Adicionar fonte",
+        "editTitle": "Editar código-fonte",
+        "name": "Nome",
+        "namePlaceholder": "por exemplo, Scripts da Empresa",
+        "url": "URL da fonte",
+        "urlPlaceholder": "https://scripts.example.com",
+        "enabled": "Ativado",
+        "enabledDescription": "Quando desativada, esta fonte não será sincronizada",
+        "validating": "A validar o URL...",
+        "validationSuccess": "Encontrou-se uma fonte válida: {{snippets}} trechos de código, {{scripts}} scripts, {{themes}} temas",
+        "create": "Criar"
+      },
+      "messages": {
+        "created": "A fonte foi criada com sucesso",
+        "updated": "A fonte foi atualizada com sucesso",
+        "deleted": "A fonte foi eliminada com sucesso",
+        "synced": "A fonte foi sincronizada com sucesso"
+      },
+      "errors": {
+        "loadFailed": "Não foi possível carregar as fontes",
+        "saveFailed": "Não foi possível guardar a fonte",
+        "deleteFailed": "Não foi possível eliminar a fonte",
+        "syncFailed": "Não foi possível sincronizar a fonte",
+        "validationFailed": "Não foi possível validar o URL",
+        "requiredFields": "O nome e o URL são obrigatórios"
+      }
+    },
+    "backup": {
+      "loading": "A carregar as definições de armazenamento...",
+      "storage": {
+        "title": "Armazenamento",
+        "description": "Vê a utilização de espaço em disco dos teus dados do Nexterm.",
+        "database": "Base de dados",
+        "recordings": "Gravações",
+        "logs": "Registos",
+        "total": "Total"
+      },
+      "backupsSection": {
+        "title": "Cópias de segurança",
+        "description": "Configura os fornecedores de cópias de segurança e programa cópias de segurança automáticas."
+      },
+      "addProvider": "Adicionar prestador",
+      "editProvider": "Editar prestador",
+      "providerName": "Nome do prestador",
+      "providerNamePlaceholder": "O meu backup",
+      "providerType": "Tipo",
+      "providerTypes": {
+        "local": "Local",
+        "smb": "Partilha SMB",
+        "webdav": "WebDAV"
+      },
+      "localPath": "Caminho de cópia de segurança",
+      "localPathPlaceholder": "/caminho/para/os/backups",
+      "smbShare": "Partilha SMB",
+      "smbSharePlaceholder": "\\\\servidor\\partilha",
+      "smbFolder": "Pasta (opcional)",
+      "smbFolderPlaceholder": "cópias de segurança",
+      "smbUsername": "Nome de utilizador",
+      "smbUsernamePlaceholder": "utilizador",
+      "smbPassword": "Palavra-passe",
+      "smbPasswordPlaceholder": "palavra-passe",
+      "smbDomain": "Domínio (opcional)",
+      "smbDomainPlaceholder": "GRUPO DE TRABALHO",
+      "webdavUrl": "URL do servidor",
+      "webdavUrlPlaceholder": "https://cloud.example.com/remote.php/dav/files/user",
+      "webdavFolder": "Pasta (opcional)",
+      "webdavFolderPlaceholder": "cópias de segurança",
+      "webdavUsername": "Nome de utilizador",
+      "webdavUsernamePlaceholder": "utilizador",
+      "webdavPassword": "Palavra-passe",
+      "webdavPasswordPlaceholder": "palavra-passe",
+      "passwordUnchanged": "Deixa em branco para manter o valor atual",
+      "schedule": {
+        "title": "Cópia de segurança automática",
+        "disabled": "Desativado",
+        "hourly": "A cada hora",
+        "every6h": "A cada 6 horas",
+        "every12h": "A cada 12 horas",
+        "daily": "Diário",
+        "weekly": "Semanal"
+      },
+      "retention": {
+        "title": "Política de retenção"
+      },
+      "backups": "cópias de segurança",
+      "includes": {
+        "title": "Incluir nas cópias de segurança",
+        "database": "Base de dados",
+        "recordings": "Gravações",
+        "logs": "Registos"
+      },
+      "providers": "Prestadores de serviços",
+      "saveSettings": "Guardar definições",
+      "noProviders": "Não há fornecedores de serviços de cópia de segurança",
+      "noProvidersDescription": "Adiciona um fornecedor de cópias de segurança para começares a criar cópias de segurança.",
+      "backupList": "Cópias de segurança - {{name}}",
+      "loadingBackups": "A carregar cópias de segurança...",
+      "noBackups": "Não foram encontrados cópias de segurança",
+      "restoreConfirm": "Tens a certeza de que queres restaurar «{{name}}»? Isto vai substituir os teus dados atuais e reiniciar o servidor.",
+      "deleteProviderConfirm": "Tens a certeza de que queres eliminar «{{name}}»? Isto não vai eliminar os backups existentes.",
+      "providerCreated": "Foi criado um fornecedor de cópias de segurança",
+      "providerUpdated": "O fornecedor de serviços de cópia de segurança foi atualizado",
+      "providerDeleted": "O fornecedor de cópias de segurança foi eliminado",
+      "backupCreated": "A cópia de segurança foi criada com sucesso",
+      "restoreStarted": "A restauração começou, o servidor vai reiniciar",
+      "saveSuccess": "As definições foram guardadas com sucesso",
+      "errors": {
+        "loadFailed": "Não foi possível carregar as definições de cópia de segurança",
+        "saveFailed": "Não foi possível guardar as definições",
+        "deleteFailed": "Não foi possível eliminar",
+        "backupFailed": "Não foi possível criar a cópia de segurança",
+        "loadBackupsFailed": "Não foi possível carregar as cópias de segurança",
+        "restoreFailed": "Não foi possível restaurar a cópia de segurança",
+        "exportFailed": "Não foi possível exportar os dados",
+        "nameRequired": "É obrigatório indicar o nome do prestador"
+      },
+      "noFiles": "Não foram encontrados ficheiros"
+    },
+    "engines": {
+      "title": "Motores",
+      "description": "Gerir instâncias do motor que tratam de ligações remotas.",
+      "addEngine": "Adicionar motor",
+      "noEngines": "Sem motores",
+      "noEnginesDescription": "Adiciona um motor para começares a ligar-te a servidores remotos.",
+      "status": {
+        "connected": "Conectado",
+        "disconnected": "Desligado"
+      },
+      "lastSeen": "Visto pela última vez {{date}}",
+      "neverConnected": "Nunca se ligou",
+      "regenerateToken": "Regenerar token",
+      "deleteEngine": "Apagar motor",
+      "dismiss": "Ignorar",
+      "copyToken": "Copiar token",
+      "transport": {
+        "encrypted": "Encriptado",
+        "unencrypted": "Não encriptado"
+      },
+      "tokenLabel": "Token de registo para <strong>{{name}}</strong>",
+      "tokenHint": "Define isto no fiche <code1>iro config.yaml</code1> ou como variável de ambiente <code2>REGISTRATION_TOKEN</code2>.",
+      "dialog": {
+        "title": "Adicionar motor",
+        "engineName": "Nome do motor",
+        "namePlaceholder": "por exemplo, Rede do Escritório",
+        "create": "Criar motor"
+      },
+      "deleteConfirm": "Tens a certeza de que queres eliminar «{{name}}»?",
+      "messages": {
+        "deleted": "O motor foi eliminado com sucesso"
+      },
+      "errors": {
+        "loadFailed": "Não foi possível carregar os motores",
+        "createFailed": "Não foi possível criar o motor",
+        "deleteFailed": "Não foi possível eliminar o motor",
+        "regenerateFailed": "Não foi possível regenerar o token"
+      }
+    },
+    "permissions": {
+      "subtitle": "Cria funções com permissões detalhadas ou atribui permissões a utilizadores individuais. A função «Padrão» aplica-se automaticamente a todos.",
+      "createRole": "Criar função",
+      "rolesTitle": "Funções",
+      "rolesTab": "Funções",
+      "overridesTab": "Permissões diretas",
+      "permissionsTab": "Permissões",
+      "membersTab": "Membros",
+      "settingsTab": "Definições",
+      "managePermissions": "Gerir permissões",
+      "memberCount_one": "{{count}} membro",
+      "memberCount_other": "{{count}} membros",
+      "dangerousHint": "Conceder isto dá acesso amplo ou destrutivo. Atribui-o com cuidado.",
+      "roleName": "Nome da função",
+      "roleNamePlaceholder": "por exemplo, Operadores",
+      "roleColor": "Cor",
+      "nameRequired": "Por favor, introduz um nome para a função.",
+      "saveError": "Não foi possível guardar as tuas alterações.",
+      "loadError": "Não foi possível carregar as permissões.",
+      "userSaved": "As permissões foram atualizadas.",
+      "noAssignableRoles": "Ainda não há funções disponíveis. Cria uma primeiro.",
+      "noMembers": "Este grupo ainda não tem membros.",
+      "addMemberPlaceholder": "Procura utilizadores para adicionar…",
+      "deleteRole": "Eliminar função",
+      "deleteConfirm": "Isto vai eliminar definitivamente a função «{{name}}» e retirá-la de todos os membros.",
+      "inheritsAllow": "Herdança: Permitida",
+      "inheritsDeny": "Herdado: Recusado"
+    },
+    "search": "Definições de pesquisa",
+    "trustedCertificates": {
+      "title": "Certificados de confiança",
+      "description": "Certificados e chaves de anfitrião que aceitaste ao estabelecer a ligação. Se removeres um, ser-te-á pedido novamente na próxima vez.",
+      "personal": "Pessoal",
+      "system": "Sistema",
+      "kinds": {
+        "ssh": "Chave de anfitrião SSH",
+        "tls": "Certificado TLS"
+      },
+      "empty": "Ainda não há nada de confiança",
+      "emptyDescription": "Os certificados e as chaves do servidor aparecem aqui assim que os aceitares para uma ligação.",
+      "remove": "Remover",
+      "removeConfirm": "Deixas de confiar no {{endpoint}}? A próxima ligação volta a perguntar.",
+      "removeSuccess": "Certificado de confiança removido",
+      "removeError": "Não foi possível remover o certificado de confiança",
+      "ignore": {
+        "title": "Ignorar avisos sobre certificados",
+        "description": "Liga-te aos teus servidores pessoais sem verificar o certificado ou a chave do anfitrião. Assim, as ligações podem ser interceptadas sem que te apercebas. Os servidores da organização são sempre verificados.",
+        "error": "Não foi possível guardar a configuração"
+      }
+    }
+  },
+  "tunnel": {
+    "title": "Reencaminhamento de portas",
+    "identity": "Identidade",
+    "remoteHost": "Host remoto",
+    "remotePort": "Porta remota",
+    "localPort": "Porto local",
+    "start": "Iniciar o Tunnel",
+    "stop": "Túnel de Paragem",
+    "status": {
+      "idle": "Não está ligado",
+      "starting": "A começar...",
+      "listening": "A ouvir no localhost:{{port}}",
+      "error": "Erro",
+      "stopped": "Parou"
+    },
+    "error": {
+      "fillAllFields": "Preenche todos os campos, por favor"
+    }
+  },
+  "share": {
+    "errors": {
+      "unableToConnect": "Não é possível estabelecer ligação",
+      "failedToJoin": "Não foi possível entrar na sessão"
+    },
+    "sessionEnded": {
+      "title": "A sessão terminou",
+      "description": "A sessão partilhada foi encerrada"
+    }
+  },
+  "servers": {
+    "addServerNote": "Clica com o botão direito do rato para adicionar um novo servidor",
+    "searchPlaceholder": "Pesquisar",
+    "time": {
+      "justNow": "Agora mesmo",
+      "minuteAgo": "{{count}} há min",
+      "minutesAgo": "{{count}} há alguns minutos",
+      "hourAgo": "{{count}} há uma hora",
+      "hoursAgo": "{{count}} há algumas horas",
+      "dayAgo": "{{count}} há um dia",
+      "daysAgo": "{{count}} há alguns dias"
+    },
+    "tags": {
+      "title": "Etiquetas",
+      "createNewTag": "Criar nova etiqueta",
+      "tagName": "Nome da etiqueta",
+      "create": "Criar",
+      "filterByTags": "Filtrar por etiquetas",
+      "clearAll": "Limpar tudo",
+      "noTagsCreated": "Ainda não foram criadas etiquetas",
+      "editTag": "Editar etiqueta",
+      "deleteTag": "Apagar etiqueta"
+    },
+    "contextMenu": {
+      "createFolder": "Criar pasta",
+      "deleteFolder": "Apagar pasta",
+      "renameFolder": "Renomear pasta",
+      "folderSettings": "Definições da pasta",
+      "new": "Novo",
+      "sshServer": "Servidor SSH",
+      "telnetServer": "Servidor Telnet",
+      "rdpServer": "Servidor RDP",
+      "vncServer": "Servidor VNC",
+      "demoServer": "Ligação de demonstração",
+      "sftpServer": "Servidor SFTP",
+      "ftpServer": "Servidor FTP",
+      "ftpsServer": "Servidor FTPS",
+      "createServer": "Criar servidor",
+      "import": "Importar",
+      "pve": "Proxmox VE",
+      "sshConfig": "Configuração do SSH",
+      "syncIntegration": "Sincronizar agora",
+      "syncSuccess": "Integração sincronizada",
+      "syncFailed": "Falha na sincronização da integração",
+      "removeIntegration": "Remover integração",
+      "connect": "Ligar-se",
+      "quickConnect": "Ligação Rápida",
+      "openSFTP": "Abrir SFTP",
+      "openBrowser": "Abrir o navegador",
+      "forwardPort": "Porta de saída",
+      "runScript": "Executar script",
+      "openNotes": "Notas abertas",
+      "addNotes": "Adicionar notas",
+      "editServer": "Editar servidor",
+      "editIntegration": "Editar integração",
+      "duplicateServer": "Servidor duplicado",
+      "pasteIdentityPassword": "Colar a palavra-passe",
+      "deleteServer": "Eliminar servidor",
+      "deleteConfirm": "Tens a certeza de que queres eliminar «{{name}}»? Esta ação não pode ser desfeita.",
+      "deleteFailServer": "Não foi possível eliminar «{{name}}».",
+      "deleteFailFolder": "Não foi possível eliminar a pasta «{{name}}».",
+      "wakeOnLan": "Wake-On-LAN",
+      "shutdown": "Desligar",
+      "stop": "Pára",
+      "start": "Iniciar",
+      "joinSession": "Entrar na sessão",
+      "joinSessionOf": "Participa na sessão de {{user}}"
+    },
+    "passwordHint": {
+      "paste": "colar a palavra-passe",
+      "pasteFor": "colar {{username}} palavra-passe",
+      "cycle": "Usa as setas do teclado para mudar de identidade"
+    },
+    "tabs": {
+      "contextMenu": {
+        "popOut": "Pop Out",
+        "startSharing": "Começa a partilhar",
+        "readOnly": "Apenas para leitura",
+        "readWrite": "Ler e escrever",
+        "copyShareLink": "Copiar link para partilhar",
+        "changePermissions": "Alterar permissões",
+        "stopSharing": "Parar de partilhar",
+        "duplicate": "Duplicado",
+        "openNotes": "Notas abertas",
+        "hibernateSession": "Hibernate",
+        "reconnect": "Reconectar",
+        "closeSession": "Desligar",
+        "splitRight": "Divisão à direita",
+        "splitDown": "Dividir para baixo",
+        "sendShortcut": "Enviar atalho…",
+        "zoom": "Ampliar ({{zoom}}%)",
+        "zoomReset": "Repor o zoom",
+        "displayScale": "Escala de visualização ({{scale}}%)",
+        "displayScaleAuto": "Automático ({{scale}}%)",
+        "displayScaleReset": "Usar o padrão"
+      },
+      "enableSplitView": "Ativar a Visualização Dividida",
+      "disableSplitView": "Desativar a Visualização Dividida",
+      "sessionMenu": "Menu da sessão"
+    },
+    "wol": {
+      "successDescription": "Pacote mágico enviado para {{name}}",
+      "errorDescription": "Não foi possível enviar o pacote mágico"
+    },
+    "messages": {
+      "fillRequiredFields": "Preenche todos os campos obrigatórios, por favor",
+      "serverCreated": "O servidor foi criado com sucesso",
+      "serverUpdated": "O servidor foi atualizado com sucesso",
+      "folderUpdated": "A pasta foi atualizada com sucesso",
+      "createFailed": "Não foi possível criar o servidor",
+      "updateFailed": "Não foi possível atualizar o servidor",
+      "identitiesRemovedOnMove": "Algumas identidades foram removidas porque não estão disponíveis no destino."
+    },
+    "dialog": {
+      "addServer": "Adicionar servidor",
+      "addProtocolServer": "Adicionar o servidor {{protocol}}",
+      "editServer": "Editar servidor",
+      "actions": {
+        "save": "Guardar",
+        "create": "Criar"
+      },
+      "fields": {
+        "name": "Nome",
+        "icon": "Ícone",
+        "serverIp": "Anfitrião",
+        "port": "Porto",
+        "protocol": "Protocolo",
+        "username": "Nome de utilizador",
+        "password": "Palavra-passe",
+        "host": "Anfitrião",
+        "macAddress": "Endereço MAC",
+        "wolBroadcastAddress": "Endereço de difusão",
+        "engine": "Motor"
+      },
+      "placeholders": {
+        "serverName": "Nome do servidor",
+        "serverIp": "Nome do anfitrião ou IP",
+        "port": "Porto",
+        "username": "Nome de utilizador",
+        "password": "Palavra-passe",
+        "host": "Anfitrião",
+        "macAddress": "AA:BB:CC:DD:EE:FF",
+        "wolBroadcastAddress": "255.255.255.255 informar"
+      },
+      "engineOffline": "(offline)",
+      "settings": {
+        "jumpHosts": {
+          "title": "Servidores de salto",
+          "description": "Liga-te através de servidores intermediários para acederes a este servidor de destino",
+          "addButton": "Adicionar Jump Host",
+          "removeTooltip": "Remover o host de salto",
+          "noServersAvailable": "Não há servidores SSH disponíveis para os hosts de passagem. Cria primeiro os servidores SSH."
+        },
+        "monitoring": {
+          "title": "Ativar a monitorização do desempenho",
+          "description": "Recolhe métricas da CPU, da memória, do disco e da rede para este servidor"
+        },
+        "wakeOnLan": {
+          "title": "Ativar o Wake-On-LAN",
+          "description": "Permite ativar este servidor remotamente usando o seu endereço MAC"
+        },
+        "rdpSecurity": {
+          "description": "Método de autenticação utilizado para te ligares ao computador Windows remoto. Usa o NLA em ambientes onde o NTLM está desativado (por exemplo, no grupo «Utilizadores Protegidos»).",
+          "method": "Método de segurança"
+        },
+        "keyboardLayout": {
+          "title": "Disposição do teclado",
+          "description": "Seleciona o layout de teclado que queres usar para esta ligação."
+        },
+        "display": {
+          "title": "Definições de ecrã",
+          "description": "Configura a profundidade de cor, o comportamento de redimensionamento e a escala do ecrã remoto",
+          "colorDepth": "Profundidade de cor",
+          "resizeMethod": "Método de redimensionamento",
+          "displayScale": "Escala de visualização",
+          "displayScaleAuto": "Automático (adaptar a este dispositivo)",
+          "displayScaleAccount": "Incumprimento da conta"
+        },
+        "performance": {
+          "title": "Definições de desempenho",
+          "description": "Ativar ou desativar efeitos visuais que possam afetar o desempenho em ligações mais lentas",
+          "enableWallpaper": "Ativar fundo de ecrã",
+          "enableWallpaperDesc": "Mostrar o fundo de ecrã no sistema remoto",
+          "enableTheming": "Ativar temas",
+          "enableThemingDesc": "Utiliza janelas e controlos temáticos no sistema remoto",
+          "enableFontSmoothing": "Ativar suavização de fontes",
+          "enableFontSmoothingDesc": "Apresenta o texto com contornos suaves para facilitar a leitura",
+          "enableFullWindowDrag": "Ativar arrastar a janela na totalidade",
+          "enableFullWindowDragDesc": "Mostrar o conteúdo da janela enquanto arrastas janelas",
+          "enableDesktopComposition": "Ativar a composição do ambiente de trabalho",
+          "enableDesktopCompositionDesc": "Ativar janelas transparentes e efeitos visuais",
+          "enableMenuAnimations": "Ativar animações do menu",
+          "enableMenuAnimationsDesc": "Ativar animações de abertura e fecho do menu"
+        },
+        "audio": {
+          "enableAudio": "Ativar som",
+          "enableAudioDesc": "Transmite áudio do sistema remoto para o teu navegador"
+        },
+        "terminal": {
+          "title": "Compatibilidade com terminais",
+          "description": "Ajustar o comportamento das teclas para diferentes tipos de terminais",
+          "backspace": "Backspace",
+          "delete": "Apagar",
+          "functionKeys": "Teclas de função"
+        }
+      },
+      "identities": {
+        "identityName": "Nome da identidade",
+        "username": "Nome de utilizador",
+        "authentication": "Autenticação",
+        "passwordField": "Palavra-passe",
+        "userPassword": "Palavra-passe",
+        "passwordOnly": "Sem nome de utilizador",
+        "sshKey": "Chave SSH",
+        "both": "Chave+Senha",
+        "sshPrivateKey": "Chave privada SSH",
+        "passphrase": "Frase-passe (opcional)",
+        "add": "Adicionar identidade",
+        "linkGlobal": "Identidade global da Link · {{count}}",
+        "empty": "Ainda não há identidades.",
+        "removeIdentity": "Remover identidade",
+        "unlinkIdentity": "Desvincular identidade",
+        "moveToOrg": "Mudar para a organização",
+        "noUsername": "Sem nome de utilizador",
+        "globalToggle": "Utilização noutros servidores",
+        "globalInUse": "Esta identidade é utilizada pelos servidores {{count}} . Desassocia-a primeiro das outras.",
+        "shareToggle": "Partilhar com a organização",
+        "inheritedHint": "Herda das definições da pasta.",
+        "onlyMe": "Só eu",
+        "onlyMeHint": "Só tu podes ver e usar esta identidade."
+      },
+      "sections": {
+        "general": "Geral",
+        "connection": "Ligação",
+        "identities": "Identidades",
+        "options": "Opções",
+        "credentials": "Credenciais"
+      },
+      "useInherited": "Usar o valor herdado",
+      "reset": "Reiniciar"
+    },
+    "proxmoxDialog": {
+      "title": {
+        "import": "Adicionar o Proxmox VE",
+        "edit": "Editar o Proxmox VE"
+      },
+      "fields": {
+        "username": "Nome de utilizador",
+        "password": "Palavra-passe",
+        "nodeName": "Nome do nó (opcional)",
+        "monitoring": "Monitorização do desempenho"
+      },
+      "monitoringDescription": "Recolher métricas de CPU, memória e armazenamento a nível do cluster",
+      "placeholders": {
+        "name": "Nome",
+        "username": "Nome de utilizador (por exemplo, root@pam)",
+        "password": "Palavra-passe",
+        "specificNode": "Nome específico do nó"
+      },
+      "actions": {
+        "import": "Adicionar",
+        "edit": "Guardar"
+      },
+      "messages": {
+        "created": "A integração com o Proxmox foi criada com sucesso",
+        "updated": "A integração com o Proxmox foi atualizada com sucesso",
+        "createFailed": "Não foi possível criar a integração com o Proxmox",
+        "updateFailed": "Não foi possível atualizar a integração com o Proxmox"
+      },
+      "credentialsDescription": "Utilizador do Proxmox com acesso à API, por exemplo, root@pam ou um utilizador dedicado à API."
+    },
+    "connectionReasonDialog": {
+      "title": "É necessário indicar o motivo da ligação",
+      "reasonLabel": "Indica o motivo da ligação ao <strong>{{serverName}}</strong>:",
+      "placeholder": "Escreve o motivo desta ligação...",
+      "characterCount": "{{count}}/500",
+      "actions": {
+        "cancel": "Cancelar",
+        "connect": "Ligar-se"
+      }
+    },
+    "sshConfigImport": {
+      "title": "Importar configuração SSH",
+      "configContent": {
+        "label": "Conteúdo da configuração SSH",
+        "placeholder": "Cola aqui o conteúdo da tua configuração SSH..."
+      },
+      "keyFiles": {
+        "label": "Ficheiros de chaves SSH ({{count}} encontrados)",
+        "userLabel": "Utilizador: {{username}}",
+        "uploaded": "✓ Carregado",
+        "uploadButton": "Carregar"
+      },
+      "actions": {
+        "cancel": "Cancelar",
+        "import": "Importar",
+        "importing": "A importar..."
+      },
+      "messages": {
+        "noContent": "Por favor, fornece o conteúdo da configuração do SSH",
+        "noFolder": "Não foi selecionada nenhuma pasta",
+        "uploadSuccess": "A chave {{name}} foi carregada com sucesso",
+        "uploadFailed": "Não foi possível carregar a chave {{name}}",
+        "importFailed": "Não foi possível importar a configuração SSH"
+      }
+    },
+    "fileManager": {
+      "dropOverlay": "Arrasta os ficheiros ou pastas para os carregares",
+      "createFile": {
+        "title": "Criar ficheiro",
+        "placeholder": "Nome do ficheiro",
+        "button": "Criar ficheiro"
+      },
+      "createFolder": {
+        "title": "Criar pasta",
+        "placeholder": "Nome da pasta",
+        "button": "Criar pasta"
+      },
+      "renameItem": {
+        "title": "Renomear",
+        "placeholder": "Novo nome",
+        "button": "Renomear"
+      },
+      "fileEditor": {
+        "title": "Editor de ficheiros",
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "loading": "A carregar...",
+        "saving": "A guardar...",
+        "saveSuccess": "O ficheiro foi guardado com sucesso",
+        "saveFailed": "Não foi possível guardar o ficheiro",
+        "loadFailed": "Não foi possível carregar o ficheiro",
+        "unsavedChanges": "Tens alterações por guardar. Tens a certeza de que queres fechar este ficheiro?"
+      },
+      "contextMenu": {
+        "open": "Abrir",
+        "download": "Descarregar",
+        "rename": "Renomear",
+        "delete": "Apagar",
+        "copy": "Copiar",
+        "cut": "Cortar",
+        "paste": "Colar",
+        "createFolder": "Criar pasta",
+        "upload": "Carregar ficheiro",
+        "edit": "Editar",
+        "preview": "Pré-visualização",
+        "moveHere": "Vem para cá",
+        "copyHere": "Copia aqui",
+        "bigFileConfirm": "Este ficheiro tem {{size}} MB. Tens a certeza de que queres editá-lo?",
+        "deleteConfirm": "Tens a certeza de que queres eliminar «{{name}}»? Esta ação não pode ser desfeita.",
+        "selectAll": "Selecionar tudo",
+        "insertSnippet": "Inserir trecho",
+        "sendCtrlC": "Envia Ctrl+C",
+        "clearTerminal": "Limpar o terminal",
+        "properties": "Propriedades",
+        "openTerminal": "Abrir o Terminal aqui",
+        "downloadFolder": "Descarregar pasta",
+        "newFile": "Novo ficheiro",
+        "newFolder": "Nova pasta"
+      },
+      "properties": {
+        "general": "Geral",
+        "permissions": "Permissões",
+        "checksum": "Soma de verificação",
+        "folder": "Pasta",
+        "file": "Ficheiro",
+        "path": "Localização",
+        "size": "Tamanho",
+        "calculateSize": "Calcular",
+        "owner": "Proprietário",
+        "group": "Grupo",
+        "modified": "Modificado",
+        "accessed": "Acedido em",
+        "calculating": "A calcular...",
+        "calculate": "Calcular"
+      },
+      "permissions": {
+        "owner": "Proprietário",
+        "group": "Grupo",
+        "others": "Outros",
+        "read": "Ler",
+        "write": "Escreve",
+        "execute": "Executar",
+        "octal": "Octal",
+        "preview": "Pré-visualização",
+        "apply": "Candidatar-se"
+      },
+      "filePreview": {
+        "title": "Pré-visualização do ficheiro",
+        "loading": "A carregar...",
+        "cannotPreview": "Não é possível pré-visualizar o ficheiro",
+        "unsupportedFileType": "Este tipo de ficheiro não é compatível com a pré-visualização",
+        "videoNotSupported": "O teu navegador não suporta a reprodução de vídeos",
+        "audioNotSupported": "O teu navegador não suporta a reprodução de áudio",
+        "download": "Descarregar",
+        "close": "Fechar"
+      },
+      "selection": {
+        "itemsSelected": "{{count}} artigos selecionados",
+        "filesSelected": "{{count}} ficheiro(s) selecionado(s)",
+        "foldersSelected": "{{count}} pasta(s) selecionada(s)",
+        "clearSelection": "Limpar seleção",
+        "downloadSelected": "Descarregar os ficheiros selecionados",
+        "deleteSelected": "Apagar os selecionados",
+        "download": "Descarregar",
+        "delete": "Apagar",
+        "deleteConfirm": "Tens a certeza de que queres eliminar o(s) item(s) « {{count}}»?"
+      },
+      "header": {
+        "name": "Nome",
+        "size": "Tamanho",
+        "permissions": "Permissões",
+        "modified": "Modificado"
+      },
+      "actionBar": {
+        "enterDirectory": "Introduz o caminho do diretório...",
+        "hiddenDirectories": "{{count}} diretórios ocultos",
+        "switchToGrid": "Mudar para a visualização em grelha",
+        "switchToList": "Mudar para a visualização em lista",
+        "uploadFile": "Carregar ficheiro(s)",
+        "uploadFolder": "Carregar pasta",
+        "search": "Pesquisar ficheiros",
+        "closeSearch": "Fechar pesquisa",
+        "refresh": "Atualizar",
+        "back": "Voltar",
+        "forward": "Avançar",
+        "up": "Diretório pai",
+        "home": "Diretório pessoal",
+        "switchToCompact": "Mudar para a visualização compacta"
+      },
+      "item": {
+        "link": "link",
+        "expand": "Expandir pasta",
+        "collapse": "Ocultar pasta"
+      },
+      "search": {
+        "placeholder": "Filtrar os ficheiros desta pasta...",
+        "results_one": "{{count}} resultado",
+        "results_other": "{{count}} resultados",
+        "noResultsTitle": "Não há resultados",
+        "noResults": "Não há ficheiros que correspondam a «{{query}}»"
+      },
+      "states": {
+        "loading": "A carregar ficheiros...",
+        "accessDenied": "Acesso negado",
+        "emptyFolder": "Esta pasta está vazia",
+        "dropFilesHint": "Arrasta os ficheiros para aqui para os carregares"
+      },
+      "toast": {
+        "uploadFailed": "Falha no envio: {{message}}",
+        "connectionLost": "A ligação SFTP foi perdida. Por favor, volta a ligar-te.",
+        "error": "Ocorreu um erro"
+      },
+      "transfers": {
+        "title": "Transferências",
+        "activeCount": "{{count}} ativo",
+        "allDone": "Pronto!",
+        "clearFinished": "Acabamento transparente",
+        "queued": "Em fila",
+        "cancelling": "A cancelar...",
+        "completed": "Concluído",
+        "savedTo": "Guardado em {{path}}",
+        "cancelled": "Cancelado",
+        "failed": "Falha: {{message}}",
+        "dismiss": "Ignorar"
+      },
+      "status": {
+        "folders_one": "{{count}} pasta",
+        "folders_other": "{{count}} pastas",
+        "files_one": "{{count}} ficheiro",
+        "files_other": "{{count}} ficheiros",
+        "hidden_one": "{{count}} oculto",
+        "hidden_other": "{{count}} oculto",
+        "selected": "{{count}} selecionado",
+        "showHidden": "Mostrar ficheiros ocultos",
+        "hideHidden": "Ocultar ficheiros ocultos"
+      },
+      "conflict": {
+        "title_one": "O item já existe",
+        "title_other": "{{count}} os itens já existem",
+        "upload_one": "Já existe um ficheiro com este nome no destino. O que queres fazer?",
+        "upload_other": "Estes ficheiros já existem no destino. O que queres fazer com eles?",
+        "move_one": "Já existe um elemento com este nome no destino. Se o transferires, vais substituí-lo.",
+        "move_other": "Estes itens já existem no destino. Se os transferires, vão ser substituídos.",
+        "copy_one": "Já existe um elemento com este nome no destino. A cópia vai substituí-lo.",
+        "copy_other": "Estes itens já existem no destino. Ao copiá-los, vão substituí-los.",
+        "more": "+ {{count}} mais",
+        "skip": "Ignorar",
+        "rename": "Guarda os dois",
+        "overwrite": "Sobrescrever"
+      }
+    },
+    "browser": {
+      "back": "Voltar",
+      "forward": "Avançar",
+      "reload": "Atualizar",
+      "stop": "Pára",
+      "address": "Morada",
+      "addressPlaceholder": "Introduz um endereço"
+    },
+    "remoteDesktop": {
+      "dropOverlay": "Arrasta os ficheiros para os enviar para o servidor remoto",
+      "toast": {
+        "uploadedSingle": "Carreguei o ficheiro «{{name}}» para a unidade remota",
+        "uploadedMultiple": "Carreguei os ficheiros {{count}} para a unidade remota",
+        "uploadFailed": "{{count}} Não foi possível carregar o(s) ficheiro(s)",
+        "uploadPartial": "{{failed}} Não foi possível carregar o(s) ficheiro(s), mas o {{succeeded}} foi bem-sucedido",
+        "downloaded": "Fiz o download de «{{name}}» a partir de um servidor remoto"
+      }
+    },
+    "automatedSession": {
+      "viewOnlyAi": "O assistente de IA está a funcionar nesta sessão. Podes ver, mas não podes escrever.",
+      "viewOnlyMcp": "Há um agente externo (MCP) a trabalhar nesta sessão. Podes ver, mas não podes escrever."
+    },
+    "aiAssistant": {
+      "title": "Assistente de IA",
+      "open": "Assistente de IA",
+      "empty": "Pede ao assistente para verificar ou alterar os teus servidores. Ele abre as suas próprias sessões nos servidores que adicionares abaixo, executa comandos, edita ficheiros e até consegue controlar ambientes de trabalho remotos.",
+      "addServer": "Adicionar servidor",
+      "removeServer": "Remover servidor",
+      "searchServers": "Pesquisar servidores...",
+      "noMatches": "Não há servidores correspondentes",
+      "current": "atual",
+      "openSessions": "{{count}} sessão(ões) aberta(s)",
+      "approval": {
+        "ask": "Pergunta antes de agir",
+        "askDescription": "Os comandos, as entradas e as alterações nos ficheiros aguardam a tua aprovação",
+        "allow": "Permitir tudo",
+        "allowDescription": "Executa chamadas de ferramentas sem perguntar",
+        "readonly": "Apenas para leitura",
+        "readonlyDescription": "Só verifica os servidores; qualquer coisa que os altere é recusada"
+      },
+      "placeholder": "Manda uma mensagem ao assistente...",
+      "connecting": "A ligar...",
+      "send": "Enviar",
+      "copyMessage": "Copiar mensagem",
+      "copied": "Copiado",
+      "editMessage": "Editar mensagem",
+      "stop": "Pára",
+      "connectionError": "A ligação com o assistente foi perdida.",
+      "reconnecting": "Conexão perdida. A reconectar...",
+      "confirmPrompt": "Queres permitir esta ação?",
+      "allow": "Permitir",
+      "allowShortcut": "Permitir ({{key}})",
+      "deny": "Negar",
+      "denied": "Neguaste esta ação.",
+      "stopped": "Parei.",
+      "continuePrompt": "O assistente fez uma pausa depois de uma longa série de passos. Continuas?",
+      "continue": "Continuar",
+      "compacted": "As mensagens anteriores foram resumidas para dar mais espaço ao contexto.",
+      "retryPrompt": "O último passo falhou. Queres tentar de novo a partir do ponto em que parou?",
+      "retry": "Tentar de novo",
+      "questionOther": "Ou escreve outra resposta...",
+      "questionAnswer": "Escreve a tua resposta...",
+      "questionSend": "Resposta",
+      "questionPickOne": "Escolhe uma opção ou escreve uma resposta",
+      "questionPickMany": "Escolhe as opções que se aplicarem",
+      "exitCode": "sair {{code}}",
+      "truncated": "[truncado]",
+      "toolSummary": {
+        "recursive": "{{path}} (recursivo)",
+        "doubleClick": "{{target}} ×2"
+      },
+      "tools": {
+        "list_entries": "Servidores de listas",
+        "get_entry": "Verificar o servidor",
+        "list_folders": "Listar pastas",
+        "list_organizations": "Listar organizações",
+        "list_identities": "Identidades da lista",
+        "list_snippets": "Excertos da lista",
+        "list_scripts": "Listar scripts",
+        "list_tags": "Lista de etiquetas",
+        "list_users": "Mostrar a lista de utilizadores",
+        "get_permissions": "Verifica as permissões",
+        "get_monitoring": "Monitorização de leituras",
+        "list_sessions": "Lista de sessões",
+        "open_session": "Sessão aberta",
+        "get_session": "Verificar sessão",
+        "close_session": "Fechar sessão",
+        "close_all_sessions": "Fechar todas as sessões",
+        "terminal_run": "Executar comando",
+        "terminal_send": "Enviar dados",
+        "terminal_read": "Ler terminal",
+        "terminal_resize": "Alterar o tamanho do terminal",
+        "run_command": "Executar comando",
+        "exec_command": "Executar comando",
+        "file_list": "Lista de diretórios",
+        "file_stat": "Verificar caminho",
+        "file_read": "Ler ficheiro",
+        "file_write": "Gravar ficheiro",
+        "file_edit": "Editar ficheiro",
+        "file_mkdir": "Criar diretório",
+        "file_delete": "Apagar",
+        "file_move": "Mover",
+        "file_chmod": "Alterar permissões",
+        "file_search_dirs": "Encontrar diretórios",
+        "desktop_screenshot": "Captura de ecrã",
+        "desktop_info": "Verificar o ambiente de trabalho",
+        "desktop_click": "Clica",
+        "desktop_mouse_move": "Mova o rato",
+        "desktop_drag": "Arrastar",
+        "desktop_scroll": "Deslizar",
+        "desktop_type": "Escreve o texto",
+        "desktop_key": "Carregue nas teclas",
+        "desktop_resize": "Redimensionar o ambiente de trabalho",
+        "desktop_clipboard_set": "Definir a área de transferência",
+        "desktop_clipboard_get": "Ler a área de transferência",
+        "batch": "Executa várias ações",
+        "ask_user": "Pergunta"
+      }
+    },
+    "commandSuggestion": {
+      "open": "Gerar comando",
+      "placeholder": "Descreve o comando...",
+      "generating": "A gerar...",
+      "accept": "Comando «Aceitar»",
+      "cycle": "Sugestões de percursos",
+      "error": "Não foi possível gerar um comando."
+    },
+    "snippets": {
+      "title": "Trechos",
+      "noSnippets": "Não há excertos disponíveis",
+      "searchPlaceholder": "Pesquisar excertos...",
+      "createNew": "Criar novo snippet"
+    },
+    "toolbar": {
+      "drag": "Arrasta para mover",
+      "shortcuts": "Atalhos de teclado",
+      "holdModifier": "Espera {{key}}",
+      "zoomIn": "Ampliar",
+      "zoomOut": "Amenizar o zoom",
+      "zoomReset": "Reiniciar o zoom (arrasta com o botão do meio do rato para deslocar a imagem)"
+    },
+    "monitors": {
+      "title": "Monitor {{number}}",
+      "select": "Mudar para o monitor {{number}}",
+      "selectOrPopOut": "Passa para o monitor {{number}} (clica duas vezes para abrir numa janela separada)",
+      "add": "Adicionar monitor",
+      "remove": "Remover o último monitor"
+    },
+    "terminalActions": {
+      "menuTitle": "Ações no terminal",
+      "snippets": "Trechos",
+      "keyboardShortcuts": "Atalhos de teclado",
+      "broadcasting": "Radiodifusão",
+      "fullScreen": "Ecrã inteiro",
+      "exitFullScreen": "Sair do modo de ecrã inteiro",
+      "badgeOn": "LIGADO"
+    },
+    "notesPanel": {
+      "title": "Notas",
+      "placeholder": "Escreve notas para este servidor…",
+      "showInList": "Mostrar na lista",
+      "showInListTooltip": "Mostra a primeira linha destas notas por baixo do nome do servidor na barra lateral.",
+      "status": {
+        "saving": "Guardar",
+        "saved": "Guardado",
+        "unsaved": "Não guardado",
+        "error": "Não foi possível guardar"
+      }
+    },
+    "liveSessions": {
+      "activeOn": "Sessões ao vivo: {{users}}",
+      "unknownUser": "Utilizador desconhecido"
+    },
+    "folderSettings": {
+      "name": "Nome da pasta",
+      "nameRequired": "É obrigatório indicar o nome da pasta",
+      "loadFailed": "Não foi possível carregar as definições da pasta",
+      "protocol": "Valores predefinidos para",
+      "protocolHint": "Os servidores nesta pasta usam o que definires abaixo, a menos que definam o seu próprio valor. Cada protocolo tem os seus próprios valores predefinidos.",
+      "unset": "Retirar da pasta"
+    },
+    "trust": {
+      "certificate": "certificado",
+      "hostKey": "chave do anfitrião",
+      "newTitle": "Podes confiar neste site {{subject}}?",
+      "newMessage": "Esta é a primeira ligação ao site {{endpoint}}. Verifica a impressão digital antes de continuares.",
+      "changedTitle": "O site {{subject}} mudou",
+      "changedMessage": "{{endpoint}} apresenta um {{subject}} diferente do anterior. Só deves continuar se estiveres à espera disso.",
+      "fingerprint": "Impressão digital",
+      "previous": "Em quem sempre confiamos até agora",
+      "presented": "Apresentado agora",
+      "subject": "Emitido a",
+      "issuer": "Emitido por",
+      "selfSigned": "Autoassinado",
+      "validUntil": "Válido até",
+      "blocked": "Só os gestores de certificados do site {{organization}} podem aceitar esta alteração.",
+      "accept": "Confia e liga-te",
+      "cancel": "Cancelar",
+      "acceptChanged": "Confia no novo",
+      "disconnect": "Desligar",
+      "failed": "Não foi possível guardar a tua decisão",
+      "acceptOnly": "Certificado de confiança"
+    }
+  },
+  "support": {
+    "title": "Obter apoio",
+    "subtitle": "Precisas de ajuda ou queres contribuir?",
+    "footer": "Obrigado por usares o Nexterm!",
+    "issues": {
+      "title": "Comunicar um problema",
+      "description": "Encontraste um erro ou tens alguma sugestão de funcionalidade?"
+    },
+    "discord": {
+      "title": "Junta-te ao Discord",
+      "description": "Conversa com a comunidade e pede ajuda."
+    },
+    "docs": {
+      "title": "Ver documentação",
+      "description": "Lê a documentação e aprende a usar o Nexterm."
+    },
+    "github": {
+      "title": "Ver no GitHub",
+      "description": "Explora o código-fonte e contribui."
+    }
+  },
+  "welcome": {
+    "hello": "Olá",
+    "defaultName": "Utilizador",
+    "subtitle": "Bem-vindo ao Nexterm. O gestor de servidores de código aberto para SSH, VNC e RDP.",
+    "downloadApps": "Descarregar aplicações",
+    "connectDevice": "Ligar o dispositivo",
+    "recentConnections": "Ligações recentes",
+    "getStarted": "Começa já",
+    "getStartedHint": "Adiciona um servidor a partir da barra lateral para começares a gerir a tua infraestrutura.",
+    "hibernated": "Em hibernação",
+    "demo": {
+      "explore": "Começa a explorar"
+    }
+  },
+  "downloadApps": {
+    "title": "Descarregar aplicações",
+    "subtitle": "Instala o Nexterm nos teus dispositivos",
+    "platforms": {
+      "windows": "Windows",
+      "macos": "macOS",
+      "linux": "Linux",
+      "android": "Android",
+      "ios": "iOS"
+    },
+    "recommended": "Recomendado",
+    "versionUnavailable": "Não foi possível determinar a versão do servidor, pelo que os downloads diretos não estão disponíveis. Ainda assim, podes ver as versões no GitHub.",
+    "sourceHint": "Os ficheiros para download estão disponíveis nas versões do GitHub.",
+    "allReleases": "Todos os comunicados"
+  }
+}
