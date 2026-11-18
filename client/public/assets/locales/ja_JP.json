@@ -1,522 +1,522 @@
 {
   "common": {
-    "error": "Error",
-    "success": "Success",
-    "loading": "Loading...",
-    "saving": "Saving...",
-    "close": "Close",
-    "cancel": "Cancel",
-    "save": "Save",
-    "download": "Download",
-    "maximize": "Maximize",
-    "restore": "Restore",
-    "resize": "Resize",
+    "error": "エラー",
+    "success": "成功",
+    "loading": "読み込み中...",
+    "saving": "保存中...",
+    "close": "閉じる",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "download": "ダウンロード",
+    "maximize": "最大化",
+    "restore": "復元",
+    "resize": "サイズ変更",
     "actions": {
-      "cancel": "Cancel",
-      "confirm": "Confirm",
-      "discard": "Discard",
-      "login": "Login",
-      "register": "Register",
-      "save": "Save",
-      "saving": "Saving…",
-      "download": "Download",
-      "close": "Close",
-      "maximize": "Maximize",
-      "restore": "Restore",
-      "back": "Back"
+      "cancel": "キャンセル",
+      "confirm": "確認する",
+      "discard": "破棄する",
+      "login": "ログイン",
+      "register": "登録する",
+      "save": "保存",
+      "saving": "… の保存",
+      "download": "ダウンロード",
+      "close": "閉じる",
+      "maximize": "最大化",
+      "restore": "復元",
+      "back": "戻る"
     },
     "iconChooser": {
-      "searchIcons": "Search icons...",
-      "searchResults": "Search Results",
-      "popularIcons": "Popular Icons",
-      "noResults": "No icons found"
+      "searchIcons": "検索アイコン...",
+      "searchResults": "検索結果",
+      "popularIcons": "人気のアイコン",
+      "noResults": "アイコンが見つかりませんでした"
     },
     "labels": {
-      "username": "Username",
-      "password": "Password",
-      "firstName": "First Name",
-      "lastName": "Last Name",
-      "code": "Code",
-      "twoFACode": "2FA Code"
+      "username": "ユーザー名",
+      "password": "パスワード",
+      "firstName": "名",
+      "lastName": "姓",
+      "code": "コード",
+      "twoFACode": "2FAコード"
     },
     "placeholders": {
-      "username": "Username",
-      "password": "Password",
-      "firstName": "First name",
-      "lastName": "Last name",
-      "code": "Code"
+      "username": "ユーザー名",
+      "password": "パスワード",
+      "firstName": "名",
+      "lastName": "姓",
+      "code": "コード"
     },
     "confirmDialog": {
-      "title": "Are you sure?",
-      "defaultText": "This action cannot be undone."
+      "title": "本当にいいの？",
+      "defaultText": "この操作は元に戻せない。"
     },
     "loginDialog": {
       "title": "Nexterm",
-      "registrationTitle": "Registration",
-      "ssoOrContinueWith": "or continue with",
-      "noAuthMethodsAvailable": "No authentication methods available.",
-      "signInWithPasskey": "Sign in with Passkey",
-      "signInWithQrCode": "Sign in with QR Code",
-      "qrScanDescription": "Scan this QR code with the Nexterm mobile app to sign in instantly.",
-      "backToLogin": "Back to Login",
-      "authenticating": "Authenticating...",
-      "noAccount": "Don't have an account?",
-      "haveAccount": "Already have an account?",
-      "welcome": "Welcome back",
-      "subtitle": "Sign in to continue to Nexterm.",
-      "registrationSubtitle": "Create your account to get started.",
-      "firstTimeSubtitle": "Create the first administrator account for this instance.",
-      "twoFactorTitle": "Two-factor authentication",
-      "twoFactorDescription": "Enter the code from your authenticator app.",
-      "qrTitle": "Sign in with the app",
+      "registrationTitle": "登録",
+      "ssoOrContinueWith": "または、以下に進む",
+      "noAuthMethodsAvailable": "利用可能な認証方法がない。",
+      "signInWithPasskey": "パスキーでログインする",
+      "signInWithQrCode": "QRコードでログインする",
+      "qrScanDescription": "NextermモバイルアプリでこのQRコードをスキャンすると、すぐにログインできる。",
+      "backToLogin": "ログイン画面に戻る",
+      "authenticating": "認証中……",
+      "noAccount": "アカウントをお持ちでないか？",
+      "haveAccount": "すでにアカウントをお持ちですか？",
+      "welcome": "おかえり",
+      "subtitle": "Nexterm へ進むには、ログインしてください。",
+      "registrationSubtitle": "アカウントを作成して、始めよう。",
+      "firstTimeSubtitle": "このインスタンスの最初の管理者アカウントを作成する。",
+      "twoFactorTitle": "二要素認証",
+      "twoFactorDescription": "認証アプリに表示されたコードを入力してください。",
+      "qrTitle": "アプリでログインする",
       "demo": {
-        "title": "Try Nexterm",
-        "subtitle": "Explore a live instance with simulated servers, no account needed.",
-        "start": "Start the demo",
-        "orSignIn": "or sign in to your account",
-        "failed": "Could not start a demo session"
+        "title": "Nextermを試してみよう",
+        "subtitle": "アカウント登録不要で、シミュレートされたサーバーを備えたライブインスタンスを体験できる。",
+        "start": "デモを開始する",
+        "orSignIn": "または、アカウントにログインする",
+        "failed": "デモセッションを開始できなかった"
       }
     },
     "demo": {
-      "timeLeft": "Demo · {{time}} left",
-      "end": "End demo",
-      "endConfirmText": "End your demo session? Everything you created will be removed.",
+      "timeLeft": "デモ · {{time}} 残り",
+      "end": "デモ終了",
+      "endConfirmText": "デモセッションを終了するか？作成した内容はすべて削除される。",
       "minutes_one": "{{count}} min",
       "minutes_other": "{{count}} min",
-      "hours_one": "{{count}} hour",
-      "hours_other": "{{count}} hours",
+      "hours_one": "{{count}} 時間",
+      "hours_other": "{{count}} 時間",
       "hoursMinutes": "{{hours}}h {{minutes}}m"
     },
     "deviceLink": {
-      "title": "Link Device",
-      "description": "Enter the code shown on your device to authorize it to access your account.",
-      "qrTab": "QR Code",
-      "codeTab": "Code",
-      "qrDescription": "Scan this QR code with the Nexterm mobile app to link your device.",
-      "codeLabel": "Device Code",
-      "continue": "Continue",
-      "verifying": "Verifying...",
-      "confirmTitle": "Authorize Device",
-      "confirmDescription": "A device is requesting access to your account. Please verify the details below.",
-      "deviceInfo": "Device Information",
-      "type": "Type",
-      "ipAddress": "IP Address",
-      "userAgent": "Device",
-      "authorize": "Authorize Device",
-      "authorizing": "Authorizing...",
-      "deny": "Deny",
-      "invalidCode": "Invalid or expired code",
-      "authorizationFailed": "Authorization failed",
-      "deviceAuthorized": "Device authorized successfully",
-      "successTitle": "Device Authorized",
-      "successMessage": "You can close this tab and return to the app.",
+      "title": "デバイスのリンク",
+      "description": "端末に表示されているコードを入力し、その端末がアカウントにアクセスすることを許可する。",
+      "qrTab": "QRコード",
+      "codeTab": "コード",
+      "qrDescription": "NextermモバイルアプリでこのQRコードをスキャンして、デバイスを連携させよう。",
+      "codeLabel": "デバイスコード",
+      "continue": "続ける",
+      "verifying": "確認中……",
+      "confirmTitle": "デバイスの認証",
+      "confirmDescription": "ある端末から、あなたのアカウントへのアクセスをリクエストしている。以下の詳細を確認してほしい。",
+      "deviceInfo": "デバイス情報",
+      "type": "種類",
+      "ipAddress": "IPアドレス",
+      "userAgent": "デバイス",
+      "authorize": "デバイスの認証",
+      "authorizing": "認証中……",
+      "deny": "拒否する",
+      "invalidCode": "コードが無効か、有効期限が切れている",
+      "authorizationFailed": "認証に失敗した",
+      "deviceAuthorized": "デバイスの認証に成功した",
+      "successTitle": "デバイスが認証された",
+      "successMessage": "このタブを閉じて、アプリに戻ることができる。",
       "clientTypes": {
-        "mobile": "Mobile App",
-        "connector": "Desktop Connector"
+        "mobile": "モバイルアプリ",
+        "connector": "デスクトップコネクタ"
       }
     },
     "connectorSetup": {
-      "title": "Nexterm Connector",
-      "serverUrl": "Server URL",
-      "serverUrlDescription": "Enter the URL of your Nexterm server to connect.",
-      "connect": "Connect",
-      "connecting": "Connecting...",
-      "enterServerUrl": "Please enter a server URL",
-      "connectionFailed": "Failed to connect to server. Please check the URL.",
-      "deviceLinkingNotSupported": "This server does not support device linking. Please update your Nexterm server.",
-      "authMethodDescription": "Choose how you want to authenticate with the server.",
-      "showCode": "Show Code",
-      "showCodeDesc": "Display a code to enter manually on the web interface",
-      "openBrowser": "Authorize",
-      "openBrowserDesc": "Open your browser to authorize automatically",
-      "enterCodeDescription": "Enter this code on the Nexterm web interface to authorize this device.",
-      "copyCode": "Copy Code",
-      "codeCopied": "Code copied to clipboard",
-      "copyFailed": "Failed to copy code",
-      "waitingForAuth": "Waiting for authorization...",
-      "codeCreationFailed": "Failed to create device code",
-      "authSuccess": "Successfully authenticated!"
+      "title": "Nextermコネクタ",
+      "serverUrl": "サーバーのURL",
+      "serverUrlDescription": "接続するには、NextermサーバーのURLを入力する。",
+      "connect": "接続する",
+      "connecting": "接続中...",
+      "enterServerUrl": "サーバーのURLを入力してください",
+      "connectionFailed": "サーバーへの接続に失敗した。URLを確認してください。",
+      "deviceLinkingNotSupported": "このサーバーはデバイスのリンクに対応していない。Nextermサーバーを更新してください。",
+      "authMethodDescription": "サーバーへの認証方法を選択する。",
+      "showCode": "コードを表示",
+      "showCodeDesc": "Webインターフェースに、手動で入力するコードを表示する",
+      "openBrowser": "承認する",
+      "openBrowserDesc": "ブラウザを開いて、自動的に認証を行う",
+      "enterCodeDescription": "このデバイスを認証するには、NextermのWebインターフェースにこのコードを入力する。",
+      "copyCode": "コードをコピー",
+      "codeCopied": "コードがクリップボードにコピーされた",
+      "copyFailed": "コードのコピーに失敗した",
+      "waitingForAuth": "承認待ち中……",
+      "codeCreationFailed": "デバイスコードの作成に失敗した",
+      "authSuccess": "認証に成功した！"
     },
     "serverSwitcher": {
-      "title": "Servers",
-      "addServer": "Add Server",
-      "removeServer": "Remove Server",
-      "removeConfirmText": "This will remove the connection to {{server}}. Are you sure?"
+      "title": "サーバー",
+      "addServer": "サーバーを追加する",
+      "removeServer": "サーバーを削除する",
+      "removeConfirmText": "これにより、 {{server}}への接続が解除される。本当にいいか？"
     },
     "selectBox": {
-      "defaultOption": "Select an option...",
-      "search": "Search...",
-      "noResults": "No results found"
+      "defaultOption": "オプションを選択してください…",
+      "search": "検索...",
+      "noResults": "結果は見つかりませんでした"
     },
     "userSearch": {
-      "placeholder": "Search for a user..."
+      "placeholder": "ユーザーを検索…"
     },
     "table": {
       "noData": {
-        "title": "No data found",
-        "subtitle": "There are no items to display."
+        "title": "データが見つかりませんでした",
+        "subtitle": "表示する項目はありません。"
       },
       "pagination": {
-        "showing": "Showing {{start}} to {{end}} of {{total}}",
-        "previous": "Previous",
-        "next": "Next",
-        "pageInfo": "Page {{current}} of {{total}}"
+        "showing": "{{start}} を {{end}} に表示中 {{total}}",
+        "previous": "前へ",
+        "next": "次へ",
+        "pageInfo": "{{current}} ページ目 {{total}}"
       }
     },
     "sidebar": {
-      "settings": "Settings",
-      "servers": "Servers",
-      "monitoring": "Monitoring",
-      "snippets": "Snippets",
-      "audit": "Audit",
-      "account": "Account",
-      "logout": "Logout",
-      "collapseTitle": "Collapse Sidebar",
-      "logoutConfirmText": "This will log you out of the {{username}} account. Are you sure?",
-      "starOnGitHub": "Star on GitHub",
-      "support": "Support"
+      "settings": "設定",
+      "servers": "サーバー",
+      "monitoring": "モニタリング",
+      "snippets": "スニペット",
+      "audit": "監査",
+      "account": "アカウント",
+      "logout": "ログアウト",
+      "collapseTitle": "サイドバーを折りたたむ",
+      "logoutConfirmText": "これにより、 {{username}} のアカウントからログアウトされる。本当にいいか？",
+      "starOnGitHub": "GitHubでスターをつける",
+      "support": "サポート"
     },
     "quickAction": {
-      "placeholder": "Search servers, snippets, or navigate...",
-      "noResults": "No results found",
-      "navigate": "Navigate",
-      "select": "Select",
-      "close": "Close",
+      "placeholder": "サーバーやスニペットを検索するか、移動する……",
+      "noResults": "結果は見つかりませんでした",
+      "navigate": "ナビゲート",
+      "select": "選択",
+      "close": "閉じる",
       "types": {
-        "server": "Server",
-        "snippet": "Snippet",
-        "navigation": "Go to",
-        "settings": "Settings"
+        "server": "サーバー",
+        "snippet": "スニペット",
+        "navigation": "[ここ](リンク)へ移動する",
+        "settings": "設定"
       }
     },
     "errors": {
-      "loadingAuthProviders": "Error loading authentication providers: {{error}}",
+      "loadingAuthProviders": "認証プロバイダの読み込み中にエラーが発生した： {{error}}",
       "webSocketConnection": {
-        "title": "WebSocket Connection Failed",
-        "message": "Connections are unavailable. This may be due to WebSocket not being enabled in your reverse proxy or network restrictions."
+        "title": "WebSocket接続に失敗した",
+        "message": "接続できない。これは、リバースプロキシでWebSocketが有効になっていないか、ネットワーク上の制限が原因である可能性がある。"
       },
-      "generalError": "An error occurred",
-      "invalidCredentials": "Invalid username or password",
-      "invalidTwoFactor": "Invalid two-factor code",
-      "internalAuthDisabled": "Internal authentication is disabled",
-      "ssoLoginFailed": "Failed to initiate SSO login",
-      "passkeyLoginFailed": "Passkey authentication failed",
-      "passkeyCancelled": "Passkey authentication was cancelled",
-      "qrCodeExpired": "QR code expired. Please try again.",
+      "generalError": "エラーが発生した",
+      "invalidCredentials": "ユーザー名またはパスワードが間違っている",
+      "invalidTwoFactor": "無効な二要素認証コード",
+      "internalAuthDisabled": "内部認証は無効になっている",
+      "ssoLoginFailed": "SSOログインの開始に失敗した",
+      "passkeyLoginFailed": "パスキー認証に失敗した",
+      "passkeyCancelled": "パスキー認証が解除された",
+      "qrCodeExpired": "QRコードの有効期限が切れた。もう一度試してほしい。",
       "connection": {
-        "title": "Connection failed",
-        "close": "Close tab",
-        "reconnect": "Reconnect",
-        "reconnectNow": "Reconnect",
-        "reconnecting": "Reconnecting…",
-        "reconnectingIn": "Reconnecting in {{seconds}}s",
-        "reconnectAttempt": "attempt {{count}} of {{max}}",
-        "hostUnreachable": "Remote host unreachable",
-        "refused": "Connection refused by remote host",
-        "timeout": "Connection timed out",
-        "authenticationFailed": "Authentication failed",
-        "permissionDenied": "Permission denied",
-        "failed": "Connection failed",
-        "closedUnexpectedly": "Connection closed unexpectedly",
-        "error": "Connection error occurred",
-        "scriptClosedUnexpectedly": "Script connection closed unexpectedly",
-        "scriptError": "Script connection error occurred",
-        "rdpSessionConflict": "The session was disconnected by the server because another connection was opened.",
-        "rdpSessionTimeout": "The RDP session was disconnected because its session time limit was reached.",
-        "rdpSessionClosed": "The RDP session was ended by the remote server or an administrator."
+        "title": "接続に失敗した",
+        "close": "タブを閉じる",
+        "reconnect": "再接続",
+        "reconnectNow": "再接続",
+        "reconnecting": "… の再接続",
+        "reconnectingIn": "{{seconds}}秒後に再接続する",
+        "reconnectAttempt": "試み {{count}} の {{max}}",
+        "hostUnreachable": "リモートホストに接続できない",
+        "refused": "リモートホストによる接続拒否",
+        "timeout": "接続タイムアウト",
+        "authenticationFailed": "認証に失敗した",
+        "permissionDenied": "アクセスが拒否された",
+        "failed": "接続に失敗した",
+        "closedUnexpectedly": "接続が予期せず切断された",
+        "error": "接続エラーが発生した",
+        "scriptClosedUnexpectedly": "スクリプトの接続が予期せず閉じられた",
+        "scriptError": "スクリプトの接続エラーが発生した",
+        "rdpSessionConflict": "別の接続が開かれたため、サーバーによってセッションが切断された。",
+        "rdpSessionTimeout": "RDPセッションのセッション時間制限に達したため、接続が切断された。",
+        "rdpSessionClosed": "RDPセッションは、リモートサーバーまたは管理者によって終了された。"
       },
-      "accountLinkRequired": "An account with this username already exists. Ask an administrator to allow linking it to your sign-in."
+      "accountLinkRequired": "このユーザー名のアカウントはすでに存在する。管理者に依頼し、このアカウントを自分のログイン情報と紐づける許可を得てほしい。"
     },
     "messages": {
-      "invitationAccepted": "Invitation accepted",
-      "invitationDeclined": "Invitation declined",
-      "invitationError": "Failed to process invitation",
-      "organizationDeleted": "Organization deleted successfully",
-      "organizationDeleteError": "Failed to delete organization",
-      "leftOrganization": "You have left the organization",
-      "leaveOrganizationError": "Failed to leave organization"
+      "invitationAccepted": "招待を受け入れた",
+      "invitationDeclined": "招待を辞退した",
+      "invitationError": "招待状の処理に失敗した",
+      "organizationDeleted": "組織の削除に成功した",
+      "organizationDeleteError": "組織の削除に失敗した",
+      "leftOrganization": "あなたは組織を離れた",
+      "leaveOrganizationError": "組織からの離脱に失敗した"
     },
     "unsavedChanges": {
-      "title": "Unsaved changes",
-      "text": "Discard them, or keep editing and save when you're done.",
-      "keepEditing": "Keep editing"
+      "title": "保存されていない変更",
+      "text": "それらを破棄するか、編集を続けて、完了したら保存する。",
+      "keepEditing": "編集を続ける"
     }
   },
   "audit": {
     "page": {
-      "title": "Audit Logs",
-      "subtitle": "Track and monitor all activities across your infrastructure"
+      "title": "監査ログ",
+      "subtitle": "インフラストラクチャ全体にわたるすべての活動を追跡・監視する"
     },
     "errors": {
-      "failedToLoadData": "Failed to load audit data",
-      "failedToLoadLogs": "Failed to load audit logs"
+      "failedToLoadData": "監査データの読み込みに失敗した",
+      "failedToLoadLogs": "監査ログの読み込みに失敗した"
     },
     "filters": {
-      "title": "Filters",
-      "activeCount": "{{count}} active",
-      "organization": "Organization",
-      "action": "Action",
-      "resource": "Resource",
-      "startDate": "Start Date",
-      "endDate": "End Date",
-      "clearAll": "Clear All",
+      "title": "フィルター",
+      "activeCount": "{{count}} アクティブ",
+      "organization": "組織",
+      "action": "アクション",
+      "resource": "リソース",
+      "startDate": "開始日",
+      "endDate": "終了日",
+      "clearAll": "すべてクリア",
       "options": {
-        "allActions": "All Actions",
-        "allResources": "All Resources",
-        "allOrganizations": "All Organizations (Personal + Org)",
-        "personalOnly": "Personal Only",
-        "categoryAll": "{{category}} (All)"
+        "allActions": "すべてのアクション",
+        "allResources": "すべてのリソース",
+        "allOrganizations": "すべての組織（個人＋組織）",
+        "personalOnly": "個人利用のみ",
+        "categoryAll": "{{category}} (すべて)"
       }
     },
     "table": {
       "headers": {
-        "timestamp": "Timestamp",
-        "action": "Action",
-        "actor": "Actor",
-        "resource": "Resource",
-        "organization": "Organization",
-        "details": "Details"
+        "timestamp": "タイムスタンプ",
+        "action": "アクション",
+        "actor": "俳優",
+        "resource": "リソース",
+        "organization": "組織",
+        "details": "詳細"
       },
       "noLogs": {
-        "title": "No audit logs found",
-        "subtitle": "Try adjusting your filters or check back later."
+        "title": "監査ログは見つかりませんでした",
+        "subtitle": "フィルタの設定を変更してみるか、後で再度確認してみてほしい。"
       },
-      "loading": "Loading audit logs...",
+      "loading": "監査ログを読み込んでいる……",
       "expandedDetails": {
-        "connectionReason": "Connection Reason",
-        "userAgent": "User Agent",
-        "additionalDetails": "Additional Details"
+        "connectionReason": "接続理由",
+        "userAgent": "ユーザーエージェント",
+        "additionalDetails": "詳細情報"
       },
       "badges": {
-        "personal": "Personal",
-        "user": "User #{{id}}",
-        "organization": "Org #{{id}}"
+        "personal": "個人用",
+        "user": "ユーザー番号{{id}}",
+        "organization": "組織番号{{id}}"
       },
       "durationUnits": {
-        "seconds": "seconds",
-        "minutes": "minutes",
-        "hours": "hours"
+        "seconds": "秒",
+        "minutes": "議事録",
+        "hours": "時間"
       }
     },
     "pagination": {
-      "showing": "Showing {{start}} to {{end}} of {{total}} logs",
-      "previous": "Previous",
-      "next": "Next",
-      "pageInfo": "Page {{current}} of {{total}}"
+      "showing": "{{total}} のログのうち、 {{start}} から {{end}} までの部分を表示中",
+      "previous": "前へ",
+      "next": "次へ",
+      "pageInfo": "{{current}} ページ目 {{total}}"
     }
   },
   "snippets": {
     "page": {
-      "title": "Snippets",
-      "subtitle": "Manage your command snippets for quick access in terminals",
-      "addSnippet": "Add Snippet",
-      "personal": "Personal",
-      "selectOrganization": "Select Organization",
+      "title": "スニペット",
+      "subtitle": "ターミナルで素早くアクセスできるよう、コマンドスニペットを管理する",
+      "addSnippet": "スニペットを追加する",
+      "personal": "個人用",
+      "selectOrganization": "組織を選択する",
       "tabs": {
-        "snippets": "Snippets",
-        "scripts": "Scripts"
+        "snippets": "スニペット",
+        "scripts": "スクリプト"
       }
     },
     "list": {
-      "empty": "You don't have any snippets yet. Create your first one!",
+      "empty": "まだスニペットはないようだ。最初のスニペットを作成しよう！",
       "actions": {
-        "edit": "Edit snippet",
-        "delete": "Delete snippet"
+        "edit": "スニペットを編集する",
+        "delete": "スニペットを削除する"
       }
     },
     "dialog": {
       "title": {
-        "create": "Create Snippet",
-        "edit": "Edit Snippet"
+        "create": "スニペットを作成する",
+        "edit": "スニペットを編集"
       },
       "fields": {
-        "name": "Name",
-        "description": "Description (optional)",
-        "command": "Command",
-        "osFilter": "Compatible OS"
+        "name": "名前",
+        "description": "説明（任意）",
+        "command": "コマンド",
+        "osFilter": "対応OS"
       },
       "placeholders": {
-        "name": "Snippet name",
-        "description": "What does this command?",
-        "command": "Enter your command",
-        "osFilter": "All operating systems"
+        "name": "スニペット名",
+        "description": "このコマンドは何をやるのか？",
+        "command": "コマンドを入力してください",
+        "osFilter": "すべてのオペレーティングシステム"
       },
       "actions": {
-        "cancel": "Cancel",
-        "create": "Create",
-        "save": "Save"
+        "cancel": "キャンセル",
+        "create": "作成する",
+        "save": "保存"
       }
     },
     "messages": {
       "success": {
-        "created": "Snippet created successfully",
-        "updated": "Snippet updated successfully",
-        "deleted": "Snippet deleted successfully"
+        "created": "スニペットの作成に成功した",
+        "updated": "スニペットの更新に成功した",
+        "deleted": "スニペットが正常に削除された"
       },
       "errors": {
-        "required": "Name and command are required",
-        "loadFailed": "Failed to load snippet data",
-        "saveFailed": "Failed to save snippet",
-        "deleteFailed": "Failed to delete snippet",
-        "reorderFailed": "Failed to reorder snippet"
+        "required": "名前と命令は必須だ",
+        "loadFailed": "スニペットデータの読み込みに失敗した",
+        "saveFailed": "スニペットの保存に失敗した",
+        "deleteFailed": "スニペットの削除に失敗した",
+        "reorderFailed": "スニペットの並べ替えに失敗した"
       }
     }
   },
   "scripts": {
     "page": {
-      "title": "Scripts",
-      "subtitle": "Manage your automation scripts for server tasks",
-      "addScript": "Add Script",
-      "personal": "Personal",
-      "selectOrganization": "Select Organization",
+      "title": "スクリプト",
+      "subtitle": "サーバータスク用の自動化スクリプトを管理する",
+      "addScript": "スクリプトを追加する",
+      "personal": "個人用",
+      "selectOrganization": "組織を選択する",
       "tabs": {
-        "snippets": "Snippets",
-        "scripts": "Scripts"
+        "snippets": "スニペット",
+        "scripts": "スクリプト"
       }
     },
     "execution": {
       "progressPanel": {
-        "title": "Script Execution",
-        "noSteps": "No steps yet",
-        "noStepsDescription": "Steps will appear here as the script executes",
-        "steps": "Steps"
+        "title": "スクリプトの実行",
+        "noSteps": "まだ手順はない",
+        "noStepsDescription": "スクリプトの実行に伴い、ここに手順が表示される",
+        "steps": "手順"
       },
       "dialogs": {
-        "enterValue": "Enter value",
-        "selectOption": "Select an option",
-        "confirm": "Confirm",
-        "submit": "Submit",
-        "cancel": "Cancel",
+        "enterValue": "値を入力する",
+        "selectOption": "オプションを選択する",
+        "confirm": "確認する",
+        "submit": "送信",
+        "cancel": "キャンセル",
         "ok": "OK",
-        "yes": "Yes",
-        "no": "No",
-        "copyCell": "Copy Cell",
-        "copyRow": "Copy Row",
-        "copyTable": "Copy Table",
-        "close": "Close"
+        "yes": "はい",
+        "no": "いいえ",
+        "copyCell": "セルのコピー",
+        "copyRow": "行をコピー",
+        "copyTable": "テーブルのコピー",
+        "close": "閉じる"
       },
       "status": {
-        "running": "Running",
-        "completed": "Completed",
-        "error": "Error",
-        "pending": "Pending"
+        "running": "ランニング",
+        "completed": "完了した",
+        "error": "エラー",
+        "pending": "保留中"
       }
     },
     "list": {
-      "empty": "You don't have any scripts yet. Create your first one!",
+      "empty": "まだスクリプトは一つもない。最初のスクリプトを作成しよう！",
       "actions": {
-        "edit": "Edit script",
-        "delete": "Delete script"
+        "edit": "スクリプトを編集する",
+        "delete": "スクリプトを削除する"
       }
     },
     "dialog": {
       "title": {
-        "create": "Create Script",
-        "edit": "Edit Script"
+        "create": "スクリプトを作成する",
+        "edit": "スクリプトを編集する"
       },
-      "scriptDetails": "Script Details",
-      "scriptContent": "Script Content",
-      "helpTip": "Use @NEXTERM: directives for interactive features",
+      "scriptDetails": "スクリプトの詳細",
+      "scriptContent": "スクリプトの内容",
+      "helpTip": "対話型機能には @NEXTERM: ディレクティブを使用する",
       "fields": {
-        "name": "Name",
-        "description": "Description",
-        "osFilter": "Compatible OS"
+        "name": "名前",
+        "description": "説明",
+        "osFilter": "対応OS"
       },
       "placeholders": {
-        "name": "Script name",
-        "description": "What does this script do?",
-        "osFilter": "All operating systems"
+        "name": "スクリプト名",
+        "description": "このスクリプトは何をやるのか？",
+        "osFilter": "すべてのオペレーティングシステム"
       },
       "actions": {
-        "cancel": "Cancel",
-        "create": "Create",
-        "update": "Update",
-        "creating": "Creating...",
-        "updating": "Updating..."
+        "cancel": "キャンセル",
+        "create": "作成する",
+        "update": "更新",
+        "creating": "作成中...",
+        "updating": "更新中..."
       },
       "errors": {
-        "nameRequired": "Script name is required",
-        "descriptionRequired": "Script description is required",
-        "contentRequired": "Script content is required",
-        "createFailed": "Failed to create script",
-        "updateFailed": "Failed to update script"
+        "nameRequired": "スクリプト名を入力する必要がある",
+        "descriptionRequired": "スクリプトの説明が必要だ",
+        "contentRequired": "スクリプトの内容は必須だ",
+        "createFailed": "スクリプトの作成に失敗した",
+        "updateFailed": "スクリプトの更新に失敗した"
       }
     },
     "messages": {
       "success": {
-        "created": "Script created successfully",
-        "updated": "Script updated successfully",
-        "deleted": "Script deleted successfully",
-        "reordered": "Script reordered successfully"
+        "created": "スクリプトの作成に成功した",
+        "updated": "スクリプトの更新に成功した",
+        "deleted": "スクリプトは正常に削除された",
+        "reordered": "スクリプトの順序変更に成功した"
       },
       "errors": {
-        "loadFailed": "Failed to load script data",
-        "deleteFailed": "Failed to delete script",
-        "reorderFailed": "Failed to reorder script"
+        "loadFailed": "スクリプトデータの読み込みに失敗した",
+        "deleteFailed": "スクリプトの削除に失敗した",
+        "reorderFailed": "スクリプトの並べ替えに失敗した"
       }
     },
     "menu": {
-      "searchPlaceholder": "Search scripts...",
-      "noScripts": "No scripts available. Create some in the Scripts section.",
-      "noMatch": "No scripts match your search.",
-      "selectIdentity": "Select Identity"
+      "searchPlaceholder": "スクリプトを検索…",
+      "noScripts": "利用可能なスクリプトはない。スクリプトセクションでいくつか作成してほしい。",
+      "noMatch": "検索条件に一致するスクリプトはない。",
+      "selectIdentity": "IDを選択する"
     }
   },
   "monitoring": {
     "page": {
-      "title": "Server Monitoring",
-      "subtitle": "Real-time server statistics and health monitoring",
-      "searchPlaceholder": "Search servers...",
+      "title": "サーバー監視",
+      "subtitle": "サーバーのリアルタイム統計情報と稼働状況の監視",
+      "searchPlaceholder": "サーバーを検索中……",
       "filters": {
-        "all": "All ({{count}})",
-        "online": "Online ({{count}})",
-        "issues": "Issues ({{count}})"
+        "all": "すべて ({{count}})",
+        "online": "オンライン（{{count}}）",
+        "issues": "問題点 ({{count}})"
       }
     },
     "errors": {
-      "loadFailed": "Failed to load monitoring data",
-      "loadFailedDescription": "The monitoring data could not be retrieved. Check your connection and try again.",
-      "retry": "Retry"
+      "loadFailed": "監視データの読み込みに失敗した",
+      "loadFailedDescription": "監視データを取得できなかった。接続を確認して、もう一度試してみてください。",
+      "retry": "再試行"
     },
     "grid": {
       "noServers": {
-        "title": "No Servers Found",
-        "subtitle": "No SSH servers available for monitoring.\nAdd some servers to start monitoring them."
+        "title": "サーバーが見つかりませんでした",
+        "subtitle": "監視対象のSSHサーバーがない。\n監視を開始するには、サーバーを追加する必要がある。"
       },
       "noResults": {
-        "title": "No matching servers",
-        "subtitle": "No monitored server matches your search."
+        "title": "一致するサーバーがない",
+        "subtitle": "検索条件に一致する監視対象サーバーはない。"
       },
       "metrics": {
-        "loadAverage": "Load Average",
-        "processes": "Processes",
-        "uptime": "Uptime",
-        "nodes": "Nodes",
-        "vms": "VMs/Containers",
+        "loadAverage": "負荷平均",
+        "processes": "プロセス",
+        "uptime": "稼働時間",
+        "nodes": "ノード",
+        "vms": "VM／コンテナ",
         "cpu": "CPU",
-        "memory": "Memory"
+        "memory": "メモリ"
       },
       "status": {
-        "serverOffline": "Server Offline",
-        "connectionError": "Connection Error",
-        "statusUnknown": "Status Unknown",
-        "offlineMessage": "The server is currently not responding to monitoring requests.",
-        "errorMessage": "Unable to establish connection to the server.",
-        "unknownMessage": "Server status could not be determined.",
-        "lastSeen": "Last seen: {{time}}",
-        "noRecentActivity": "No recent activity",
-        "waitingForData": "Waiting for data",
-        "pendingMessage": "Monitoring data will appear after the next monitoring cycle.",
+        "serverOffline": "サーバーがオフラインだ",
+        "connectionError": "接続エラー",
+        "statusUnknown": "状況不明",
+        "offlineMessage": "現在、サーバーは監視リクエストに応答していない。",
+        "errorMessage": "サーバーへの接続を確立できなかった。",
+        "unknownMessage": "サーバーの状態を確認できなかった。",
+        "lastSeen": "最終アクセス日時： {{time}}",
+        "noRecentActivity": "最近の活動はない",
+        "waitingForData": "データを待機中",
+        "pendingMessage": "モニタリングデータは、次回のモニタリングサイクル終了後に表示される。",
         "labels": {
-          "online": "Online",
-          "offline": "Offline",
-          "error": "Error",
-          "pending": "Pending",
-          "unknown": "Unknown"
+          "online": "オンライン",
+          "offline": "オフライン",
+          "error": "エラー",
+          "pending": "保留中",
+          "unknown": "不明"
         }
       },
       "uptime": {
-        "unknown": "Unknown",
+        "unknown": "不明",
         "format": {
           "days": "{{days}}d {{hours}}h {{minutes}}m",
           "hours": "{{hours}}h {{minutes}}m",
@@ -526,1954 +526,1954 @@
     },
     "details": {
       "timeRanges": {
-        "1h": "1h",
-        "6h": "6h",
-        "24h": "24h"
+        "1h": "1時間",
+        "6h": "6時間",
+        "24h": "24時間"
       },
       "tabs": {
-        "overview": "Overview",
-        "storage": "Storage",
-        "network": "Network",
-        "processes": "Processes",
-        "nodes": "Nodes"
+        "overview": "概要",
+        "storage": "ストレージ",
+        "network": "ネットワーク",
+        "processes": "プロセス",
+        "nodes": "ノード"
       },
       "overview": {
         "systemInfo": {
-          "title": "System Information",
-          "hostname": "Hostname",
+          "title": "システム情報",
+          "hostname": "ホスト名",
           "os": "OS",
-          "version": "Version",
-          "kernel": "Kernel",
-          "architecture": "Architecture",
-          "uptime": "Uptime",
-          "unknown": "Unknown",
-          "noData": "No system information available"
+          "version": "バージョン",
+          "kernel": "カーネル",
+          "architecture": "建築",
+          "uptime": "稼働時間",
+          "unknown": "不明",
+          "noData": "システム情報は利用できない"
         },
         "performance": {
-          "title": "Performance Metrics",
-          "loadAverage": "Load Average",
-          "processes": "Active Processes",
-          "total": "Total: {{value}}",
-          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}",
-          "memory": "Memory"
+          "title": "パフォーマンス指標",
+          "loadAverage": "負荷平均",
+          "processes": "アクティブなプロセス",
+          "total": "合計： {{value}}",
+          "loadDetail": "5m： {{fiveMin}}、15m： {{fifteenMin}}",
+          "memory": "メモリ"
         },
         "uptime": {
           "format": {
-            "full": "{{days}} days, {{hours}} hours, {{minutes}} minutes",
-            "hoursMinutes": "{{hours}} hours, {{minutes}} minutes",
-            "minutes": "{{minutes}} minutes"
+            "full": "{{days}} 日、 {{hours}} 時間、 {{minutes}} 分",
+            "hoursMinutes": "{{hours}} 時間、 {{minutes}} 分",
+            "minutes": "{{minutes}} 議事録"
           }
         }
       },
       "charts": {
-        "cpuUsage": "CPU Usage",
-        "memoryUsage": "Memory Usage",
-        "processes": "Active Processes",
-        "noData": "No data available for the selected time range"
+        "cpuUsage": "CPU使用率",
+        "memoryUsage": "メモリ使用量",
+        "processes": "アクティブなプロセス",
+        "noData": "選択した期間のデータはありません"
       },
       "storage": {
-        "title": "Disk Usage",
-        "noData": "No disk usage data available",
-        "noPartitions": "No mounted partitions",
-        "usedOf": "{{used}} of {{total}} used",
-        "free": "{{value}} free",
-        "filesystems": "Filesystems",
-        "disks": "Disks",
+        "title": "ディスク使用量",
+        "noData": "ディスク使用量のデータは利用できない",
+        "noPartitions": "マウントされたパーティションがない",
+        "usedOf": "{{used}} {{total}} を使用",
+        "free": "{{value}} 無料",
+        "filesystems": "ファイルシステム",
+        "disks": "ディスク",
         "on": "{{volume}} on {{partition}}",
-        "swap": "Swap",
-        "unmounted": "Not mounted",
-        "unallocated": "Unallocated",
-        "inodes": "Inodes",
+        "swap": "スワップ",
+        "unmounted": "マウントされていない",
+        "unallocated": "未割り当て",
+        "inodes": "iノード",
         "inodesDetail": "{{used}} of {{total}}",
         "health": {
-          "passed": "Healthy",
-          "warning": "Warning",
-          "failed": "Failing",
-          "denied": "SMART needs root",
-          "temperature": "Temperature",
-          "powerOn": "Power-on time",
-          "wear": "Wear",
-          "reallocated": "Reallocated sectors",
-          "pending": "Pending sectors",
-          "mediaErrors": "Media errors",
-          "years": "{{value}} years",
-          "days": "{{value}} days",
-          "hours": "{{value}} hours",
-          "failedTitle": "Disk failure predicted",
-          "failedMessage": "{{disks}} failed its SMART self-assessment. Back up the data and replace the disk."
+          "passed": "健康的",
+          "warning": "警告",
+          "failed": "失敗する",
+          "denied": "SMARTにはroot権限が必要だ",
+          "temperature": "温度",
+          "powerOn": "電源投入時間",
+          "wear": "着用",
+          "reallocated": "再割り当てされたセクタ",
+          "pending": "保留中のセクター",
+          "mediaErrors": "メディアエラー",
+          "years": "{{value}} 年",
+          "days": "{{value}} 日",
+          "hours": "{{value}} 時間",
+          "failedTitle": "ディスクの故障が予測された",
+          "failedMessage": "{{disks}} SMART自己診断に失敗した。データをバックアップし、ディスクを交換する。"
         }
       },
       "network": {
-        "speed": "Speed",
-        "noData": "No network interface data available",
-        "download": "Download",
-        "upload": "Upload",
-        "interface": "Interface",
-        "address": "Address",
-        "gateway": "Gateway",
-        "interfaces": "Interfaces",
-        "virtual": "Virtual interfaces",
-        "defaultRoute": "Default route",
-        "up": "Up",
-        "down": "Down",
-        "errors": "{{count}} errors",
-        "dropped": "{{count}} dropped",
-        "copy": "Copy {{address}}",
-        "total": "{{value}} total"
+        "speed": "速度",
+        "noData": "利用可能なネットワークインターフェースのデータがない",
+        "download": "ダウンロード",
+        "upload": "アップロード",
+        "interface": "インターフェース",
+        "address": "住所",
+        "gateway": "ゲートウェイ",
+        "interfaces": "インターフェース",
+        "virtual": "仮想インターフェース",
+        "defaultRoute": "デフォルトルート",
+        "up": "上へ",
+        "down": "下へ",
+        "errors": "{{count}} エラー",
+        "dropped": "{{count}} 落とした",
+        "copy": "コピー {{address}}",
+        "total": "{{value}} 合計"
       },
       "processes": {
-        "searchPlaceholder": "Search processes...",
-        "showing": "Showing {{count}} of {{total}} processes",
-        "noData": "No process data available. Process data will appear after the next monitoring cycle.",
-        "noResults": "No processes match your search criteria.",
+        "searchPlaceholder": "検索中……",
+        "showing": "{{total}} プロセス中、 {{count}} を表示中",
+        "noData": "プロセスデータは利用できない。プロセスデータは、次の監視サイクル終了後に表示される。",
+        "noResults": "検索条件に一致するプロセスはありません。",
         "columns": {
-          "command": "Command",
+          "command": "コマンド",
           "cpu": "CPU",
-          "mem": "Memory"
+          "mem": "メモリ"
         }
       },
       "pve": {
-        "clusterInfo": "Cluster Information",
-        "onlineNodes": "Online Nodes",
-        "totalCPU": "Total CPU",
-        "totalMemory": "Total Memory",
-        "totalStorage": "Total Storage",
-        "storageUsage": "Storage Usage",
-        "cores": "Cores",
-        "uptime": "Uptime",
-        "qemuVMs": "QEMU VMs",
-        "lxcContainers": "LXC Containers",
-        "running": "{{count}} running",
-        "vmContainerCount": "VM/Container Count",
+        "clusterInfo": "クラスタ情報",
+        "onlineNodes": "オンラインノード",
+        "totalCPU": "CPU合計",
+        "totalMemory": "メモリ合計",
+        "totalStorage": "総ストレージ容量",
+        "storageUsage": "ストレージの使用状況",
+        "cores": "コア",
+        "uptime": "稼働時間",
+        "qemuVMs": "QEMU仮想マシン",
+        "lxcContainers": "LXCコンテナ",
+        "running": "{{count}} ランニング",
+        "vmContainerCount": "VM／コンテナ数",
         "cpu": "CPU",
-        "memory": "Memory",
-        "storage": "Storage",
-        "nodeOffline": "This node is currently offline",
-        "noNodes": "No nodes available"
+        "memory": "メモリ",
+        "storage": "ストレージ",
+        "nodeOffline": "このノードは現在オフラインだ",
+        "noNodes": "利用可能なノードがない"
       }
     }
   },
   "settings": {
-    "title": "Settings",
-    "userSettings": "USER SETTINGS",
-    "adminSettings": "ADMIN SETTINGS",
+    "title": "設定",
+    "userSettings": "ユーザー設定",
+    "adminSettings": "管理設定",
     "pages": {
-      "account": "Account",
-      "appearance": "Appearance",
-      "terminal": "Terminal",
-      "fileManager": "File Manager",
-      "keymaps": "Keymaps",
-      "identities": "Identities",
-      "sessions": "Sessions",
-      "organizations": "Organizations",
-      "users": "Users",
-      "authentication": "Authentication",
-      "sources": "Sources",
+      "account": "アカウント",
+      "appearance": "外観",
+      "terminal": "ターミナル",
+      "fileManager": "ファイルマネージャー",
+      "keymaps": "キーマップ",
+      "identities": "アイデンティティ",
+      "sessions": "セッション",
+      "organizations": "組織",
+      "users": "ユーザー",
+      "authentication": "認証",
+      "sources": "出典",
       "ai": "AI",
-      "monitoring": "Monitoring",
-      "backup": "Storage",
-      "engines": "Engines",
-      "permissions": "Roles & Permissions",
-      "trustedCertificates": "Trusted Certificates"
+      "monitoring": "モニタリング",
+      "backup": "ストレージ",
+      "engines": "エンジン",
+      "permissions": "役割と権限",
+      "trustedCertificates": "信頼された証明書"
     },
     "account": {
-      "title": "Account",
+      "title": "アカウント",
       "demo": {
-        "title": "Security",
-        "description": "Password, two-factor authentication, passkeys, API keys and profile pictures can't be changed while you're exploring as a guest."
+        "title": "セキュリティ",
+        "description": "ゲストとして閲覧している間は、パスワード、二要素認証、パスキー、APIキー、プロフィール画像を変更することはできない。"
       },
       "avatar": {
-        "label": "Picture",
-        "upload": "Change profile picture",
-        "remove": "Remove",
-        "updated": "Your profile picture has been updated",
-        "removed": "Your profile picture has been removed",
-        "tooLarge": "The selected image is larger than 10 MB",
-        "uploadFailed": "The profile picture could not be uploaded",
-        "removeFailed": "The profile picture could not be removed"
+        "label": "写真",
+        "upload": "プロフィール写真を変更する",
+        "remove": "削除",
+        "updated": "プロフィール写真が更新された",
+        "removed": "プロフィール写真が削除された",
+        "tooLarge": "選択した画像は10 MBを超えている",
+        "uploadFailed": "プロフィール写真をアップロードできなかった",
+        "removeFailed": "プロフィール写真を削除できなかった"
       },
-      "accountDetails": "Account details",
-      "firstName": "First name",
-      "lastName": "Last name",
-      "appearance": "Appearance",
-      "appearanceDescription": "Choose your preferred theme. Auto follows your system settings and adjusts based on time of day.",
-      "themeAuto": "Auto",
-      "themeLight": "Light",
-      "themeDark": "Dark",
-      "themeDarkHint": "Press three times to enable OLED mode.",
+      "accountDetails": "口座詳細",
+      "firstName": "名",
+      "lastName": "姓",
+      "appearance": "外観",
+      "appearanceDescription": "好みのテーマを選んでください。「自動」を選択すると、システム設定に従い、時間帯に応じてテーマが調整される。",
+      "themeAuto": "自動車",
+      "themeLight": "光",
+      "themeDark": "ダーク",
+      "themeDarkHint": "3回押すと、OLEDモードが有効になる。",
       "themeOled": "OLED",
-      "oledEnabled": "OLED mode enabled",
-      "oledDisabled": "OLED mode disabled",
-      "themeLabel": "Theme",
-      "accentColor": "Accent Color",
-      "sizeLabel": "Size",
+      "oledEnabled": "OLEDモードが有効になっている",
+      "oledDisabled": "OLEDモードが無効になっている",
+      "themeLabel": "テーマ",
+      "accentColor": "アクセントカラー",
+      "sizeLabel": "サイズ",
       "sizeXS": "XS",
       "sizeS": "S",
       "sizeM": "M",
       "sizeL": "L",
       "sizeXL": "XL",
-      "twoFactor": "Two-factor authentication",
-      "twoFactorActive": "Active",
-      "twoFactorInactive": "Inactive",
-      "twoFactorDescription": "Add an extra layer of security to your account by enabling two-factor authentication.",
-      "enable2FA": "Enable 2FA",
-      "disable2FA": "Disable 2FA",
-      "changePassword": "Change password",
-      "changePasswordDescription": "Choose a new and secure password for your account here.",
-      "changePasswordButton": "Change password",
-      "language": "Language",
-      "languageDescription": "Select your preferred language for the interface.",
-      "currentLanguage": "Current Language",
-      "missingLanguage": "Missing your language?",
-      "helpTranslateLink": "Help translate Nexterm",
-      "syncLoginRequired": "Please log in to sync settings",
-      "appearanceSyncEnabled": "Appearance settings will now sync to your account",
-      "appearanceSyncDisabled": "Appearance settings will no longer sync",
-      "generalSyncEnabled": "General settings will now sync to your account",
-      "generalSyncDisabled": "General settings will no longer sync",
+      "twoFactor": "二要素認証",
+      "twoFactorActive": "アクティブ",
+      "twoFactorInactive": "非アクティブ",
+      "twoFactorDescription": "二段階認証を有効にすることで、アカウントのセキュリティをさらに強化できる。",
+      "enable2FA": "2段階認証を有効にする",
+      "disable2FA": "2段階認証を無効にする",
+      "changePassword": "パスワードを変更する",
+      "changePasswordDescription": "ここで、アカウント用の新しい安全なパスワードを設定してください。",
+      "changePasswordButton": "パスワードを変更する",
+      "language": "言語",
+      "languageDescription": "インターフェースの言語を選択してください。",
+      "currentLanguage": "現在の言語",
+      "missingLanguage": "お探しの言語はありませんか？",
+      "helpTranslateLink": "Nextermの翻訳にご協力ください",
+      "syncLoginRequired": "設定を同期するには、ログインしてください",
+      "appearanceSyncEnabled": "外観の設定がアカウントに同期されるようになった",
+      "appearanceSyncDisabled": "外観の設定は今後同期されなくなる",
+      "generalSyncEnabled": "一般設定がアカウントに同期されるようになった",
+      "generalSyncDisabled": "一般設定は今後同期されなくなる",
       "customThemes": {
-        "title": "Custom Themes",
-        "description": "Create custom CSS themes or choose from synced source themes to personalize your interface.",
-        "newTheme": "New Theme",
-        "noThemesYet": "No themes yet",
-        "noThemesDescription": "Create a custom theme or add a source to get started.",
-        "editTheme": "Edit Theme",
-        "createTheme": "Create Theme",
-        "name": "Name",
-        "themeName": "Theme name",
-        "descriptionLabel": "Description",
-        "optionalDescription": "Optional description",
-        "saveChanges": "Save Changes",
-        "fromSource": "From source",
-        "edit": "Edit",
-        "delete": "Delete",
-        "deleteConfirm": "Are you sure you want to delete the theme \"{{name}}\"?",
-        "failedToLoadTheme": "Failed to load theme",
-        "nameAndCssRequired": "Name and CSS are required",
-        "themeUpdated": "Theme updated",
-        "themeCreated": "Theme created",
-        "failedToSaveTheme": "Failed to save theme",
-        "themeDeleted": "Theme deleted",
-        "failedToDeleteTheme": "Failed to delete theme",
-        "failedToActivateTheme": "Failed to activate theme"
+        "title": "カスタムテーマ",
+        "description": "カスタムCSSテーマを作成するか、同期されたソーステーマから選択して、インターフェースを自分好みにカスタマイズできる。",
+        "newTheme": "新しいテーマ",
+        "noThemesYet": "まだテーマはない",
+        "noThemesDescription": "カスタムテーマを作成するか、ソースを追加して始めよう。",
+        "editTheme": "テーマを編集する",
+        "createTheme": "テーマを作成する",
+        "name": "名前",
+        "themeName": "テーマ名",
+        "descriptionLabel": "説明",
+        "optionalDescription": "任意の説明",
+        "saveChanges": "変更を保存",
+        "fromSource": "出典より",
+        "edit": "編集",
+        "delete": "削除",
+        "deleteConfirm": "テーマ「{{name}} 」を削除してもよろしいか？",
+        "failedToLoadTheme": "テーマの読み込みに失敗した",
+        "nameAndCssRequired": "名前とCSSは必須だ",
+        "themeUpdated": "テーマが更新された",
+        "themeCreated": "テーマが作成された",
+        "failedToSaveTheme": "テーマの保存に失敗した",
+        "themeDeleted": "テーマが削除された",
+        "failedToDeleteTheme": "テーマの削除に失敗した",
+        "failedToActivateTheme": "テーマの有効化に失敗した"
       },
-      "sessionSynchronization": "Session Synchronization",
-      "sessionSyncDescription": "Control how your server sessions are stored and synchronized across devices and browser tabs.",
-      "sessionSyncAcrossDevices": "Across devices",
-      "sessionSyncSameBrowser": "Same browser",
-      "sessionSyncSameTab": "Same tab",
-      "sessionSyncAcrossDevicesDesc": "Sessions will be available across devices and synced",
-      "sessionSyncSameBrowserDesc": "Sessions will synchronize for the current user session",
-      "sessionSyncSameTabDesc": "Sessions will synchronize inside your browser tab",
-      "showAgentSessionsDesc": "Show sessions opened by the AI assistant or MCP agents as view-only tabs",
+      "sessionSynchronization": "セッションの同期",
+      "sessionSyncDescription": "サーバーセッションの保存方法や、デバイス間およびブラウザのタブ間で同期される方法を制御する。",
+      "sessionSyncAcrossDevices": "あらゆるデバイスで",
+      "sessionSyncSameBrowser": "同じブラウザ",
+      "sessionSyncSameTab": "同じタブ",
+      "sessionSyncAcrossDevicesDesc": "セッションはあらゆるデバイスで利用可能で、同期される",
+      "sessionSyncSameBrowserDesc": "セッションは、現在のユーザーセッションに合わせて同期される",
+      "sessionSyncSameTabDesc": "セッションはブラウザのタブ内で同期される",
+      "showAgentSessionsDesc": "AIアシスタントまたはMCPエージェントによって開かれたセッションを、閲覧専用タブとして表示する",
       "twoFactorDialog": {
-        "title": "Enable 2FA",
-        "description": "Scan the code with your authenticator app or enter <span class=\"totp-code\">{{secret}}</span> manually.",
-        "codePlaceholder": "Enter 2FA code",
-        "enableButton": "Enable",
+        "title": "2段階認証を有効にする",
+        "description": "認証アプリでコードをスキャンするか、 <span class=\"totp-code\">{{secret}}</span> 手動で入力する。",
+        "codePlaceholder": "2FAコードを入力する",
+        "enableButton": "有効にする",
         "messages": {
-          "setupFailed": "2FA setup failed. Please try again."
+          "setupFailed": "2段階認証の設定に失敗した。もう一度試してほしい。"
         }
       },
       "passkeys": {
-        "sectionTitle": "Passkeys",
-        "sectionDescription": "Use passkeys for faster, more secure sign-in without passwords.",
-        "addButton": "Add Passkey",
-        "addDialogTitle": "Add Passkey",
-        "addDialogDescription": "Give your passkey a name to help you identify it later.",
-        "namePlaceholder": "Passkey name",
-        "enterName": "Enter a name for this passkey:",
-        "defaultName": "My Passkey",
-        "confirmDelete": "Are you sure you want to delete this passkey?",
-        "createdAt": "Created {{date}}",
-        "registerError": "Failed to register passkey. Please try again.",
-        "noPasskeys": "No passkeys registered yet",
-        "rename": "Rename",
-        "delete": "Delete"
+        "sectionTitle": "パスキー",
+        "sectionDescription": "パスキーを使えば、パスワードを使わずに、より迅速かつ安全にサインインできる。",
+        "addButton": "パスキーを追加する",
+        "addDialogTitle": "パスキーを追加する",
+        "addDialogDescription": "後で識別しやすいように、パスキーに名前を付けておこう。",
+        "namePlaceholder": "パスキー名",
+        "enterName": "このパスキーの名前を入力してください：",
+        "defaultName": "マイ・パスキー",
+        "confirmDelete": "このパスキーを削除してもよろしいか？",
+        "createdAt": "作成日 {{date}}",
+        "registerError": "パスキーの登録に失敗した。もう一度試してほしい。",
+        "noPasskeys": "まだパスキーは登録されていない",
+        "rename": "名前を変更する",
+        "delete": "削除"
       },
       "apiKeys": {
-        "sectionTitle": "API Keys",
-        "sectionDescription": "Create API keys to access Nexterm programmatically from scripts and integrations.",
-        "addButton": "Create API Key",
-        "createTitle": "Create API Key",
-        "createDescription": "Give your key a name. The token will be shown only once after creation.",
-        "nameLabel": "Name",
-        "namePlaceholder": "e.g. Deployment script",
-        "nameRequired": "Name is required",
-        "expiryLabel": "Expiration",
-        "expiryNever": "Never",
-        "expiry30": "30 days",
-        "expiry90": "90 days",
-        "expiry365": "1 year",
-        "createButton": "Create",
-        "createdTitle": "API Key Created",
-        "createdWarning": "Copy this token now. For security reasons you won't be able to see it again.",
-        "tokenLabel": "Token",
-        "doneButton": "Done",
-        "createError": "Failed to create API key.",
-        "copyError": "Failed to copy to clipboard.",
-        "confirmDelete": "Are you sure you want to revoke this API key? Any system using it will lose access.",
-        "noKeys": "No API keys yet",
-        "lastUsed": "Last used {{date}}",
-        "neverUsed": "Never used",
-        "expires": "Expires {{date}}",
-        "delete": "Delete"
+        "sectionTitle": "APIキー",
+        "sectionDescription": "スクリプトや連携機能からNextermにプログラム経由でアクセスするためのAPIキーを作成する。",
+        "addButton": "APIキーを作成する",
+        "createTitle": "APIキーを作成する",
+        "createDescription": "キーに名前を付けよう。トークンは作成後に一度だけ表示される。",
+        "nameLabel": "名前",
+        "namePlaceholder": "例：デプロイスクリプト",
+        "nameRequired": "名前は必須だ",
+        "expiryLabel": "有効期限",
+        "expiryNever": "決して",
+        "expiry30": "30日間",
+        "expiry90": "90日",
+        "expiry365": "1年",
+        "createButton": "作成する",
+        "createdTitle": "APIキーが作成された",
+        "createdWarning": "今すぐこのトークンをコピーしてください。セキュリティ上の理由により、これ以降はこのトークンを確認することはできなくなる。",
+        "tokenLabel": "トークン",
+        "doneButton": "完了",
+        "createError": "APIキーの作成に失敗した。",
+        "copyError": "クリップボードへのコピーに失敗した。",
+        "confirmDelete": "このAPIキーを無効化してもよろしいか？このキーを使用しているシステムはすべてアクセスできなくなる。",
+        "noKeys": "まだAPIキーがない",
+        "lastUsed": "最終使用日 {{date}}",
+        "neverUsed": "一度も使ったことがない",
+        "expires": "有効期限 {{date}}",
+        "delete": "削除"
       },
-      "remoteDesktop": "Remote Desktop",
-      "remoteDesktopDescription": "Default display scale for remote desktop sessions. Connections can override it, and a scale picked during a session is remembered on that device.",
-      "remoteDesktopScale": "Display Scale",
-      "remoteDesktopScaleAuto": "Automatic (match device)",
-      "remoteDesktopSyncEnabled": "Remote desktop settings will now sync across devices",
-      "remoteDesktopSyncDisabled": "Remote desktop settings are now saved on this device only"
+      "remoteDesktop": "リモートデスクトップ",
+      "remoteDesktopDescription": "リモートデスクトップセッションのデフォルトの表示スケールだ。接続時にこれを上書きすることができ、セッション中に選択されたスケールはそのデバイスに記憶される。",
+      "remoteDesktopScale": "表示スケール",
+      "remoteDesktopScaleAuto": "自動（デバイスに合わせる）",
+      "remoteDesktopSyncEnabled": "リモートデスクトップの設定が、デバイス間で同期されるようになった",
+      "remoteDesktopSyncDisabled": "リモートデスクトップの設定は、現在このデバイスにのみ保存される"
     },
     "passwordChange": {
-      "title": "Change password",
-      "description": "A strong password contains special characters, numbers, and letters in both uppercase and lowercase.",
-      "newPassword": "New password",
-      "confirmPassword": "Confirm new password",
-      "changePasswordButton": "Change password",
-      "currentPassword": "Current password",
-      "descriptionOwn": "Enter your current password and choose a new one. You will be signed out on all other devices.",
-      "descriptionOther": "Choose a new password for this user. They will be signed out on all devices.",
-      "successOwn": "Your password was changed. Other devices were signed out.",
-      "successOther": "The password was changed and the user was signed out everywhere."
+      "title": "パスワードを変更する",
+      "description": "強力なパスワードには、特殊文字、数字、大文字と小文字のアルファベットが含まれている。",
+      "newPassword": "新しいパスワード",
+      "confirmPassword": "新しいパスワードの確認",
+      "changePasswordButton": "パスワードを変更する",
+      "currentPassword": "現在のパスワード",
+      "descriptionOwn": "現在のパスワードを入力し、新しいパスワードを設定する。他のすべてのデバイスからはログアウトされる。",
+      "descriptionOther": "このユーザーの新しいパスワードを設定する。すべてのデバイスからログアウトされる。",
+      "successOwn": "パスワードが変更された。他のデバイスからはログアウトされた。",
+      "successOther": "パスワードが変更され、そのユーザーはすべての場所でログアウトされた。"
     },
     "organizations": {
-      "title": "Your Organizations",
-      "createOrganization": "Create Organization",
-      "noOrganizations": "You don't have any organizations yet.",
-      "noOrganizationsDescription": "Create one to start collaborating with your team.",
-      "invite": "Invite",
-      "delete": "Delete",
-      "leave": "Leave",
-      "members": "Members",
+      "title": "所属組織",
+      "createOrganization": "組織を作成する",
+      "noOrganizations": "まだ所属している団体はない。",
+      "noOrganizationsDescription": "チームとの共同作業を始めるには、1つ作成する。",
+      "invite": "招待する",
+      "delete": "削除",
+      "leave": "退室",
+      "members": "メンバー",
       "auditSettings": {
-        "auditSettingsTab": "Audit Settings",
-        "sessionRecordingHeading": "Session Recording",
-        "sessionRecordingDescription": "Record terminal and remote desktop sessions for playback",
-        "enableSessionRecordingLabel": "Enable Session Recording",
-        "enableSessionRecordingDescription": "Record SSH, Telnet, RDP, and VNC sessions for later playback",
-        "recordingRetentionLabel": "Recording Retention (days)",
-        "recordingRetentionDescription": "How long to keep session recordings before automatic deletion (1-365 days)",
-        "connectionRequirementsHeading": "Connection Requirements",
-        "connectionRequirementsDescription": "Control connection behavior and requirements",
-        "requireConnectionReasonLabel": "Require Connection Reason",
-        "requireConnectionReasonDescription": "Require users to provide a reason when connecting to servers",
-        "activityLoggingHeading": "Activity Logging",
-        "activityLoggingDescription": "Choose which types of activities to log",
-        "fileOperationsLabel": "File Operations",
-        "fileOperationsDescription": "Log file uploads, downloads, deletions, and renames via SFTP",
-        "serverConnectionsLabel": "Server Connections",
-        "serverConnectionsDescription": "Log SSH, SFTP, and PVE connections and disconnections",
-        "identityManagementLabel": "Identity Management",
-        "identityManagementDescription": "Log creation, modification, and deletion of SSH identities",
-        "passwordPasteLabel": "Password Paste",
-        "passwordPasteDescription": "Log usage of the password paste action",
-        "serverManagementLabel": "Server Management",
-        "serverManagementDescription": "Log creation, modification, and deletion of server configurations",
-        "folderManagementLabel": "Folder Management",
-        "folderManagementDescription": "Log creation, modification, and deletion of folders",
-        "scriptExecutionLabel": "Script Execution",
-        "scriptExecutionDescription": "Log execution of scripts and automation tasks",
-        "agentOperationsLabel": "AI Agent Operations",
-        "agentOperationsDescription": "Log commands, input, screenshots and file changes performed by the AI assistant and by agents connected through the MCP server",
+        "auditSettingsTab": "監査設定",
+        "sessionRecordingHeading": "セッションの録画",
+        "sessionRecordingDescription": "ターミナルおよびリモートデスクトップのセッションを録画し、再生する",
+        "enableSessionRecordingLabel": "セッションの録画を有効にする",
+        "enableSessionRecordingDescription": "SSH、Telnet、RDP、VNCのセッションを録画し、後で再生できるようにする",
+        "recordingRetentionLabel": "記録の保存期間（日）",
+        "recordingRetentionDescription": "セッションの録画データを自動削除されるまでどのくらいの期間保存するか（1～365日）",
+        "connectionRequirementsHeading": "接続要件",
+        "connectionRequirementsDescription": "接続の動作と要件を制御する",
+        "requireConnectionReasonLabel": "接続理由の入力が必要だ",
+        "requireConnectionReasonDescription": "サーバーに接続する際、ユーザーに理由の入力が必要となる",
+        "activityLoggingHeading": "アクティビティの記録",
+        "activityLoggingDescription": "記録するアクティビティの種類を選択する",
+        "fileOperationsLabel": "ファイル操作",
+        "fileOperationsDescription": "SFTP によるログファイルのアップロード、ダウンロード、削除、および名前変更",
+        "serverConnectionsLabel": "サーバーへの接続",
+        "serverConnectionsDescription": "SSH、SFTP、およびPVEの接続および切断を記録する",
+        "identityManagementLabel": "ID管理",
+        "identityManagementDescription": "SSH IDの作成、変更、削除",
+        "passwordPasteLabel": "パスワードの貼り付け",
+        "passwordPasteDescription": "「パスワード貼り付け」アクションの使用状況を記録する",
+        "serverManagementLabel": "サーバー管理",
+        "serverManagementDescription": "サーバー設定のログ作成、変更、および削除",
+        "folderManagementLabel": "フォルダ管理",
+        "folderManagementDescription": "フォルダの作成、変更、削除",
+        "scriptExecutionLabel": "スクリプトの実行",
+        "scriptExecutionDescription": "スクリプトおよび自動化タスクの実行をログに記録する",
+        "agentOperationsLabel": "AIエージェントの運用",
+        "agentOperationsDescription": "AIアシスタントおよびMCPサーバーを介して接続されたエージェントによって実行されたコマンド、入力、スクリーンショット、およびファイルの変更をログに記録する",
         "actions": {
-          "save": "Save Settings"
+          "save": "設定を保存する"
         },
         "messages": {
-          "updated": "Audit settings updated successfully",
-          "updateFailed": "Failed to update audit settings"
+          "updated": "監査設定の更新に成功した",
+          "updateFailed": "監査設定の更新に失敗した"
         }
       },
-      "pendingInvitations": "Pending Invitations",
-      "invitedBy": "Invited by: {{name}}",
-      "deleteConfirmation": "This will permanently delete the organization and remove all members. This action cannot be undone.",
-      "leaveConfirmation": "Are you sure you want to leave this organization?",
+      "pendingInvitations": "保留中の招待状",
+      "invitedBy": "招待者： {{name}}",
+      "deleteConfirmation": "これにより、組織が完全に削除され、すべてのメンバーが除外される。この操作は元に戻せない。",
+      "leaveConfirmation": "本当にこの組織を辞めたいのか？",
       "dialog": {
-        "title": "Create Organization",
+        "title": "組織を作成する",
         "fields": {
-          "name": "Name",
-          "namePlaceholder": "Organization name",
-          "description": "Description (optional)",
-          "descriptionPlaceholder": "Brief description of your organization"
+          "name": "名前",
+          "namePlaceholder": "組織名",
+          "description": "説明（任意）",
+          "descriptionPlaceholder": "貴団体の概要"
         },
         "actions": {
-          "cancel": "Cancel",
-          "create": "Create"
+          "cancel": "キャンセル",
+          "create": "作成する"
         },
         "messages": {
-          "nameRequired": "Organization name is required",
-          "createSuccess": "Organization created successfully",
-          "createFailed": "Failed to create organization"
+          "nameRequired": "組織名の入力は必須だ",
+          "createSuccess": "組織の作成に成功した",
+          "createFailed": "組織の作成に失敗した"
         }
       },
       "sessionSettings": {
-        "sessionSettingsTab": "Live Sessions",
-        "liveSharingHeading": "Live Session Sharing",
-        "liveSharingDescription": "Control how running sessions are shared in this organization.",
-        "enableLiveSessionSharingLabel": "Enable live session sharing",
-        "enableLiveSessionSharingDescription": "Members need the View or Control Live Sessions permission.",
+        "sessionSettingsTab": "ライブセッション",
+        "liveSharingHeading": "ライブセッションの共有",
+        "liveSharingDescription": "この組織内でのランニングセッションの共有方法を管理する。",
+        "enableLiveSessionSharingLabel": "ライブセッションの共有を有効にする",
+        "enableLiveSessionSharingDescription": "メンバーには、「ライブセッションの閲覧」または「ライブセッションの制御」の権限が必要だ。",
         "actions": {
-          "save": "Save Settings"
+          "save": "設定を保存する"
         },
         "messages": {
-          "updated": "Live session settings updated successfully",
-          "updateFailed": "Failed to update live session settings"
+          "updated": "ライブセッションの設定が正常に更新された",
+          "updateFailed": "ライブセッションの設定の更新に失敗した"
         }
       }
     },
     "users": {
-      "title": "{{count}} users",
-      "createNewUser": "Create new user",
-      "searchPlaceholder": "Search users...",
-      "twoFactorEnabled": "2FA enabled",
-      "twoFactorDisabled": "2FA disabled",
-      "noUsers": "No Users Found",
-      "noUsersDescription": "Create a new user to get started.",
-      "noSearchResults": "No Users Found",
-      "noSearchResultsDescription": "Try adjusting your search query.",
+      "title": "{{count}} ユーザー",
+      "createNewUser": "新しいユーザーを作成する",
+      "searchPlaceholder": "ユーザーを検索…",
+      "twoFactorEnabled": "2段階認証が有効になっている",
+      "twoFactorDisabled": "2段階認証が無効になっている",
+      "noUsers": "ユーザーが見つかりませんでした",
+      "noUsersDescription": "まずは新しいユーザーを作成しよう。",
+      "noSearchResults": "ユーザーが見つかりませんでした",
+      "noSearchResultsDescription": "検索クエリを調整してみてほしい。",
       "table": {
-        "user": "User",
+        "user": "ユーザー",
         "twoFactor": "2FA",
-        "roles": "Roles"
+        "roles": "役割"
       },
       "contextMenu": {
-        "changePassword": "Change password",
-        "deleteUser": "Delete user",
-        "loginAsUser": "Login as user",
-        "deleteConfirm": "This will permanently delete the user and all associated data.",
-        "managePermissions": "Manage permissions",
-        "allowExternalLink": "Allow SSO/LDAP linking",
-        "cancelExternalLink": "Cancel SSO/LDAP linking",
-        "unlinkExternal": "Unlink SSO/LDAP sign-in"
+        "changePassword": "パスワードを変更する",
+        "deleteUser": "ユーザーを削除する",
+        "loginAsUser": "ユーザーとしてログインする",
+        "deleteConfirm": "これにより、ユーザーおよび関連するすべてのデータが完全に削除される。",
+        "managePermissions": "権限の管理",
+        "allowExternalLink": "SSO/LDAPの連携を許可する",
+        "cancelExternalLink": "SSO/LDAPの連携を解除する",
+        "unlinkExternal": "SSO/LDAP ログインの紐付けを解除する"
       }
     },
     "userDialog": {
-      "title": "Create new user",
-      "firstName": "First Name",
-      "lastName": "Last Name",
-      "username": "Username",
-      "password": "Password",
-      "firstNamePlaceholder": "First name",
-      "lastNamePlaceholder": "Last name",
-      "usernamePlaceholder": "Username",
-      "passwordPlaceholder": "Password",
-      "create": "Create",
-      "errorOccurred": "An error occurred"
+      "title": "新しいユーザーを作成する",
+      "firstName": "名",
+      "lastName": "姓",
+      "username": "ユーザー名",
+      "password": "パスワード",
+      "firstNamePlaceholder": "名",
+      "lastNamePlaceholder": "姓",
+      "usernamePlaceholder": "ユーザー名",
+      "passwordPlaceholder": "パスワード",
+      "create": "作成する",
+      "errorOccurred": "エラーが発生した"
     },
     "sessions": {
-      "title": "Sessions",
-      "lastActivity": "Last activity: {{date}} from {{ip}}",
-      "currentSession": "Current session",
-      "logout": "Logout",
-      "revoke": "Revoke",
+      "title": "セッション",
+      "lastActivity": "最終アクセス： {{date}} から {{ip}}",
+      "currentSession": "現在のセッション",
+      "logout": "ログアウト",
+      "revoke": "取り消す",
       "browserOn": "{{browser}} {{version}} on {{os}} {{osVersion}}"
     },
     "keymaps": {
-      "title": "Keymaps",
-      "description": "Customize keyboard shortcuts to match your workflow.",
-      "resetAll": "Reset All",
+      "title": "キーマップ",
+      "description": "ワークフローに合わせてキーボードショートカットをカスタマイズする。",
+      "resetAll": "すべてリセット",
       "actions": {
         "search": {
-          "title": "Search",
-          "description": "Open the search input"
+          "title": "検索",
+          "description": "検索入力欄を開く"
         },
         "quickaction": {
-          "title": "Quick Action",
-          "description": "Open the quick action menu"
+          "title": "迅速な対応",
+          "description": "クイックアクションメニューを開く"
         },
         "aimenu": {
-          "title": "AI Menu",
-          "description": "Open the AI command menu"
+          "title": "AIメニュー",
+          "description": "AIコマンドメニューを開く"
         },
         "aiaccepttool": {
-          "title": "AI Accept Action",
-          "description": "Approve the pending AI tool action in the assistant"
+          "title": "AIによるアクションの承認",
+          "description": "アシスタントで保留中のAIツールのアクションを承認する"
         },
         "aicommand": {
-          "title": "Generate Command",
-          "description": "Ask for a command suggestion inside the terminal"
+          "title": "コマンドを生成する",
+          "description": "ターミナル内でコマンドの提案を求める"
         },
         "snippets": {
-          "title": "Snippets",
-          "description": "Open the snippets dialog"
+          "title": "スニペット",
+          "description": "スニペットダイアログを開く"
         },
         "keyboardshortcuts": {
-          "title": "Keyboard Shortcuts",
-          "description": "Open the keyboard shortcuts menu"
+          "title": "キーボードショートカット",
+          "description": "キーボードショートカットメニューを開く"
         },
         "broadcast": {
-          "title": "Broadcast Mode",
-          "description": "Toggle broadcast mode when using split view"
+          "title": "ブロードキャストモード",
+          "description": "スプリットビュー使用時の放送モードを切り替える"
         },
         "copy": {
-          "title": "Copy",
-          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+          "title": "コピー",
+          "description": "ターミナルでハイライトされたテキストをクリップボードにコピーする。ターミナルの設定で「マウス」または「キーボード」モードが有効になっている必要がある。"
         },
         "paste": {
-          "title": "Paste",
-          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
+          "title": "貼り付け",
+          "description": "クリップボードのテキストをターミナルに貼り付ける。ターミナルの設定で「Smart Ctrl+C」、「マウス」、または「キーボード」モードが有効になっている必要がある。"
         },
         "fullscreen": {
-          "title": "Full-Screen",
-          "description": "Toggle full-screen mode"
+          "title": "全画面表示",
+          "description": "全画面表示モードを切り替える"
         },
         "pasteidentitypassword": {
-          "title": "Paste Identity Password",
-          "description": "Paste the password of the current SSH connection's identity"
+          "title": "IDとパスワードを貼り付ける",
+          "description": "現在のSSH接続の認証情報のパスワードを貼り付ける"
         }
       },
       "recorder": {
-        "pressKeys": "Press keys...",
-        "save": "Save",
-        "cancel": "Cancel",
-        "disabled": "Disabled",
-        "reset": "Reset"
+        "pressKeys": "キーを押す…",
+        "save": "保存",
+        "cancel": "キャンセル",
+        "disabled": "無効",
+        "reset": "リセット"
       },
       "messages": {
-        "updateSuccess": "Keybind updated successfully",
-        "updateFailed": "Failed to update keybind",
-        "resetSuccess": "Keybind reset to default",
-        "resetFailed": "Failed to reset keybind",
-        "resetAllSuccess": "All keybinds reset to defaults",
-        "resetAllFailed": "Failed to reset keybinds"
+        "updateSuccess": "キーバインドの更新に成功した",
+        "updateFailed": "キーバインドの更新に失敗した",
+        "resetSuccess": "キーバインドをデフォルトにリセット",
+        "resetFailed": "キーバインドのリセットに失敗した",
+        "resetAllSuccess": "すべてのキー設定がデフォルトに戻った",
+        "resetAllFailed": "キーバインドのリセットに失敗した"
       }
     },
     "terminal": {
-      "title": "Terminal",
-      "syncLoginRequired": "Please log in to sync terminal settings",
+      "title": "ターミナル",
+      "syncLoginRequired": "ターミナルの設定を同期するには、ログインしてください",
       "font": {
-        "title": "Font",
-        "description": "Customize the font family and size for your terminal.",
-        "fontFamily": "Font Family",
-        "fontSize": "Font Size",
-        "syncEnabled": "Font settings will now sync to your account",
-        "syncDisabled": "Font settings will no longer sync"
+        "title": "フォント",
+        "description": "ターミナルのフォントファミリーとサイズをカスタマイズする。",
+        "fontFamily": "フォントファミリー",
+        "fontSize": "文字サイズ",
+        "syncEnabled": "フォントの設定がアカウントに同期されるようになった",
+        "syncDisabled": "フォントの設定は今後同期されなくなる"
       },
       "cursor": {
-        "title": "Cursor",
-        "description": "Customize the appearance and behavior of your terminal cursor.",
-        "cursorStyle": "Cursor Style",
-        "cursorBlinking": "Cursor Blinking",
-        "enabled": "Enabled",
-        "disabled": "Disabled",
-        "syncEnabled": "Cursor settings will now sync to your account",
-        "syncDisabled": "Cursor settings will no longer sync"
+        "title": "カーソル",
+        "description": "ターミナルカーソルの外観や動作をカスタマイズする。",
+        "cursorStyle": "カーソルのスタイル",
+        "cursorBlinking": "カーソルの点滅",
+        "enabled": "有効",
+        "disabled": "無効",
+        "syncEnabled": "カーソルの設定がアカウントに同期されるようになった",
+        "syncDisabled": "カーソルの設定は今後同期されなくなる"
       },
       "input": {
-        "title": "Input",
-        "description": "Control how keyboard shortcuts behave inside the terminal.",
-        "copyPasteBehavior": "Copy/Paste Behavior",
-        "copyPasteBehaviorNone": "None",
-        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
-        "copyPasteBehaviorSmart": "Smart Ctrl+C",
-        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
-        "copyPasteBehaviorKeyboard": "Keyboard",
-        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
-        "copyPasteBehaviorMouse": "Mouse",
-        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
-        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
-        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
-        "passwordPromptDetection": "Password input detection",
-        "autoReconnect": "Auto-reconnect",
-        "enabled": "Enabled",
-        "disabled": "Disabled",
-        "syncEnabled": "Input settings will now sync to your account",
-        "syncDisabled": "Input settings will no longer sync"
+        "title": "入力",
+        "description": "ターミナル内でのキーボードショートカットの動作を制御する。",
+        "copyPasteBehavior": "コピー／ペーストの動作",
+        "copyPasteBehaviorNone": "なし",
+        "copyPasteBehaviorNoneHint": "コンテキストメニューからのコピーと貼り付けのみだ。",
+        "copyPasteBehaviorSmart": "スマートなCtrl+C",
+        "copyPasteBehaviorSmartHint": "テキストが選択されている場合はスマートにコピーし、そうでない場合はCtrl+Cをそのままターミナルに送信する。",
+        "copyPasteBehaviorKeyboard": "キーボード",
+        "copyPasteBehaviorKeyboardHint": "定義したキーマップを使用して、コピー／貼り付けを行う",
+        "copyPasteBehaviorMouse": "マウス",
+        "copyPasteBehaviorMouseHint": "ハイライトしてコピーし、右クリックして貼り付ける。Ctrlキーを押しながら右クリックすると、コンテキストメニューが表示される。",
+        "copyPasteBehaviorMouseKeyboard": "マウス／キーボード",
+        "copyPasteBehaviorMouseKeyboardHint": "マウスモードとキーボードモードの両方を有効にする。",
+        "passwordPromptDetection": "パスワード入力の検知",
+        "autoReconnect": "自動再接続",
+        "enabled": "有効",
+        "disabled": "無効",
+        "syncEnabled": "入力設定がアカウントに同期されるようになった",
+        "syncDisabled": "入力設定は今後同期されなくなる"
       },
       "theme": {
-        "title": "Theme",
-        "description": "Choose a color theme for your terminal.",
-        "syncEnabled": "Theme settings will now sync to your account",
-        "syncDisabled": "Theme settings will no longer sync"
+        "title": "テーマ",
+        "description": "ターミナルのカラーテーマを選択する。",
+        "syncEnabled": "テーマの設定がアカウントに同期されるようになった",
+        "syncDisabled": "テーマの設定は今後同期されなくなる"
       },
       "preview": {
         "text": "$ echo 'Hi, Nexterm!'\nHi, Nexterm!\n$ "
       }
     },
     "fileManager": {
-      "title": "File Manager",
-      "description": "Configure how files and folders are displayed and managed.",
-      "syncLoginRequired": "Please log in to sync file manager settings",
-      "syncEnabled": "File manager settings will now sync to your account",
-      "syncDisabled": "File manager settings will no longer sync",
+      "title": "ファイルマネージャー",
+      "description": "ファイルやフォルダの表示および管理方法を設定する。",
+      "syncLoginRequired": "ファイルマネージャーの設定を同期するには、ログインしてください",
+      "syncEnabled": "ファイルマネージャーの設定が、アカウントに同期されるようになった",
+      "syncDisabled": "ファイルマネージャーの設定は今後同期されなくなる",
       "view": {
-        "title": "View",
-        "description": "How files and folders are shown when you open the file manager."
+        "title": "表示",
+        "description": "ファイルマネージャーを開いたときに、ファイルやフォルダがどのように表示されるか。"
       },
       "behavior": {
-        "title": "Behavior",
-        "description": "What happens when you open, delete and move files."
+        "title": "行動",
+        "description": "ファイルを開いたり、削除したり、移動したりするとどうなるか。"
       },
       "defaultView": {
-        "title": "Default View Mode",
-        "description": "Choose the default layout when opening the file manager.",
-        "list": "List View",
-        "listDescription": "Show files in a detailed list with size and date columns",
-        "grid": "Grid View",
-        "gridDescription": "Show files as icons in a grid layout with thumbnails",
-        "compact": "Compact View",
-        "compactDescription": "Show only names in dense columns to fit many files on screen",
-        "label": "Default view"
+        "title": "デフォルトの表示モード",
+        "description": "ファイルマネージャーを開く際は、デフォルトのレイアウトを選択する。",
+        "list": "リスト表示",
+        "listDescription": "サイズと日付の列を含む詳細リストでファイルを表示する",
+        "grid": "グリッド表示",
+        "gridDescription": "ファイルをサムネイル付きのグリッドレイアウトでアイコンとして表示する",
+        "compact": "コンパクト表示",
+        "compactDescription": "画面に多くのファイルを表示できるように、密度の高い列では名前のみを表示する",
+        "label": "デフォルトの表示"
       },
       "thumbnails": {
-        "title": "Image Thumbnails",
-        "description": "Show image thumbnails in grid view. This uses additional bandwidth to generate previews.",
-        "enabled": "Show Thumbnails",
-        "enabledDescription": "Display image previews in grid view for quick visual identification",
-        "disabled": "Hide Thumbnails",
-        "disabledDescription": "Show only file icons to save bandwidth and improve performance",
-        "label": "Image thumbnails",
-        "show": "Show",
-        "hide": "Hide"
+        "title": "画像のサムネイル",
+        "description": "画像のサムネイルをグリッド表示する。プレビューを生成するために、追加の帯域幅が必要となる。",
+        "enabled": "サムネイルを表示する",
+        "enabledDescription": "画像のプレビューをグリッド表示で表示し、一目で識別できるようにする",
+        "disabled": "サムネイルを非表示にする",
+        "disabledDescription": "帯域幅を節約し、パフォーマンスを向上させるため、ファイルアイコンのみを表示する",
+        "label": "画像のサムネイル",
+        "show": "表示",
+        "hide": "非表示"
       },
       "hiddenFiles": {
-        "title": "Hidden Files",
-        "description": "Control visibility of hidden files and folders (names starting with a dot).",
-        "show": "Show Hidden Files",
-        "showDescription": "Display all files including .dotfiles and system directories",
-        "hide": "Hide Hidden Files",
-        "hideDescription": "Only show regular files and folders",
-        "label": "Hidden files",
-        "showShort": "Show",
-        "hideShort": "Hide"
+        "title": "隠しファイル",
+        "description": "隠しファイルや隠しフォルダ（名前がドットで始まるもの）の表示設定を制御する。",
+        "show": "隠しファイルを表示する",
+        "showDescription": ".dotfiles やシステムディレクトリを含むすべてのファイルを表示する",
+        "hide": "隠しファイルを非表示にする",
+        "hideDescription": "通常のファイルとフォルダのみを表示する",
+        "label": "隠しファイル",
+        "showShort": "表示",
+        "hideShort": "非表示"
       },
       "deleteConfirmation": {
-        "title": "Delete Confirmation",
-        "description": "Require confirmation before deleting files and folders.",
-        "enabled": "Confirm Deletions",
-        "enabledDescription": "Show a confirmation dialog before deleting items",
-        "disabled": "Delete Immediately",
-        "disabledDescription": "Delete files without asking for confirmation",
-        "label": "Before deleting",
-        "ask": "Ask for confirmation",
-        "immediately": "Delete immediately"
+        "title": "削除の確認",
+        "description": "ファイルやフォルダを削除する前に確認を求める。",
+        "enabled": "削除の確認",
+        "enabledDescription": "項目を削除する前に確認ダイアログを表示する",
+        "disabled": "直ちに削除する",
+        "disabledDescription": "確認を求めずにファイルを削除する",
+        "label": "削除する前に",
+        "ask": "確認を求める",
+        "immediately": "直ちに削除する"
       },
       "dragDropAction": {
-        "title": "Drag & Drop Action",
-        "description": "Default action when dragging files to a new location.",
-        "move": "Move",
-        "copy": "Copy",
-        "ask": "Ask",
-        "label": "When dropping files"
+        "title": "ドラッグ＆ドロップ操作",
+        "description": "ファイルを新しい場所にドラッグした際のデフォルトの動作。",
+        "move": "移動",
+        "copy": "コピー",
+        "ask": "質問する",
+        "label": "ファイルをドロップするとき"
       },
       "singleClickOpen": {
-        "title": "Open with single click",
-        "description": "Open files and folders with a single click instead of selecting them. Double-click opens when this is off.",
-        "single": "Single click",
-        "double": "Double click",
-        "label": "Open items with"
+        "title": "ワンクリックで開く",
+        "description": "ファイルやフォルダを選択せずに、ワンクリックで開くことができる。この設定がオフの場合、ダブルクリックで開く。",
+        "single": "ワンクリック",
+        "double": "ダブルクリック",
+        "label": "未処理の項目（以下を含む）"
       },
       "sharedDrive": {
-        "title": "Shared Drive",
-        "description": "What remote desktops can see of this computer through their shared drive. Changes apply to new connections.",
+        "title": "共有ドライブ",
+        "description": "リモートデスクトップから、共有ドライブを通じてこのコンピュータのどの部分が見えるか。変更は新しい接続から適用される。",
         "mode": {
-          "title": "Share",
-          "folder": "One folder",
-          "disk": "Entire disk",
-          "off": "Nothing",
-          "diskWarning": "Remote desktops can read, change and delete every file on this computer."
+          "title": "シェア",
+          "folder": "1つのフォルダ",
+          "disk": "ディスク全体",
+          "off": "何もない",
+          "diskWarning": "リモートデスクトップからは、このコンピュータ上のすべてのファイルを読み取り、変更し、削除することができる。"
         },
         "folder": {
-          "title": "Shared folder",
-          "default": "Nexterm Shared in your home folder",
-          "choose": "Choose folder",
-          "reset": "Use default"
+          "title": "共有フォルダ",
+          "default": "Nexterm がホームフォルダに共有された",
+          "choose": "フォルダを選択する",
+          "reset": "デフォルトを使用する"
         },
-        "folderError": "The shared folder could not be prepared"
+        "folderError": "共有フォルダの準備ができなかった"
       }
     },
     "authentication": {
-      "title": "{{count}} Authentication Providers",
-      "internalProviderName": "Internal Authentication",
-      "addProvider": "Add Provider",
-      "addLdapProvider": "Add LDAP",
-      "system": "System",
-      "systemDescription": "Username and password authentication",
+      "title": "{{count}} 認証プロバイダー",
+      "internalProviderName": "内部認証",
+      "addProvider": "プロバイダーを追加する",
+      "addLdapProvider": "LDAPを追加する",
+      "system": "システム",
+      "systemDescription": "ユーザー名とパスワードによる認証",
       "registration": {
-        "title": "Self-Registration",
-        "description": "Allow visitors to create their own account from the login screen"
+        "title": "自己登録",
+        "description": "ログイン画面から、訪問者が独自のアカウントを作成できるようにする"
       },
-      "deleteConfirm": "This will permanently delete this authentication provider.",
+      "deleteConfirm": "これにより、この認証プロバイダが完全に削除される。",
       "errors": {
-        "deleteProvider": "Error deleting provider",
-        "toggleProvider": "Error toggling provider"
+        "deleteProvider": "プロバイダーの削除に失敗した",
+        "toggleProvider": "プロバイダーの切り替え中にエラーが発生した"
       },
       "providerDialog": {
-        "createTitle": "Add Authentication Provider",
-        "editTitle": "Edit Authentication Provider",
+        "createTitle": "認証プロバイダーを追加する",
+        "editTitle": "認証プロバイダーの編集",
         "fields": {
-          "displayName": "Display Name",
-          "displayNamePlaceholder": "e.g. Company SSO",
-          "issuerUrl": "Issuer URL",
+          "displayName": "表示名",
+          "displayNamePlaceholder": "例：企業のSSO",
+          "issuerUrl": "発行元URL",
           "issuerUrlPlaceholder": "https://auth.company.com",
-          "clientId": "Client ID",
-          "clientIdPlaceholder": "Client ID",
-          "clientSecret": "Client Secret",
-          "clientSecretPlaceholder": "Client Secret",
-          "clientSecretPlaceholderEdit": "Leave blank to keep existing",
-          "redirectUri": "Redirect URI",
+          "clientId": "クライアントID",
+          "clientIdPlaceholder": "クライアントID",
+          "clientSecret": "クライアントシークレット",
+          "clientSecretPlaceholder": "クライアントシークレット",
+          "clientSecretPlaceholderEdit": "既存のものを維持する場合は、空欄のままにしておく",
+          "redirectUri": "リダイレクトURI",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
-          "endSessionEndpoint": "End Session Endpoint (Optional)",
+          "endSessionEndpoint": "セッション終了エンドポイント（任意）",
           "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
-          "scope": "Scope",
-          "scopePlaceholder": "openid profile",
-          "usernameAttribute": "Username Attribute",
-          "usernameAttributePlaceholder": "preferred_username",
-          "firstNameAttribute": "First Name Attribute",
+          "scope": "適用範囲",
+          "scopePlaceholder": "OpenIDプロファイル",
+          "usernameAttribute": "ユーザー名属性",
+          "usernameAttributePlaceholder": "希望のユーザー名",
+          "firstNameAttribute": "名属性",
           "firstNameAttributePlaceholder": "given_name",
-          "lastNameAttribute": "Last Name Attribute",
+          "lastNameAttribute": "姓の属性",
           "lastNameAttributePlaceholder": "family_name"
         },
         "advanced": {
-          "show": "Show Advanced Settings",
-          "hide": "Hide Advanced Settings"
+          "show": "詳細設定を表示する",
+          "hide": "詳細設定を非表示にする"
         },
         "actions": {
-          "addProvider": "Add Provider",
-          "saveChanges": "Save Changes"
+          "addProvider": "プロバイダーを追加する",
+          "saveChanges": "変更を保存"
         },
         "messages": {
-          "saveFailed": "Failed to save provider"
+          "saveFailed": "プロバイダの保存に失敗した"
         },
         "groupSync": {
-          "title": "Group Sync",
-          "hint": "Automatically add users to organizations and control access based on group claims from your identity provider.",
-          "groupsAttribute": "Groups Claim",
-          "groupsAttributePlaceholder": "groups",
-          "requiredGroup": "Required Group",
+          "title": "グループ同期",
+          "hint": "IDプロバイダーからのグループクレームに基づいて、ユーザーを組織に自動的に追加し、アクセス権を管理する。",
+          "groupsAttribute": "各団体の主張",
+          "groupsAttributePlaceholder": "グループ",
+          "requiredGroup": "必須グループ",
           "requiredGroupPlaceholder": "nexterm-users",
-          "requiredGroupHint": "If set, only users whose groups claim contains this value are allowed to log in.",
-          "mappings": "Organization Mappings",
-          "mappingsHint": "Map a group claim value to an organization. Membership is kept in sync on every login.",
-          "mappingValuePlaceholder": "Group value",
-          "roleMember": "Member",
-          "roleOwner": "Owner",
-          "addMapping": "Add Mapping"
+          "requiredGroupHint": "この設定が有効な場合、グループの「claim」にこの値が含まれているユーザーのみがログインできる。",
+          "mappings": "組織のマッピング",
+          "mappingsHint": "グループの請求額を組織に紐付ける。メンバーシップはログインのたびに同期される。",
+          "mappingValuePlaceholder": "グループの価値",
+          "roleMember": "メンバー",
+          "roleOwner": "所有者",
+          "addMapping": "マッピングを追加する"
         }
       },
       "ldapDialog": {
-        "createTitle": "Add LDAP Provider",
-        "editTitle": "Edit LDAP Provider",
+        "createTitle": "LDAPプロバイダを追加する",
+        "editTitle": "LDAPプロバイダの編集",
         "fields": {
-          "displayName": "Display Name",
-          "displayNamePlaceholder": "e.g. Company LDAP",
-          "host": "Host",
+          "displayName": "表示名",
+          "displayNamePlaceholder": "例：会社のLDAP",
+          "host": "ホスト",
           "hostPlaceholder": "ldap.company.com",
-          "port": "Port",
-          "bindDN": "Bind DN",
+          "port": "ポート",
+          "bindDN": "DNをバインドする",
           "bindDNPlaceholder": "cn=admin,dc=company,dc=com",
-          "bindPassword": "Bind Password",
-          "bindPasswordPlaceholder": "Bind password",
-          "bindPasswordPlaceholderEdit": "Leave blank to keep existing",
-          "baseDN": "Base DN",
+          "bindPassword": "パスワードの登録",
+          "bindPasswordPlaceholder": "パスワードの登録",
+          "bindPasswordPlaceholderEdit": "既存のものを維持する場合は、空欄のままにしておく",
+          "baseDN": "ベースDN",
           "baseDNPlaceholder": "dc=company,dc=com",
-          "userSearchFilter": "User Search Filter",
-          "userSearchFilterPlaceholder": "(uid={{username}}) or (sAMAccountName={{username}})",
-          "useTLS": "Use TLS/SSL",
-          "usernameAttribute": "Username Attribute",
+          "userSearchFilter": "ユーザー検索フィルター",
+          "userSearchFilterPlaceholder": "(uid={{username}}) または (sAMAccountName={{username}})",
+          "useTLS": "TLS/SSL を使用する",
+          "usernameAttribute": "ユーザー名属性",
           "usernameAttributePlaceholder": "uid",
-          "emailAttribute": "Email Attribute",
-          "emailAttributePlaceholder": "mail",
-          "firstNameAttribute": "First Name Attribute",
+          "emailAttribute": "メール属性",
+          "emailAttributePlaceholder": "メール",
+          "firstNameAttribute": "名属性",
           "firstNameAttributePlaceholder": "givenName",
-          "lastNameAttribute": "Last Name Attribute",
+          "lastNameAttribute": "姓の属性",
           "lastNameAttributePlaceholder": "sn"
         },
         "advanced": {
-          "show": "Show Advanced Settings",
-          "hide": "Hide Advanced Settings"
+          "show": "詳細設定を表示する",
+          "hide": "詳細設定を非表示にする"
         },
         "actions": {
-          "addProvider": "Add Provider",
-          "saveChanges": "Save Changes",
-          "testConnection": "Test Connection",
-          "testing": "Testing..."
+          "addProvider": "プロバイダーを追加する",
+          "saveChanges": "変更を保存",
+          "testConnection": "接続テスト",
+          "testing": "テスト中……"
         },
         "messages": {
-          "saveFailed": "Failed to save provider",
-          "saveFirst": "Save the provider first to test the connection",
-          "testSuccess": "Connection test successful",
-          "testFailed": "Connection test failed"
+          "saveFailed": "プロバイダの保存に失敗した",
+          "saveFirst": "接続をテストするには、まずプロバイダを保存する",
+          "testSuccess": "接続テストに成功した",
+          "testFailed": "接続テストに失敗した"
         }
       },
       "sessions": {
-        "title": "Sessions",
-        "description": "When signed-in devices, including the mobile and desktop apps, have to sign in again.",
-        "idle": "Sign out after inactivity",
-        "lifetime": "Maximum session length",
-        "days_one": "{{count}} day",
-        "days_other": "{{count}} days",
-        "never": "Never",
-        "loadError": "Failed to load the session settings",
-        "saveError": "Failed to save the session settings"
+        "title": "セッション",
+        "description": "モバイルアプリやデスクトップアプリなど、すでにサインイン済みのデバイスで、再度サインインが必要になる場合。",
+        "idle": "一定時間操作がない場合はログアウトする",
+        "lifetime": "セッションの最大時間",
+        "days_one": "{{count}} 日",
+        "days_other": "{{count}} 日",
+        "never": "決して",
+        "loadError": "セッション設定の読み込みに失敗した",
+        "saveError": "セッション設定の保存に失敗した"
       }
     },
     "ai": {
-      "title": "AI Assistant Configuration",
-      "description": "Configure the AI provider used by the assistant, which can operate your servers through its own sessions.",
-      "loading": "Loading AI settings...",
+      "title": "AIアシスタントの設定",
+      "description": "アシスタントが使用するAIプロバイダーを設定する。このプロバイダーは、独自のセッションを通じてサーバーを操作できる。",
+      "loading": "AI設定を読み込み中...",
       "enable": {
-        "title": "Enable AI Assistant",
-        "description": "Allow users to open the AI assistant inside server sessions"
+        "title": "AIアシスタントを有効にする",
+        "description": "ユーザーがサーバーセッション内でAIアシスタントを開けるようにする"
       },
       "provider": {
-        "title": "AI Provider",
-        "description": "Choose your AI service provider"
+        "title": "AIプロバイダー",
+        "description": "AIサービスプロバイダーを選ぶ"
       },
       "model": {
-        "title": "Model",
-        "description": "Select the AI model the assistant should use"
+        "title": "モデル",
+        "description": "アシスタントが使用するAIモデルを選択する"
       },
       "apiKey": {
-        "title": "API Key",
-        "setPlaceholder": "API key is set (leave blank to keep current)",
-        "genericDescription": "API key used to authenticate with the selected provider",
-        "genericPlaceholder": "Enter your {{provider}} API key"
+        "title": "APIキー",
+        "setPlaceholder": "APIキーが設定されている（現在のものを維持する場合は空欄のままにする）",
+        "genericDescription": "選択したプロバイダーでの認証に使用されるAPIキー",
+        "genericPlaceholder": "{{provider}} のAPIキーを入力してください"
       },
       "authMethod": {
-        "title": "Authentication",
-        "description": "Authenticate with an API key or your provider subscription",
-        "apiKey": "API Key",
-        "subscription": "Subscription"
+        "title": "認証",
+        "description": "APIキーまたはプロバイダーのサブスクリプションで認証する",
+        "apiKey": "APIキー",
+        "subscription": "定期購読"
       },
       "subscription": {
-        "title": "{{provider}} Subscription",
-        "description": "Sign in with your {{provider}} subscription to use its models without an API key",
-        "connectedDescription": "Your {{provider}} subscription is connected",
-        "connect": "Connect",
-        "connecting": "Connecting...",
-        "complete": "Complete",
-        "disconnect": "Disconnect",
-        "codePlaceholder": "Paste the authorization code here",
-        "codePlaceholderUrl": "Paste the full callback URL (or code) here",
-        "connectSuccess": "{{provider}} subscription connected",
-        "startError": "Failed to start authorization",
-        "exchangeError": "Failed to connect subscription",
-        "disconnectError": "Failed to disconnect subscription"
+        "title": "{{provider}} 定期購読",
+        "description": "{{provider}} のサブスクリプションでサインインすれば、APIキーなしでそのモデルを利用できる",
+        "connectedDescription": "{{provider}} のサブスクリプションが連携されている",
+        "connect": "接続する",
+        "connecting": "接続中...",
+        "complete": "完了",
+        "disconnect": "切断",
+        "codePlaceholder": "ここに認証コードを貼り付けてください",
+        "codePlaceholderUrl": "ここにコールバックURL（またはコード）をすべて貼り付けてください",
+        "connectSuccess": "{{provider}} サブスクリプションが接続されている",
+        "startError": "認証の開始に失敗した",
+        "exchangeError": "サブスクリプションへの接続に失敗した",
+        "disconnectError": "サブスクリプションの解除に失敗した"
       },
       "baseUrl": {
         "title": "API URL",
-        "description": "Base URL of the provider's OpenAI-compatible endpoint",
+        "description": "プロバイダーのOpenAI互換エンドポイントのベースURL",
         "placeholder": "https://api.example.com/v1"
       },
-      "selectProvider": "Select a provider...",
-      "selectModel": "Select a model...",
-      "loadingModels": "Loading models...",
-      "noModels": "No models available",
-      "saveSettings": "Save Settings",
-      "testConnection": "Test Connection",
-      "testing": "Testing...",
-      "saveSuccess": "AI settings saved successfully",
-      "testSuccess": "AI connection test successful",
+      "selectProvider": "プロバイダーを選択してください…",
+      "selectModel": "モデルを選択してください…",
+      "loadingModels": "モデルを読み込み中……",
+      "noModels": "利用可能なモデルはない",
+      "saveSettings": "設定を保存する",
+      "testConnection": "接続テスト",
+      "testing": "テスト中……",
+      "saveSuccess": "AIの設定が正常に保存された",
+      "testSuccess": "AI接続テストに成功した",
       "errors": {
-        "loadSettings": "Failed to load AI settings",
-        "saveSettings": "Failed to save AI settings",
-        "testConnection": "AI connection test failed"
+        "loadSettings": "AI設定の読み込みに失敗した",
+        "saveSettings": "AI設定の保存に失敗した",
+        "testConnection": "AI接続テストに失敗した"
       }
     },
     "monitoring": {
-      "loading": "Loading monitoring settings...",
-      "saveSettings": "Save Settings",
-      "saveSuccess": "Monitoring settings saved successfully",
-      "seconds": "seconds",
-      "hours": "hours",
-      "servers": "servers",
+      "loading": "監視設定を読み込んでいる……",
+      "saveSettings": "設定を保存する",
+      "saveSuccess": "監視設定の保存に成功した",
+      "seconds": "秒",
+      "hours": "時間",
+      "servers": "サーバー",
       "statusChecker": {
-        "title": "Status Checker",
-        "description": "Configure how Nexterm checks the online/offline status of your servers.",
+        "title": "ステータスチェッカー",
+        "description": "Nextermがサーバーのオンライン／オフライン状態を確認する方法を設定する。",
         "enable": {
-          "title": "Enable Status Checker",
-          "description": "Automatically check if servers are online or offline. When disabled, all servers will be marked as online."
+          "title": "ステータスチェッカーを有効にする",
+          "description": "サーバーがオンラインかオフラインかを自動的に確認する。無効にすると、すべてのサーバーがオンラインとして表示される。"
         },
         "interval": {
-          "title": "Check Interval",
-          "description": "How often to check server status (10-300 seconds)"
+          "title": "点検間隔",
+          "description": "サーバーの状態を確認する間隔（10～300秒）"
         }
       },
       "dataCollection": {
-        "title": "Data Collection",
-        "description": "Configure monitoring data collection for CPU, memory, disk, and network metrics.",
+        "title": "データ収集",
+        "description": "CPU、メモリ、ディスク、ネットワークの各メトリクスについて、監視データの収集を設定する。",
         "enable": {
-          "title": "Enable Monitoring",
-          "description": "Collect detailed performance metrics from servers with monitoring enabled."
+          "title": "監視を有効にする",
+          "description": "監視機能が有効になっているサーバーから、詳細なパフォーマンス指標を収集する。"
         },
         "interval": {
-          "title": "Collection Interval",
-          "description": "How often to collect monitoring data (30-600 seconds)"
+          "title": "収集間隔",
+          "description": "モニタリングデータの収集間隔（30～600秒）"
         },
         "retention": {
-          "title": "Data Retention",
-          "description": "How long to keep monitoring data (1-24 hours)"
+          "title": "データの保存期間",
+          "description": "モニタリングデータをどのくらいの期間保存するか（1～24時間）"
         }
       },
       "advanced": {
-        "title": "Advanced Settings",
-        "description": "Fine-tune monitoring performance and resource usage.",
+        "title": "詳細設定",
+        "description": "監視のパフォーマンスとリソース使用状況を微調整する。",
         "timeout": {
-          "title": "Connection Timeout",
-          "description": "Maximum time to wait for a server response (5-120 seconds)"
+          "title": "接続タイムアウト",
+          "description": "サーバーからの応答を待つ最大時間（5～120秒）"
         },
         "batchSize": {
-          "title": "Batch Size",
-          "description": "Number of servers to check simultaneously (1-50)"
+          "title": "バッチサイズ",
+          "description": "同時に確認するサーバーの数（1～50）"
         }
       },
       "errors": {
-        "loadSettings": "Failed to load monitoring settings",
-        "saveSettings": "Failed to save monitoring settings"
+        "loadSettings": "監視設定の読み込みに失敗した",
+        "saveSettings": "監視設定の保存に失敗した"
       }
     },
     "identities": {
-      "title": "SSH Keys & Credentials",
-      "description": "Identities you can link to any server. Server-specific ones live in that server's settings.",
-      "createIdentity": "Create Identity",
-      "personal": "Personal",
-      "noUsername": "No username",
-      "notInUse": "Not in use",
-      "notInUseHint": "Not linked to any server or folder",
-      "sshKey": "SSH Key",
-      "password": "Password",
-      "editIdentity": "Edit identity",
-      "deleteIdentity": "Delete identity",
-      "noIdentities": "No Identities Found",
-      "noIdentitiesDescription": "Create your first identity to get started with server connections",
-      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone and will remove this identity from all servers that use it.",
-      "deleteSuccess": "Identity deleted successfully",
-      "deleteError": "Failed to delete identity",
+      "title": "SSHキーと認証情報",
+      "description": "任意のサーバーに紐付けられるIDだ。サーバー固有のIDは、そのサーバーの設定内に存在する。",
+      "createIdentity": "アイデンティティを作成する",
+      "personal": "個人用",
+      "noUsername": "ユーザー名なし",
+      "notInUse": "使用されていない",
+      "notInUseHint": "どのサーバーやフォルダにもリンクされていない",
+      "sshKey": "SSHキー",
+      "password": "パスワード",
+      "editIdentity": "IDを編集する",
+      "deleteIdentity": "IDを削除する",
+      "noIdentities": "該当するIDが見つかりませんでした",
+      "noIdentitiesDescription": "サーバー接続を始めるには、まず最初のIDを作成する",
+      "deleteConfirm": "「{{name}}」を削除してもよろしいか？この操作は元に戻せない。また、このIDを使用しているすべてのサーバーからこのIDが削除される。",
+      "deleteSuccess": "IDの削除に成功した",
+      "deleteError": "IDの削除に失敗した",
       "dialog": {
-        "createTitle": "Create New Identity",
-        "editTitle": "Edit Identity",
+        "createTitle": "新しいアイデンティティを作成する",
+        "editTitle": "IDを編集する",
         "fields": {
-          "name": "Identity Name",
-          "namePlaceholder": "Enter identity name",
-          "username": "Username",
-          "usernamePlaceholder": "Username (optional)",
-          "authType": "Authentication Type",
-          "password": "Password",
-          "passwordPlaceholder": "Enter password",
-          "passwordPlaceholderEdit": "Leave blank to keep current password",
-          "sshKey": "SSH Private Key",
-          "passphrase": "Passphrase (optional)",
-          "passphrasePlaceholder": "Enter passphrase (optional)",
-          "passphrasePlaceholderEdit": "Leave blank to keep current passphrase"
+          "name": "識別名",
+          "namePlaceholder": "ID名を入力する",
+          "username": "ユーザー名",
+          "usernamePlaceholder": "ユーザー名（任意）",
+          "authType": "認証タイプ",
+          "password": "パスワード",
+          "passwordPlaceholder": "パスワードを入力する",
+          "passwordPlaceholderEdit": "現在のパスワードを維持する場合は、空欄のままにしておく",
+          "sshKey": "SSH秘密鍵",
+          "passphrase": "パスフレーズ（任意）",
+          "passphrasePlaceholder": "パスフレーズを入力する（任意）",
+          "passphrasePlaceholderEdit": "現在のパスフレーズを維持する場合は、空欄のままにしておく"
         },
         "authTypes": {
-          "password": "Password",
-          "password-only": "No Username",
-          "ssh": "SSH Key",
-          "both": "Key+Pass"
+          "password": "パスワード",
+          "password-only": "ユーザー名なし",
+          "ssh": "SSHキー",
+          "both": "キー＋パス"
         },
         "actions": {
-          "cancel": "Cancel",
-          "create": "Create Identity",
-          "update": "Update Identity"
+          "cancel": "キャンセル",
+          "create": "アイデンティティを作成する",
+          "update": "IDを更新する"
         },
         "messages": {
-          "nameRequired": "Identity name is required",
-          "passwordRequired": "Password is required",
-          "sshKeyRequired": "SSH key is required",
-          "createSuccess": "Identity created successfully",
-          "updateSuccess": "Identity updated successfully",
-          "createFailed": "Failed to create identity",
-          "updateFailed": "Failed to update identity"
+          "nameRequired": "ID名は必須だ",
+          "passwordRequired": "パスワードが必要だ",
+          "sshKeyRequired": "SSHキーが必要だ",
+          "createSuccess": "IDの作成に成功した",
+          "updateSuccess": "IDの更新に成功した",
+          "createFailed": "IDの作成に失敗した",
+          "updateFailed": "IDの更新に失敗した"
         }
       }
     },
     "sources": {
-      "title": "Script & Snippet Sources",
-      "description": "Configure external sources to automatically sync scripts and snippets.",
-      "loading": "Loading sources...",
-      "noSources": "No Sources Configured",
-      "noSourcesDescription": "Add external sources to automatically sync scripts and snippets.",
-      "addSource": "Add Source",
-      "snippets": "snippets",
-      "scripts": "scripts",
-      "themes": "themes",
-      "neverSynced": "Never synced",
-      "sync": "Sync now",
-      "edit": "Edit",
-      "delete": "Delete",
-      "deleteConfirm": "Are you sure you want to delete the source \"{{name}}\"? All synced scripts and snippets from this source will also be deleted.",
+      "title": "スクリプトおよびスニペットの出典",
+      "description": "スクリプトやスニペットを自動的に同期するように、外部ソースを設定する。",
+      "loading": "ソースを読み込み中……",
+      "noSources": "ソースが設定されていない",
+      "noSourcesDescription": "外部ソースを追加して、スクリプトやスニペットを自動的に同期させる。",
+      "addSource": "ソースを追加する",
+      "snippets": "スニペット",
+      "scripts": "スクリプト",
+      "themes": "テーマ",
+      "neverSynced": "一度も同期されていない",
+      "sync": "今すぐ同期する",
+      "edit": "編集",
+      "delete": "削除",
+      "deleteConfirm": "ソース「{{name}}」を削除してもよろしいか？このソースから同期されたスクリプトやスニペットもすべて削除される。",
       "status": {
-        "success": "Synced",
-        "error": "Error",
-        "pending": "Pending",
-        "syncing": "Syncing",
-        "disabled": "Disabled"
+        "success": "同期済み",
+        "error": "エラー",
+        "pending": "保留中",
+        "syncing": "同期",
+        "disabled": "無効"
       },
       "dialog": {
-        "createTitle": "Add Source",
-        "editTitle": "Edit Source",
-        "name": "Name",
-        "namePlaceholder": "e.g. Company Scripts",
-        "url": "Source URL",
+        "createTitle": "ソースを追加する",
+        "editTitle": "ソースを編集",
+        "name": "名前",
+        "namePlaceholder": "例：企業用スクリプト",
+        "url": "出典URL",
         "urlPlaceholder": "https://scripts.example.com",
-        "enabled": "Enabled",
-        "enabledDescription": "When disabled, this source will not be synced",
-        "validating": "Validating URL...",
-        "validationSuccess": "Valid source found: {{snippets}} snippets, {{scripts}} scripts, {{themes}} themes",
-        "create": "Create"
+        "enabled": "有効",
+        "enabledDescription": "無効にすると、このソースは同期されなくなる",
+        "validating": "URLの検証中...",
+        "validationSuccess": "有効なソースが見つかった： {{snippets}} スニペット、 {{scripts}} スクリプト、 {{themes}} テーマ",
+        "create": "作成する"
       },
       "messages": {
-        "created": "Source created successfully",
-        "updated": "Source updated successfully",
-        "deleted": "Source deleted successfully",
-        "synced": "Source synced successfully"
+        "created": "ソースの作成に成功した",
+        "updated": "ソースの更新に成功した",
+        "deleted": "ソースの削除に成功した",
+        "synced": "ソースの同期に成功した"
       },
       "errors": {
-        "loadFailed": "Failed to load sources",
-        "saveFailed": "Failed to save source",
-        "deleteFailed": "Failed to delete source",
-        "syncFailed": "Failed to sync source",
-        "validationFailed": "Failed to validate URL",
-        "requiredFields": "Name and URL are required"
+        "loadFailed": "ソースの読み込みに失敗した",
+        "saveFailed": "ソースの保存に失敗した",
+        "deleteFailed": "ソースの削除に失敗した",
+        "syncFailed": "ソースの同期に失敗した",
+        "validationFailed": "URLの検証に失敗した",
+        "requiredFields": "名前とURLは必須だ"
       }
     },
     "backup": {
-      "loading": "Loading storage settings...",
+      "loading": "ストレージ設定を読み込んでいる……",
       "storage": {
-        "title": "Storage",
-        "description": "View disk usage for your Nexterm data.",
-        "database": "Database",
-        "recordings": "Recordings",
-        "logs": "Logs",
-        "total": "Total"
+        "title": "ストレージ",
+        "description": "Nextermデータのディスク使用状況を確認する。",
+        "database": "データベース",
+        "recordings": "録音",
+        "logs": "ログ",
+        "total": "合計"
       },
       "backupsSection": {
-        "title": "Backups",
-        "description": "Configure backup providers and schedule automatic backups."
+        "title": "バックアップ",
+        "description": "バックアッププロバイダを設定し、自動バックアップのスケジュールを設定する。"
       },
-      "addProvider": "Add Provider",
-      "editProvider": "Edit Provider",
-      "providerName": "Provider Name",
-      "providerNamePlaceholder": "My Backup",
-      "providerType": "Type",
+      "addProvider": "プロバイダーを追加する",
+      "editProvider": "プロバイダーを編集する",
+      "providerName": "プロバイダー名",
+      "providerNamePlaceholder": "マイ・バックアップ",
+      "providerType": "種類",
       "providerTypes": {
-        "local": "Local",
-        "smb": "SMB Share",
+        "local": "ローカル",
+        "smb": "SMB共有",
         "webdav": "WebDAV"
       },
-      "localPath": "Backup Path",
-      "localPathPlaceholder": "/path/to/backups",
-      "smbShare": "SMB Share",
+      "localPath": "バックアップパス",
+      "localPathPlaceholder": "/バックアップのパス/",
+      "smbShare": "SMB共有",
       "smbSharePlaceholder": "\\\\server\\share",
-      "smbFolder": "Folder (optional)",
-      "smbFolderPlaceholder": "backups",
-      "smbUsername": "Username",
-      "smbUsernamePlaceholder": "user",
-      "smbPassword": "Password",
-      "smbPasswordPlaceholder": "password",
-      "smbDomain": "Domain (optional)",
-      "smbDomainPlaceholder": "WORKGROUP",
-      "webdavUrl": "Server URL",
+      "smbFolder": "フォルダ（任意）",
+      "smbFolderPlaceholder": "バックアップ",
+      "smbUsername": "ユーザー名",
+      "smbUsernamePlaceholder": "ユーザー",
+      "smbPassword": "パスワード",
+      "smbPasswordPlaceholder": "パスワード",
+      "smbDomain": "ドメイン（任意）",
+      "smbDomainPlaceholder": "ワークグループ",
+      "webdavUrl": "サーバーのURL",
       "webdavUrlPlaceholder": "https://cloud.example.com/remote.php/dav/files/user",
-      "webdavFolder": "Folder (optional)",
-      "webdavFolderPlaceholder": "backups",
-      "webdavUsername": "Username",
-      "webdavUsernamePlaceholder": "user",
-      "webdavPassword": "Password",
-      "webdavPasswordPlaceholder": "password",
-      "passwordUnchanged": "Leave empty to keep current",
+      "webdavFolder": "フォルダ（任意）",
+      "webdavFolderPlaceholder": "バックアップ",
+      "webdavUsername": "ユーザー名",
+      "webdavUsernamePlaceholder": "ユーザー",
+      "webdavPassword": "パスワード",
+      "webdavPasswordPlaceholder": "パスワード",
+      "passwordUnchanged": "現在のままにする場合は空欄のままにしておく",
       "schedule": {
-        "title": "Automatic Backup",
-        "disabled": "Disabled",
-        "hourly": "Every hour",
-        "every6h": "Every 6 hours",
-        "every12h": "Every 12 hours",
-        "daily": "Daily",
-        "weekly": "Weekly"
+        "title": "自動バックアップ",
+        "disabled": "無効",
+        "hourly": "1時間ごとに",
+        "every6h": "6時間ごと",
+        "every12h": "12時間ごとに",
+        "daily": "毎日",
+        "weekly": "週刊"
       },
       "retention": {
-        "title": "Retention Policy"
+        "title": "保存方針"
       },
-      "backups": "backups",
+      "backups": "バックアップ",
       "includes": {
-        "title": "Include in Backups",
-        "database": "Database",
-        "recordings": "Recordings",
-        "logs": "Logs"
+        "title": "バックアップに含める",
+        "database": "データベース",
+        "recordings": "録音",
+        "logs": "ログ"
       },
-      "providers": "Providers",
-      "saveSettings": "Save Settings",
-      "noProviders": "No Backup Providers",
-      "noProvidersDescription": "Add a backup provider to start creating backups.",
-      "backupList": "Backups - {{name}}",
-      "loadingBackups": "Loading backups...",
-      "noBackups": "No backups found",
-      "restoreConfirm": "Are you sure you want to restore \"{{name}}\"? This will overwrite your current data and restart the server.",
-      "deleteProviderConfirm": "Are you sure you want to delete \"{{name}}\"? This will not delete existing backups.",
-      "providerCreated": "Backup provider created",
-      "providerUpdated": "Backup provider updated",
-      "providerDeleted": "Backup provider deleted",
-      "backupCreated": "Backup created successfully",
-      "restoreStarted": "Restore started, server will restart",
-      "saveSuccess": "Settings saved successfully",
+      "providers": "プロバイダー",
+      "saveSettings": "設定を保存する",
+      "noProviders": "バックアッププロバイダーなし",
+      "noProvidersDescription": "バックアッププロバイダーを追加して、バックアップの作成を開始する。",
+      "backupList": "バックアップ - {{name}}",
+      "loadingBackups": "バックアップを読み込んでいる……",
+      "noBackups": "バックアップが見つかりませんでした",
+      "restoreConfirm": "「{{name}}」を復元してもよろしいか？ これにより、現在のデータが上書きされ、サーバーが再起動する。",
+      "deleteProviderConfirm": "「{{name}}」を削除してもよろしいか？ これにより、既存のバックアップは削除されない。",
+      "providerCreated": "バックアッププロバイダーが作成された",
+      "providerUpdated": "バックアッププロバイダーが更新された",
+      "providerDeleted": "バックアッププロバイダーが削除された",
+      "backupCreated": "バックアップの作成に成功した",
+      "restoreStarted": "復元が開始された。サーバーが再起動する",
+      "saveSuccess": "設定が正常に保存された",
       "errors": {
-        "loadFailed": "Failed to load backup settings",
-        "saveFailed": "Failed to save settings",
-        "deleteFailed": "Failed to delete",
-        "backupFailed": "Failed to create backup",
-        "loadBackupsFailed": "Failed to load backups",
-        "restoreFailed": "Failed to restore backup",
-        "exportFailed": "Failed to export data",
-        "nameRequired": "Provider name is required"
+        "loadFailed": "バックアップ設定の読み込みに失敗した",
+        "saveFailed": "設定の保存に失敗した",
+        "deleteFailed": "削除に失敗した",
+        "backupFailed": "バックアップの作成に失敗した",
+        "loadBackupsFailed": "バックアップの読み込みに失敗した",
+        "restoreFailed": "バックアップの復元に失敗した",
+        "exportFailed": "データのエクスポートに失敗した",
+        "nameRequired": "プロバイダー名の入力は必須だ"
       },
-      "noFiles": "No files found"
+      "noFiles": "ファイルが見つかりませんでした"
     },
     "engines": {
-      "title": "Engines",
-      "description": "Manage engine instances that handle remote connections.",
-      "addEngine": "Add Engine",
-      "noEngines": "No Engines",
-      "noEnginesDescription": "Add an engine to start connecting to remote servers.",
+      "title": "エンジン",
+      "description": "リモート接続を処理するエンジンインスタンスを管理する。",
+      "addEngine": "エンジンを追加する",
+      "noEngines": "エンジンなし",
+      "noEnginesDescription": "エンジンを追加して、リモートサーバーへの接続を開始する。",
       "status": {
-        "connected": "Connected",
-        "disconnected": "Disconnected"
+        "connected": "接続済み",
+        "disconnected": "接続が切れた"
       },
-      "lastSeen": "Last seen {{date}}",
-      "neverConnected": "Never connected",
-      "regenerateToken": "Regenerate token",
-      "deleteEngine": "Delete engine",
-      "dismiss": "Dismiss",
-      "copyToken": "Copy token",
+      "lastSeen": "最終確認日時 {{date}}",
+      "neverConnected": "一度も接続されたことがない",
+      "regenerateToken": "トークンを再生成する",
+      "deleteEngine": "エンジンを削除する",
+      "dismiss": "閉じる",
+      "copyToken": "トークンをコピーする",
       "transport": {
-        "encrypted": "Encrypted",
-        "unencrypted": "Unencrypted"
+        "encrypted": "暗号化済み",
+        "unencrypted": "暗号化されていない"
       },
-      "tokenLabel": "Registration token for <strong>{{name}}</strong>",
-      "tokenHint": "Set this in <code1>config.yaml</code1> or as <code2>REGISTRATION_TOKEN</code2> env variable.",
+      "tokenLabel": "の登録トークン <strong>{{name}}</strong>",
+      "tokenHint": "これを<code1>config.yaml</code1>に設定するか、<code2>REGISTRATION_TOKENという</code2>環境変数として設定する。",
       "dialog": {
-        "title": "Add Engine",
-        "engineName": "Engine Name",
-        "namePlaceholder": "e.g. Office Network",
-        "create": "Create Engine"
+        "title": "エンジンを追加する",
+        "engineName": "エンジン名",
+        "namePlaceholder": "例：オフィスネットワーク",
+        "create": "エンジンを作成する"
       },
-      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+      "deleteConfirm": "「{{name}} 」を削除してもよろしいか？",
       "messages": {
-        "deleted": "Engine deleted successfully"
+        "deleted": "エンジンの削除に成功した"
       },
       "errors": {
-        "loadFailed": "Failed to load engines",
-        "createFailed": "Failed to create engine",
-        "deleteFailed": "Failed to delete engine",
-        "regenerateFailed": "Failed to regenerate token"
+        "loadFailed": "エンジンの読み込みに失敗した",
+        "createFailed": "エンジンの作成に失敗した",
+        "deleteFailed": "エンジンの削除に失敗した",
+        "regenerateFailed": "トークンの再生成に失敗した"
       }
     },
     "permissions": {
-      "subtitle": "Create roles with granular permissions or assign permissions to individual users. The Default role applies to everyone automatically.",
-      "createRole": "Create role",
-      "rolesTitle": "Roles",
-      "rolesTab": "Roles",
-      "overridesTab": "Direct permissions",
-      "permissionsTab": "Permissions",
-      "membersTab": "Members",
-      "settingsTab": "Settings",
-      "managePermissions": "Manage permissions",
-      "memberCount_one": "{{count}} member",
-      "memberCount_other": "{{count}} members",
-      "dangerousHint": "Granting this gives broad or destructive access. Assign it with care.",
-      "roleName": "Role name",
-      "roleNamePlaceholder": "e.g. Operators",
-      "roleColor": "Color",
-      "nameRequired": "Please enter a name for the role.",
-      "saveError": "Could not save your changes.",
-      "loadError": "Could not load permissions.",
-      "userSaved": "Permissions updated.",
-      "noAssignableRoles": "No roles available yet. Create one first.",
-      "noMembers": "This role has no members yet.",
-      "addMemberPlaceholder": "Search users to add…",
-      "deleteRole": "Delete role",
-      "deleteConfirm": "This will permanently delete the role \"{{name}}\" and remove it from all members.",
-      "inheritsAllow": "Inherits: Allowed",
-      "inheritsDeny": "Inherits: Denied"
+      "subtitle": "きめ細かな権限を持つロールを作成するか、個々のユーザーに権限を割り当てる。デフォルトのロールは、すべてのユーザーに自動的に適用される。",
+      "createRole": "ロールの作成",
+      "rolesTitle": "役割",
+      "rolesTab": "役割",
+      "overridesTab": "直接的な権限",
+      "permissionsTab": "権限",
+      "membersTab": "メンバー",
+      "settingsTab": "設定",
+      "managePermissions": "権限の管理",
+      "memberCount_one": "{{count}} メンバー",
+      "memberCount_other": "{{count}} メンバー",
+      "dangerousHint": "これを許可すると、広範囲にわたる、あるいは破壊的なアクセス権が与えられることになる。割り当てる際は注意が必要だ。",
+      "roleName": "役割名",
+      "roleNamePlaceholder": "例：演算子",
+      "roleColor": "色",
+      "nameRequired": "ロールの名前を入力してください。",
+      "saveError": "変更を保存できなかった。",
+      "loadError": "権限を読み込めなかった。",
+      "userSaved": "権限が更新された。",
+      "noAssignableRoles": "まだ役割は登録されていない。まず役割を作成する必要がある。",
+      "noMembers": "この役割にはまだメンバーがいない。",
+      "addMemberPlaceholder": "… を追加するユーザーを検索する",
+      "deleteRole": "ロールの削除",
+      "deleteConfirm": "これにより、「{{name}}」というロールが完全に削除され、すべてのメンバーからそのロールが外される。",
+      "inheritsAllow": "継承：許可",
+      "inheritsDeny": "継承：拒否された"
     },
-    "search": "Search settings",
+    "search": "検索設定",
     "trustedCertificates": {
-      "title": "Trusted Certificates",
-      "description": "Certificates and host keys you accepted when connecting. Remove one to be asked again the next time.",
-      "personal": "Personal",
-      "system": "System",
+      "title": "信頼された証明書",
+      "description": "接続時に受け入れた証明書とホストキー。いずれかを削除すると、次回接続時に再度確認を求められる。",
+      "personal": "個人用",
+      "system": "システム",
       "kinds": {
-        "ssh": "SSH host key",
-        "tls": "TLS certificate"
+        "ssh": "SSHホストキー",
+        "tls": "TLS証明書"
       },
-      "empty": "Nothing trusted yet",
-      "emptyDescription": "Certificates and host keys appear here once you accept them for a connection.",
-      "remove": "Remove",
-      "removeConfirm": "Stop trusting {{endpoint}}? The next connection asks again.",
-      "removeSuccess": "Trusted certificate removed",
-      "removeError": "Failed to remove the trusted certificate",
+      "empty": "まだ信頼できるものは何もない",
+      "emptyDescription": "接続のために証明書やホストキーを受け入れると、それらがここに表示される。",
+      "remove": "削除",
+      "removeConfirm": "{{endpoint}}を信頼しないようにするか？　次の接続時に再度確認が表示される。",
+      "removeSuccess": "信頼済み証明書が削除された",
+      "removeError": "信頼済み証明書の削除に失敗した",
       "ignore": {
-        "title": "Ignore certificate warnings",
-        "description": "Connect to your personal servers without checking their certificate or host key. Connections can then be intercepted without you noticing. Organization servers are always checked.",
-        "error": "Failed to save the setting"
+        "title": "証明書の警告を無視する",
+        "description": "証明書やホストキーを確認せずに、個人のサーバーに接続する。そうすると、本人が気づかないうちに通信が傍受される可能性がある。組織のサーバーについては、常に確認が行われる。",
+        "error": "設定の保存に失敗した"
       }
     }
   },
   "tunnel": {
-    "title": "Port Forward",
-    "identity": "Identity",
-    "remoteHost": "Remote Host",
-    "remotePort": "Remote Port",
-    "localPort": "Local Port",
-    "start": "Start Tunnel",
-    "stop": "Stop Tunnel",
+    "title": "ポートフォワーディング",
+    "identity": "アイデンティティ",
+    "remoteHost": "リモートホスト",
+    "remotePort": "リモートポート",
+    "localPort": "地元の港",
+    "start": "トンネルを開始する",
+    "stop": "トンネル停止",
     "status": {
-      "idle": "Not connected",
-      "starting": "Starting...",
-      "listening": "Listening on localhost:{{port}}",
-      "error": "Error",
-      "stopped": "Stopped"
+      "idle": "接続されていない",
+      "starting": "開始……",
+      "listening": "localhost:{{port}} で待機中",
+      "error": "エラー",
+      "stopped": "停止した"
     },
     "error": {
-      "fillAllFields": "Please fill in all fields"
+      "fillAllFields": "すべての項目に記入してください"
     }
   },
   "share": {
     "errors": {
-      "unableToConnect": "Unable to Connect",
-      "failedToJoin": "Failed to join session"
+      "unableToConnect": "接続できません",
+      "failedToJoin": "セッションへの参加に失敗した"
     },
     "sessionEnded": {
-      "title": "Session Ended",
-      "description": "The shared session has been closed"
+      "title": "セッションが終了した",
+      "description": "共有セッションが終了した"
     }
   },
   "servers": {
-    "addServerNote": "Right-click to add a new server",
-    "searchPlaceholder": "Search",
+    "addServerNote": "右クリックして新しいサーバーを追加する",
+    "searchPlaceholder": "検索",
     "time": {
-      "justNow": "Just now",
-      "minuteAgo": "{{count}} min ago",
-      "minutesAgo": "{{count}} mins ago",
-      "hourAgo": "{{count}} hour ago",
-      "hoursAgo": "{{count}} hours ago",
-      "dayAgo": "{{count}} day ago",
-      "daysAgo": "{{count}} days ago"
+      "justNow": "ついさっき",
+      "minuteAgo": "{{count}} 数分前",
+      "minutesAgo": "{{count}} 数分前",
+      "hourAgo": "{{count}} 1時間前",
+      "hoursAgo": "{{count}} 数時間前",
+      "dayAgo": "{{count}} 1日前",
+      "daysAgo": "{{count}} 数日前"
     },
     "tags": {
-      "title": "Tags",
-      "createNewTag": "Create new tag",
-      "tagName": "Tag name",
-      "create": "Create",
-      "filterByTags": "Filter by Tags",
-      "clearAll": "Clear all",
-      "noTagsCreated": "No tags created yet",
-      "editTag": "Edit tag",
-      "deleteTag": "Delete tag"
+      "title": "タグ",
+      "createNewTag": "新しいタグを作成する",
+      "tagName": "タグ名",
+      "create": "作成する",
+      "filterByTags": "タグで絞り込む",
+      "clearAll": "すべて消去する",
+      "noTagsCreated": "まだタグは作成されていない",
+      "editTag": "タグを編集する",
+      "deleteTag": "タグを削除する"
     },
     "contextMenu": {
-      "createFolder": "Create Folder",
-      "deleteFolder": "Delete Folder",
-      "renameFolder": "Rename Folder",
-      "folderSettings": "Folder Settings",
-      "new": "New",
-      "sshServer": "SSH Server",
-      "telnetServer": "Telnet Server",
-      "rdpServer": "RDP Server",
-      "vncServer": "VNC Server",
-      "demoServer": "Demo Connection",
-      "sftpServer": "SFTP Server",
-      "ftpServer": "FTP Server",
-      "ftpsServer": "FTPS Server",
-      "createServer": "Create Server",
-      "import": "Import",
+      "createFolder": "フォルダを作成する",
+      "deleteFolder": "フォルダを削除する",
+      "renameFolder": "フォルダの名前を変更する",
+      "folderSettings": "フォルダの設定",
+      "new": "新着",
+      "sshServer": "SSHサーバー",
+      "telnetServer": "Telnet サーバー",
+      "rdpServer": "RDPサーバー",
+      "vncServer": "VNCサーバー",
+      "demoServer": "デモ接続",
+      "sftpServer": "SFTPサーバー",
+      "ftpServer": "FTPサーバー",
+      "ftpsServer": "FTPSサーバー",
+      "createServer": "サーバーを作成する",
+      "import": "インポート",
       "pve": "Proxmox VE",
-      "sshConfig": "SSH-Config",
-      "syncIntegration": "Sync now",
-      "syncSuccess": "Integration synced",
-      "syncFailed": "Failed to sync integration",
-      "removeIntegration": "Remove Integration",
-      "connect": "Connect",
-      "quickConnect": "Quick Connect",
-      "openSFTP": "Open SFTP",
-      "openBrowser": "Open Browser",
-      "forwardPort": "Forward Port",
-      "runScript": "Run Script",
-      "openNotes": "Open Notes",
-      "addNotes": "Add Notes",
-      "editServer": "Edit Server",
-      "editIntegration": "Edit Integration",
-      "duplicateServer": "Duplicate Server",
-      "pasteIdentityPassword": "Paste Password",
-      "deleteServer": "Delete Server",
-      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
-      "deleteFailServer": "Failed to delete \"{{name}}\".",
-      "deleteFailFolder": "Failed to delete the folder \"{{name}}\".",
+      "sshConfig": "SSH設定",
+      "syncIntegration": "今すぐ同期する",
+      "syncSuccess": "統合が同期された",
+      "syncFailed": "連携の同期に失敗した",
+      "removeIntegration": "統合を解除する",
+      "connect": "接続する",
+      "quickConnect": "クイックコネクト",
+      "openSFTP": "SFTPを開く",
+      "openBrowser": "ブラウザを開く",
+      "forwardPort": "フォワードポート",
+      "runScript": "スクリプトを実行する",
+      "openNotes": "「オープン・ノーツ」",
+      "addNotes": "メモを追加する",
+      "editServer": "サーバーの編集",
+      "editIntegration": "統合の編集",
+      "duplicateServer": "サーバーの複製",
+      "pasteIdentityPassword": "パスワードを貼り付ける",
+      "deleteServer": "サーバーを削除する",
+      "deleteConfirm": "「{{name}}」を削除してもよろしいか？この操作は元に戻せない。",
+      "deleteFailServer": "「{{name}} 」の削除に失敗した。",
+      "deleteFailFolder": "フォルダ「{{name}} 」の削除に失敗した。",
       "wakeOnLan": "Wake-On-LAN",
-      "shutdown": "Shutdown",
-      "stop": "Stop",
-      "start": "Start",
-      "joinSession": "Join Session",
-      "joinSessionOf": "Join session of {{user}}"
+      "shutdown": "シャットダウン",
+      "stop": "停止",
+      "start": "開始",
+      "joinSession": "セッションに参加する",
+      "joinSessionOf": "のセッションに参加する {{user}}"
     },
     "passwordHint": {
-      "paste": "paste password",
-      "pasteFor": "paste {{username}} password",
-      "cycle": "Use the arrow keys to switch identity"
+      "paste": "パスワードを貼り付ける",
+      "pasteFor": "{{username}} を貼り付け　パスワード",
+      "cycle": "矢印キーを使ってアイデンティティを切り替える"
     },
     "tabs": {
       "contextMenu": {
-        "popOut": "Pop Out",
-        "startSharing": "Start Sharing",
-        "readOnly": "Read-only",
-        "readWrite": "Read & Write",
-        "copyShareLink": "Copy Share Link",
-        "changePermissions": "Change Permissions",
-        "stopSharing": "Stop Sharing",
-        "duplicate": "Duplicate",
-        "openNotes": "Open Notes",
-        "hibernateSession": "Hibernate",
-        "reconnect": "Reconnect",
-        "closeSession": "Disconnect",
-        "splitRight": "Split Right",
-        "splitDown": "Split Down",
-        "sendShortcut": "Send Shortcut…",
-        "zoom": "Zoom ({{zoom}}%)",
-        "zoomReset": "Reset Zoom",
-        "displayScale": "Display Scale ({{scale}}%)",
-        "displayScaleAuto": "Automatic ({{scale}}%)",
-        "displayScaleReset": "Use Default"
+        "popOut": "ポップアウト",
+        "startSharing": "共有を始める",
+        "readOnly": "読み取り専用",
+        "readWrite": "読み書き",
+        "copyShareLink": "リンクをコピー・共有する",
+        "changePermissions": "権限の変更",
+        "stopSharing": "共有を停止する",
+        "duplicate": "重複",
+        "openNotes": "「オープン・ノーツ」",
+        "hibernateSession": "ハイバーネート",
+        "reconnect": "再接続",
+        "closeSession": "切断",
+        "splitRight": "右分割",
+        "splitDown": "スプリット・ダウン",
+        "sendShortcut": "ショートカットを送信…",
+        "zoom": "ズーム（{{zoom}}％）",
+        "zoomReset": "ズームをリセット",
+        "displayScale": "表示倍率（{{scale}}％）",
+        "displayScaleAuto": "自動（{{scale}}％）",
+        "displayScaleReset": "「既定値」を使用する"
       },
-      "enableSplitView": "Enable Split View",
-      "disableSplitView": "Disable Split View",
-      "sessionMenu": "Session Menu"
+      "enableSplitView": "スプリットビューを有効にする",
+      "disableSplitView": "スプリットビューを無効にする",
+      "sessionMenu": "セッションメニュー"
     },
     "wol": {
-      "successDescription": "Magic packet sent to {{name}}",
-      "errorDescription": "Failed to send magic packet"
+      "successDescription": "送信先のマジックパケット {{name}}",
+      "errorDescription": "マジックパケットの送信に失敗した"
     },
     "messages": {
-      "fillRequiredFields": "Please fill in all required fields",
-      "serverCreated": "Server created successfully",
-      "serverUpdated": "Server updated successfully",
-      "folderUpdated": "Folder updated successfully",
-      "createFailed": "Failed to create server",
-      "updateFailed": "Failed to update server",
-      "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination."
+      "fillRequiredFields": "必須項目はすべて入力してください",
+      "serverCreated": "サーバーの作成に成功した",
+      "serverUpdated": "サーバーの更新に成功した",
+      "folderUpdated": "フォルダが正常に更新された",
+      "createFailed": "サーバーの作成に失敗した",
+      "updateFailed": "サーバーの更新に失敗した",
+      "identitiesRemovedOnMove": "一部のIDは、宛先で利用できないため削除された。"
     },
     "dialog": {
-      "addServer": "Add server",
-      "addProtocolServer": "Add {{protocol}} server",
-      "editServer": "Edit server",
+      "addServer": "サーバーを追加する",
+      "addProtocolServer": "{{protocol}} サーバーを追加する",
+      "editServer": "サーバーを編集する",
       "actions": {
-        "save": "Save",
-        "create": "Create"
+        "save": "保存",
+        "create": "作成する"
       },
       "fields": {
-        "name": "Name",
-        "icon": "Icon",
-        "serverIp": "Host",
-        "port": "Port",
-        "protocol": "Protocol",
-        "username": "Username",
-        "password": "Password",
-        "host": "Host",
-        "macAddress": "MAC Address",
-        "wolBroadcastAddress": "Broadcast Address",
-        "engine": "Engine"
+        "name": "名前",
+        "icon": "アイコン",
+        "serverIp": "ホスト",
+        "port": "ポート",
+        "protocol": "プロトコル",
+        "username": "ユーザー名",
+        "password": "パスワード",
+        "host": "ホスト",
+        "macAddress": "MACアドレス",
+        "wolBroadcastAddress": "ブロードキャストアドレス",
+        "engine": "エンジン"
       },
       "placeholders": {
-        "serverName": "Server name",
-        "serverIp": "Hostname or IP",
-        "port": "Port",
-        "username": "Username",
-        "password": "Password",
-        "host": "Host",
+        "serverName": "サーバー名",
+        "serverIp": "ホスト名またはIPアドレス",
+        "port": "ポート",
+        "username": "ユーザー名",
+        "password": "パスワード",
+        "host": "ホスト",
         "macAddress": "AA:BB:CC:DD:EE:FF",
         "wolBroadcastAddress": "255.255.255.255"
       },
-      "engineOffline": "(offline)",
+      "engineOffline": "(オフライン)",
       "settings": {
         "jumpHosts": {
-          "title": "Jump Hosts",
-          "description": "Connect through intermediate servers to reach this target server",
-          "addButton": "Add Jump Host",
-          "removeTooltip": "Remove jump host",
-          "noServersAvailable": "No SSH servers available for jump hosts. Create SSH servers first."
+          "title": "Jumpホスト",
+          "description": "中間サーバーを経由して、このターゲットサーバーに接続する",
+          "addButton": "ジャンプホストを追加する",
+          "removeTooltip": "ジャンプホストを削除する",
+          "noServersAvailable": "ジャンプホスト用のSSHサーバーがない。まずSSHサーバーを作成する。"
         },
         "monitoring": {
-          "title": "Enable Performance Monitoring",
-          "description": "Collect CPU, memory, disk, and network metrics for this server"
+          "title": "パフォーマンス監視を有効にする",
+          "description": "このサーバーのCPU、メモリ、ディスク、ネットワークのメトリクスを収集する"
         },
         "wakeOnLan": {
-          "title": "Enable Wake-On-LAN",
-          "description": "Allow waking this server remotely using its MAC address"
+          "title": "Wake-On-LAN を有効にする",
+          "description": "このサーバーのMACアドレスを使用して、リモートから起動できるようにする"
         },
         "rdpSecurity": {
-          "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
-          "method": "Security Method"
+          "description": "リモートの Windows マシンに接続するために使用される認証方法。NTLM が無効になっている環境（例：Protected Users グループ）では、NLA を使用する。",
+          "method": "セキュリティ手法"
         },
         "keyboardLayout": {
-          "title": "Keyboard Layout",
-          "description": "Select the keyboard layout to use for this connection."
+          "title": "キーボードの配列",
+          "description": "この接続で使用するキーボードレイアウトを選択する。"
         },
         "display": {
-          "title": "Display Settings",
-          "description": "Configure color depth, resize behavior and scaling for the remote display",
-          "colorDepth": "Color Depth",
-          "resizeMethod": "Resize Method",
-          "displayScale": "Display Scale",
-          "displayScaleAuto": "Automatic (match this device)",
-          "displayScaleAccount": "Account default"
+          "title": "表示設定",
+          "description": "リモートディスプレイの色深度、サイズ変更時の動作、および拡大縮小の設定を行う",
+          "colorDepth": "色深度",
+          "resizeMethod": "サイズ変更の方法",
+          "displayScale": "表示スケール",
+          "displayScaleAuto": "自動（このデバイスに合わせる）",
+          "displayScaleAccount": "アカウントのデフォルト設定"
         },
         "performance": {
-          "title": "Performance Settings",
-          "description": "Toggle visual effects that may impact performance over slower connections",
-          "enableWallpaper": "Enable Wallpaper",
-          "enableWallpaperDesc": "Show the desktop wallpaper on the remote system",
-          "enableTheming": "Enable Theming",
-          "enableThemingDesc": "Use themed windows and controls on the remote system",
-          "enableFontSmoothing": "Enable Font Smoothing",
-          "enableFontSmoothingDesc": "Render text with smooth edges for better readability",
-          "enableFullWindowDrag": "Enable Full Window Drag",
-          "enableFullWindowDragDesc": "Display window contents while dragging windows",
-          "enableDesktopComposition": "Enable Desktop Composition",
-          "enableDesktopCompositionDesc": "Enable transparent windows and visual effects",
-          "enableMenuAnimations": "Enable Menu Animations",
-          "enableMenuAnimationsDesc": "Enable menu open and close animations"
+          "title": "パフォーマンス設定",
+          "description": "低速な接続環境においてパフォーマンスに影響を与える可能性のある視覚効果の表示を切り替える",
+          "enableWallpaper": "壁紙を有効にする",
+          "enableWallpaperDesc": "リモートシステム上のデスクトップの壁紙を表示する",
+          "enableTheming": "テーマ機能を有効にする",
+          "enableThemingDesc": "リモートシステム上で、テーマに応じたウィンドウやコントロールを使用する",
+          "enableFontSmoothing": "フォントの滑らか化を有効にする",
+          "enableFontSmoothingDesc": "読みやすさを高めるため、テキストの縁を滑らかにして表示する",
+          "enableFullWindowDrag": "ウィンドウ全体のドラッグを有効にする",
+          "enableFullWindowDragDesc": "ウィンドウをドラッグしている間も、ウィンドウ内の内容を表示する",
+          "enableDesktopComposition": "デスクトップコンポジションを有効にする",
+          "enableDesktopCompositionDesc": "透過ウィンドウと視覚効果を有効にする",
+          "enableMenuAnimations": "メニューのアニメーションを有効にする",
+          "enableMenuAnimationsDesc": "メニューの開閉アニメーションを有効にする"
         },
         "audio": {
-          "enableAudio": "Enable Audio",
-          "enableAudioDesc": "Stream audio from the remote system to your browser"
+          "enableAudio": "音声を有効にする",
+          "enableAudioDesc": "リモートシステムからブラウザへオーディオをストリーミングする"
         },
         "terminal": {
-          "title": "Terminal Compatibility",
-          "description": "Adjust key behavior for different terminal types",
-          "backspace": "Backspace",
-          "delete": "Delete",
-          "functionKeys": "Function Keys"
+          "title": "端末の互換性",
+          "description": "端末の種類に応じてキーの動作を調整する",
+          "backspace": "バックスペース",
+          "delete": "削除",
+          "functionKeys": "ファンクションキー"
         }
       },
       "identities": {
-        "identityName": "Identity Name",
-        "username": "Username",
-        "authentication": "Authentication",
-        "passwordField": "Password",
-        "userPassword": "Password",
-        "passwordOnly": "No Username",
-        "sshKey": "SSH Key",
-        "both": "Key+Pass",
-        "sshPrivateKey": "SSH Private Key",
-        "passphrase": "Passphrase (optional)",
-        "add": "Add identity",
-        "linkGlobal": "Link global identity · {{count}}",
-        "empty": "No identities yet.",
-        "removeIdentity": "Remove identity",
-        "unlinkIdentity": "Unlink identity",
-        "moveToOrg": "Move to organization",
-        "noUsername": "No username",
-        "globalToggle": "Use on other servers",
-        "globalInUse": "This identity is used by {{count}} servers. Unlink it from the others first.",
-        "shareToggle": "Share with organization",
-        "inheritedHint": "Inherited from the folder settings.",
-        "onlyMe": "Only me",
-        "onlyMeHint": "Only you can see and use this identity."
+        "identityName": "識別名",
+        "username": "ユーザー名",
+        "authentication": "認証",
+        "passwordField": "パスワード",
+        "userPassword": "パスワード",
+        "passwordOnly": "ユーザー名なし",
+        "sshKey": "SSHキー",
+        "both": "キー＋パス",
+        "sshPrivateKey": "SSH秘密鍵",
+        "passphrase": "パスフレーズ（任意）",
+        "add": "IDを追加する",
+        "linkGlobal": "LinkのグローバルID · {{count}}",
+        "empty": "まだ身元は特定されていない。",
+        "removeIdentity": "IDを削除する",
+        "unlinkIdentity": "IDの紐付けを解除する",
+        "moveToOrg": "組織へ移動する",
+        "noUsername": "ユーザー名なし",
+        "globalToggle": "他のサーバーでの使用",
+        "globalInUse": "このIDは、 {{count}} サーバーで使用されている。まず、他のIDとの関連付けを解除する。",
+        "shareToggle": "組織と共有する",
+        "inheritedHint": "フォルダの設定から引き継がれる。",
+        "onlyMe": "僕だけ",
+        "onlyMeHint": "このIDを確認・利用できるのはあなただけだ。"
       },
       "sections": {
-        "general": "General",
-        "connection": "Connection",
-        "identities": "Identities",
-        "options": "Options",
-        "credentials": "Credentials"
+        "general": "概要",
+        "connection": "接続",
+        "identities": "アイデンティティ",
+        "options": "オプション",
+        "credentials": "資格"
       },
-      "useInherited": "Use inherited value",
-      "reset": "Reset"
+      "useInherited": "継承された値を使用する",
+      "reset": "リセット"
     },
     "proxmoxDialog": {
       "title": {
-        "import": "Add Proxmox VE",
-        "edit": "Edit Proxmox VE"
+        "import": "Proxmox VE を追加する",
+        "edit": "Proxmox VE を編集する"
       },
       "fields": {
-        "username": "Username",
-        "password": "Password",
-        "nodeName": "Node Name (Optional)",
-        "monitoring": "Performance Monitoring"
+        "username": "ユーザー名",
+        "password": "パスワード",
+        "nodeName": "ノード名（任意）",
+        "monitoring": "パフォーマンスの監視"
       },
-      "monitoringDescription": "Collect cluster-wide CPU, memory, and storage metrics",
+      "monitoringDescription": "クラスタ全体のCPU、メモリ、ストレージのメトリクスを収集する",
       "placeholders": {
-        "name": "Name",
-        "username": "Username (e.g. root@pam)",
-        "password": "Password",
-        "specificNode": "Specific node name"
+        "name": "名前",
+        "username": "ユーザー名（例：root@pam）",
+        "password": "パスワード",
+        "specificNode": "特定のノード名"
       },
       "actions": {
-        "import": "Add",
-        "edit": "Save"
+        "import": "追加",
+        "edit": "保存"
       },
       "messages": {
-        "created": "Proxmox integration created successfully",
-        "updated": "Proxmox integration updated successfully",
-        "createFailed": "Failed to create Proxmox integration",
-        "updateFailed": "Failed to update Proxmox integration"
+        "created": "Proxmoxとの統合が正常に完了した",
+        "updated": "Proxmoxとの連携が正常に更新された",
+        "createFailed": "Proxmox 連携の作成に失敗した",
+        "updateFailed": "Proxmox 連携の更新に失敗した"
       },
-      "credentialsDescription": "Proxmox user with API access, e.g. root@pam or a dedicated API user."
+      "credentialsDescription": "API アクセス権を持つ Proxmox ユーザー。例えば、root@pam や専用の API ユーザーなどだ。"
     },
     "connectionReasonDialog": {
-      "title": "Connection Reason Required",
-      "reasonLabel": "Please provide a reason for connecting to <strong>{{serverName}}</strong>:",
-      "placeholder": "Enter your reason for this connection...",
+      "title": "接続理由の入力が必要だ",
+      "reasonLabel": "接続する理由を記入してください <strong>{{serverName}}</strong>:",
+      "placeholder": "この接続の理由を入力してください…",
       "characterCount": "{{count}}/500",
       "actions": {
-        "cancel": "Cancel",
-        "connect": "Connect"
+        "cancel": "キャンセル",
+        "connect": "接続する"
       }
     },
     "sshConfigImport": {
-      "title": "Import SSH Config",
+      "title": "SSH設定のインポート",
       "configContent": {
-        "label": "SSH Config Content",
-        "placeholder": "Paste your SSH config content here..."
+        "label": "SSH設定の内容",
+        "placeholder": "SSH設定の内容をここに貼り付けてください…"
       },
       "keyFiles": {
-        "label": "SSH Key Files ({{count}} found)",
-        "userLabel": "User: {{username}}",
-        "uploaded": "✓ Uploaded",
-        "uploadButton": "Upload"
+        "label": "SSH 鍵ファイル（{{count}} が見つかった）",
+        "userLabel": "ユーザー： {{username}}",
+        "uploaded": "✓ アップロード済み",
+        "uploadButton": "アップロード"
       },
       "actions": {
-        "cancel": "Cancel",
-        "import": "Import",
-        "importing": "Importing..."
+        "cancel": "キャンセル",
+        "import": "インポート",
+        "importing": "読み込み中..."
       },
       "messages": {
-        "noContent": "Please provide SSH config content",
-        "noFolder": "No folder selected",
-        "uploadSuccess": "Key {{name}} uploaded successfully",
-        "uploadFailed": "Failed to upload key {{name}}",
-        "importFailed": "Failed to import SSH config"
+        "noContent": "SSHの設定内容を記載してください",
+        "noFolder": "フォルダが選択されていない",
+        "uploadSuccess": "キー「 {{name}} 」のアップロードに成功した",
+        "uploadFailed": "キーのアップロードに失敗した {{name}}",
+        "importFailed": "SSH設定のインポートに失敗した"
       }
     },
     "fileManager": {
-      "dropOverlay": "Drop files or folders to upload",
+      "dropOverlay": "ファイルやフォルダをドラッグ＆ドロップしてアップロードする",
       "createFile": {
-        "title": "Create File",
-        "placeholder": "File Name",
-        "button": "Create File"
+        "title": "ファイルを作成する",
+        "placeholder": "ファイル名",
+        "button": "ファイルを作成する"
       },
       "createFolder": {
-        "title": "Create Folder",
-        "placeholder": "Folder Name",
-        "button": "Create Folder"
+        "title": "フォルダを作成する",
+        "placeholder": "フォルダ名",
+        "button": "フォルダを作成する"
       },
       "renameItem": {
-        "title": "Rename",
-        "placeholder": "New name",
-        "button": "Rename"
+        "title": "名前を変更する",
+        "placeholder": "新しい名前",
+        "button": "名前を変更する"
       },
       "fileEditor": {
-        "title": "File Editor",
-        "save": "Save",
-        "cancel": "Cancel",
-        "loading": "Loading...",
-        "saving": "Saving...",
-        "saveSuccess": "File saved successfully",
-        "saveFailed": "Failed to save file",
-        "loadFailed": "Failed to load file",
-        "unsavedChanges": "You have unsaved changes. Are you sure you want to close this file?"
+        "title": "ファイルエディタ",
+        "save": "保存",
+        "cancel": "キャンセル",
+        "loading": "読み込み中...",
+        "saving": "保存中...",
+        "saveSuccess": "ファイルが正常に保存された",
+        "saveFailed": "ファイルの保存に失敗した",
+        "loadFailed": "ファイルの読み込みに失敗した",
+        "unsavedChanges": "保存されていない変更がある。このファイルを閉じてよいのか？"
       },
       "contextMenu": {
-        "open": "Open",
-        "download": "Download",
-        "rename": "Rename",
-        "delete": "Delete",
-        "copy": "Copy",
-        "cut": "Cut",
-        "paste": "Paste",
-        "createFolder": "Create Folder",
-        "upload": "Upload File",
-        "edit": "Edit",
-        "preview": "Preview",
-        "moveHere": "Move here",
-        "copyHere": "Copy here",
-        "bigFileConfirm": "This file is {{size}} MB large. Are you sure you want to edit it?",
-        "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
-        "selectAll": "Select All",
-        "insertSnippet": "Insert Snippet",
-        "sendCtrlC": "Send Ctrl+C",
-        "clearTerminal": "Clear Terminal",
-        "properties": "Properties",
-        "openTerminal": "Open Terminal Here",
-        "downloadFolder": "Download Folder",
-        "newFile": "New File",
-        "newFolder": "New Folder"
+        "open": "開く",
+        "download": "ダウンロード",
+        "rename": "名前を変更する",
+        "delete": "削除",
+        "copy": "コピー",
+        "cut": "カット",
+        "paste": "貼り付け",
+        "createFolder": "フォルダを作成する",
+        "upload": "ファイルをアップロードする",
+        "edit": "編集",
+        "preview": "プレビュー",
+        "moveHere": "ここに移動する",
+        "copyHere": "ここにコピーする",
+        "bigFileConfirm": "このファイルのサイズは {{size}} MB だ。本当に編集してもよいか？",
+        "deleteConfirm": "「{{name}}」を削除してもよろしいか？この操作は元に戻せない。",
+        "selectAll": "すべて選択",
+        "insertSnippet": "スニペットを挿入する",
+        "sendCtrlC": "Ctrl+C を送信",
+        "clearTerminal": "ターミナルをクリアする",
+        "properties": "プロパティ",
+        "openTerminal": "ここでターミナルを開く",
+        "downloadFolder": "ダウンロードフォルダ",
+        "newFile": "新しいファイル",
+        "newFolder": "新しいフォルダ"
       },
       "properties": {
-        "general": "General",
-        "permissions": "Permissions",
-        "checksum": "Checksum",
-        "folder": "Folder",
-        "file": "File",
-        "path": "Location",
-        "size": "Size",
-        "calculateSize": "Calculate",
-        "owner": "Owner",
-        "group": "Group",
-        "modified": "Modified",
-        "accessed": "Accessed",
-        "calculating": "Calculating...",
-        "calculate": "Calculate"
+        "general": "概要",
+        "permissions": "権限",
+        "checksum": "チェックサム",
+        "folder": "フォルダ",
+        "file": "ファイル",
+        "path": "場所",
+        "size": "サイズ",
+        "calculateSize": "計算する",
+        "owner": "所有者",
+        "group": "グループ",
+        "modified": "変更済み",
+        "accessed": "アクセス日",
+        "calculating": "計算中……",
+        "calculate": "計算する"
       },
       "permissions": {
-        "owner": "Owner",
-        "group": "Group",
-        "others": "Others",
-        "read": "Read",
-        "write": "Write",
-        "execute": "Execute",
-        "octal": "Octal",
-        "preview": "Preview",
-        "apply": "Apply"
+        "owner": "所有者",
+        "group": "グループ",
+        "others": "その他",
+        "read": "読む",
+        "write": "書く",
+        "execute": "実行する",
+        "octal": "8進数",
+        "preview": "プレビュー",
+        "apply": "応募する"
       },
       "filePreview": {
-        "title": "File Preview",
-        "loading": "Loading...",
-        "cannotPreview": "Cannot Preview File",
-        "unsupportedFileType": "This file type is not supported for preview",
-        "videoNotSupported": "Your browser does not support video playback",
-        "audioNotSupported": "Your browser does not support audio playback",
-        "download": "Download",
-        "close": "Close"
+        "title": "ファイルのプレビュー",
+        "loading": "読み込み中...",
+        "cannotPreview": "ファイルのプレビューができない",
+        "unsupportedFileType": "このファイル形式はプレビューに対応していない",
+        "videoNotSupported": "お使いのブラウザは動画の再生に対応していない",
+        "audioNotSupported": "お使いのブラウザは音声再生に対応していない",
+        "download": "ダウンロード",
+        "close": "閉じる"
       },
       "selection": {
-        "itemsSelected": "{{count}} items selected",
-        "filesSelected": "{{count}} file(s) selected",
-        "foldersSelected": "{{count}} folder(s) selected",
-        "clearSelection": "Clear selection",
-        "downloadSelected": "Download selected",
-        "deleteSelected": "Delete selected",
-        "download": "Download",
-        "delete": "Delete",
-        "deleteConfirm": "Are you sure you want to delete {{count}} item(s)?"
+        "itemsSelected": "{{count}} 選択された商品",
+        "filesSelected": "{{count}} 選択されたファイル",
+        "foldersSelected": "{{count}} 選択されたフォルダ",
+        "clearSelection": "選択を解除する",
+        "downloadSelected": "選択したものをダウンロード",
+        "deleteSelected": "選択したものを削除する",
+        "download": "ダウンロード",
+        "delete": "削除",
+        "deleteConfirm": "{{count}} の項目を削除してもよろしいか？"
       },
       "header": {
-        "name": "Name",
-        "size": "Size",
-        "permissions": "Permissions",
-        "modified": "Modified"
+        "name": "名前",
+        "size": "サイズ",
+        "permissions": "権限",
+        "modified": "変更済み"
       },
       "actionBar": {
-        "enterDirectory": "Enter directory path...",
-        "hiddenDirectories": "{{count}} hidden directories",
-        "switchToGrid": "Switch to grid view",
-        "switchToList": "Switch to list view",
-        "uploadFile": "Upload file(s)",
-        "uploadFolder": "Upload folder",
-        "search": "Search files",
-        "closeSearch": "Close search",
-        "refresh": "Refresh",
-        "back": "Back",
-        "forward": "Forward",
-        "up": "Parent directory",
-        "home": "Home directory",
-        "switchToCompact": "Switch to compact view"
+        "enterDirectory": "ディレクトリのパスを入力してください…",
+        "hiddenDirectories": "{{count}} 隠しディレクトリ",
+        "switchToGrid": "グリッド表示に切り替える",
+        "switchToList": "リスト表示に切り替える",
+        "uploadFile": "ファイルをアップロードする",
+        "uploadFolder": "アップロード用フォルダ",
+        "search": "ファイルを検索",
+        "closeSearch": "検索を閉じる",
+        "refresh": "更新",
+        "back": "戻る",
+        "forward": "次へ",
+        "up": "親ディレクトリ",
+        "home": "ホームディレクトリ",
+        "switchToCompact": "コンパクト表示に切り替える"
       },
       "item": {
-        "link": "link",
-        "expand": "Expand folder",
-        "collapse": "Collapse folder"
+        "link": "リンク",
+        "expand": "フォルダを展開する",
+        "collapse": "フォルダを折りたたむ"
       },
       "search": {
-        "placeholder": "Filter files in this folder...",
-        "results_one": "{{count}} result",
-        "results_other": "{{count}} results",
-        "noResultsTitle": "No matches",
-        "noResults": "No files match \"{{query}}\""
+        "placeholder": "このフォルダ内のファイルをフィルタリングする...",
+        "results_one": "{{count}} 結果",
+        "results_other": "{{count}} 結果",
+        "noResultsTitle": "一致する結果はありません",
+        "noResults": "「{{query}} 」に一致するファイルはない"
       },
       "states": {
-        "loading": "Loading files...",
-        "accessDenied": "Access Denied",
-        "emptyFolder": "This folder is empty",
-        "dropFilesHint": "Drop files here to upload them"
+        "loading": "ファイルを読み込んでいる……",
+        "accessDenied": "アクセス拒否",
+        "emptyFolder": "このフォルダは空だ",
+        "dropFilesHint": "ファイルをここにドラッグ＆ドロップしてアップロードする"
       },
       "toast": {
-        "uploadFailed": "Upload failed: {{message}}",
-        "connectionLost": "SFTP connection lost. Please reconnect.",
-        "error": "An error occurred"
+        "uploadFailed": "アップロードに失敗した： {{message}}",
+        "connectionLost": "SFTP接続が切断された。再接続してください。",
+        "error": "エラーが発生した"
       },
       "transfers": {
-        "title": "Transfers",
-        "activeCount": "{{count}} active",
-        "allDone": "All done",
-        "clearFinished": "Clear finished",
-        "queued": "Queued",
-        "cancelling": "Cancelling...",
-        "completed": "Completed",
-        "savedTo": "Saved to {{path}}",
-        "cancelled": "Cancelled",
-        "failed": "Failed: {{message}}",
-        "dismiss": "Dismiss"
+        "title": "移籍",
+        "activeCount": "{{count}} アクティブ",
+        "allDone": "すべて終わった",
+        "clearFinished": "クリア仕上げ",
+        "queued": "待機中",
+        "cancelling": "キャンセル中……",
+        "completed": "完了した",
+        "savedTo": "保存先 {{path}}",
+        "cancelled": "中止となった",
+        "failed": "失敗： {{message}}",
+        "dismiss": "閉じる"
       },
       "status": {
-        "folders_one": "{{count}} folder",
-        "folders_other": "{{count}} folders",
-        "files_one": "{{count}} file",
-        "files_other": "{{count}} files",
-        "hidden_one": "{{count}} hidden",
-        "hidden_other": "{{count}} hidden",
-        "selected": "{{count}} selected",
-        "showHidden": "Show hidden files",
-        "hideHidden": "Hide hidden files"
+        "folders_one": "{{count}} フォルダ",
+        "folders_other": "{{count}} フォルダ",
+        "files_one": "{{count}} ファイル",
+        "files_other": "{{count}} ファイル",
+        "hidden_one": "{{count}} 非表示",
+        "hidden_other": "{{count}} 非表示",
+        "selected": "{{count}} 選択済み",
+        "showHidden": "隠しファイルを表示する",
+        "hideHidden": "隠しファイルを非表示にする"
       },
       "conflict": {
-        "title_one": "Item already exists",
-        "title_other": "{{count}} items already exist",
-        "upload_one": "A file with this name already exists in the destination. What would you like to do?",
-        "upload_other": "These files already exist in the destination. What would you like to do with them?",
-        "move_one": "An item with this name already exists in the destination. Moving will replace it.",
-        "move_other": "These items already exist in the destination. Moving will replace them.",
-        "copy_one": "An item with this name already exists in the destination. Copying will replace it.",
-        "copy_other": "These items already exist in the destination. Copying will replace them.",
-        "more": "+ {{count}} more",
-        "skip": "Skip",
-        "rename": "Keep both",
-        "overwrite": "Overwrite"
+        "title_one": "その項目はすでに存在する",
+        "title_other": "{{count}} その項目はすでに存在する",
+        "upload_one": "保存先にこの名前のファイルがすでに存在する。どうする？",
+        "upload_other": "これらのファイルは保存先にすでに存在する。これらをどう処理するか？",
+        "move_one": "移動先のフォルダには、この名前のアイテムがすでに存在する。移動すると、そのアイテムが上書きされる。",
+        "move_other": "これらのアイテムは、移動先の場所にすでに存在する。移動すると、それらは上書きされる。",
+        "copy_one": "宛先には、この名前の項目がすでに存在する。コピーすると、その項目が上書きされる。",
+        "copy_other": "これらの項目は、コピー先の場所にすでに存在する。コピーすると、それらが上書きされる。",
+        "more": "+ {{count}} 続きを見る",
+        "skip": "スキップ",
+        "rename": "両方とも残しておく",
+        "overwrite": "上書き"
       }
     },
     "browser": {
-      "back": "Back",
-      "forward": "Forward",
-      "reload": "Reload",
-      "stop": "Stop",
-      "address": "Address",
-      "addressPlaceholder": "Enter an address"
+      "back": "戻る",
+      "forward": "次へ",
+      "reload": "再読み込み",
+      "stop": "停止",
+      "address": "住所",
+      "addressPlaceholder": "住所を入力する"
     },
     "remoteDesktop": {
-      "dropOverlay": "Drop files to upload to remote",
+      "dropOverlay": "ファイルをドロップしてリモートにアップロードする",
       "toast": {
-        "uploadedSingle": "Uploaded \"{{name}}\" to remote drive",
-        "uploadedMultiple": "Uploaded {{count}} files to remote drive",
-        "uploadFailed": "{{count}} file(s) failed to upload",
-        "uploadPartial": "{{failed}} file(s) failed to upload, {{succeeded}} succeeded",
-        "downloaded": "Downloaded \"{{name}}\" from remote"
+        "uploadedSingle": "「{{name}}」をリモートドライブにアップロードした",
+        "uploadedMultiple": "{{count}} のファイルをリモートドライブにアップロードした",
+        "uploadFailed": "{{count}} ファイルのアップロードに失敗した",
+        "uploadPartial": "{{failed}} ファイルのアップロードに失敗した。 {{succeeded}} は成功した。",
+        "downloaded": "リモートから「{{name}}」をダウンロードした"
       }
     },
     "automatedSession": {
-      "viewOnlyAi": "The AI assistant is working in this session. You can watch, but not type.",
-      "viewOnlyMcp": "An external agent (MCP) is working in this session. You can watch, but not type."
+      "viewOnlyAi": "このセッションではAIアシスタントが作動している。閲覧はできるが、入力はできない。",
+      "viewOnlyMcp": "このセッションでは、外部エージェント（MCP）が作業を行っている。閲覧はできるが、入力はできない。"
     },
     "aiAssistant": {
-      "title": "AI Assistant",
-      "open": "AI Assistant",
-      "empty": "Ask the assistant to inspect or change your servers. It opens its own sessions to the servers you add below, runs commands, edits files and can even operate remote desktops.",
-      "addServer": "Add server",
-      "removeServer": "Remove server",
-      "searchServers": "Search servers...",
-      "noMatches": "No matching servers",
-      "current": "current",
-      "openSessions": "{{count}} open session(s)",
+      "title": "AIアシスタント",
+      "open": "AIアシスタント",
+      "empty": "アシスタントに、サーバーの点検や変更を依頼する。アシスタントは、以下に追加したサーバーに対して独自のセッションを開き、コマンドを実行したり、ファイルを編集したり、さらにはリモートデスクトップを操作したりすることもできる。",
+      "addServer": "サーバーを追加する",
+      "removeServer": "サーバーを削除する",
+      "searchServers": "サーバーを検索中……",
+      "noMatches": "一致するサーバーがない",
+      "current": "現在",
+      "openSessions": "{{count}} 公開セッション",
       "approval": {
-        "ask": "Ask before actions",
-        "askDescription": "Commands, input and file changes wait for your approval",
-        "allow": "Allow all",
-        "allowDescription": "Runs tool calls without asking",
-        "readonly": "Read-only",
-        "readonlyDescription": "Only inspects servers; anything that changes them is denied"
+        "ask": "行動する前に確認する",
+        "askDescription": "コマンド、入力、およびファイルの変更は、承認を待っている",
+        "allow": "すべて許可する",
+        "allowDescription": "確認を求めずにツール呼び出しを実行する",
+        "readonly": "読み取り専用",
+        "readonlyDescription": "サーバーの検査のみを行う。サーバーに変更を加える行為はすべて拒否される"
       },
-      "placeholder": "Message the assistant...",
-      "connecting": "Connecting...",
-      "send": "Send",
-      "copyMessage": "Copy message",
-      "copied": "Copied",
-      "editMessage": "Edit message",
-      "stop": "Stop",
-      "connectionError": "Connection to the assistant was lost.",
-      "reconnecting": "Connection lost. Reconnecting...",
-      "confirmPrompt": "Allow this action?",
-      "allow": "Allow",
-      "allowShortcut": "Allow ({{key}})",
-      "deny": "Deny",
-      "denied": "You denied this action.",
-      "stopped": "Stopped.",
-      "continuePrompt": "The assistant paused after a long run of steps. Continue?",
-      "continue": "Continue",
-      "compacted": "Earlier messages were summarised to free up context.",
-      "retryPrompt": "The last step failed. Retry from where it stopped?",
-      "retry": "Retry",
-      "questionOther": "Or type another answer...",
-      "questionAnswer": "Type your answer...",
-      "questionSend": "Answer",
-      "questionPickOne": "Pick one or type an answer",
-      "questionPickMany": "Pick any that apply",
-      "exitCode": "exit {{code}}",
-      "truncated": "[truncated]",
+      "placeholder": "アシスタントにメッセージを送る……",
+      "connecting": "接続中...",
+      "send": "送信",
+      "copyMessage": "メッセージをコピーする",
+      "copied": "コピーした",
+      "editMessage": "メッセージを編集する",
+      "stop": "停止",
+      "connectionError": "アシスタントとの接続が切断された。",
+      "reconnecting": "接続が切断された。再接続中……",
+      "confirmPrompt": "この操作を実行してもよいか？",
+      "allow": "許可する",
+      "allowShortcut": "許可する ({{key}})",
+      "deny": "拒否する",
+      "denied": "あなたはこのアクションを拒否した。",
+      "stopped": "止まった。",
+      "continuePrompt": "アシスタントは、長い階段を駆け上がった後、立ち止まった。続けるか？",
+      "continue": "続ける",
+      "compacted": "文脈を明確にするため、以前のメッセージは要約された。",
+      "retryPrompt": "最後のステップが失敗した。中断した箇所から再試行するか？",
+      "retry": "再試行",
+      "questionOther": "あるいは、別の答えを入力してもよい……",
+      "questionAnswer": "答えを入力してください…",
+      "questionSend": "答え",
+      "questionPickOne": "1つ選ぶか、答えを入力する",
+      "questionPickMany": "該当するものを選んでください",
+      "exitCode": "終了 {{code}}",
+      "truncated": "[省略]",
       "toolSummary": {
-        "recursive": "{{path}} (recursive)",
+        "recursive": "{{path}} (再帰的)",
         "doubleClick": "{{target}} ×2"
       },
       "tools": {
-        "list_entries": "List servers",
-        "get_entry": "Inspect server",
-        "list_folders": "List folders",
-        "list_organizations": "List organizations",
-        "list_identities": "List identities",
-        "list_snippets": "List snippets",
-        "list_scripts": "List scripts",
-        "list_tags": "List tags",
-        "list_users": "List users",
-        "get_permissions": "Check permissions",
-        "get_monitoring": "Read monitoring",
-        "list_sessions": "List sessions",
-        "open_session": "Open session",
-        "get_session": "Inspect session",
-        "close_session": "Close session",
-        "close_all_sessions": "Close all sessions",
-        "terminal_run": "Run command",
-        "terminal_send": "Send input",
-        "terminal_read": "Read terminal",
-        "terminal_resize": "Resize terminal",
-        "run_command": "Run command",
-        "exec_command": "Run command",
-        "file_list": "List directory",
-        "file_stat": "Inspect path",
-        "file_read": "Read file",
-        "file_write": "Write file",
-        "file_edit": "Edit file",
-        "file_mkdir": "Create directory",
-        "file_delete": "Delete",
-        "file_move": "Move",
-        "file_chmod": "Change permissions",
-        "file_search_dirs": "Find directories",
-        "desktop_screenshot": "Screenshot",
-        "desktop_info": "Inspect desktop",
-        "desktop_click": "Click",
-        "desktop_mouse_move": "Move mouse",
-        "desktop_drag": "Drag",
-        "desktop_scroll": "Scroll",
-        "desktop_type": "Type text",
-        "desktop_key": "Press keys",
-        "desktop_resize": "Resize desktop",
-        "desktop_clipboard_set": "Set clipboard",
-        "desktop_clipboard_get": "Read clipboard",
-        "batch": "Run several actions",
-        "ask_user": "Question"
+        "list_entries": "メーリングリスト",
+        "get_entry": "サーバーを点検する",
+        "list_folders": "フォルダの一覧",
+        "list_organizations": "組織の一覧",
+        "list_identities": "リストの恒等式",
+        "list_snippets": "リストの抜粋",
+        "list_scripts": "スクリプトの一覧",
+        "list_tags": "タグ一覧",
+        "list_users": "ユーザー一覧",
+        "get_permissions": "権限を確認する",
+        "get_monitoring": "読み取り監視",
+        "list_sessions": "セッション一覧",
+        "open_session": "公開セッション",
+        "get_session": "セッションを確認する",
+        "close_session": "セッションを終了する",
+        "close_all_sessions": "すべてのセッションを閉じる",
+        "terminal_run": "コマンドを実行する",
+        "terminal_send": "入力を送信する",
+        "terminal_read": "端末を読み取る",
+        "terminal_resize": "ターミナルのサイズを変更する",
+        "run_command": "コマンドを実行する",
+        "exec_command": "コマンドを実行する",
+        "file_list": "ディレクトリ一覧",
+        "file_stat": "パスを確認する",
+        "file_read": "ファイルを読み込む",
+        "file_write": "ファイルの書き込み",
+        "file_edit": "ファイルを編集する",
+        "file_mkdir": "ディレクトリを作成する",
+        "file_delete": "削除",
+        "file_move": "移動",
+        "file_chmod": "権限を変更する",
+        "file_search_dirs": "ディレクトリを検索する",
+        "desktop_screenshot": "スクリーンショット",
+        "desktop_info": "デスクトップを確認する",
+        "desktop_click": "クリック",
+        "desktop_mouse_move": "マウスを動かす",
+        "desktop_drag": "ドラッグ",
+        "desktop_scroll": "スクロール",
+        "desktop_type": "テキストを入力する",
+        "desktop_key": "キーを押す",
+        "desktop_resize": "デスクトップのサイズを変更する",
+        "desktop_clipboard_set": "クリップボードを設定する",
+        "desktop_clipboard_get": "クリップボードを読み取る",
+        "batch": "複数のアクションを実行する",
+        "ask_user": "質問"
       }
     },
     "commandSuggestion": {
-      "open": "Generate Command",
-      "placeholder": "Describe the command...",
-      "generating": "Generating...",
-      "accept": "Accept command",
-      "cycle": "Cycle suggestions",
-      "error": "Failed to generate a command."
+      "open": "コマンドを生成する",
+      "placeholder": "そのコマンドについて説明してください……",
+      "generating": "生成中...",
+      "accept": "「Accept」コマンド",
+      "cycle": "サイクリングの提案",
+      "error": "コマンドの生成に失敗した。"
     },
     "snippets": {
-      "title": "Snippets",
-      "noSnippets": "No snippets available",
-      "searchPlaceholder": "Search snippets...",
-      "createNew": "Create New Snippet"
+      "title": "スニペット",
+      "noSnippets": "利用可能なスニペットはありません",
+      "searchPlaceholder": "検索結果の抜粋…",
+      "createNew": "新しいスニペットを作成する"
     },
     "toolbar": {
-      "drag": "Drag to move",
-      "shortcuts": "Keyboard shortcuts",
-      "holdModifier": "Hold {{key}}",
-      "zoomIn": "Zoom in",
-      "zoomOut": "Zoom out",
-      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
+      "drag": "ドラッグして移動する",
+      "shortcuts": "キーボードショートカット",
+      "holdModifier": "保留 {{key}}",
+      "zoomIn": "拡大する",
+      "zoomOut": "ズームアウトする",
+      "zoomReset": "ズームをリセット（マウスの中ボタンでドラッグしてパンする）"
     },
     "monitors": {
-      "title": "Monitor {{number}}",
-      "select": "Switch to monitor {{number}}",
-      "selectOrPopOut": "Switch to monitor {{number}} (double-click to open in its own window)",
-      "add": "Add monitor",
-      "remove": "Remove last monitor"
+      "title": "モニター {{number}}",
+      "select": "モニターに切り替える {{number}}",
+      "selectOrPopOut": "{{number}} に切り替える（ダブルクリックすると別ウィンドウで開く）",
+      "add": "モニターを追加する",
+      "remove": "最後のモニターを削除する"
     },
     "terminalActions": {
-      "menuTitle": "Terminal Actions",
-      "snippets": "Snippets",
-      "keyboardShortcuts": "Keyboard Shortcuts",
-      "broadcasting": "Broadcasting",
-      "fullScreen": "Full-Screen",
-      "exitFullScreen": "Exit Full-Screen Mode",
+      "menuTitle": "ターミナルでの操作",
+      "snippets": "スニペット",
+      "keyboardShortcuts": "キーボードショートカット",
+      "broadcasting": "放送",
+      "fullScreen": "全画面表示",
+      "exitFullScreen": "全画面表示を終了する",
       "badgeOn": "ON"
     },
     "notesPanel": {
-      "title": "Notes",
-      "placeholder": "Write notes for this server…",
-      "showInList": "Show in list",
-      "showInListTooltip": "Display the first line of these notes under the server name in the sidebar.",
+      "title": "注記",
+      "placeholder": "このサーバー「… 」に関するメモを書く",
+      "showInList": "リストに表示する",
+      "showInListTooltip": "サイドバーのサーバー名の下に、これらのメモの最初の行を表示する。",
       "status": {
-        "saving": "Saving",
-        "saved": "Saved",
-        "unsaved": "Unsaved",
-        "error": "Save failed"
+        "saving": "保存",
+        "saved": "保存済み",
+        "unsaved": "未保存",
+        "error": "保存に失敗した"
       }
     },
     "liveSessions": {
-      "activeOn": "Live sessions: {{users}}",
-      "unknownUser": "Unknown user"
+      "activeOn": "ライブセッション： {{users}}",
+      "unknownUser": "不明なユーザー"
     },
     "folderSettings": {
-      "name": "Folder name",
-      "nameRequired": "Folder name is required",
-      "loadFailed": "Unable to load folder settings",
-      "protocol": "Defaults for",
-      "protocolHint": "Servers in this folder use what you set below unless they set their own value. Each protocol has its own defaults.",
-      "unset": "Remove from folder"
+      "name": "フォルダ名",
+      "nameRequired": "フォルダ名は必須だ",
+      "loadFailed": "フォルダの設定を読み込めない",
+      "protocol": "のデフォルト設定は",
+      "protocolHint": "このフォルダ内のサーバーは、独自の値を設定していない限り、以下で設定した値を使用する。各プロトコルには独自のデフォルト値がある。",
+      "unset": "フォルダから削除する"
     },
     "trust": {
-      "certificate": "certificate",
-      "hostKey": "host key",
-      "newTitle": "Trust this {{subject}}?",
-      "newMessage": "This is the first connection to {{endpoint}}. Check the fingerprint before you continue.",
-      "changedTitle": "The {{subject}} has changed",
-      "changedMessage": "{{endpoint}} presents a different {{subject}} than before. Only continue if you expect this.",
-      "fingerprint": "Fingerprint",
-      "previous": "Trusted until now",
-      "presented": "Presented now",
-      "subject": "Issued to",
-      "issuer": "Issued by",
-      "selfSigned": "Self-signed",
-      "validUntil": "Valid until",
-      "blocked": "Only certificate managers of {{organization}} can accept this change.",
-      "accept": "Trust and connect",
-      "cancel": "Cancel",
-      "acceptChanged": "Trust the new one",
-      "disconnect": "Disconnect",
-      "failed": "Your decision could not be saved",
-      "acceptOnly": "Trust certificate"
+      "certificate": "証明書",
+      "hostKey": "ホストキー",
+      "newTitle": "このサイト {{subject}} は信頼できるか？",
+      "newMessage": "これは {{endpoint}}への最初の接続だ。続行する前にフィンガープリントを確認すること。",
+      "changedTitle": "{{subject}} が変更された",
+      "changedMessage": "{{endpoint}} 以前とは異なる {{subject}} が表示される。これを想定している場合のみ、続行すること。",
+      "fingerprint": "指紋",
+      "previous": "これまで信頼されてきた",
+      "presented": "今、紹介する",
+      "subject": "発行先",
+      "issuer": "発行元",
+      "selfSigned": "自己署名",
+      "validUntil": "有効期限は",
+      "blocked": "{{organization}} の証明書管理者のみが、この変更を受け入れることができる。",
+      "accept": "信頼し、つながる",
+      "cancel": "キャンセル",
+      "acceptChanged": "新しいものを信じて",
+      "disconnect": "切断",
+      "failed": "選択内容を保存できなかった",
+      "acceptOnly": "信頼証明書"
     }
   },
   "support": {
-    "title": "Get Support",
-    "subtitle": "Need help or want to contribute?",
-    "footer": "Thank you for using Nexterm!",
+    "title": "サポートを受ける",
+    "subtitle": "助けが必要か、あるいは協力したいか？",
+    "footer": "Nextermをご利用いただき、ありがとうございます！",
     "issues": {
-      "title": "Report an Issue",
-      "description": "Found a bug or have a feature request?"
+      "title": "問題を報告する",
+      "description": "バグを見つけた、あるいは機能のリクエストがあるか？"
     },
     "discord": {
-      "title": "Join Discord",
-      "description": "Chat with the community and get help."
+      "title": "Discordに参加する",
+      "description": "コミュニティのメンバーとチャットして、助けを求めよう。"
     },
     "docs": {
-      "title": "View Documentation",
-      "description": "Read the documentation and learn how to use Nexterm."
+      "title": "ドキュメントを表示する",
+      "description": "ドキュメントを読んで、Nextermの使い方を学ぼう。"
     },
     "github": {
-      "title": "View on GitHub",
-      "description": "Browse source code and contribute."
+      "title": "GitHubで閲覧する",
+      "description": "ソースコードを閲覧し、貢献しよう。"
     }
   },
   "welcome": {
-    "hello": "Hi",
-    "defaultName": "User",
-    "subtitle": "Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.",
-    "downloadApps": "Download Apps",
-    "connectDevice": "Connect Device",
-    "recentConnections": "Recent Connections",
-    "getStarted": "Get Started",
-    "getStartedHint": "Add a server from the sidebar to begin managing your infrastructure.",
-    "hibernated": "Hibernated",
+    "hello": "こんにちは",
+    "defaultName": "ユーザー",
+    "subtitle": "Nextermへようこそ。SSH、VNC、RDPに対応したオープンソースのサーバー管理ツールだ。",
+    "downloadApps": "アプリのダウンロード",
+    "connectDevice": "デバイスを接続する",
+    "recentConnections": "最近のつながり",
+    "getStarted": "はじめに",
+    "getStartedHint": "サイドバーからサーバーを追加して、インフラの管理を始めよう。",
+    "hibernated": "休眠状態だった",
     "demo": {
-      "explore": "Start exploring"
+      "explore": "探索を始めよう"
     }
   },
   "downloadApps": {
-    "title": "Download Apps",
-    "subtitle": "Get Nexterm on your devices",
+    "title": "アプリのダウンロード",
+    "subtitle": "お使いのデバイスにNextermをインストールしよう",
     "platforms": {
       "windows": "Windows",
       "macos": "macOS",
@@ -2481,9 +2481,9 @@
       "android": "Android",
       "ios": "iOS"
     },
-    "recommended": "Recommended",
-    "versionUnavailable": "The server version could not be determined, so direct downloads are unavailable. You can still browse the releases on GitHub.",
-    "sourceHint": "Downloads are served from the GitHub releases.",
-    "allReleases": "All releases"
+    "recommended": "おすすめ",
+    "versionUnavailable": "サーバーのバージョンが特定できなかったため、直接ダウンロードは利用できない。ただし、GitHubでリリース一覧を閲覧することはできる。",
+    "sourceHint": "ダウンロードはGitHubのリリースページから提供されている。",
+    "allReleases": "すべてのリリース"
   }
 }
