@@ -16,6 +16,7 @@ import DisplaySection from "./sections/DisplaySection.jsx";
 import OptionsSection from "./sections/OptionsSection.jsx";
 import CredentialsSection from "./sections/CredentialsSection.jsx";
 import SectionedDialog from "@/common/components/SectionedDialog";
+import { useCertificateReview } from "@/common/components/CertificateReview";
 import "./styles.sass";
 
 const PROTOCOL_DEFAULT_PORTS = { ssh: "22", telnet: "23", rdp: "3389", vnc: "5900", sftp: "22", ftp: "21", ftps: "21" };
@@ -32,6 +33,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     const { sendToast } = useToast();
 
     const [name, setName] = useState("");
+    const { reviewUntrusted, certificateReviewDialog } = useCertificateReview();
     const [icon, setIcon] = useState(null);
     const [identities, setIdentities] = useState([]);
     const [config, setConfig] = useState({});
@@ -155,10 +157,11 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
         }
     };
 
-    const saveIntegration = async () => {
+    const saveIntegration = async (acceptFingerprint = null) => {
         const payload = {
             name, ip: config.ip, port: config.port, username: config.username, monitoringEnabled,
             password: editServerId && config.password === PASSWORD_MASK ? undefined : config.password,
+            ...(acceptFingerprint && !editServerId ? { acceptFingerprint } : {}),
         };
         try {
             const response = editServerId
@@ -172,6 +175,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             loadServers();
             onClose();
         } catch (error) {
+            if (reviewUntrusted(error, saveIntegration)) return;
             sendToast("Error", error.message || t(editServerId ? "servers.proxmoxDialog.messages.updateFailed" : "servers.proxmoxDialog.messages.createFailed"));
             console.error(error);
         }
@@ -308,6 +312,8 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     const has = (key) => sectionKeys.includes(key);
 
     return (
+        <>
+        {certificateReviewDialog}
         <SectionedDialog ref={dialogRef} open={open} onClose={onClose} isDirty={isDirty} inheritance={inheritance}
                          icon={mdiIcons[headerIcon] || mdiIcons.mdiServerNetwork} title={title} subtitle={subtitle} sections={sections}
                          onSubmit={handleSubmit}
@@ -334,5 +340,6 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                                 monitoringDescription={isIntegration ? t("servers.proxmoxDialog.monitoringDescription") : undefined} />
             )}
         </SectionedDialog>
+        </>
     );
 };

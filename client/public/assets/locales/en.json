@@ -672,7 +672,8 @@
       "monitoring": "Monitoring",
       "backup": "Storage",
       "engines": "Engines",
-      "permissions": "Roles & Permissions"
+      "permissions": "Roles & Permissions",
+      "trustedCertificates": "Trusted Certificates"
     },
     "account": {
       "title": "Account",
@@ -1627,7 +1628,28 @@
       "inheritsAllow": "Inherits: Allowed",
       "inheritsDeny": "Inherits: Denied"
     },
-    "search": "Search settings"
+    "search": "Search settings",
+    "trustedCertificates": {
+      "title": "Trusted Certificates",
+      "description": "Certificates and host keys you accepted when connecting. Remove one to be asked again the next time.",
+      "personal": "Personal",
+      "system": "System",
+      "kinds": {
+        "ssh": "SSH host key",
+        "tls": "TLS certificate"
+      },
+      "empty": "Nothing trusted yet",
+      "emptyDescription": "Certificates and host keys appear here once you accept them for a connection.",
+      "remove": "Remove",
+      "removeConfirm": "Stop trusting {{endpoint}}? The next connection asks again.",
+      "removeSuccess": "Trusted certificate removed",
+      "removeError": "Failed to remove the trusted certificate",
+      "ignore": {
+        "title": "Ignore certificate warnings",
+        "description": "Connect to your personal servers without checking their certificate or host key. Connections can then be intercepted without you noticing. Organization servers are always checked.",
+        "error": "Failed to save the setting"
+      }
+    }
   },
   "tunnel": {
     "title": "Port Forward",
@@ -2330,6 +2352,28 @@
       "protocol": "Defaults for",
       "protocolHint": "Servers in this folder use what you set below unless they set their own value. Each protocol has its own defaults.",
       "unset": "Remove from folder"
+    },
+    "trust": {
+      "certificate": "certificate",
+      "hostKey": "host key",
+      "newTitle": "Trust this {{subject}}?",
+      "newMessage": "This is the first connection to {{endpoint}}. Check the fingerprint before you continue.",
+      "changedTitle": "The {{subject}} has changed",
+      "changedMessage": "{{endpoint}} presents a different {{subject}} than before. Only continue if you expect this.",
+      "fingerprint": "Fingerprint",
+      "previous": "Trusted until now",
+      "presented": "Presented now",
+      "subject": "Issued to",
+      "issuer": "Issued by",
+      "selfSigned": "Self-signed",
+      "validUntil": "Valid until",
+      "blocked": "Only certificate managers of {{organization}} can accept this change.",
+      "accept": "Trust and connect",
+      "cancel": "Cancel",
+      "acceptChanged": "Trust the new one",
+      "disconnect": "Disconnect",
+      "failed": "Your decision could not be saved",
+      "acceptOnly": "Trust certificate"
     }
   },
   "support": {

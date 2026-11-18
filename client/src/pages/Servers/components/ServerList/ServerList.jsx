@@ -59,6 +59,7 @@ import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { Permission } from "@/common/utils/permissions.js";
 import FolderInheritanceDialog from "@/pages/Servers/components/FolderInheritanceDialog/FolderInheritanceDialog.jsx";
 import { useMove } from "./useMove.js";
+import { useCertificateReview } from "@/common/components/CertificateReview";
 
 const flattenEntries = (entries, path = []) => entries.flatMap(entry =>
     entry.type === "folder" || entry.type === "organization"
@@ -127,6 +128,7 @@ export const ServerList = ({
     const demoEnabled = useDevFeature("demo", import.meta.env.DEV);
 
     const [search, setSearch] = useState("");
+    const { reviewUntrusted, certificateReviewDialog } = useCertificateReview();
     const [selectedTags, setSelectedTags] = useState([]);
     const [showTagFilter, setShowTagFilter] = useState(false);
     const [contextClickedType, setContextClickedType] = useState(null);
@@ -418,17 +420,19 @@ export const ServerList = ({
             .then(loadServers);
     };
 
-    const syncIntegrationNow = () => {
-        const integrationId = contextFolder?.integrationId;
+    const syncIntegrationNow = (integrationId = contextFolder?.integrationId, acceptFingerprint = null) => {
         if (!integrationId) return;
-        postRequest(`integrations/${integrationId}/sync`).then((response) => {
+        postRequest(`integrations/${integrationId}/sync`, acceptFingerprint ? { acceptFingerprint } : undefined).then((response) => {
             if (response?.code) {
                 sendToast("Error", response.message);
             } else {
                 sendToast("Success", t("servers.contextMenu.syncSuccess"));
             }
             loadServers();
-        }).catch(() => sendToast("Error", t("servers.contextMenu.syncFailed")));
+        }).catch((error) => {
+            if (reviewUntrusted(error, (fingerprint) => syncIntegrationNow(integrationId, fingerprint))) return;
+            sendToast("Error", error?.message || t("servers.contextMenu.syncFailed"));
+        });
     };
 
     const editIntegrationFolder = () => {
@@ -565,6 +569,7 @@ export const ServerList = ({
 
     return (
         <>
+            {certificateReviewDialog}
             {isMobile && mobileOpen && <div className="server-list-overlay" onClick={() => setMobileOpen?.(false)} />}
             <div
                 className={`server-list ${isCollapsed ? "collapsed" : ""} ${isMobile ? "mobile" : ""} ${mobileOpen ? "mobile-open" : ""}`}
@@ -694,7 +699,7 @@ export const ServerList = ({
                                 <ContextMenuItem
                                     icon={mdiSync}
                                     label={t("servers.contextMenu.syncIntegration")}
-                                    onClick={syncIntegrationNow}
+                                    onClick={() => syncIntegrationNow()}
                                 />
                                 {isIntegrationRoot && canManageResources && (
                                     <>

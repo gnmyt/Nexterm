@@ -1,10 +1,11 @@
-import { mdiServerOutline, mdiCodeBraces, mdiChartBoxOutline, mdiShieldCheckOutline, mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiCreationOutline, mdiKeyVariant, mdiConsole, mdiKeyboardOutline, mdiCloudDownloadOutline, mdiChartLine, mdiHarddisk, mdiFolderOutline, mdiEngine, mdiPalette, mdiShieldKeyOutline } from "@mdi/js";
+import { mdiServerOutline, mdiCodeBraces, mdiChartBoxOutline, mdiShieldCheckOutline, mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiCreationOutline, mdiKeyVariant, mdiConsole, mdiKeyboardOutline, mdiCloudDownloadOutline, mdiChartLine, mdiHarddisk, mdiFolderOutline, mdiEngine, mdiPalette, mdiShieldKeyOutline, mdiCertificateOutline } from "@mdi/js";
 import Account from "@/pages/Settings/pages/Account";
 import Appearance from "@/pages/Settings/pages/Appearance";
 import Terminal from "@/pages/Settings/pages/Terminal";
 import FileManager from "@/pages/Settings/pages/FileManager";
 import Keymaps from "@/pages/Settings/pages/Keymaps";
 import Identities from "@/pages/Settings/pages/Identities";
+import TrustedCertificates from "@/pages/Settings/pages/TrustedCertificates";
 import Sessions from "@/pages/Settings/pages/Sessions";
 import Organizations from "@/pages/Settings/pages/Organizations";
 import Users from "@/pages/Settings/pages/Users";
@@ -31,6 +32,7 @@ export const getSettingsUserPages = t => [
     { title: t("settings.pages.fileManager"), key: "fileManager", icon: mdiFolderOutline, content: <FileManager /> },
     { title: t("settings.pages.keymaps"), key: "keymaps", icon: mdiKeyboardOutline, content: <Keymaps /> },
     { title: t("settings.pages.identities"), key: "identities", icon: mdiKeyVariant, content: <Identities /> },
+    { title: t("settings.pages.trustedCertificates"), key: "trustedCertificates", icon: mdiCertificateOutline, content: <TrustedCertificates /> },
     { title: t("settings.pages.sessions"), key: "sessions", icon: mdiClockStarFourPointsOutline, content: <Sessions /> },
     { title: t("settings.pages.organizations"), key: "organizations", icon: mdiDomain, content: <Organizations /> },
 ];

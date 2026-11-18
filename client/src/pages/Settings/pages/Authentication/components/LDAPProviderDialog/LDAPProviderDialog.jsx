@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import Input from "@/common/components/IconInput";
 import { mdiAccountMultiple, mdiCog, mdiFormTextbox, mdiKey, mdiServer, mdiNumeric, mdiFilter, mdiTestTube } from "@mdi/js";
 import Button from "@/common/components/Button";
+import { useCertificateReview } from "@/common/components/CertificateReview";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
 import { patchRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
@@ -17,6 +18,7 @@ export const LDAPProviderDialog = ({ open, onClose, provider, onSave }) => {
     const [form, setForm] = useState(defaults);
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [testing, setTesting] = useState(false);
+    const { reviewUntrusted, certificateReviewDialog } = useCertificateReview();
 
     const set = (key) => (val) => setForm(f => ({ ...f, [key]: val }));
     const T = (key) => t(`settings.authentication.ldapDialog.${key}`);
@@ -46,17 +48,21 @@ export const LDAPProviderDialog = ({ open, onClose, provider, onSave }) => {
         } catch (e) { sendToast("Error", e.message || T("messages.saveFailed")); }
     };
 
-    const handleTest = async () => {
+    const handleTest = async (acceptFingerprint = null) => {
         if (!provider) return sendToast("Error", T("messages.saveFirst"));
         setTesting(true);
         try {
-            const r = await postRequest(`auth/providers/admin/ldap/${provider.id}/test`);
+            const r = await postRequest(`auth/providers/admin/ldap/${provider.id}/test`, acceptFingerprint ? { acceptFingerprint } : undefined);
             if (r.success) sendToast(t("common.success"), T("messages.testSuccess"));
-        } catch (e) { sendToast("Error", e.message || T("messages.testFailed")); }
+        } catch (e) {
+            if (!reviewUntrusted(e, handleTest)) sendToast("Error", e.message || T("messages.testFailed"));
+        }
         finally { setTesting(false); }
     };
 
     return (
+        <>
+        {certificateReviewDialog}
         <DialogProvider open={open} onClose={onClose}>
             <div className="ldap-provider-dialog">
                 <h2>{provider ? T("editTitle") : T("createTitle")}</h2>
@@ -117,10 +123,11 @@ export const LDAPProviderDialog = ({ open, onClose, provider, onSave }) => {
                 </div>
 
                 <div className="button-row">
-                    {provider && <Button type="secondary" icon={mdiTestTube} onClick={handleTest} text={testing ? T("actions.testing") : T("actions.testConnection")} disabled={testing} />}
+                    {provider && <Button type="secondary" icon={mdiTestTube} onClick={() => handleTest()} text={testing ? T("actions.testing") : T("actions.testConnection")} disabled={testing} />}
                     <Button text={provider ? T("actions.saveChanges") : T("actions.addProvider")} onClick={handleSubmit} />
                 </div>
             </div>
         </DialogProvider>
+        </>
     );
 };

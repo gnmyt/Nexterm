@@ -92,7 +92,7 @@ export const Servers = () => {
         connectionVersion = null,
     } = {}) => {
         const session = activeSessionsRef.current.find(current => current.id === sessionId);
-        if (!session) return;
+        if (!session || session.trustChallenge) return;
         const currentVersion = getConnectionVersion(session);
         const reportedVersion = connectionVersion ?? currentVersion;
         const targetVersion = reconnectingKeysRef.current.get(session.reconnectKey);
@@ -132,6 +132,7 @@ export const Servers = () => {
         const mappedSessions = sessions.map(session => {
             const server = getServerById(session.entryId);
             if (!server) return null;
+            if (session.trustChallenge) erroredSessionsRef.current.delete(session.sessionId);
             return {
                 id: session.sessionId,
                 connectionGeneration: session.connectionGeneration ?? 0,
@@ -150,6 +151,7 @@ export const Servers = () => {
                 participants: session.participants || [],
                 automated: session.automated === true,
                 origin: session.origin || null,
+                trustChallenge: session.trustChallenge || null,
             };
         }).filter(Boolean);
 
@@ -299,6 +301,7 @@ export const Servers = () => {
                 type,
                 tabId: getTabId(),
                 browserId: getBrowserId(),
+                trustPrompt: true,
                 displayDpi: scaleToDpi(resolveScale(resolveScaleSetting(server.id, server.displayScale, defaultDisplayScaleRef.current))),
                 ...(displaySize && { displayWidth: displaySize.width, displayHeight: displaySize.height }),
                 ...(reconnectSessionId && { connectionGeneration: connectionGeneration ?? existingSession?.connectionGeneration ?? 0 }),
@@ -407,6 +410,7 @@ export const Servers = () => {
 
     const disconnectFromServer = useCallback((sessionId, { force = false, connectionVersion = null } = {}) => {
         const session = activeSessionsRef.current.find(current => current.id === sessionId);
+        if (!force && session?.trustChallenge) return;
         if (!force && session) {
             const currentVersion = getConnectionVersion(session);
             const reportedVersion = connectionVersion ?? currentVersion;
@@ -561,6 +565,7 @@ export const Servers = () => {
                 startPath: path,
                 tabId: getTabId(),
                 browserId: getBrowserId(),
+                trustPrompt: true,
             };
 
             const session = await postRequest("/connections", payload);
