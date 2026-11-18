@@ -16,6 +16,8 @@ void nexterm_http_fetch(struct nexterm_control_plane* cp,
                         size_t header_count,
                         const char* body,
                         uint32_t timeout_ms,
-                        bool insecure);
+                        const char* trust_mode,
+                        const char* trust_pins,
+                        bool trust_ca);
 
 #endif

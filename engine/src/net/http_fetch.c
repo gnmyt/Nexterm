@@ -2,6 +2,7 @@
 #include "control_plane.h"
 #include "io.h"
 #include "log.h"
+#include "trust.h"
 
 #include <curl/curl.h>
 #include <pthread.h>
@@ -10,6 +11,7 @@
 #include <string.h>
 
 #include "control_plane_builder.h"
+#include "peer_identity.h"
 
 typedef struct {
     char* data;
@@ -83,7 +85,9 @@ typedef struct {
     size_t header_count;
     char* body;
     uint32_t timeout_ms;
-    bool insecure;
+    char* trust_mode;
+    char* trust_pins;
+    bool trust_ca;
 } http_fetch_ctx_t;
 
 static void free_http_fetch_ctx(http_fetch_ctx_t* ctx) {
@@ -97,6 +101,8 @@ static void free_http_fetch_ctx(http_fetch_ctx_t* ctx) {
     free(ctx->header_names);
     free(ctx->header_values);
     free(ctx->body);
+    free(ctx->trust_mode);
+    free(ctx->trust_pins);
     free(ctx);
 }
 
@@ -109,6 +115,8 @@ static int send_http_fetch_result(nexterm_control_plane_t* cp,
                                    size_t resp_header_count,
                                    const char* body,
                                    const char* error_message) {
+    nexterm_peer_t* rejected = nexterm_trust_take_rejected();
+
     flatcc_builder_t builder;
     flatcc_builder_init(&builder);
 
@@ -134,6 +142,9 @@ static int send_http_fetch_result(nexterm_control_plane_t* cp,
         Nexterm_ControlPlane_HttpFetchResult_body_create_str(&builder, body);
     if (error_message)
         Nexterm_ControlPlane_HttpFetchResult_error_message_create_str(&builder, error_message);
+    if (rejected && !success)
+        Nexterm_ControlPlane_HttpFetchResult_peer_add(&builder, nexterm_cp_build_peer(&builder, rejected));
+    nexterm_peer_free(rejected);
 
     Nexterm_ControlPlane_Envelope_http_fetch_result_end(&builder);
     Nexterm_ControlPlane_Envelope_end_as_root(&builder);
@@ -144,6 +155,26 @@ static int send_http_fetch_result(nexterm_control_plane_t* cp,
     flatcc_builder_clear(&builder);
     free(buf);
     return ret;
+}
+
+static void parse_url_endpoint(const char* url, char* host, size_t host_sz, uint16_t* port) {
+    CURLU* parsed = curl_url();
+    if (parsed && curl_url_set(parsed, CURLUPART_URL, url, 0) == CURLUE_OK) {
+        char* part = NULL;
+        if (curl_url_get(parsed, CURLUPART_HOST, &part, 0) == CURLUE_OK && part) {
+            size_t len = strlen(part);
+            bool bracketed = len > 2 && part[0] == '[' && part[len - 1] == ']';
+            snprintf(host, host_sz, "%.*s",
+                     (int)(bracketed ? len - 2 : len), bracketed ? part + 1 : part);
+            curl_free(part);
+        }
+        part = NULL;
+        if (curl_url_get(parsed, CURLUPART_PORT, &part, CURLU_DEFAULT_PORT) == CURLUE_OK && part) {
+            *port = (uint16_t)atoi(part);
+            curl_free(part);
+        }
+    }
+    curl_url_cleanup(parsed);
 }
 
 static void* http_fetch_thread(void* arg) {
@@ -174,10 +205,15 @@ static void* http_fetch_thread(void* arg) {
     else
         curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, 30000L);
 
-    if (ctx->insecure) {
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-    }
+    nexterm_trust_t trust;
+    nexterm_trust_from_values(ctx->trust_mode, ctx->trust_pins, ctx->trust_ca, &trust);
+
+    char trust_host[256] = "";
+    uint16_t trust_port = 443;
+    parse_url_endpoint(ctx->url, trust_host, sizeof(trust_host), &trust_port);
+
+    nexterm_tls_trust_t tls_trust = { .trust = &trust, .host = trust_host, .port = trust_port };
+    nexterm_trust_apply_curl(curl, &tls_trust);
 
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, ctx->method);
 
@@ -239,7 +275,9 @@ void nexterm_http_fetch(nexterm_control_plane_t* cp,
                         size_t header_count,
                         const char* body,
                         uint32_t timeout_ms,
-                        bool insecure) {
+                        const char* trust_mode,
+                        const char* trust_pins,
+                        bool trust_ca) {
 
     http_fetch_ctx_t* ctx = calloc(1, sizeof(http_fetch_ctx_t));
     if (!ctx) {
@@ -253,7 +291,9 @@ void nexterm_http_fetch(nexterm_control_plane_t* cp,
     ctx->method = strdup(method);
     ctx->url = strdup(url);
     ctx->timeout_ms = timeout_ms;
-    ctx->insecure = insecure;
+    ctx->trust_mode = trust_mode ? strdup(trust_mode) : NULL;
+    ctx->trust_pins = trust_pins ? strdup(trust_pins) : NULL;
+    ctx->trust_ca = trust_ca;
     ctx->body = body ? strdup(body) : NULL;
 
     if (header_count > 0) {
@@ -275,5 +315,5 @@ void nexterm_http_fetch(nexterm_control_plane_t* cp,
     }
     pthread_detach(thread);
 
-    LOG_DEBUG("HttpFetch: req=%s %s %s (insecure=%d)", request_id, method, url, insecure);
+    LOG_DEBUG("HttpFetch: req=%s %s %s", request_id, method, url);
 }
