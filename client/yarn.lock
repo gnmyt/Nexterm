@@ -528,10 +528,10 @@
   resolved "https://registry.yarnpkg.com/@solid-primitives/utils/-/utils-6.4.0.tgz#45257521d258cffd563b40d62163058af75496ae"
   integrity sha512-AeGTBg8Wtkh/0s+evyLtP8piQoS4wyqqQaAFs2HJcFMMjYAtUgo+ZPduRXLjPlqKVc2ejeR544oeqpbn8Egn8A==
 
-"@tauri-apps/api@^2", "@tauri-apps/api@^2.11.0":
-  version "2.11.1"
-  resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-2.11.1.tgz#cd6b13fc26403ca095a02e39ecdbec8048d2872d"
-  integrity sha512-M2FPuYND2m+wh5hfW9ZpSdxMPdEJovPBWwoHJmwUpysTYNHaOkVFN419m/K0LIgjb/7KU2vBgsUepJWugQCvAA==
+"@tauri-apps/api@^2", "@tauri-apps/api@^2.11.0", "@tauri-apps/api@^2.12.0":
+  version "2.12.5"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-2.12.5.tgz#e7484e38aede505c74ec258b10b703262dcda787"
+  integrity sha512-G9QIMt5fzED+aS4QhVK3w1HWLKpLIwH/MnpCr9z1ugGEHnS2ORmqrLkc0uALOjRK4qXJy+4Yiw8LDl/KicC1Hg==
 
 "@tauri-apps/plugin-dialog@^2":
   version "2.7.3"
@@ -561,12 +561,12 @@
   dependencies:
     "@tauri-apps/api" "^2.11.0"
 
-"@tauri-apps/plugin-shell@^2.3.6":
-  version "2.3.6"
-  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-shell/-/plugin-shell-2.3.6.tgz#31ce01f7bb0042c81d9b7d433cc38dc2694b3154"
-  integrity sha512-C2AG+QmBJPK0E3gccLXfRdjTfGBC9DgwzGi/PfYa61ieAZbYvhvOss4OdSGfn/D28N3THGhJZEhf3lozOh/Uqw==
+"@tauri-apps/plugin-shell@^2.6.0":
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-shell/-/plugin-shell-2.6.0.tgz#1f64a638487e51ce6af8fc97f3c722f3ba8a0dd7"
+  integrity sha512-z9LZGSr8jfD0FWWJ+CdD99i2FQcmJ26ebNJlYJdrlFdMLcggUS29BYrfS4hJlXO1UAI6A6r084vJUAG5734Y6w==
   dependencies:
-    "@tauri-apps/api" "^2.11.0"
+    "@tauri-apps/api" "^2.12.0"
 
 "@types/estree@^1.0.6":
   version "1.0.8"
