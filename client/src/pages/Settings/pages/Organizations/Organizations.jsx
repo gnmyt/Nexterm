@@ -18,12 +18,14 @@ import { useTranslation } from "react-i18next";
 import "./styles.sass";
 import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
 import EmptyState from "@/common/components/EmptyState";
+import { isDemoGuest } from "@/common/utils/demo.js";
 
 export const Organizations = () => {
     const { t } = useTranslation();
     const { sendToast } = useToast();
     const { loadServers } = useContext(ServerContext);
-    const { hasPermission } = useContext(UserContext);
+    const { hasPermission, user } = useContext(UserContext);
+    const demoGuest = isDemoGuest(user);
 
     const [organizations, setOrganizations] = useState(null);
     const [pendingInvitations, setPendingInvitations] = useState([]);
@@ -89,6 +91,7 @@ export const Organizations = () => {
     };
 
     const handleOrgClick = async (org) => {
+        if (demoGuest) return;
         if (expandedOrgId === org.id) {
             setExpandedOrgId(null);
             setActiveTab(prev => ({ ...prev, [org.id]: "members" }));
@@ -169,7 +172,7 @@ export const Organizations = () => {
                 ) : organizations.map((org) => (
                     <div key={org.id}>
                         <div
-                            className={`item clickable ${expandedOrgId === org.id ? "expanded" : ""}`}
+                            className={`item${demoGuest ? "" : " clickable"} ${expandedOrgId === org.id ? "expanded" : ""}`}
                             onClick={() => handleOrgClick(org)}
                         >
                             <div className="left-section">
@@ -200,7 +203,7 @@ export const Organizations = () => {
                                         <Button text={t("settings.organizations.delete")} type="danger"
                                                 onClick={(e) => handleDeleteOrg(org.id, e)} />
                                     )}
-                                    {!org.isOwner && (
+                                    {!org.isOwner && !demoGuest && (
                                         <Button text={t("settings.organizations.leave")} type="danger" onClick={(e) => handleLeaveOrg(org.id, e)} />
                                     )}
                                 </div>

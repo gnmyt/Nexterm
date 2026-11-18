@@ -47,7 +47,11 @@ module.exports = db.define("accounts", {
         references: { model: "themes", key: "id" },
         onDelete: "SET NULL",
     },
-}, { 
+    demoExpiresAt: {
+        type: Sequelize.DATE,
+        allowNull: true,
+    },
+}, {
     freezeTableName: true, 
     createdAt: false, 
     updatedAt: false,

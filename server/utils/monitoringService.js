@@ -11,7 +11,7 @@ const { buildSSHParams, resolveJumpHosts } = require("../lib/ConnectionService")
 const { buildWindowsMonitoringCommand, isWindowsProbeResult, isPowerShellProbeResult, parseWindowsMonitoringOutput } = require("./windowsMonitoring");
 const { getEffectiveEntryConfig, getEntryIdentityIds } = require("./folderInheritance");
 const { parseCPUUsage } = require("./cpuUsage");
-const { COMMANDS, WINDOWS_OS_COMMAND, parseMeminfo, parseMemoryUsage, parseDiskUsage, parseUptime, parseLoadAverage, parseProcessCount, parseProcessList, parseOSInfo, parseNetworkInterfaces } = require("./monitoringParsers");
+const { COMMANDS, WINDOWS_OS_COMMAND, applyNetworkRates, parseMeminfo, parseMemoryUsage, parseDiskUsage, parseUptime, parseLoadAverage, parseProcessCount, parseProcessList, parseOSInfo, parseNetworkInterfaces } = require("./monitoringParsers");
 
 let monitoringInterval = null;
 let isRunning = false;
@@ -138,13 +138,13 @@ const collectServerData = async (entry, identity, credentials) => {
             cpuUsage: parseCPUUsage(out.cpu),
             memoryUsage: memory.usage,
             memoryTotal: memory.total,
-            disk: parseDiskUsage(out.lsblk, out.df),
+            disk: parseDiskUsage(out.lsblk, out.df, out.dfInodes, out.smart),
             uptime: parseUptime(out.uptime),
             loadAverage: parseLoadAverage(out.loadAverage),
             processes: parseProcessCount(out.processCount),
             processList: parseProcessList(out.processList),
             osInfo,
-            network: parseNetworkInterfaces(out.ifaceDetails, out.ipAddr),
+            network: parseNetworkInterfaces(out.ifaceDetails, out.ipAddr, out.defaultRoute),
         };
     } catch (error) {
         logger.error("Error during monitoring data collection", { error: error.message, host });
@@ -220,6 +220,11 @@ const saveMonitoringData = async (entryId, data) => {
             processes: data.processes,
             errorMessage: data.errorMessage,
         });
+
+        if (Array.isArray(data.network)) {
+            const previous = await MonitoringSnapshot.findOne({ where: { entryId } });
+            applyNetworkRates(data.network, previous?.network, previous?.updatedAt);
+        }
 
         await MonitoringSnapshot.upsert({
             entryId,

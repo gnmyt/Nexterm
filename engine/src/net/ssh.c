@@ -141,6 +141,9 @@ static ssh_end_reason_t ssh_bridge_poll(nexterm_session_t* session, int data_fd,
 
     ssh_apply_pending_resize(session, channel);
 
+    if (ssh_read_channel_to_fd(channel, data_fd) != 0)
+        return SSH_END_DISCONNECTED;
+
     int ret = poll(fds, 2, 200);
     if (ret < 0)
         return errno == EINTR ? SSH_END_CONTINUE : SSH_END_DISCONNECTED;

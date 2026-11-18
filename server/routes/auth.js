@@ -9,6 +9,8 @@ const { generateAuthenticationOptions, verifyAuthentication } = require("../cont
 const { createCode, pollToken, authorizeCode, getCodeInfo, checkLinkStatus } = require("../controllers/deviceCode");
 const { authenticate } = require("../middlewares/auth");
 const { findActiveSession } = require("../utils/sessionActivity");
+const { createGuestSession, removeGuestByToken } = require("../controllers/demo");
+const { isDemoMode, DEMO_SETTINGS } = require("../utils/demoMode");
 const Account = require("../models/Account");
 
 const optionalAuth = async (req, res, next) => {
@@ -62,6 +64,32 @@ app.post("/login", authRateLimiter, async (req, res) => {
     res.header("Authorization", session?.token).json({ ...session, message: "Your session got successfully created" });
 });
 
+const demoGuestRateLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    limit: DEMO_SETTINGS.guestsPerIpPerHour,
+    message: { code: 429, message: "Too many demo sessions from your network. Please try again later." },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+/**
+ * POST /auth/demo
+ * @summary Start Demo Session
+ * @description Creates a temporary guest account and returns its session token. Only available when the server runs in demo mode. Guest accounts and everything they created are removed once they expire.
+ * @tags Authentication
+ * @produces application/json
+ * @return {object} 200 - Session token and expiry of the guest account
+ * @return {object} 404 - Demo mode is not enabled
+ * @return {object} 429 - Too many demo sessions from this address
+ * @return {object} 503 - The demo is at capacity
+ */
+app.post("/demo", (req, res, next) => isDemoMode() ? next() : res.status(404).json({ code: 404, message: "Demo mode is not enabled" }),
+    demoGuestRateLimiter, async (req, res) => {
+        const result = await createGuestSession({ ip: req.ip, userAgent: req.header("User-Agent") || "None" });
+        if (result.code) return res.status(result.code).json(result);
+        res.json(result);
+    });
+
 /**
  * POST /auth/logout
  * @summary User Logout
@@ -73,6 +101,7 @@ app.post("/login", authRateLimiter, async (req, res) => {
  */
 app.post("/logout", async (req, res) => {
     if (validateSchema(res, tokenValidation, req.body)) return;
+    await removeGuestByToken(req.body.token);
     const session = await logout(req.body.token);
     if (session) return res.json(session);
     res.json({ message: "Your session got deleted successfully" });

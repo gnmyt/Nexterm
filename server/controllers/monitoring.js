@@ -87,12 +87,18 @@ module.exports.getServerMonitoring = async (accountId, entryId, timeRange = "1h"
 
 const DEFAULT_MONITORING = { timestamp: null, cpuUsage: null, memoryUsage: null, memoryTotal: null, disk: [], uptime: null, loadAverage: [], processes: null, processList: [], osInfo: {}, network: [], errorMessage: "No monitoring data available" };
 
-const buildMonitoringResult = (items, idField, tsMap, snapMap, transform) => items.map(item => {
+const HISTORY_POINTS = 30;
+
+const toHistory = (rows) => (rows || []).map(row => ({ timestamp: row.timestamp, cpuUsage: row.cpuUsage, memoryUsage: row.memoryUsage })).reverse();
+
+const buildMonitoringResult = (items, tsMap, snapMap, transform, historyMap) => items.map(item => {
     const ts = tsMap[item.id], snap = snapMap[item.id];
-    return { ...transform(item), monitoring: ts || snap ? { ...toJson(ts), ...toJson(snap) } : DEFAULT_MONITORING };
+    const result = { ...transform(item), monitoring: ts || snap ? { ...toJson(ts), ...toJson(snap) } : DEFAULT_MONITORING };
+    if (historyMap) result.history = toHistory(historyMap[item.id]);
+    return result;
 });
 
-module.exports.getAllServersMonitoring = async (accountId) => {
+module.exports.getAllServersMonitoring = async (accountId, { includeHistory = false } = {}) => {
     try {
         const { getEffectivePolicies, checkPoliciesAgainstEntry } = require("../utils/accessPolicy");
         const policies = await getEffectivePolicies(accountId);
@@ -132,14 +138,20 @@ module.exports.getAllServersMonitoring = async (accountId) => {
         ]);
 
         const latestByEntry = {}, snapByEntry = {}, latestByInt = {}, snapByInt = {};
-        entryData.forEach(d => { if (!latestByEntry[d.entryId]) latestByEntry[d.entryId] = d; });
+        const historyByEntry = includeHistory ? {} : null, historyByInt = includeHistory ? {} : null;
+        const collect = (history, id, row) => {
+            if (!history) return;
+            const rows = history[id] || (history[id] = []);
+            if (rows.length < HISTORY_POINTS) rows.push(row);
+        };
+        entryData.forEach(d => { if (!latestByEntry[d.entryId]) latestByEntry[d.entryId] = d; collect(historyByEntry, d.entryId, d); });
         entrySnaps.forEach(s => snapByEntry[s.entryId] = s);
-        intData.forEach(d => { if (!latestByInt[d.integrationId]) latestByInt[d.integrationId] = d; });
+        intData.forEach(d => { if (!latestByInt[d.integrationId]) latestByInt[d.integrationId] = d; collect(historyByInt, d.integrationId, d); });
         intSnaps.forEach(s => snapByInt[s.integrationId] = s);
 
         return [
-            ...buildMonitoringResult(accessibleEntries, "id", latestByEntry, snapByEntry, e => ({ id: e.id, name: e.name, ip: e.config?.ip, status: e.status, port: e.config?.port, icon: e.icon, monitoringEnabled: e.config?.monitoringEnabled, type: "server" })),
-            ...buildMonitoringResult(accessibleInts, "id", latestByInt, snapByInt, i => ({ id: `pve-${i.id}`, integrationId: i.id, name: i.name, ip: i.config?.ip, status: i.status, port: i.config?.port, icon: "proxmox", monitoringEnabled: i.config?.monitoringEnabled, type: "proxmox" })),
+            ...buildMonitoringResult(accessibleEntries, latestByEntry, snapByEntry, e => ({ id: e.id, name: e.name, ip: e.config?.ip, status: e.status, port: e.config?.port, icon: e.icon, monitoringEnabled: e.config?.monitoringEnabled, type: "server" }), historyByEntry),
+            ...buildMonitoringResult(accessibleInts, latestByInt, snapByInt, i => ({ id: `pve-${i.id}`, integrationId: i.id, name: i.name, ip: i.config?.ip, status: i.status, port: i.config?.port, icon: "proxmox", monitoringEnabled: i.config?.monitoringEnabled, type: "proxmox" }), historyByInt),
         ].map((item) => ({ ...item, accessBlocked: blockedIds.has(item.id) }));
     } catch (error) {
         logger.error("Error getting all servers monitoring", { error: error.message });

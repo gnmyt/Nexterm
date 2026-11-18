@@ -1,6 +1,6 @@
 import IconInput from "@/common/components/IconInput";
 import "./styles.sass";
-import { mdiAccountCircleOutline, mdiAccountEdit, mdiCameraOutline, mdiClose, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiCloudSync, mdiCloudOffOutline, mdiWeb, mdiTabUnselected, mdiFingerprint, mdiKeyVariant, mdiPencil, mdiTrashCan, mdiPlus, mdiApi } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiAccountEdit, mdiShieldLockOutline, mdiCameraOutline, mdiClose, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiCloudSync, mdiCloudOffOutline, mdiWeb, mdiTabUnselected, mdiFingerprint, mdiKeyVariant, mdiPencil, mdiTrashCan, mdiPlus, mdiApi } from "@mdi/js";
 import { useContext, useEffect, useRef, useState } from "react";
 import LetterAvatar from "@/common/components/LetterAvatar";
 import { createSquareAvatar, MAX_AVATAR_INPUT_SIZE } from "@/common/utils/imageUtils.js";
@@ -24,6 +24,7 @@ import i18n from "@/i18n.js";
 import Icon from "@mdi/react";
 import { openExternalUrl } from "@/common/utils/TauriUtil.js";
 import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
+import { isDemoGuest } from "@/common/utils/demo.js";
 
 export const Account = () => {
     const { t } = useTranslation();
@@ -41,6 +42,7 @@ export const Account = () => {
     const [apiKeyToDelete, setApiKeyToDelete] = useState(null);
 
     const { user, login, sessionToken } = useContext(UserContext);
+    const demoGuest = isDemoGuest(user);
     const { isGroupSynced, toggleGroupSync, language, setLanguage } = usePreferences();
     const { sendToast } = useToast();
 
@@ -237,8 +239,10 @@ export const Account = () => {
             setFirstName(user.firstName);
             setLastName(user.lastName);
             setSessionSync(user.sessionSync || "same_browser");
-            loadPasskeys();
-            loadApiKeys();
+            if (!demoGuest) {
+                loadPasskeys();
+                loadApiKeys();
+            }
         }
     }, [user]);
 
@@ -276,7 +280,7 @@ export const Account = () => {
                         <div className="avatar-edit">
                             <button type="button" id="avatar" className="avatar-button"
                                     onClick={() => avatarInputRef.current?.click()}
-                                    disabled={avatarUploading} aria-label={t("settings.account.avatar.upload")}>
+                                    disabled={avatarUploading || demoGuest} aria-label={t("settings.account.avatar.upload")}>
                                 <LetterAvatar user={user} size="lg" showTooltip={false} />
                                 <span className="avatar-overlay"><Icon path={mdiCameraOutline} size={0.9} /></span>
                             </button>
@@ -310,29 +314,40 @@ export const Account = () => {
                 </div>
             </div>
 
-            <div className="account-section settings-page-section">
-                <div className="tfa-title">
-                    <SettingsHeading><Icon path={mdiShieldCheck} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.twoFactor")}</SettingsHeading>
-                    {user?.totpEnabled ? <p className="active">{t("settings.account.twoFactorActive")}</p> :
-                        <p className="inactive">{t("settings.account.twoFactorInactive")}</p>}
+            {demoGuest && (
+                <div className="account-section settings-page-section">
+                    <SettingsHeading><Icon path={mdiShieldLockOutline} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.demo.title")}</SettingsHeading>
+                    <div className="section-inner">
+                        <p style={{ maxWidth: "25rem" }}>{t("settings.account.demo.description")}</p>
+                    </div>
                 </div>
-                <div className="section-inner">
-                    <p style={{ maxWidth: "25rem" }}>{t("settings.account.twoFactorDescription")}</p>
-                    {!user?.totpEnabled &&
-                        <Button text={t("settings.account.enable2FA")} onClick={() => setTwoFactorOpen(true)} />}
-                    {user?.totpEnabled ? <Button text={t("settings.account.disable2FA")} onClick={disable2FA} /> : null}
-                </div>
-            </div>
+            )}
 
-            <div className="account-section settings-page-section">
-                <SettingsHeading><Icon path={mdiLockReset} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.changePassword")}</SettingsHeading>
-                <div className="section-inner">
-                    <p style={{ maxWidth: "25rem" }}>{t("settings.account.changePasswordDescription")}</p>
-
-                    <Button text={t("settings.account.changePasswordButton")}
-                            onClick={() => setPasswordChangeOpen(true)} />
+            {!demoGuest && (<>
+                <div className="account-section settings-page-section">
+                    <div className="tfa-title">
+                        <SettingsHeading><Icon path={mdiShieldCheck} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.twoFactor")}</SettingsHeading>
+                        {user?.totpEnabled ? <p className="active">{t("settings.account.twoFactorActive")}</p> :
+                            <p className="inactive">{t("settings.account.twoFactorInactive")}</p>}
+                    </div>
+                    <div className="section-inner">
+                        <p style={{ maxWidth: "25rem" }}>{t("settings.account.twoFactorDescription")}</p>
+                        {!user?.totpEnabled &&
+                            <Button text={t("settings.account.enable2FA")} onClick={() => setTwoFactorOpen(true)} />}
+                        {user?.totpEnabled ? <Button text={t("settings.account.disable2FA")} onClick={disable2FA} /> : null}
+                    </div>
                 </div>
-            </div>
+
+                <div className="account-section settings-page-section">
+                    <SettingsHeading><Icon path={mdiLockReset} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.changePassword")}</SettingsHeading>
+                    <div className="section-inner">
+                        <p style={{ maxWidth: "25rem" }}>{t("settings.account.changePasswordDescription")}</p>
+
+                        <Button text={t("settings.account.changePasswordButton")}
+                                onClick={() => setPasswordChangeOpen(true)} />
+                    </div>
+                </div>
+            </>)}
 
             <div className="account-section settings-page-section">
                 <div className="section-header">
@@ -385,100 +400,102 @@ export const Account = () => {
                 </div>
             </div>
 
-            <div className="account-section settings-page-section">
-                <div className="section-header">
-                    <div className="header-content">
-                        <SettingsHeading><Icon path={mdiFingerprint} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.passkeys.sectionTitle")}</SettingsHeading>
-                        <p>{t("settings.account.passkeys.sectionDescription")}</p>
-                    </div>
-                    <Button text={t("settings.account.passkeys.addButton")} icon={mdiPlus} onClick={() => setAddPasskeyOpen(true)} />
-                </div>
-                <div className="settings-list">
-                    {passkeys.length > 0 ? (
-                        passkeys.map(passkey => (
-                            <div className="settings-list-item" key={passkey.id}>
-                                <div className="item-info">
-                                    <Icon path={mdiKeyVariant} className="item-icon" />
-                                    <div className="item-details">
-                                        {editingPasskeyId === passkey.id ? (
-                                            <input 
-                                                type="text" 
-                                                value={editingPasskeyName} 
-                                                onChange={(e) => setEditingPasskeyName(e.target.value)}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === "Enter") savePasskeyName();
-                                                    if (e.key === "Escape") cancelEditPasskey();
-                                                }}
-                                                onBlur={savePasskeyName}
-                                                autoFocus
-                                                className="passkey-name-input"
-                                            />
-                                        ) : (
-                                            <h3>{passkey.name}</h3>
-                                        )}
-                                        <p className="item-meta">
-                                            {t("settings.account.passkeys.createdAt", {
-                                                date: new Date(passkey.createdAt).toLocaleDateString(),
-                                                interpolation: { escapeValue: false }
-                                            })}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="item-actions">
-                                    <Button icon={mdiPencil} onClick={() => startEditPasskey(passkey)} title={t("settings.account.passkeys.rename")} />
-                                    <Button type="danger" icon={mdiTrashCan} onClick={() => confirmDeletePasskey(passkey)} title={t("settings.account.passkeys.delete")} />
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <div className="list-empty">
-                            <p>{t("settings.account.passkeys.noPasskeys")}</p>
+            {!demoGuest && (<>
+                <div className="account-section settings-page-section">
+                    <div className="section-header">
+                        <div className="header-content">
+                            <SettingsHeading><Icon path={mdiFingerprint} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.passkeys.sectionTitle")}</SettingsHeading>
+                            <p>{t("settings.account.passkeys.sectionDescription")}</p>
                         </div>
-                    )}
-                </div>
-            </div>
-
-            <div className="account-section settings-page-section">
-                <div className="section-header">
-                    <div className="header-content">
-                        <SettingsHeading><Icon path={mdiApi} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.apiKeys.sectionTitle")}</SettingsHeading>
-                        <p>{t("settings.account.apiKeys.sectionDescription")}</p>
+                        <Button text={t("settings.account.passkeys.addButton")} icon={mdiPlus} onClick={() => setAddPasskeyOpen(true)} />
                     </div>
-                    <Button text={t("settings.account.apiKeys.addButton")} icon={mdiPlus} onClick={() => setAddApiKeyOpen(true)} />
-                </div>
-                <div className="settings-list">
-                    {apiKeys.length > 0 ? (
-                        apiKeys.map(apiKey => (
-                            <div className="settings-list-item" key={apiKey.id}>
-                                <div className="item-info">
-                                    <Icon path={mdiKeyVariant} className="item-icon" />
-                                    <div className="item-details">
-                                        <h3>{apiKey.name}</h3>
-                                        <p className="item-meta api-key-meta">
-                                            <code>{apiKey.prefix}</code>
-                                            <span>
-                                                {apiKey.lastUsedAt
-                                                    ? t("settings.account.apiKeys.lastUsed", { date: new Date(apiKey.lastUsedAt).toLocaleDateString(), interpolation: { escapeValue: false } })
-                                                    : t("settings.account.apiKeys.neverUsed")}
-                                            </span>
-                                            {apiKey.expiresAt && (
-                                                <span>{t("settings.account.apiKeys.expires", { date: new Date(apiKey.expiresAt).toLocaleDateString(), interpolation: { escapeValue: false } })}</span>
+                    <div className="settings-list">
+                        {passkeys.length > 0 ? (
+                            passkeys.map(passkey => (
+                                <div className="settings-list-item" key={passkey.id}>
+                                    <div className="item-info">
+                                        <Icon path={mdiKeyVariant} className="item-icon" />
+                                        <div className="item-details">
+                                            {editingPasskeyId === passkey.id ? (
+                                                <input 
+                                                    type="text" 
+                                                    value={editingPasskeyName} 
+                                                    onChange={(e) => setEditingPasskeyName(e.target.value)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === "Enter") savePasskeyName();
+                                                        if (e.key === "Escape") cancelEditPasskey();
+                                                    }}
+                                                    onBlur={savePasskeyName}
+                                                    autoFocus
+                                                    className="passkey-name-input"
+                                                />
+                                            ) : (
+                                                <h3>{passkey.name}</h3>
                                             )}
-                                        </p>
+                                            <p className="item-meta">
+                                                {t("settings.account.passkeys.createdAt", {
+                                                    date: new Date(passkey.createdAt).toLocaleDateString(),
+                                                    interpolation: { escapeValue: false }
+                                                })}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="item-actions">
+                                        <Button icon={mdiPencil} onClick={() => startEditPasskey(passkey)} title={t("settings.account.passkeys.rename")} />
+                                        <Button type="danger" icon={mdiTrashCan} onClick={() => confirmDeletePasskey(passkey)} title={t("settings.account.passkeys.delete")} />
                                     </div>
                                 </div>
-                                <div className="item-actions">
-                                    <Button type="danger" icon={mdiTrashCan} onClick={() => confirmDeleteApiKey(apiKey)} title={t("settings.account.apiKeys.delete")} />
-                                </div>
+                            ))
+                        ) : (
+                            <div className="list-empty">
+                                <p>{t("settings.account.passkeys.noPasskeys")}</p>
                             </div>
-                        ))
-                    ) : (
-                        <div className="list-empty">
-                            <p>{t("settings.account.apiKeys.noKeys")}</p>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
-            </div>
+
+                <div className="account-section settings-page-section">
+                    <div className="section-header">
+                        <div className="header-content">
+                            <SettingsHeading><Icon path={mdiApi} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.apiKeys.sectionTitle")}</SettingsHeading>
+                            <p>{t("settings.account.apiKeys.sectionDescription")}</p>
+                        </div>
+                        <Button text={t("settings.account.apiKeys.addButton")} icon={mdiPlus} onClick={() => setAddApiKeyOpen(true)} />
+                    </div>
+                    <div className="settings-list">
+                        {apiKeys.length > 0 ? (
+                            apiKeys.map(apiKey => (
+                                <div className="settings-list-item" key={apiKey.id}>
+                                    <div className="item-info">
+                                        <Icon path={mdiKeyVariant} className="item-icon" />
+                                        <div className="item-details">
+                                            <h3>{apiKey.name}</h3>
+                                            <p className="item-meta api-key-meta">
+                                                <code>{apiKey.prefix}</code>
+                                                <span>
+                                                    {apiKey.lastUsedAt
+                                                        ? t("settings.account.apiKeys.lastUsed", { date: new Date(apiKey.lastUsedAt).toLocaleDateString(), interpolation: { escapeValue: false } })
+                                                        : t("settings.account.apiKeys.neverUsed")}
+                                                </span>
+                                                {apiKey.expiresAt && (
+                                                    <span>{t("settings.account.apiKeys.expires", { date: new Date(apiKey.expiresAt).toLocaleDateString(), interpolation: { escapeValue: false } })}</span>
+                                                )}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="item-actions">
+                                        <Button type="danger" icon={mdiTrashCan} onClick={() => confirmDeleteApiKey(apiKey)} title={t("settings.account.apiKeys.delete")} />
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="list-empty">
+                                <p>{t("settings.account.apiKeys.noKeys")}</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </>)}
 
         </div>
     );

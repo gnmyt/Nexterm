@@ -70,7 +70,24 @@
       "firstTimeSubtitle": "Create the first administrator account for this instance.",
       "twoFactorTitle": "Two-factor authentication",
       "twoFactorDescription": "Enter the code from your authenticator app.",
-      "qrTitle": "Sign in with the app"
+      "qrTitle": "Sign in with the app",
+      "demo": {
+        "title": "Try Nexterm",
+        "subtitle": "Explore a live instance with simulated servers, no account needed.",
+        "start": "Start the demo",
+        "orSignIn": "or sign in to your account",
+        "failed": "Could not start a demo session"
+      }
+    },
+    "demo": {
+      "timeLeft": "Demo · {{time}} left",
+      "end": "End demo",
+      "endConfirmText": "End your demo session? Everything you created will be removed.",
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min",
+      "hours_one": "{{count}} hour",
+      "hours_other": "{{count}} hours",
+      "hoursMinutes": "{{hours}}h {{minutes}}m"
     },
     "deviceLink": {
       "title": "Link Device",
@@ -454,25 +471,35 @@
     "page": {
       "title": "Server Monitoring",
       "subtitle": "Real-time server statistics and health monitoring",
-      "searchPlaceholder": "Search servers..."
+      "searchPlaceholder": "Search servers...",
+      "filters": {
+        "all": "All ({{count}})",
+        "online": "Online ({{count}})",
+        "issues": "Issues ({{count}})"
+      }
     },
     "errors": {
-      "loadFailed": "Failed to load monitoring data"
+      "loadFailed": "Failed to load monitoring data",
+      "loadFailedDescription": "The monitoring data could not be retrieved. Check your connection and try again.",
+      "retry": "Retry"
     },
     "grid": {
-      "loading": "Loading monitoring data...",
       "noServers": {
         "title": "No Servers Found",
         "subtitle": "No SSH servers available for monitoring.\nAdd some servers to start monitoring them."
       },
+      "noResults": {
+        "title": "No matching servers",
+        "subtitle": "No monitored server matches your search."
+      },
       "metrics": {
-        "cpuUsage": "CPU Usage",
-        "memoryUsage": "Memory Usage",
         "loadAverage": "Load Average",
         "processes": "Processes",
         "uptime": "Uptime",
         "nodes": "Nodes",
-        "vms": "VMs/Containers"
+        "vms": "VMs/Containers",
+        "cpu": "CPU",
+        "memory": "Memory"
       },
       "status": {
         "serverOffline": "Server Offline",
@@ -482,7 +509,16 @@
         "errorMessage": "Unable to establish connection to the server.",
         "unknownMessage": "Server status could not be determined.",
         "lastSeen": "Last seen: {{time}}",
-        "noRecentActivity": "No recent activity"
+        "noRecentActivity": "No recent activity",
+        "waitingForData": "Waiting for data",
+        "pendingMessage": "Monitoring data will appear after the next monitoring cycle.",
+        "labels": {
+          "online": "Online",
+          "offline": "Offline",
+          "error": "Error",
+          "pending": "Pending",
+          "unknown": "Unknown"
+        }
       },
       "uptime": {
         "unknown": "Unknown",
@@ -505,7 +541,6 @@
       },
       "tabs": {
         "overview": "Overview",
-        "charts": "Charts",
         "storage": "Storage",
         "network": "Network",
         "processes": "Processes",
@@ -525,12 +560,11 @@
         },
         "performance": {
           "title": "Performance Metrics",
-          "cpuUsage": "CPU Usage",
-          "memoryUsage": "Memory Usage",
           "loadAverage": "Load Average",
           "processes": "Active Processes",
           "total": "Total: {{value}}",
-          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}"
+          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}",
+          "memory": "Memory"
         },
         "uptime": {
           "format": {
@@ -548,33 +582,67 @@
       },
       "storage": {
         "title": "Disk Usage",
-        "used": "Used: {{value}}",
-        "available": "Available: {{value}}",
-        "total": "Total: {{value}}",
-        "type": "Type: {{value}}",
         "noData": "No disk usage data available",
-        "noPartitions": "No mounted partitions"
+        "noPartitions": "No mounted partitions",
+        "usedOf": "{{used}} of {{total}} used",
+        "free": "{{value}} free",
+        "filesystems": "Filesystems",
+        "disks": "Disks",
+        "on": "{{volume}} on {{partition}}",
+        "swap": "Swap",
+        "unmounted": "Not mounted",
+        "unallocated": "Unallocated",
+        "inodes": "Inodes",
+        "inodesDetail": "{{used}} of {{total}}",
+        "health": {
+          "passed": "Healthy",
+          "warning": "Warning",
+          "failed": "Failing",
+          "denied": "SMART needs root",
+          "temperature": "Temperature",
+          "powerOn": "Power-on time",
+          "wear": "Wear",
+          "reallocated": "Reallocated sectors",
+          "pending": "Pending sectors",
+          "mediaErrors": "Media errors",
+          "years": "{{value}} years",
+          "days": "{{value}} days",
+          "hours": "{{value}} hours",
+          "failedTitle": "Disk failure predicted",
+          "failedMessage": "{{disks}} failed its SMART self-assessment. Back up the data and replace the disk."
+        }
       },
       "network": {
-        "title": "Network Interfaces",
-        "rxBytes": "RX Bytes",
-        "txBytes": "TX Bytes",
-        "mac": "MAC Address",
         "speed": "Speed",
-        "noData": "No network interface data available"
+        "noData": "No network interface data available",
+        "download": "Download",
+        "upload": "Upload",
+        "interface": "Interface",
+        "address": "Address",
+        "gateway": "Gateway",
+        "interfaces": "Interfaces",
+        "virtual": "Virtual interfaces",
+        "defaultRoute": "Default route",
+        "up": "Up",
+        "down": "Down",
+        "errors": "{{count}} errors",
+        "dropped": "{{count}} dropped",
+        "copy": "Copy {{address}}",
+        "total": "{{value}} total"
       },
       "processes": {
-        "title": "Running Processes",
         "searchPlaceholder": "Search processes...",
         "showing": "Showing {{count}} of {{total}} processes",
         "noData": "No process data available. Process data will appear after the next monitoring cycle.",
-        "noResults": "No processes match your search criteria."
+        "noResults": "No processes match your search criteria.",
+        "columns": {
+          "command": "Command",
+          "cpu": "CPU",
+          "mem": "Memory"
+        }
       },
       "pve": {
         "clusterInfo": "Cluster Information",
-        "resources": "Resource Usage",
-        "virtualMachines": "Virtual Machines",
-        "totalNodes": "Total Nodes",
         "onlineNodes": "Online Nodes",
         "totalCPU": "Total CPU",
         "totalMemory": "Total Memory",
@@ -618,6 +686,10 @@
     },
     "account": {
       "title": "Account",
+      "demo": {
+        "title": "Security",
+        "description": "Password, two-factor authentication, passkeys, API keys and profile pictures can't be changed while you're exploring as a guest."
+      },
       "avatar": {
         "label": "Picture",
         "upload": "Change profile picture",
@@ -2398,7 +2470,10 @@
     "recentConnections": "Recent Connections",
     "getStarted": "Get Started",
     "getStartedHint": "Add a server from the sidebar to begin managing your infrastructure.",
-    "hibernated": "Hibernated"
+    "hibernated": "Hibernated",
+    "demo": {
+      "explore": "Start exploring"
+    }
   },
   "downloadApps": {
     "title": "Download Apps",

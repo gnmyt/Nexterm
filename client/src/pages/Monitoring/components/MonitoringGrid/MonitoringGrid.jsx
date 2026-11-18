@@ -1,117 +1,106 @@
 import Icon from "@mdi/react";
-import { mdiServerOff, mdiAlertCircle, mdiClockOutline, mdiServerNetwork } from "@mdi/js";
+import { mdiClockOutline, mdiMagnify, mdiServerOff } from "@mdi/js";
 import { useTranslation } from "react-i18next";
-import { getIconPath } from "@/common/utils/iconUtils.js";
 import EmptyState from "@/common/components/EmptyState";
+import {
+    EMPTY, FactList, ServerIdentity, Sparkline, getMonitoringState, describeMonitoringState, formatUptime, getUsageLevel,
+} from "../shared";
 
-const STATUS_ICONS = { offline: mdiServerOff, error: mdiAlertCircle, unknown: mdiClockOutline };
+const getFacts = (server, t) => {
+    const monitoring = server.monitoring;
+    const pve = monitoring?.osInfo;
+    const isWindows = pve?.platform === "windows";
+    const facts = server.type === "proxmox"
+        ? {
+            nodes: pve?.onlineNodes != null ? `${pve.onlineNodes}/${pve.totalNodes}` : null,
+            vms: pve?.vmCount != null ? `${pve.runningVMs + pve.runningLXC}/${pve.vmCount + pve.lxcCount}` : null,
+        }
+        : { ...(isWindows ? {} : { loadAverage: monitoring?.loadAverage?.[0]?.toFixed(2) }), processes: monitoring?.processes };
 
-export const MonitoringGrid = ({ servers, onServerSelect }) => {
+    return Object.entries({ ...facts, uptime: formatUptime(monitoring?.uptime, t) })
+        .map(([key, value]) => ({ key, label: t(`monitoring.grid.metrics.${key}`), value }));
+};
+
+const UsageMetric = ({ label, value, history }) => (
+    <div className="fleet-metric">
+        <div className="fleet-metric__head">
+            <span className="fleet-metric__label">{label}</span>
+            <span className="fleet-metric__value">
+                {value ?? EMPTY}{value != null && <span className="fleet-metric__unit">%</span>}
+            </span>
+        </div>
+        <Sparkline values={history} level={getUsageLevel(value)} label={label} />
+    </div>
+);
+
+export const MonitoringGrid = ({ servers, selectedId, isFiltered = false, onServerSelect }) => {
     const { t } = useTranslation();
-
-    const formatUptime = (seconds) => {
-        if (!seconds) return t("monitoring.grid.uptime.unknown");
-        const days = Math.floor(seconds / 86400);
-        const hours = Math.floor((seconds % 86400) / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        if (days > 0) return t("monitoring.grid.uptime.format.days", { days, hours, minutes });
-        if (hours > 0) return t("monitoring.grid.uptime.format.hours", { hours, minutes });
-        return t("monitoring.grid.uptime.format.minutes", { minutes });
-    };
 
     if (!servers?.length) {
         return (
             <div className="monitoring-grid empty">
-                <EmptyState icon={mdiServerOff} title={t("monitoring.grid.noServers.title")}
-                            description={t("monitoring.grid.noServers.subtitle")} />
+                {isFiltered
+                    ? <EmptyState icon={mdiMagnify} title={t("monitoring.grid.noResults.title")}
+                                  description={t("monitoring.grid.noResults.subtitle")} />
+                    : <EmptyState icon={mdiServerOff} title={t("monitoring.grid.noServers.title")}
+                                  description={t("monitoring.grid.noServers.subtitle")} />}
             </div>
         );
     }
 
-    const getServerIcon = (server) => {
-        if (server.type === "proxmox") return mdiServerNetwork;
-        return getIconPath(server.icon);
-    };
-
-    const getMetrics = (server) => {
-        const isPVE = server.type === "proxmox";
-        const pveInfo = server.monitoring?.osInfo;
-        
-        if (isPVE) {
-            return [
-                { key: "cpuUsage", val: server.monitoring?.cpuUsage, unit: "%" },
-                { key: "memoryUsage", val: server.monitoring?.memoryUsage, unit: "%" },
-                { key: "nodes", val: pveInfo?.onlineNodes != null ? `${pveInfo.onlineNodes}/${pveInfo.totalNodes}` : null, unit: "" },
-                { key: "vms", val: pveInfo ? `${pveInfo.runningVMs + pveInfo.runningLXC}/${pveInfo.vmCount + pveInfo.lxcCount}` : null, unit: "" },
-            ];
-        }
-        const metrics = [
-            { key: "cpuUsage", val: server.monitoring?.cpuUsage, unit: "%" },
-            { key: "memoryUsage", val: server.monitoring?.memoryUsage, unit: "%" },
-            { key: "processes", val: server.monitoring?.processes, unit: "" },
-        ];
-        if (pveInfo?.platform !== "windows") {
-            metrics.splice(2, 0, { key: "loadAverage", val: server.monitoring?.loadAverage?.[0]?.toFixed(2), unit: "" });
-        }
-        return metrics;
+    const handleKeyDown = (event, server) => {
+        if (server.accessBlocked) return;
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        onServerSelect(server);
     };
 
     return (
         <div className="monitoring-grid">
-            {servers.map(server => (
-                <div key={server.id} className={`server-card ${server.type === "proxmox" ? "pve" : ""}${server.accessBlocked ? " access-blocked" : ""}`} onClick={server.accessBlocked ? undefined : () => onServerSelect(server)}>
-                    <div className={`status-indicator ${server.monitoring?.status || "unknown"}`}></div>
-                    <div className="server-header">
-                        <div className="server-icon">
-                            <Icon path={getServerIcon(server)} />
+            {servers.map(server => {
+                const restricted = !!server.accessBlocked;
+                const state = getMonitoringState(server);
+                const cardState = restricted ? "unknown" : state;
+                const issue = restricted
+                    ? {
+                        icon: mdiClockOutline,
+                        title: t("monitoring.grid.restricted.title"),
+                        message: t("monitoring.grid.restricted.subtitle"),
+                    }
+                    : state === "online" ? null : describeMonitoringState(server, state, t);
+                const selected = String(server.id) === String(selectedId);
+
+                return (
+                    <div key={server.id} role="button" tabIndex={restricted ? -1 : 0} aria-pressed={selected}
+                         aria-disabled={restricted || undefined}
+                         className={`fleet-card mon-state mon-state--${cardState}${selected ? " selected" : ""}${restricted ? " access-blocked" : ""}`}
+                         onClick={restricted ? undefined : () => onServerSelect(server)}
+                         onKeyDown={(event) => handleKeyDown(event, server)}>
+                        <div className="fleet-card__header">
+                            <ServerIdentity server={server} />
+                            <span className="fleet-card__dot" role="img" aria-label={t(`monitoring.grid.status.labels.${cardState}`)} />
                         </div>
-                        <div className="server-info">
-                            <h3>{server.name}</h3>
-                            <p>{server.ip}:{server.port}</p>
-                        </div>
-                    </div>
-                    {server.accessBlocked ? (
-                        <div className="offline-state">
-                            <div className="offline-icon">
-                                <Icon path={mdiClockOutline} />
+                        {issue ? (
+                            <div className="fleet-card__issue">
+                                <div className="fleet-card__issue-icon"><Icon path={issue.icon} /></div>
+                                <h4>{issue.title}</h4>
+                                <p>{issue.message}</p>
+                                {issue.meta && <span>{issue.meta}</span>}
                             </div>
-                            <div className="offline-info">
-                                <h4>{t("monitoring.grid.restricted.title")}</h4>
-                                <p>{t("monitoring.grid.restricted.subtitle")}</p>
-                            </div>
-                        </div>
-                    ) : server.status === "online" ? (
-                        <>
-                            <div className="metrics">
-                                {getMetrics(server).map(m => (
-                                    <div key={m.key} className="metric">
-                                        <div className="metric-label">{t(`monitoring.grid.metrics.${m.key}`)}</div>
-                                        <div className="metric-value">{m.val != null ? `${m.val}${m.unit}` : "N/A"}</div>
-                                    </div>
-                                ))}
-                            </div>
-                            {server.monitoring?.uptime && (
-                                <div className="uptime-info">{t("monitoring.grid.metrics.uptime")}: {formatUptime(server.monitoring.uptime)}</div>
-                            )}
-                        </>
-                    ) : (
-                        <div className="offline-state">
-                            <div className="offline-icon">
-                                <Icon path={STATUS_ICONS[server.status] || mdiClockOutline} />
-                            </div>
-                            <div className="offline-info">
-                                <h4>{t(`monitoring.grid.status.${server.status === "offline" ? "serverOffline" : server.status === "error" ? "connectionError" : "statusUnknown"}`)}</h4>
-                                <p>{server.status === "error" ? (server.monitoring?.errorMessage || t("monitoring.grid.status.errorMessage")) : t(`monitoring.grid.status.${server.status === "offline" ? "offlineMessage" : "unknownMessage"}`)}</p>
-                                <div className="offline-actions">
-                                    <span className="last-seen">
-                                        {server.monitoring?.lastSeen ? t("monitoring.grid.status.lastSeen", { time: new Date(server.monitoring.lastSeen).toLocaleString() }) : t("monitoring.grid.status.noRecentActivity")}
-                                    </span>
+                        ) : (
+                            <>
+                                <div className="fleet-card__metrics">
+                                    <UsageMetric label={t("monitoring.grid.metrics.cpu")} value={server.monitoring?.cpuUsage}
+                                                 history={server.history?.map(point => point.cpuUsage)} />
+                                    <UsageMetric label={t("monitoring.grid.metrics.memory")} value={server.monitoring?.memoryUsage}
+                                                 history={server.history?.map(point => point.memoryUsage)} />
                                 </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            ))}
+                                <FactList facts={getFacts(server, t)} />
+                            </>
+                        )}
+                    </div>
+                );
+            })}
         </div>
     );
 };

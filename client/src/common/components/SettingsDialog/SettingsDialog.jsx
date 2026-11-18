@@ -9,6 +9,7 @@ import { getSettingsUserPages, getSettingsAdminPages } from "@/common/utils/navi
 import { useScrollSpy } from "@/common/hooks/useScrollSpy.js";
 import { SettingsSectionsContext } from "./SettingsHeading.jsx";
 import "./styles.sass";
+import { isDemoGuest } from "@/common/utils/demo.js";
 
 const byDocumentOrder = (a, b) => (a.element.compareDocumentPosition(b.element) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1);
 
@@ -127,7 +128,7 @@ export const SettingsDialog = ({ open, onClose, initialTab = "account" }) => {
     return createPortal(
         <>
             <ActionConfirmDialog open={logoutDialogOpen} setOpen={setLogoutDialogOpen}
-                                 text={t("common.sidebar.logoutConfirmText", { username: user?.username })}
+                                 text={isDemoGuest(user) ? t("common.demo.endConfirmText") : t("common.sidebar.logoutConfirmText", { username: user?.username })}
                                  onConfirm={logout} />
             <div className={`settings-dialog-overlay ${isClosing ? "closing" : ""}`} onAnimationEnd={handleAnimationEnd}>
                 <div className="settings-dialog">
@@ -157,7 +158,7 @@ export const SettingsDialog = ({ open, onClose, initialTab = "account" }) => {
                                 <div className="nav-group nav-group--footer">
                                     <button type="button" className="nav-item danger" onClick={() => setLogoutDialogOpen(true)}>
                                         <Icon path={mdiLogout} className="nav-icon" />
-                                        <span className="nav-label">{t("common.sidebar.logout")}</span>
+                                        <span className="nav-label">{isDemoGuest(user) ? t("common.demo.end") : t("common.sidebar.logout")}</span>
                                     </button>
                                 </div>
                             )}

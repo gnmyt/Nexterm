@@ -485,6 +485,14 @@ class ControlPlaneServer extends EventEmitter {
 
         const sessionId = ready.sessionId();
 
+        socket.pause();
+        const resumeForConsumer = (event) => {
+            if (event !== "data") return;
+            socket.removeListener("newListener", resumeForConsumer);
+            process.nextTick(() => socket.resume());
+        };
+        socket.on("newListener", resumeForConsumer);
+
         const ownerEngineId = this._sessionEngineMap.get(sessionId);
         const ownerEngine = ownerEngineId ? this._engines.get(ownerEngineId) : null;
         if (!ownerEngine || ownerEngine.remoteHost !== socket.remoteAddress) {

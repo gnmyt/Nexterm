@@ -9,6 +9,7 @@ const { resolveIdentity } = require("../utils/identityResolver");
 const { findActiveSession } = require("../utils/sessionActivity");
 const { safeCloseWs } = require("../utils/wsClose");
 const { applyEffectiveEntryConfig } = require("../utils/folderInheritance");
+const { isGuestExpired } = require("../utils/demoMode");
 
 const SHARED_ENTRY_ATTRIBUTES = ["id", "type", "config", "folderId", "organizationId", "accountId", "integrationId", "disabled"];
 
@@ -22,6 +23,7 @@ const authenticateToken = async (ws, sessionToken) => {
 
     const user = await Account.findByPk(session.accountId);
     if (!user) return ws.close(4004, "The token is not valid"), null;
+    if (isGuestExpired(user)) return ws.close(4003, "Your demo session has expired"), null;
 
     return { session, user };
 };

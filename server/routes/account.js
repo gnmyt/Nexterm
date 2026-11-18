@@ -53,6 +53,7 @@ app.get("/me", authenticate, async (req, res) => {
         sessionSync: req.user.sessionSync, preferences: req.user.preferences || {},
         activeThemeId: req.user.activeThemeId || null,
         avatarHash: req.user.avatarHash || null,
+        demoExpiresAt: req.user.demoExpiresAt || null,
     });
 });
 
