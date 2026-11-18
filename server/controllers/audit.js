@@ -52,6 +52,11 @@ const AUDIT_ACTIONS = {
     IDENTITY_DELETE: "identity.delete",
     IDENTITY_CREDENTIALS_ACCESS: "identity.credentials_access",
 
+    TRUST_ACCEPT: "trust.accept",
+    TRUST_ACCEPT_CHANGED: "trust.accept_changed",
+    TRUST_REJECT: "trust.reject",
+    TRUST_REMOVE: "trust.remove",
+
     SCRIPT_EXECUTE: "script.execute",
 
     AGENT_COMMAND: "agent.command",
@@ -105,6 +110,11 @@ const ACTION_LABELS = {
     "identity.delete": "Identity deleted",
     "identity.credentials_access": "Identity credentials accessed",
 
+    "trust.accept": "Certificate trusted",
+    "trust.accept_changed": "Changed certificate trusted",
+    "trust.reject": "Certificate rejected",
+    "trust.remove": "Trusted certificate removed",
+
     "script.execute": "Script executed",
 
     "ai.command": "AI ran a command",
@@ -132,6 +142,7 @@ const ACTION_CATEGORIES = [
     { key: "folder", label: "Folders (SFTP)", description: "Folder operations performed over SFTP" },
     { key: "folder_mgmt", label: "Folder Management", description: "Folder records management" },
     { key: "identity", label: "Identities", description: "Identity records and credential access" },
+    { key: "trust", label: "Trusted Certificates", description: "Certificates and host keys that were trusted, rejected or removed" },
     { key: "script", label: "Scripts", description: "Script execution" },
     { key: "ai", label: "AI Assistant", description: "Actions performed by the AI assistant on a server" },
     { key: "agent", label: "AI Agents", description: "Actions performed by the AI assistant and external agents connected through the MCP server" },

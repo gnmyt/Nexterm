@@ -39,6 +39,7 @@ const Permission = Object.freeze({
     ORG_MANAGE: "org.manage",
     ORG_DELETE: "org.delete",
     ORG_MEMBERS_MANAGE: "org.members.manage",
+    ORG_CERTIFICATES_MANAGE: "org.certificates.manage",
     ORG_AUDIT_VIEW: "org.audit.view",
     ORG_AUDIT_RECORDINGS: "org.audit.recordings",
     ORG_SESSIONS_VIEW: "org.sessions.view",
@@ -101,6 +102,7 @@ const PERMISSIONS = [
     { id: P.ORG_MANAGE, scopes: [ORGANIZATION], category: "general", label: "Manage Organization", description: "Edit the organization name, description and settings." },
     { id: P.ORG_DELETE, scopes: [ORGANIZATION], category: "general", label: "Delete Organization", description: "Permanently delete this organization.", dangerous: true },
     { id: P.ORG_MEMBERS_MANAGE, scopes: [ORGANIZATION], category: "members", label: "Manage Members", description: "Invite, remove and assign permissions to members." },
+    { id: P.ORG_CERTIFICATES_MANAGE, scopes: [ORGANIZATION], category: "general", label: "Manage Trusted Certificates", description: "Accept changed server certificates and host keys, and remove trusted ones.", dangerous: true },
 
     { id: P.ORG_AUDIT_VIEW, scopes: [ORGANIZATION], category: "audit", label: "View Audit Logs", description: "View audit logs and configure auditing for this organization." },
     { id: P.ORG_AUDIT_RECORDINGS, scopes: [ORGANIZATION], category: "audit", label: "Play Session Recordings", description: "Download and play back recorded sessions.", dangerous: true },
