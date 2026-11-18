@@ -17,6 +17,7 @@ const logger = require("../utils/logger");
 const SessionManager = require("../lib/SessionManager");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const { endSessions } = require("../utils/loginSession");
+const { clearTotpSecret } = require("../utils/totp");
 
 module.exports.createAccount = async (configuration, firstTimeSetup = true) => {
     if (await Account.count() > 0 && firstTimeSetup)
@@ -175,6 +176,7 @@ module.exports.updateTOTP = async (id, status) => {
         return { code: 103, message: `TOTP is already ${status ? "enabled" : "disabled"} on your account` };
 
     await Account.update({ totpEnabled: status }, { where: { id } });
+    if (!status) await clearTotpSecret(id);
 };
 
 module.exports.updateSessionSync = async (id, sessionSync) => {
@@ -283,7 +285,7 @@ module.exports.listUsers = async (options = {}) => {
     const [users, total] = await Promise.all([
         Account.findAll({
             where: whereClause,
-            attributes: { exclude: ["password", "totpSecret", "preferences", "sessionSync", "externalId"] },
+            attributes: { exclude: ["password", "totpSecretEncrypted", "totpSecretIV", "totpSecretAuthTag", "preferences", "sessionSync", "externalId"] },
             limit: parseInt(limit),
             offset: parseInt(offset),
             order: [["id", "DESC"]],

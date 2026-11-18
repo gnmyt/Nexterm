@@ -1,5 +1,6 @@
 const { Op } = require("sequelize");
 const Session = require("../models/Session");
+const { hashSessionToken } = require("../models/Session");
 const SessionSettings = require("../models/SessionSettings");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const logger = require("./logger");
@@ -45,7 +46,7 @@ const endSessions = async (where) => {
 
 const findActiveSession = async (token) => {
     if (!token) return null;
-    const session = await Session.findOne({ where: { token } });
+    const session = await Session.findOne({ where: { tokenHash: hashSessionToken(token) } });
     if (!session) return null;
 
     const expiry = expiryOf(session, await getSessionSettings());
@@ -72,8 +73,15 @@ const removeExpiredSessions = async () => {
 setInterval(() => removeExpiredSessions().catch((error) =>
     logger.error("Failed to remove expired login sessions", { error: error.message })), CLEANUP_INTERVAL_MS).unref?.();
 
+const issueNewToken = async (session) => {
+    const token = require("crypto").randomBytes(48).toString("hex");
+    await Session.update({ tokenHash: hashSessionToken(token) }, { where: { id: session.id } });
+    return token;
+};
+
 module.exports = {
     IMPERSONATION_LIFETIME_MS,
+    issueNewToken,
     getSessionSettings,
     updateSessionSettings,
     findActiveSession,

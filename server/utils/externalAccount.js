@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const speakeasy = require("speakeasy");
+const { verifyTotpCode } = require("./totp");
 const { genSalt, hash } = require("bcrypt");
 const Account = require("../models/Account");
 
@@ -21,8 +21,7 @@ const findExternalAccount = async ({ provider, externalId, username }) => {
 const verifyTotp = (account, code) => {
     if (!account?.totpEnabled) return null;
     if (!code) return { code: 202, message: "TOTP is required for this account" };
-    const valid = speakeasy.totp.verify({ secret: account.totpSecret || "", encoding: "base32", token: code });
-    return valid ? null : { code: 203, message: "Your provided code is invalid or has expired." };
+    return verifyTotpCode(account, code) ? null : { code: 203, message: "Your provided code is invalid or has expired." };
 };
 
 const applyExternalAccount = async (plan, { provider, externalId, username, firstName, lastName }) => {

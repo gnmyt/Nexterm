@@ -2,7 +2,7 @@ const { Router } = require("express");
 const { registerValidation, totpSetup, ownPasswordChangeValidation, updateNameValidation, updateSessionSyncValidation } = require("../validations/account");
 const { preferencesValidation } = require("../validations/preferences");
 const { createAccount, selfRegister, getFTSStatus, updateTOTP, changeOwnPassword, updateName, updateSessionSync, updatePreferences, searchUsers, updateAvatar, removeAvatar } = require("../controllers/account");
-const speakeasy = require("speakeasy");
+const { startTotpSetup, verifyTotpCode } = require("../utils/totp");
 const express = require("express");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const { authenticate, authenticateQuery } = require("../middlewares/auth");
@@ -196,16 +196,19 @@ app.post("/register", async (req, res) => {
 /**
  * GET /account/totp/secret
  * @summary Get TOTP Secret
- * @description Retrieves the TOTP secret and QR code URL for setting up two-factor authentication. Used for configuring authenticator apps.
+ * @description Generates a new TOTP secret and QR code URL for setting up two-factor authentication. Only available while two-factor authentication is off.
  * @tags Account
  * @produces application/json
  * @security BearerAuth
  * @return {object} 200 - TOTP secret and setup URL
  */
 app.get("/totp/secret", authenticate, async (req, res) => {
+    if (req.user.totpEnabled) return sendError(res, 409, 208, "Two-factor authentication is already enabled. Disable it to set it up again.");
+
+    const secret = await startTotpSetup(req.user);
     res.json({
-        secret: req.user?.totpSecret,
-        url: `otpauth://totp/Nexterm%20%28${req.user?.username}%29?secret=${req.user?.totpSecret}`,
+        secret,
+        url: `otpauth://totp/Nexterm%20%28${encodeURIComponent(req.user.username)}%29?secret=${secret}`,
     });
 });
 
@@ -223,13 +226,7 @@ app.get("/totp/secret", authenticate, async (req, res) => {
 app.post("/totp/enable", authenticate, async (req, res) => {
     if (validateSchema(res, totpSetup, req.body)) return;
 
-    const tokenCorrect = speakeasy.totp.verify({
-        secret: req.user?.totpSecret || "",
-        encoding: "base32",
-        token: req.body.code,
-    });
-
-    if (!tokenCorrect)
+    if (!verifyTotpCode(req.user, req.body.code))
         return sendError(res, 400, 203, "Your provided code is invalid or has expired.", {
             serverTime: new Date().toISOString()
         });

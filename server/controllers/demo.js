@@ -4,6 +4,7 @@ const { genSalt, hash } = require("bcrypt");
 const db = require("../utils/database");
 const Account = require("../models/Account");
 const Session = require("../models/Session");
+const { hashSessionToken } = require("../models/Session");
 const GroupMember = require("../models/GroupMember");
 const OrganizationMember = require("../models/OrganizationMember");
 const OrganizationMemberPermission = require("../models/OrganizationMemberPermission");
@@ -96,7 +97,7 @@ module.exports.cleanupExpiredGuests = async () => {
 };
 
 module.exports.removeGuestByToken = async (token) => {
-    const session = token ? await Session.findOne({ where: { token } }) : null;
+    const session = token ? await Session.findOne({ where: { tokenHash: hashSessionToken(token) } }) : null;
     const account = session ? await Account.findByPk(session.accountId) : null;
     if (!account?.demoExpiresAt) return;
 
