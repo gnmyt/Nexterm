@@ -1,0 +1,292 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  changes:
+    name: "Detect changes"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      cli: ${{ steps.filter.outputs.cli }}
+      connector: ${{ steps.filter.outputs.connector }}
+      client: ${{ steps.filter.outputs.client }}
+      landing: ${{ steps.filter.outputs.landing }}
+      server: ${{ steps.filter.outputs.server }}
+      mobile: ${{ steps.filter.outputs.mobile }}
+      engine: ${{ steps.filter.outputs.engine }}
+    steps:
+      - name: Filter changed paths
+        id: filter
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          BEFORE: ${{ github.event.before }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -uo pipefail
+          all=false
+          files=""
+
+          if [ "$EVENT" = "pull_request" ]; then
+            files=$(gh api "repos/$REPO/pulls/$PR/files" --paginate --jq '.[].filename') || all=true
+          elif [ "$EVENT" = "push" ] && ! [[ "$BEFORE" =~ ^0+$ ]]; then
+            files=$(gh api "repos/$REPO/compare/$BEFORE...$SHA" --jq '.files[].filename') || all=true
+            if [ "$(wc -l <<<"$files")" -ge 300 ]; then all=true; fi
+          else
+            all=true
+          fi
+
+          if grep -qE '^\.github/workflows/ci\.yml$' <<<"$files"; then all=true; fi
+
+          check() {
+            if $all || grep -qE "$2" <<<"$files"; then
+              echo "$1=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "$1=false" >> "$GITHUB_OUTPUT"
+            fi
+          }
+
+          check cli '^cli/'
+          check connector '^connector/'
+          check client '^client/'
+          check landing '^landing/'
+          check server '^(server/|package\.json$|yarn\.lock$)'
+          check mobile '^mobile/'
+          check engine '^(engine/|schema/|vendor/|scripts/build-engine-release\.sh$)'
+
+          cat "$GITHUB_OUTPUT"
+
+  cli:
+    name: "CLI"
+    needs: changes
+    if: needs.changes.outputs.cli == 'true'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v7
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install OpenSSL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev pkg-config
+
+      - name: Check CLI
+        working-directory: cli
+        run: cargo check --locked
+
+  connector:
+    name: "Connector"
+    needs: changes
+    if: needs.changes.outputs.connector == 'true'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "26"
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libssl-dev
+
+      - name: Install connector dependencies
+        working-directory: connector
+        run: |
+          npm install -g yarn
+          yarn install --frozen-lockfile
+
+      - name: Stub frontend dist
+        run: mkdir -p client/dist
+
+      - name: Check Connector
+        working-directory: connector/src-tauri
+        run: cargo check --locked
+
+  client:
+    name: "Client"
+    needs: changes
+    if: needs.changes.outputs.client == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "26"
+
+      - name: Build client
+        working-directory: client
+        run: |
+          npm install -g yarn
+          yarn install --frozen-lockfile --ignore-engines
+          yarn build
+
+  landing:
+    name: "Landing"
+    needs: changes
+    if: needs.changes.outputs.landing == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "26"
+
+      - name: Build landing
+        working-directory: landing
+        run: |
+          npm install -g pnpm
+          pnpm install --frozen-lockfile
+          pnpm build
+
+  server:
+    name: "Server"
+    needs: changes
+    if: needs.changes.outputs.server == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "26"
+
+      - name: Install server dependencies
+        run: |
+          npm install -g yarn
+          yarn install --frozen-lockfile --ignore-engines
+
+      - name: Syntax check server
+        run: find server -name '*.js' -not -path '*/generated/*' -print0 | xargs -0 -n1 node --check
+
+  android:
+    name: "Android"
+    needs: changes
+    if: needs.changes.outputs.mobile == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v7
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-disabled: true
+
+      - name: Build debug APK
+        working-directory: mobile
+        run: ./gradlew :androidApp:assembleDebug
+
+  ios:
+    name: "iOS"
+    needs: changes
+    if: needs.changes.outputs.mobile == 'true'
+    runs-on: macos-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v7
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-disabled: true
+
+      - name: Fetch libghostty-vt XCFramework
+        working-directory: mobile/shared/native
+        run: |
+          VT=$(grep -m1 '^VT_VERSION=' build-libghostty.sh | cut -d= -f2)
+          BASE="https://release.files.ghostty.org/libghostty-vt/$VT"
+          curl -fsSLO "$BASE/SHA256SUMS" && curl -fsSLO "$BASE/ghostty-vt-$VT.xcframework.zip"
+          grep "ghostty-vt-$VT.xcframework.zip" SHA256SUMS | shasum -a 256 -c -
+          unzip -q "ghostty-vt-$VT.xcframework.zip" && rm -rf "ghostty-vt.xcframework/macos-arm64_x86_64" SHA256SUMS ./*.zip
+
+      - name: Build iOS
+        working-directory: mobile/iosApp
+        run: |
+          xcodebuild -project iosApp.xcodeproj -scheme iosApp -configuration Release -sdk iphoneos \
+            -derivedDataPath "$RUNNER_TEMP/build" CODE_SIGNING_ALLOWED=NO build
+
+  engine:
+    name: "Engine"
+    needs: changes
+    if: needs.changes.outputs.engine == 'true'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v7
+
+      - name: Build engine (Debian bookworm container)
+        run: |
+          docker run --rm \
+            -v "$PWD":/work -w /work \
+            -e ARCH=x64 \
+            debian:bookworm-slim \
+            sh -c 'for step in deps-all libvnc guac engine; do sh scripts/build-engine-release.sh "$step" || exit 1; done'
+
+  ci-ok:
+    name: "CI"
+    if: always()
+    needs: [changes, cli, connector, client, landing, server, android, ios, engine]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify all checks passed
+        env:
+          RESULTS: ${{ toJSON(needs.*.result) }}
+        run: |
+          echo "$RESULTS"
+          if grep -qE '"(failure|cancelled)"' <<<"$RESULTS"; then
+            echo "One or more checks failed."
+            exit 1
+          fi

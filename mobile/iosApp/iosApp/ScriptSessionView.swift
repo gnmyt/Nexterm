@@ -17,41 +17,80 @@ struct ScriptSessionView: View {
     }
 
     private var input: ScriptDialog.Input? { state.value.dialog as? ScriptDialog.Input }
+    private var notice: ScriptDialog.Notice? { state.value.dialog as? ScriptDialog.Notice }
+
+    private var inputShown: Binding<Bool> {
+        presented { ($0 as? ScriptDialog.Input).map { $0.kind != .select } ?? false }
+    }
+
+    private var selectShown: Binding<Bool> {
+        presented { ($0 as? ScriptDialog.Input)?.kind == .select }
+    }
+
+    private var noticeShown: Binding<Bool> {
+        presented { $0 is ScriptDialog.Notice }
+    }
+
+    private var resultShown: Binding<Bool> {
+        presented(dismiss: true) { $0 is ScriptDialog.Summary || $0 is ScriptDialog.Table }
+    }
 
     var body: some View {
-        let script = state.value
-        TerminalSessionView(session: session, terminal: terminal)
-            .safeAreaInset(edge: .top, spacing: 0) { header(script) }
-            .onChange(of: script.notice) { _, notice in if let notice { app.show(notice) } }
-            .onChange(of: input) { _, prompt in value = prompt?.kind == .text ? prompt?.placeholder ?? "" : "" }
-            .alert("Input Required", isPresented: presented { ($0 as? ScriptDialog.Input).map { $0.kind != .select } ?? false }, presenting: input) { prompt in
-                switch prompt.kind {
-                case .confirm:
-                    Button("Yes") { run.submit(value: "Yes") }
-                    Button("No") { run.submit(value: "No") }
-                case .password:
-                    SecureField("Password", text: $value)
-                    Button("Submit") { run.submit(value: value) }.disabled(value.isEmpty)
-                default:
-                    TextField("Value", text: $value)
-                    Button("Submit") { run.submit(value: value) }.disabled(value.trimmingCharacters(in: .whitespaces).isEmpty)
-                }
-                Button("Cancel", role: .cancel) { run.cancel() }
+        terminalView
+            .alert("Input Required", isPresented: inputShown, presenting: input) { prompt in
+                inputActions(prompt)
             } message: { prompt in
                 Text(prompt.prompt)
             }
-            .confirmationDialog(input?.prompt ?? "", isPresented: presented { ($0 as? ScriptDialog.Input)?.kind == .select }, titleVisibility: .visible, presenting: input) { prompt in
-                ForEach(prompt.options, id: \.self) { option in Button(option) { run.submit(value: option) } }
-                Button("Cancel", role: .cancel) { run.cancel() }
+            .confirmationDialog(input?.prompt ?? "", isPresented: selectShown, titleVisibility: .visible, presenting: input) { prompt in
+                selectActions(prompt)
             }
-            .alert((script.dialog as? ScriptDialog.Notice)?.title ?? "", isPresented: presented { $0 is ScriptDialog.Notice }) {
+            .alert(notice?.title ?? "", isPresented: noticeShown) {
                 Button("OK") { run.dismiss() }
             } message: {
-                Text((script.dialog as? ScriptDialog.Notice)?.message ?? "")
+                Text(notice?.message ?? "")
             }
-            .sheet(isPresented: presented(dismiss: true) { $0 is ScriptDialog.Summary || $0 is ScriptDialog.Table }) {
-                ScriptResultSheet(dialog: script.dialog) { run.dismiss() }
+            .sheet(isPresented: resultShown) {
+                ScriptResultSheet(dialog: state.value.dialog) { run.dismiss() }
             }
+    }
+
+    private var terminalView: some View {
+        let script = state.value
+        return TerminalSessionView(session: session, terminal: terminal)
+            .safeAreaInset(edge: .top, spacing: 0) { header(script) }
+            .onChange(of: script.notice) { _, notice in if let notice { app.show(notice) } }
+            .onChange(of: input) { _, prompt in resetValue(for: prompt) }
+    }
+
+    private func resetValue(for prompt: ScriptDialog.Input?) {
+        if let prompt, prompt.kind == .text {
+            value = prompt.placeholder
+        } else {
+            value = ""
+        }
+    }
+
+    @ViewBuilder
+    private func inputActions(_ prompt: ScriptDialog.Input) -> some View {
+        switch prompt.kind {
+        case .confirm:
+            Button("Yes") { run.submit(value: "Yes") }
+            Button("No") { run.submit(value: "No") }
+        case .password:
+            SecureField("Password", text: $value)
+            Button("Submit") { run.submit(value: value) }.disabled(value.isEmpty)
+        default:
+            TextField("Value", text: $value)
+            Button("Submit") { run.submit(value: value) }.disabled(value.trimmingCharacters(in: .whitespaces).isEmpty)
+        }
+        Button("Cancel", role: .cancel) { run.cancel() }
+    }
+
+    @ViewBuilder
+    private func selectActions(_ prompt: ScriptDialog.Input) -> some View {
+        ForEach(prompt.options, id: \.self) { option in Button(option) { run.submit(value: option) } }
+        Button("Cancel", role: .cancel) { run.cancel() }
     }
 
     private func presented(dismiss: Bool = false, _ matches: @escaping (ScriptDialog?) -> Bool) -> Binding<Bool> {
