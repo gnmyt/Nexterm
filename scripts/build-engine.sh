@@ -7,7 +7,7 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 ENGINE_SRC="$PROJECT_ROOT/engine"
 ENGINE_BUILD="$ENGINE_SRC/build"
 GUACD_SRC="$PROJECT_ROOT/vendor/guacamole-server"
-LIBVNC_LIB="$PROJECT_ROOT/vendor/libvncserver/dist/lib"
+source "$SCRIPT_DIR/libvnc-client.sh"
 ENGINE_PID=""
 
 ENGINE_LOG_LEVEL=${LOG_LEVEL:-info}
@@ -34,6 +34,8 @@ ensure_guacd_built() {
     local NEEDS_BUILD=0
     if [ ! -f "$GUAC_LIB" ]; then
         NEEDS_BUILD=1
+    elif [[ "$LIBVNC_STAMP" -nt "$GUAC_LIB" ]]; then
+        NEEDS_BUILD=1
     elif find "$GUACD_SRC/src" "$GUACD_SRC/configure.ac" "$GUACD_SRC/Makefile.am" \
             -type f -newer "$GUAC_LIB" | grep -q .; then
         NEEDS_BUILD=1
@@ -44,8 +46,10 @@ ensure_guacd_built() {
         cd "$GUACD_SRC"
         CONFIGURE_OPTS="--prefix=$DIST_DIR --with-freerdp-plugin-dir=$DIST_DIR/lib/freerdp3"
 
-        if [ ! -f Makefile ]; then
-            autoreconf -fi && CFLAGS="${CFLAGS:-} -Wno-error=deprecated-declarations" ./configure $CONFIGURE_OPTS
+        if [[ ! -f Makefile || configure.ac -nt Makefile || \
+                "$LIBVNC_STAMP" -nt Makefile ]]; then
+            autoreconf -fi && \
+                CFLAGS="${CFLAGS:-} -Wno-error=deprecated-declarations" ./configure $CONFIGURE_OPTS
         fi
 
         make -j$(nproc)
@@ -54,25 +58,12 @@ ensure_guacd_built() {
     fi
 }
 
-ensure_libvnc_built() {
-    [[ -f "$LIBVNC_LIB/libvncclient.so.1" ]] && return 0
-
-    echo "[engine] Building patched libvncclient (one time)..."
-    if ! REPO_ROOT="$PROJECT_ROOT" sh "$SCRIPT_DIR/build-engine-release.sh" libvnc \
-            > "$PROJECT_ROOT/vendor/libvncserver-build.log" 2>&1; then
-        echo "[engine] libvncclient build failed, using the system library instead."
-        echo "[engine] Remote displays will not resize on TigerVNC 1.14+."
-        echo "[engine] See vendor/libvncserver-build.log"
-        return 0
-    fi
-    echo "[engine] Patched libvncclient built"
-}
-
 build() {
     echo "[engine] Building nexterm-engine..."
 
-    ensure_guacd_built
     ensure_libvnc_built
+    use_patched_libvnc
+    ensure_guacd_built
 
     mkdir -p "$ENGINE_BUILD"
     cd "$ENGINE_BUILD"

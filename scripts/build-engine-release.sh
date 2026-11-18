@@ -126,6 +126,7 @@ build_libvnc() {
 
     cd "libvncserver-LibVNCServer-${LIBVNC_VERSION}"
     patch -p1 < "$REPO_ROOT/vendor/patches/libvncclient-accept-screen-id-zero.patch"
+    patch -p1 < "$REPO_ROOT/vendor/patches/libvncclient-extended-clipboard.patch"
 
     cmake -B build \
         -DCMAKE_BUILD_TYPE=Release \
@@ -136,6 +137,9 @@ build_libvnc() {
     cmake --build build -j"$(nproc)"
     cmake --install build
     strip "$LIBVNC_DIST/lib"/libvnc*.so.*.* 2>/dev/null || true
+    cat "$REPO_ROOT/vendor/patches/libvncclient-accept-screen-id-zero.patch" \
+        "$REPO_ROOT/vendor/patches/libvncclient-extended-clipboard.patch" \
+        | cksum > "$LIBVNC_DIST/.nexterm-patches"
 }
 
 install_patched_libvnc() {
@@ -145,6 +149,14 @@ install_patched_libvnc() {
 }
 
 build_guac() {
+    # Compile against the same patched headers/library shipped at runtime.
+    # Otherwise configure may silently disable Extended Clipboard support.
+    if [ -f "$LIBVNC_DIST/lib/libvncclient.so.1" ]; then
+        export CPPFLAGS="-I$LIBVNC_DIST/include ${CPPFLAGS:-}"
+        export LDFLAGS="-L$LIBVNC_DIST/lib ${LDFLAGS:-}"
+        export PKG_CONFIG_PATH="$LIBVNC_DIST/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
+        export LD_LIBRARY_PATH="$LIBVNC_DIST/lib:${LD_LIBRARY_PATH:-}"
+    fi
     cd "$GUAC_SRC"
     autoreconf -fi
     CFLAGS="${CFLAGS:-} -Wno-error=deprecated-declarations" \

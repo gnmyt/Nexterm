@@ -1832,6 +1832,8 @@
           "description": "Configure color depth, resize behavior and scaling for the remote display",
           "colorDepth": "Color Depth",
           "resizeMethod": "Resize Method",
+          "clipboardEncoding": "Clipboard Encoding",
+          "clipboardEncodingHint": "Use UTF-8 for Chinese and emoji with TigerVNC Extended Clipboard. Leave the default for legacy servers.",
           "displayScale": "Display Scale",
           "displayScaleAuto": "Automatic (match this device)",
           "displayScaleAccount": "Account default"

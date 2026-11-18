@@ -1,0 +1,84 @@
+Complete the text-only Extended Clipboard handshake with TigerVNC.
+Based on LibVNCServer 0.9.15; retain the existing screen-ID-zero patch.
+Reply to capabilities, request announced UTF-8 text, and strip the wire NUL.
+Do not advertise unimplemented Request/Peek handlers.
+
+--- a/src/libvncclient/rfbclient.c
++++ b/src/libvncclient/rfbclient.c
+@@ -1924,6 +1924,22 @@
+  */
+ 
+ static rfbBool
++sendExtClientClipboardControl(rfbClient* client, uint32_t flags, rfbBool caps)
++{
++  rfbClientCutTextMsg msg;
++  uint32_t payload[2];
++  unsigned int length = caps ? sizeof(payload) : sizeof(payload[0]);
++  memset(&msg, 0, sizeof(msg));
++  msg.type = rfbClientCutText;
++  msg.length = rfbClientSwap32IfLE(-(int32_t)length);
++  payload[0] = rfbClientSwap32IfLE(flags);
++  /* Maximum unsolicited UTF-8 payload. One size follows the one type. */
++  payload[1] = rfbClientSwap32IfLE(1 << 20);
++  return WriteToRFBServer(client, (char*)&msg, sz_rfbClientCutTextMsg)
++      && WriteToRFBServer(client, (char*)payload, length);
++}
++
++static rfbBool
+ rfbClientProcessExtServerCutText(rfbClient* client, char *data, int len)
+ {
+   uint32_t flags;
+@@ -1936,21 +1952,33 @@
+   len -= sizeof(flags);
+   flags = rfbClientSwap32IfLE(flags);
+ 
+-  /*
+-   * only process (text | provide). Ignore all others
+-   * modify here if need more types(rtf,html,dib,files)
+-   */
++  /* Reply to capabilities so TigerVNC does not fall back to Latin-1. */
++  if (flags & rfbExtendedClipboard_Caps) {
++    if (!(flags & rfbExtendedClipboard_Text))
++      return TRUE;
++    if (len < sizeof(uint32_t))
++      return FALSE;
++    client->extendedClipboardServerCapabilities = flags;
++    return sendExtClientClipboardControl(client,
++        rfbExtendedClipboard_Caps | rfbExtendedClipboard_Notify
++        | rfbExtendedClipboard_Provide | rfbExtendedClipboard_Text, TRUE);
++  }
++
++  /* Request text announced by the server instead of dropping Notify. */
++  if (flags & rfbExtendedClipboard_Notify) {
++    if (flags & rfbExtendedClipboard_Text)
++      return sendExtClientClipboardControl(client,
++          rfbExtendedClipboard_Request | rfbExtendedClipboard_Text, FALSE);
++    return TRUE;
++  }
++
++  /* Only UTF-8 text is supported. */
+   if (!(flags & rfbExtendedClipboard_Text)) {
+     rfbClientLog("rfbClientProcessExtServerCutText. not text type. ignore\n");
+     return TRUE;
+   }
+   if (!(flags & rfbExtendedClipboard_Provide)) {
+     rfbClientLog("rfbClientProcessExtServerCutText. not provide type. ignore\n");
+-    return TRUE;
+-  }
+-  if (flags & rfbExtendedClipboard_Caps) {
+-    rfbClientLog("rfbClientProcessExtServerCutText. default cap.\n");
+-    client->extendedClipboardServerCapabilities |= rfbExtendedClipboard_Text; /* for now, only text */
+     return TRUE;
+   }
+ 
+@@ -2004,6 +2032,10 @@
+     inflateEnd(&stream);
+     return FALSE;
+   }
++  /* Extended Clipboard includes a terminating NUL on the wire, unlike
++   * the length-delimited callback interface. */
++  if (size > 0 && buf[size - 1] == 0)
++    size--;
+   if (client->GotXCutTextUTF8)
+     client->GotXCutTextUTF8(client, (char *)buf, size);
+   free(buf);

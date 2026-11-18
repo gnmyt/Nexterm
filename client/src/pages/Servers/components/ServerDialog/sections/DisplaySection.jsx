@@ -20,6 +20,14 @@ const RESIZE_METHODS = [
     { label: "None", value: "none" },
 ];
 
+const CLIPBOARD_ENCODINGS = [
+    { label: "Default (ISO-8859-1)", value: "" },
+    { label: "UTF-8 (Extended Clipboard / TigerVNC)", value: "UTF-8" },
+    { label: "ISO-8859-1", value: "ISO8859-1" },
+    { label: "UTF-16", value: "UTF-16" },
+    { label: "Windows-1252", value: "CP1252" },
+];
+
 const DISPLAY_SCALES = SCALE_STEPS.map(scale => ({ label: `${scale}%`, value: String(scale) }));
 
 const RDP_SECURITY_METHODS = [
@@ -76,6 +84,14 @@ export const DisplayFields = ({ config, setConfig, fieldConfig }) => {
                                    setSelected={(value) => update({ resizeMethod: value })} />
                     </Field>
                 </div>
+            )}
+
+            {config.protocol === "vnc" && (
+                <Field configKey="clipboardEncoding" label={t("servers.dialog.settings.display.clipboardEncoding")}
+                       hint={t("servers.dialog.settings.display.clipboardEncodingHint")}>
+                    <SelectBox options={CLIPBOARD_ENCODINGS} selected={config.clipboardEncoding || ""}
+                               setSelected={(value) => update({ clipboardEncoding: value })} />
+                </Field>
             )}
 
             {fieldConfig.showDisplayScale && (

@@ -713,6 +713,28 @@ then
 fi
 
 #
+# libVNCClient Extended Clipboard requires both the callback member and the
+# UTF-8 send symbol. Headers alone are insufficient when building against a
+# newer header set but linking an older system library.
+#
+
+if test "x${have_libvncserver}" = "xyes"
+then
+    have_vnc_extended_clipboard=yes
+    AC_CHECK_MEMBERS([rfbClient.GotXCutTextUTF8],
+                     [], [have_vnc_extended_clipboard=no],
+                     [[#include <rfb/rfbclient.h>]])
+    AC_CHECK_LIB([vncclient], [SendClientCutTextUTF8],
+                 [], [have_vnc_extended_clipboard=no])
+
+    if test "x${have_vnc_extended_clipboard}" = "xyes"
+    then
+        AC_DEFINE([LIBVNC_CLIENT_HAS_EXTENDED_CLIPBOARD],,
+                  [Whether libvncclient supports UTF-8 Extended Clipboard.])
+    fi
+fi
+
+#
 # libVNCserver support for extended key events (SendExtendedKeyEvent).
 # This allows sending XT scancodes alongside keysyms for proper keyboard
 # layout support with QEMU.

@@ -80,6 +80,36 @@ yarn dev:engine
 
 If you want the engine to register automatically with the local control plane, set `LOCAL_ENGINE_TOKEN` in `.env` and use the same value as `REGISTRATION_TOKEN` for the engine.
 
+### Testing the VNC clipboard
+
+VNC entries expose **Clipboard Encoding** under Display Settings. The default
+remains ISO-8859-1 for classic servers. Select **UTF-8** for Chinese and emoji
+with TigerVNC Extended Clipboard; changing the encoding alone does not add
+Extended Clipboard support to a legacy server.
+
+The engine builds pinned LibVNCClient 0.9.15 with the patches in `vendor/patches`
+before compiling Guacamole. Development launchers rebuild an older cached
+dependency when its patch checksum changes. Guacamole detects both the UTF-8
+callback and send symbol; builds without those APIs retain the classic path.
+
+Run the parameter tests without a database, and the native protocol tests after
+building the dependency (requires a C compiler, pkg-config and zlib headers):
+
+```sh
+node --test server/tests/vncClipboardParams.test.js
+# With server dependencies installed:
+node --test server/tests/vncClipboardValidation.test.js
+sh scripts/build-engine-release.sh libvnc
+sh scripts/tests/vnc-clipboard.sh
+```
+
+The native test uses a local socketpair, not a running desktop. It covers the
+TigerVNC capability reply, Notify/Request, exact Chinese/emoji transfers,
+wire-format NUL removal, empty text and classic clipboard fallback. For an
+integration check, copy Chinese/emoji in both directions through a TigerVNC
+session and verify dynamic resizing still works. Classic servers should keep
+their previous behavior with the default encoding.
+
 ## 🤝 Contributing
 
 1. **Fork the repository**: Click the "Fork" button at the top right of the [repository page](https://github.com/gnmyt/Nexterm).

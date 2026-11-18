@@ -5,6 +5,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 GUACD_SRC="$PROJECT_ROOT/vendor/guacamole-server"
+source "$SCRIPT_DIR/libvnc-client.sh"
 GUACD_PID=""
 
 GUACD_LOG_LEVEL=${LOG_LEVEL:-debug}
@@ -25,6 +26,8 @@ trap cleanup SIGINT SIGTERM
 
 build() {
     echo "[guacd] Building..."
+    ensure_libvnc_built
+    use_patched_libvnc
     cd "$GUACD_SRC"
     
     DIST_DIR="$GUACD_SRC/dist"
@@ -33,7 +36,8 @@ build() {
     if [ -f Makefile ]; then
         CURRENT_PREFIX=$(grep "^prefix = " Makefile | sed 's/prefix = //')
         CURRENT_FREERDP_DIR=$(grep "^FREERDP_PLUGIN_DIR = " src/protocols/rdp/Makefile 2>/dev/null | sed 's/FREERDP_PLUGIN_DIR = //' || echo "")
-        if [ "$CURRENT_PREFIX" != "$DIST_DIR" ] || [ "$CURRENT_FREERDP_DIR" != "$DIST_DIR/lib/freerdp3" ]; then
+        if [[ "$CURRENT_PREFIX" != "$DIST_DIR" || "$CURRENT_FREERDP_DIR" != "$DIST_DIR/lib/freerdp3" || \
+                configure.ac -nt Makefile || "$LIBVNC_STAMP" -nt Makefile ]]; then
             echo "[guacd] Configuration mismatch, reconfiguring..."
             make distclean 2>/dev/null || true
             autoreconf -fi && CFLAGS="${CFLAGS:-} -Wno-error=deprecated-declarations" ./configure $CONFIGURE_OPTS
@@ -52,6 +56,9 @@ start_guacd() {
     echo "[guacd] Starting (log level: $GUACD_LOG_LEVEL)..."
 
     export LD_LIBRARY_PATH="$GUACD_SRC/dist/lib:$GUACD_SRC/dist/lib/freerdp3:$LD_LIBRARY_PATH"
+    if [[ -f "$LIBVNC_LIB/libvncclient.so.1" ]]; then
+        export LD_LIBRARY_PATH="$LIBVNC_LIB:$LD_LIBRARY_PATH"
+    fi
     export GUACD_HOME="$GUACD_SRC/dist"
     
     "$GUACD_SRC/src/guacd/guacd" -b 0.0.0.0 -f $GUACD_ARGS &
