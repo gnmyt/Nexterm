@@ -126,9 +126,12 @@ build_libvnc() {
 
     cd "libvncserver-LibVNCServer-${LIBVNC_VERSION}"
     patch -p1 < "$REPO_ROOT/vendor/patches/libvncclient-accept-screen-id-zero.patch"
+    patch -p1 < "$REPO_ROOT/vendor/patches/libvncclient-pinned-certificates.patch"
 
     cmake -B build \
         -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+        -DWITH_GNUTLS=OFF \
         -DCMAKE_INSTALL_PREFIX="$LIBVNC_DIST" \
         -DWITH_EXAMPLES=OFF \
         -DWITH_TESTS=OFF \

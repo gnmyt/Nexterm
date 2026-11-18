@@ -1,0 +1,169 @@
+Pin server certificates for X.509 VeNCrypt and report rejected ones through rfbClientLog.
+
+--- a/src/libvncclient/tls_openssl.c	2026-11-18 11:02:20.979617718 +0100
++++ b/src/libvncclient/tls_openssl.c	2026-11-18 11:18:35.360662504 +0100
+@@ -247,6 +247,91 @@
+     return FALSE;
+ }
+ 
++#define NEXTERM_X509_SKIP_VERIFY 0x80
++
++typedef struct
++{
++  rfbClient *client;
++  STACK_OF(X509) *pinned;
++} pinned_verify_ctx;
++
++static STACK_OF(X509) *
++load_pinned_certificates (const char *path)
++{
++  STACK_OF(X509) *pinned = sk_X509_new_null();
++  STACK_OF(X509_INFO) *xis;
++  BIO *bio;
++  int i;
++
++  if (!pinned || !path) return pinned;
++  if (!(bio = BIO_new_file(path, "r"))) return pinned;
++
++  xis = PEM_X509_INFO_read_bio(bio, NULL, NULL, NULL);
++  BIO_free(bio);
++
++  for (i = 0; xis && i < sk_X509_INFO_num(xis); i++)
++  {
++    X509_INFO *xi = sk_X509_INFO_value(xis, i);
++    if (xi->x509 && X509_up_ref(xi->x509))
++      sk_X509_push(pinned, xi->x509);
++  }
++
++  if (xis) sk_X509_INFO_pop_free(xis, X509_INFO_free);
++  return pinned;
++}
++
++static void
++report_untrusted_certificate (rfbClient *client, X509 *cert)
++{
++  unsigned char *der = NULL;
++  unsigned char digest[EVP_MAX_MD_SIZE];
++  unsigned int digest_len = 0, i;
++  char fingerprint[3 * EVP_MAX_MD_SIZE + 1] = "";
++  char *encoded;
++  int der_len = i2d_X509(cert, &der);
++
++  if (der_len <= 0) return;
++
++  X509_digest(cert, EVP_sha256(), digest, &digest_len);
++  for (i = 0; i < digest_len; i++)
++    snprintf(fingerprint + 3 * i, 4, i + 1 < digest_len ? "%02X:" : "%02X", digest[i]);
++
++  encoded = malloc(4 * ((der_len + 2) / 3) + 1);
++  if (encoded)
++  {
++    EVP_EncodeBlock((unsigned char *)encoded, der, der_len);
++    rfbClientLog("untrusted-certificate\t%s\t%d\t%s\t\t\t%s\n",
++                 client->serverHost, client->serverPort, fingerprint, encoded);
++    free(encoded);
++  }
++
++  OPENSSL_free(der);
++}
++
++static int
++pinned_verify_callback (X509_STORE_CTX *store_ctx, void *arg)
++{
++  pinned_verify_ctx *ctx = (pinned_verify_ctx *)arg;
++  X509 *cert = X509_STORE_CTX_get0_cert(store_ctx);
++  int i;
++
++  if (!cert) return 0;
++
++  if (X509_verify_cert(store_ctx) == 1) return 1;
++
++  for (i = 0; i < sk_X509_num(ctx->pinned); i++)
++  {
++    if (X509_cmp(cert, sk_X509_value(ctx->pinned, i)) == 0)
++    {
++      X509_STORE_CTX_set_error(store_ctx, X509_V_OK);
++      return 1;
++    }
++  }
++
++  report_untrusted_certificate(ctx->client, cert);
++  return 0;
++}
++
+ static SSL *
+ open_ssl_connection (rfbClient *client, int sockfd, rfbBool anonTLS, rfbCredential *cred)
+ {
+@@ -255,6 +340,7 @@
+   int n, finished = 0;
+   X509_VERIFY_PARAM *param;
+   uint8_t verify_crls;
++  pinned_verify_ctx verify_ctx = { client, NULL };
+ 
+   if (!(ssl_ctx = SSL_CTX_new(SSLv23_client_method())))
+   {
+@@ -267,19 +353,11 @@
+   /* Setup verification if not anonymous */
+   if (!anonTLS)
+   {
+-    verify_crls = cred->x509Credential.x509CrlVerifyMode;
+-    if (cred->x509Credential.x509CACertFile)
+-    {
+-      if (!SSL_CTX_load_verify_locations(ssl_ctx, cred->x509Credential.x509CACertFile, NULL))
+-      {
+-        rfbClientLog("Failed to load CA certificate from %s.\n",
+-                     cred->x509Credential.x509CACertFile);
+-        goto error_free_ctx;
+-      }
+-    } else {
+-      rfbClientLog("Using default paths for certificate verification.\n");
+-      SSL_CTX_set_default_verify_paths (ssl_ctx);
+-    }
++    rfbBool skip_verify = (cred->x509Credential.x509CrlVerifyMode & NEXTERM_X509_SKIP_VERIFY) != 0;
++    verify_crls = cred->x509Credential.x509CrlVerifyMode & (uint8_t)~NEXTERM_X509_SKIP_VERIFY;
++
++    SSL_CTX_set_default_verify_paths (ssl_ctx);
++    verify_ctx.pinned = load_pinned_certificates(cred->x509Credential.x509CACertFile);
+ 
+     if (cred->x509Credential.x509CACrlFile)
+     {
+@@ -312,14 +390,21 @@
+       }
+     }
+ 
+-    SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_PEER, NULL);
++    if (skip_verify)
++      SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_NONE, NULL);
++    else
++    {
++      SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_PEER, NULL);
++      SSL_CTX_set_cert_verify_callback(ssl_ctx, pinned_verify_callback, &verify_ctx);
++    }
+ 
+     if (verify_crls == rfbX509CrlVerifyClient) 
+       X509_VERIFY_PARAM_set_flags(param, X509_V_FLAG_CRL_CHECK);
+     else if (verify_crls == rfbX509CrlVerifyAll)
+       X509_VERIFY_PARAM_set_flags(param, X509_V_FLAG_CRL_CHECK | X509_V_FLAG_CRL_CHECK_ALL);
+ 
+-    if(!X509_VERIFY_PARAM_set1_host(param, client->serverHost, strlen(client->serverHost)))
++    if(!X509_VERIFY_PARAM_set1_ip_asc(param, client->serverHost) &&
++       !X509_VERIFY_PARAM_set1_host(param, client->serverHost, strlen(client->serverHost)))
+     {
+       rfbClientLog("Could not set server name for verification.\n");
+       goto error_free_ctx;
+@@ -369,6 +454,7 @@
+     }
+   } while( n != 1 && finished != 1 );
+ 
++  sk_X509_pop_free(verify_ctx.pinned, X509_free);
+   X509_VERIFY_PARAM_free(param);
+   return ssl;
+ 
+@@ -376,6 +462,7 @@
+   SSL_free(ssl);
+ 
+ error_free_ctx:
++  sk_X509_pop_free(verify_ctx.pinned, X509_free);
+   X509_VERIFY_PARAM_free(param);
+   SSL_CTX_free(ssl_ctx);
+ 
