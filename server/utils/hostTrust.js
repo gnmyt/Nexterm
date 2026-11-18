@@ -6,7 +6,6 @@ const { Op } = require("sequelize");
 const TrustedHost = require("../models/TrustedHost");
 const Account = require("../models/Account");
 const Organization = require("../models/Organization");
-const Folder = require("../models/Folder");
 const { hasOrganizationPermission } = require("./permission");
 const { Permission } = require("../permissions/registry");
 
@@ -40,11 +39,7 @@ const scopeOf = (organizationId, accountId = null) => organizationId
 
 const scopeForEntry = (entry) => scopeOf(entry.organizationId, entry.accountId);
 
-const scopeForIntegration = async (integration) => {
-    if (integration.organizationId) return scopeOf(integration.organizationId);
-    const root = await Folder.findOne({ where: { integrationId: integration.id, type: "integration-root" } });
-    return scopeOf(null, root?.accountId);
-};
+const scopeForIntegration = async (integration) => scopeOf(integration.organizationId, integration.accountId);
 
 const scopeLabel = ({ organizationId, accountId }) => organizationId ? "organization" : accountId ? "personal" : "system";
 

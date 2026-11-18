@@ -9,7 +9,7 @@ const { getProvider, entryKey } = require("../lib/hypervisors");
 const hostTrust = require("../utils/hostTrust");
 
 const validateIntegrationAccess = async (accountId, integration, requiredPermission = null) => {
-    if (!integration) return { valid: false, error: { code: 401, message: "Integration does not exist" } };
+    if (!integration) return { valid: false, error: { code: 404, message: "Integration does not exist" } };
 
     if (integration.organizationId) {
         const allowed = requiredPermission
@@ -21,6 +21,8 @@ const validateIntegrationAccess = async (accountId, integration, requiredPermiss
                 error: { code: 403, message: `You don't have access to this organization's integration` },
             };
         }
+    } else if (!integration.accountId || integration.accountId !== accountId) {
+        return { valid: false, error: { code: 404, message: "Integration does not exist" } };
     } else if (requiredPermission && !(await hasAccountPermission(accountId, requiredPermission))) {
         return { valid: false, error: { code: 403, message: "You don't have permission to manage resources" } };
     }
@@ -53,7 +55,7 @@ const ensureRootFolder = async (integration, ownerAccountId = null) => {
 
     const accountId = integration.organizationId
         ? null
-        : ownerAccountId ?? (sample ? sample.accountId : null);
+        : integration.accountId ?? ownerAccountId ?? (sample ? sample.accountId : null);
 
     if (!integration.organizationId && !accountId) {
         throw new Error("Cannot determine an owner for the integration root folder");
@@ -230,6 +232,7 @@ module.exports.createIntegration = async (accountId, configuration) => {
     }
 
     const integration = await Integration.create({
+        accountId: configuration.organizationId ? null : accountId,
         organizationId: configuration.organizationId || null,
         type,
         name: configuration.name,
@@ -411,7 +414,7 @@ module.exports.performEntryAction = async (accountId, entryId, action) => {
     if (!entry.integrationId) return { code: 400, message: "Entry is not linked to an integration" };
 
     const integration = await Integration.findByPk(entry.integrationId);
-    const accessCheck = await validateIntegrationAccess(accountId, integration);
+    const accessCheck = await validateIntegrationAccess(accountId, integration, Permission.CONNECT_PROXMOX);
     if (!accessCheck.valid) return accessCheck.error;
 
     const provider = getProvider(integration.type);
