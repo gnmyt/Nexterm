@@ -141,6 +141,7 @@ export const LoginDialog = ({ open }) => {
             if (resultObj.code === 201) sendToast("Error", t("common.errors.invalidCredentials"));
             if (resultObj.code === 202) setTotpRequired(true);
             if (resultObj.code === 203) sendToast("Error", t("common.errors.invalidTwoFactor"));
+            if (resultObj.code === 204) sendToast("Error", t("common.errors.accountLinkRequired"));
             if (resultObj.code === 403) sendToast("Error", t("common.errors.internalAuthDisabled"));
             if (resultObj.token) {
                 updateSessionToken(resultObj.token);

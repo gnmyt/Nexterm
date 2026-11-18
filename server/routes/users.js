@@ -1,5 +1,7 @@
 const { Router } = require("express");
-const { listUsers, createAccount, deleteAccount, updatePassword } = require("../controllers/account");
+const { listUsers, createAccount, deleteAccount, updatePassword, updateExternalLink } = require("../controllers/account");
+const Joi = require("joi");
+const logger = require("../utils/logger");
 const { validateSchema } = require("../utils/schema");
 const { createUserValidation } = require("../validations/users");
 const { createSession } = require("../controllers/session");
@@ -105,6 +107,29 @@ app.patch("/:accountId/password", requirePermission(Permission.USERS_MANAGE), as
     if (account?.code) return res.json(account);
 
     res.json({ message: "Password got successfully updated" });
+});
+
+/**
+ * PATCH /users/{accountId}/external-link
+ * @summary Update External Sign-in Link
+ * @description Allows the next OIDC or LDAP login with this username to link to the account, or removes the existing link. Requires the "users.manage" permission.
+ * @tags Users
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} accountId.path.required - The unique identifier of the user account
+ * @param {object} request.body.required - allow: true to allow linking on the next external login, false to remove the link
+ * @return {object} 200 - Link updated
+ * @return {object} 403 - Insufficient permissions
+ */
+app.patch("/:accountId/external-link", requirePermission(Permission.USERS_MANAGE), async (req, res) => {
+    if (validateSchema(res, Joi.object({ allow: Joi.boolean().required() }), req.body)) return;
+
+    const result = await updateExternalLink(req.params.accountId, req.body);
+    if (result?.code) return res.json(result);
+
+    logger.system(req.body.allow ? "External sign-in link allowed" : "External sign-in link removed",
+        { accountId: Number(req.params.accountId), by: req.user.id });
+    res.json({ message: req.body.allow ? "Linking allowed on next sign-in" : "Sign-in link removed" });
 });
 
 module.exports = app;

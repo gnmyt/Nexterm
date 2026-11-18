@@ -19,7 +19,7 @@ module.exports.login = async (configuration, user) => {
     }
 
     if (ldapProvider) {
-        const ldapResult = await ldapAuth(configuration.username, configuration.password, user);
+        const ldapResult = await ldapAuth(configuration.username, configuration.password, user, configuration.code);
         if (ldapResult) return ldapResult;
         return { code: 201, message: "Username or password incorrect" };
     }

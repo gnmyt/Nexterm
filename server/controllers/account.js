@@ -135,6 +135,18 @@ module.exports.updatePassword = async (id, password) => {
     await Account.update({ password: hashedPassword }, { where: { id } });
 };
 
+module.exports.updateExternalLink = async (id, { allow }) => {
+    const account = await Account.findByPk(id);
+    if (account === null) return { code: 102, message: "The provided account does not exist" };
+
+    if (allow) {
+        await Account.update({ allowExternalLink: true }, { where: { id } });
+    } else {
+        await Account.update({ externalProvider: null, externalId: null, allowExternalLink: false }, { where: { id } });
+    }
+    return { account };
+};
+
 module.exports.updateTOTP = async (id, status) => {
     const account = await Account.findByPk(id);
 
@@ -253,7 +265,7 @@ module.exports.listUsers = async (options = {}) => {
     const [users, total] = await Promise.all([
         Account.findAll({
             where: whereClause,
-            attributes: { exclude: ["password", "totpSecret", "preferences", "sessionSync"] },
+            attributes: { exclude: ["password", "totpSecret", "preferences", "sessionSync", "externalId"] },
             limit: parseInt(limit),
             offset: parseInt(offset),
             order: [["id", "DESC"]],

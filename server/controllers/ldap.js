@@ -1,12 +1,10 @@
 const { Client } = require("ldapts");
 const LDAPProvider = require("../models/LDAPProvider");
 const OIDCProvider = require("../models/OIDCProvider");
-const Account = require("../models/Account");
 const Session = require("../models/Session");
-const { genSalt, hash } = require("bcrypt");
-const crypto = require("crypto");
 const logger = require("../utils/logger");
 const hostTrust = require("../utils/hostTrust");
+const { LINK_CONFLICT, findExternalAccount, verifyTotp, applyExternalAccount } = require("../utils/externalAccount");
 
 const createLdapClient = async (provider) => {
     const url = `${provider.useTLS ? "ldaps" : "ldap"}://${provider.host}:${provider.port}`;
@@ -92,7 +90,20 @@ module.exports.testConnection = async (id, accountId = null, acceptFingerprint =
     }
 };
 
-module.exports.authenticateUser = async (username, password, userInfo) => {
+const escapeFilterValue = (value) => String(value).replace(/[\\*()\0]/g,
+    (character) => `\\${character.charCodeAt(0).toString(16).padStart(2, "0")}`);
+
+const firstValue = (value) => Array.isArray(value) ? value[0] : value;
+
+const externalIdOf = (entry) => {
+    const guid = firstValue(entry.objectGUID);
+    if (Buffer.isBuffer(guid) && guid.length) return `guid:${guid.toString("hex")}`;
+    const uuid = firstValue(entry.entryUUID);
+    if (uuid) return `uuid:${uuid}`;
+    return `dn:${entry.dn.toLowerCase()}`;
+};
+
+module.exports.authenticateUser = async (username, password, userInfo, totpCode = null) => {
     const provider = await LDAPProvider.findOne({ where: { enabled: true } });
     if (!provider) return null;
 
@@ -103,11 +114,12 @@ module.exports.authenticateUser = async (username, password, userInfo) => {
 
         const { searchEntries } = await client.search(provider.baseDN, {
             scope: "sub",
-            filter: provider.userSearchFilter.replace(/\{\{username\}\}/g, username),
-            attributes: [provider.usernameAttribute, provider.firstNameAttribute, provider.lastNameAttribute],
+            filter: provider.userSearchFilter.replace(/\{\{username\}\}/g, escapeFilterValue(username)),
+            attributes: [provider.usernameAttribute, provider.firstNameAttribute, provider.lastNameAttribute, "entryUUID", "objectGUID"],
+            explicitBufferAttributes: ["objectGUID"],
         });
 
-        if (!searchEntries.length) { await client.unbind(); return null; }
+        if (searchEntries.length !== 1) { await client.unbind(); return null; }
 
         const userEntry = searchEntries[0];
         const userClient = await createLdapClient(provider);
@@ -118,25 +130,29 @@ module.exports.authenticateUser = async (username, password, userInfo) => {
 
         await client.unbind();
 
-        const ldapUsername = userEntry[provider.usernameAttribute] || username;
-        let account = await Account.findOne({ where: { username: String(ldapUsername) } });
-
-        const userData = {
-            firstName: String(userEntry[provider.firstNameAttribute] || ""),
-            lastName: String(userEntry[provider.lastNameAttribute] || ""),
+        const identity = {
+            provider: "ldap",
+            externalId: externalIdOf(userEntry),
+            username: String(firstValue(userEntry[provider.usernameAttribute]) || username),
+            firstName: String(firstValue(userEntry[provider.firstNameAttribute]) || ""),
+            lastName: String(firstValue(userEntry[provider.lastNameAttribute]) || ""),
         };
 
-        if (!account) {
-            const hashedPassword = await hash(crypto.randomBytes(16).toString("hex"), await genSalt(10));
-            account = await Account.create({ username: String(ldapUsername), password: hashedPassword, ...userData });
-        } else {
-            await Account.update(userData, { where: { id: account.id } });
+        const plan = await findExternalAccount(identity);
+        if (plan.action === "conflict") {
+            logger.warn("LDAP login refused: username belongs to an unlinked account", { username: identity.username });
+            return LINK_CONFLICT;
         }
 
-        const session = await Session.create({ accountId: account.id, ip: userInfo.ip || "LDAP", userAgent: userInfo.userAgent || "LDAP" });
-        logger.system(`User ${account.username} logged in via LDAP`, { accountId: account.id, ip: userInfo.ip });
+        const totpError = verifyTotp(plan.account, totpCode);
+        if (totpError) return totpError;
 
-        return { token: session.token, user: { id: account.id, username: account.username, ...userData } };
+        const account = await applyExternalAccount(plan, identity);
+
+        const session = await Session.create({ accountId: account.id, ip: userInfo.ip || "LDAP", userAgent: userInfo.userAgent || "LDAP" });
+        logger.system(`User ${account.username} logged in via LDAP`, { accountId: account.id, ip: userInfo.ip, linked: plan.action === "link" });
+
+        return { token: session.token, user: { id: account.id, username: account.username, firstName: account.firstName, lastName: account.lastName } };
     } catch (error) {
         logger.error("LDAP authentication failed", { error: error.message });
         try { await client?.unbind(); } catch {}

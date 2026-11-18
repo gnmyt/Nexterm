@@ -47,6 +47,18 @@ module.exports = db.define("accounts", {
         references: { model: "themes", key: "id" },
         onDelete: "SET NULL",
     },
+    externalProvider: {
+        type: Sequelize.STRING,
+        allowNull: true,
+    },
+    externalId: {
+        type: Sequelize.STRING,
+        allowNull: true,
+    },
+    allowExternalLink: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+    },
     demoExpiresAt: {
         type: Sequelize.DATE,
         allowNull: true,
