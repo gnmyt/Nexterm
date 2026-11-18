@@ -31,7 +31,7 @@
     "joi": "^18.3.2",
     "joi-to-swagger": "^6.2.0",
     "js-yaml": "^5.5.0",
-    "ldapts": "^9.0.0",
+    "ldapts": "^9.2.0",
     "mysql2": "^3.24.6",
     "openid-client": "^6.9.0",
     "selfsigned": "^5.5.0",
