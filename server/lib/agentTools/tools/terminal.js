@@ -39,14 +39,12 @@ const SPECIAL_KEYS = {
 const usesSudo = (command) => /(^|[\n|&;(`]|\$\()\s*sudo\s/.test(command);
 
 const SUDO_SHIM = [
-    "IFS= read -r __NX_SUDO_PW && export __NX_SUDO_PW",
-    "export SUDO_ASKPASS=\"${HOME:-/tmp}/.nexterm-askpass.$$\"",
-    "trap 'rm -f \"$SUDO_ASKPASS\"' EXIT INT TERM",
-    "cat > \"$SUDO_ASKPASS\" <<'__NX_EOF__' && chmod 700 \"$SUDO_ASKPASS\"",
-    "#!/bin/sh",
-    "printf '%s\\n' \"$__NX_SUDO_PW\"",
-    "__NX_EOF__",
-    "sudo() { command sudo -A \"$@\"; }",
+    "if ! command sudo -S -p '' -v 2>/dev/null; then",
+    "    echo 'nexterm: sudo authentication failed (wrong password or no sudo rights)' >&2",
+    "    exit 1",
+    "fi",
+    "exec 0</dev/null",
+    "trap 'command sudo -k 2>/dev/null' EXIT",
 ].join("\n");
 
 const resolveTerminal = async (ctx, sessionId) => {
@@ -160,7 +158,8 @@ module.exports = (define, ctx) => {
         confirm: true,
         title: "Run a non-interactive command over SSH",
         description: "Runs a command on the server of an SSH session in a separate non-interactive exec channel and returns stdout, stderr and the exit code. "
-            + "This does not touch the interactive shell of the session. Commands using sudo are supplied the session identity's password automatically. "
+            + "This does not touch the interactive shell of the session. Commands using sudo are authenticated with the session identity's password automatically; "
+            + "sudo works when this command runs it, but not when another program starts it, such as xargs sudo. "
             + "Prefer this over terminal_run for scripts and anything that needs a reliable exit code.",
         inputSchema: {
             sessionId: z.uuid().describe("An SSH session (open_session on an SSH entry)."),
