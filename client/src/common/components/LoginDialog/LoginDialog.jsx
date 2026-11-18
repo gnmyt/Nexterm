@@ -271,7 +271,7 @@ export const LoginDialog = ({ open }) => {
         : t("common.loginDialog.subtitle");
 
     return (
-        <DialogProvider disableClosing open={open} className="login-card">
+        <DialogProvider disableClosing open={open} className="login-card" portalTarget={document.getElementById("login-root")}>
             <div className="login">
                 <header className="login__header dialog-heading">
                     <div className="login__brand">
