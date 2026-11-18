@@ -1,0 +1,2489 @@
+{
+  "common": {
+    "error": "Error",
+    "success": "Success",
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "download": "Download",
+    "maximize": "Maximize",
+    "restore": "Restore",
+    "resize": "Resize",
+    "actions": {
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "discard": "Discard",
+      "login": "Login",
+      "register": "Register",
+      "save": "Save",
+      "saving": "Saving…",
+      "download": "Download",
+      "close": "Close",
+      "maximize": "Maximize",
+      "restore": "Restore",
+      "back": "Back"
+    },
+    "iconChooser": {
+      "searchIcons": "Search icons...",
+      "searchResults": "Search Results",
+      "popularIcons": "Popular Icons",
+      "noResults": "No icons found"
+    },
+    "labels": {
+      "username": "Username",
+      "password": "Password",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "code": "Code",
+      "twoFACode": "2FA Code"
+    },
+    "placeholders": {
+      "username": "Username",
+      "password": "Password",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "code": "Code"
+    },
+    "confirmDialog": {
+      "title": "Are you sure?",
+      "defaultText": "This action cannot be undone."
+    },
+    "loginDialog": {
+      "title": "Nexterm",
+      "registrationTitle": "Registration",
+      "ssoOrContinueWith": "or continue with",
+      "noAuthMethodsAvailable": "No authentication methods available.",
+      "signInWithPasskey": "Sign in with Passkey",
+      "signInWithQrCode": "Sign in with QR Code",
+      "qrScanDescription": "Scan this QR code with the Nexterm mobile app to sign in instantly.",
+      "backToLogin": "Back to Login",
+      "authenticating": "Authenticating...",
+      "noAccount": "Don't have an account?",
+      "haveAccount": "Already have an account?",
+      "welcome": "Welcome back",
+      "subtitle": "Sign in to continue to Nexterm.",
+      "registrationSubtitle": "Create your account to get started.",
+      "firstTimeSubtitle": "Create the first administrator account for this instance.",
+      "twoFactorTitle": "Two-factor authentication",
+      "twoFactorDescription": "Enter the code from your authenticator app.",
+      "qrTitle": "Sign in with the app",
+      "demo": {
+        "title": "Try Nexterm",
+        "subtitle": "Explore a live instance with simulated servers, no account needed.",
+        "start": "Start the demo",
+        "orSignIn": "or sign in to your account",
+        "failed": "Could not start a demo session"
+      }
+    },
+    "demo": {
+      "timeLeft": "Demo · {{time}} left",
+      "end": "End demo",
+      "endConfirmText": "End your demo session? Everything you created will be removed.",
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min",
+      "hours_one": "{{count}} hour",
+      "hours_other": "{{count}} hours",
+      "hoursMinutes": "{{hours}}h {{minutes}}m"
+    },
+    "deviceLink": {
+      "title": "Link Device",
+      "description": "Enter the code shown on your device to authorize it to access your account.",
+      "qrTab": "QR Code",
+      "codeTab": "Code",
+      "qrDescription": "Scan this QR code with the Nexterm mobile app to link your device.",
+      "codeLabel": "Device Code",
+      "continue": "Continue",
+      "verifying": "Verifying...",
+      "confirmTitle": "Authorize Device",
+      "confirmDescription": "A device is requesting access to your account. Please verify the details below.",
+      "deviceInfo": "Device Information",
+      "type": "Type",
+      "ipAddress": "IP Address",
+      "userAgent": "Device",
+      "authorize": "Authorize Device",
+      "authorizing": "Authorizing...",
+      "deny": "Deny",
+      "invalidCode": "Invalid or expired code",
+      "authorizationFailed": "Authorization failed",
+      "deviceAuthorized": "Device authorized successfully",
+      "successTitle": "Device Authorized",
+      "successMessage": "You can close this tab and return to the app.",
+      "clientTypes": {
+        "mobile": "Mobile App",
+        "connector": "Desktop Connector"
+      }
+    },
+    "connectorSetup": {
+      "title": "Nexterm Connector",
+      "serverUrl": "Server URL",
+      "serverUrlDescription": "Enter the URL of your Nexterm server to connect.",
+      "connect": "Connect",
+      "connecting": "Connecting...",
+      "enterServerUrl": "Please enter a server URL",
+      "connectionFailed": "Failed to connect to server. Please check the URL.",
+      "deviceLinkingNotSupported": "This server does not support device linking. Please update your Nexterm server.",
+      "authMethodDescription": "Choose how you want to authenticate with the server.",
+      "showCode": "Show Code",
+      "showCodeDesc": "Display a code to enter manually on the web interface",
+      "openBrowser": "Authorize",
+      "openBrowserDesc": "Open your browser to authorize automatically",
+      "enterCodeDescription": "Enter this code on the Nexterm web interface to authorize this device.",
+      "copyCode": "Copy Code",
+      "codeCopied": "Code copied to clipboard",
+      "copyFailed": "Failed to copy code",
+      "waitingForAuth": "Waiting for authorization...",
+      "codeCreationFailed": "Failed to create device code",
+      "authSuccess": "Successfully authenticated!"
+    },
+    "serverSwitcher": {
+      "title": "Servers",
+      "addServer": "Add Server",
+      "removeServer": "Remove Server",
+      "removeConfirmText": "This will remove the connection to {{server}}. Are you sure?"
+    },
+    "selectBox": {
+      "defaultOption": "Select an option...",
+      "search": "Search...",
+      "noResults": "No results found"
+    },
+    "userSearch": {
+      "placeholder": "Search for a user..."
+    },
+    "table": {
+      "noData": {
+        "title": "No data found",
+        "subtitle": "There are no items to display."
+      },
+      "pagination": {
+        "showing": "Showing {{start}} to {{end}} of {{total}}",
+        "previous": "Previous",
+        "next": "Next",
+        "pageInfo": "Page {{current}} of {{total}}"
+      }
+    },
+    "sidebar": {
+      "settings": "Settings",
+      "servers": "Servers",
+      "monitoring": "Monitoring",
+      "snippets": "Snippets",
+      "audit": "Audit",
+      "account": "Account",
+      "logout": "Logout",
+      "collapseTitle": "Collapse Sidebar",
+      "logoutConfirmText": "This will log you out of the {{username}} account. Are you sure?",
+      "starOnGitHub": "Star on GitHub",
+      "support": "Support"
+    },
+    "quickAction": {
+      "placeholder": "Search servers, snippets, or navigate...",
+      "noResults": "No results found",
+      "navigate": "Navigate",
+      "select": "Select",
+      "close": "Close",
+      "types": {
+        "server": "Server",
+        "snippet": "Snippet",
+        "navigation": "Go to",
+        "settings": "Settings"
+      }
+    },
+    "errors": {
+      "loadingAuthProviders": "Error loading authentication providers: {{error}}",
+      "webSocketConnection": {
+        "title": "WebSocket Connection Failed",
+        "message": "Connections are unavailable. This may be due to WebSocket not being enabled in your reverse proxy or network restrictions."
+      },
+      "generalError": "An error occurred",
+      "invalidCredentials": "Invalid username or password",
+      "invalidTwoFactor": "Invalid two-factor code",
+      "internalAuthDisabled": "Internal authentication is disabled",
+      "ssoLoginFailed": "Failed to initiate SSO login",
+      "passkeyLoginFailed": "Passkey authentication failed",
+      "passkeyCancelled": "Passkey authentication was cancelled",
+      "qrCodeExpired": "QR code expired. Please try again.",
+      "connection": {
+        "title": "Connection failed",
+        "close": "Close tab",
+        "reconnect": "Reconnect",
+        "reconnectNow": "Reconnect",
+        "reconnecting": "Reconnecting…",
+        "reconnectingIn": "Reconnecting in {{seconds}}s",
+        "reconnectAttempt": "attempt {{count}} of {{max}}",
+        "hostUnreachable": "Remote host unreachable",
+        "refused": "Connection refused by remote host",
+        "timeout": "Connection timed out",
+        "authenticationFailed": "Authentication failed",
+        "permissionDenied": "Permission denied",
+        "failed": "Connection failed",
+        "closedUnexpectedly": "Connection closed unexpectedly",
+        "error": "Connection error occurred",
+        "scriptClosedUnexpectedly": "Script connection closed unexpectedly",
+        "scriptError": "Script connection error occurred",
+        "rdpSessionConflict": "The session was disconnected by the server because another connection was opened.",
+        "rdpSessionTimeout": "The RDP session was disconnected because its session time limit was reached.",
+        "rdpSessionClosed": "The RDP session was ended by the remote server or an administrator."
+      },
+      "accountLinkRequired": "An account with this username already exists. Ask an administrator to allow linking it to your sign-in."
+    },
+    "messages": {
+      "invitationAccepted": "Invitation accepted",
+      "invitationDeclined": "Invitation declined",
+      "invitationError": "Failed to process invitation",
+      "organizationDeleted": "Organization deleted successfully",
+      "organizationDeleteError": "Failed to delete organization",
+      "leftOrganization": "You have left the organization",
+      "leaveOrganizationError": "Failed to leave organization"
+    },
+    "unsavedChanges": {
+      "title": "Unsaved changes",
+      "text": "Discard them, or keep editing and save when you're done.",
+      "keepEditing": "Keep editing"
+    }
+  },
+  "audit": {
+    "page": {
+      "title": "Audit Logs",
+      "subtitle": "Track and monitor all activities across your infrastructure"
+    },
+    "errors": {
+      "failedToLoadData": "Failed to load audit data",
+      "failedToLoadLogs": "Failed to load audit logs"
+    },
+    "filters": {
+      "title": "Filters",
+      "activeCount": "{{count}} active",
+      "organization": "Organization",
+      "action": "Action",
+      "resource": "Resource",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "clearAll": "Clear All",
+      "options": {
+        "allActions": "All Actions",
+        "allResources": "All Resources",
+        "allOrganizations": "All Organizations (Personal + Org)",
+        "personalOnly": "Personal Only",
+        "categoryAll": "{{category}} (All)"
+      }
+    },
+    "table": {
+      "headers": {
+        "timestamp": "Timestamp",
+        "action": "Action",
+        "actor": "Actor",
+        "resource": "Resource",
+        "organization": "Organization",
+        "details": "Details"
+      },
+      "noLogs": {
+        "title": "No audit logs found",
+        "subtitle": "Try adjusting your filters or check back later."
+      },
+      "loading": "Loading audit logs...",
+      "expandedDetails": {
+        "connectionReason": "Connection Reason",
+        "userAgent": "User Agent",
+        "additionalDetails": "Additional Details"
+      },
+      "badges": {
+        "personal": "Personal",
+        "user": "User #{{id}}",
+        "organization": "Org #{{id}}"
+      },
+      "durationUnits": {
+        "seconds": "seconds",
+        "minutes": "minutes",
+        "hours": "hours"
+      }
+    },
+    "pagination": {
+      "showing": "Showing {{start}} to {{end}} of {{total}} logs",
+      "previous": "Previous",
+      "next": "Next",
+      "pageInfo": "Page {{current}} of {{total}}"
+    }
+  },
+  "snippets": {
+    "page": {
+      "title": "Snippets",
+      "subtitle": "Manage your command snippets for quick access in terminals",
+      "addSnippet": "Add Snippet",
+      "personal": "Personal",
+      "selectOrganization": "Select Organization",
+      "tabs": {
+        "snippets": "Snippets",
+        "scripts": "Scripts"
+      }
+    },
+    "list": {
+      "empty": "You don't have any snippets yet. Create your first one!",
+      "actions": {
+        "edit": "Edit snippet",
+        "delete": "Delete snippet"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "Create Snippet",
+        "edit": "Edit Snippet"
+      },
+      "fields": {
+        "name": "Name",
+        "description": "Description (optional)",
+        "command": "Command",
+        "osFilter": "Compatible OS"
+      },
+      "placeholders": {
+        "name": "Snippet name",
+        "description": "What does this command?",
+        "command": "Enter your command",
+        "osFilter": "All operating systems"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "create": "Create",
+        "save": "Save"
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "Snippet created successfully",
+        "updated": "Snippet updated successfully",
+        "deleted": "Snippet deleted successfully"
+      },
+      "errors": {
+        "required": "Name and command are required",
+        "loadFailed": "Failed to load snippet data",
+        "saveFailed": "Failed to save snippet",
+        "deleteFailed": "Failed to delete snippet",
+        "reorderFailed": "Failed to reorder snippet"
+      }
+    }
+  },
+  "scripts": {
+    "page": {
+      "title": "Scripts",
+      "subtitle": "Manage your automation scripts for server tasks",
+      "addScript": "Add Script",
+      "personal": "Personal",
+      "selectOrganization": "Select Organization",
+      "tabs": {
+        "snippets": "Snippets",
+        "scripts": "Scripts"
+      }
+    },
+    "execution": {
+      "progressPanel": {
+        "title": "Script Execution",
+        "noSteps": "No steps yet",
+        "noStepsDescription": "Steps will appear here as the script executes",
+        "steps": "Steps"
+      },
+      "dialogs": {
+        "enterValue": "Enter value",
+        "selectOption": "Select an option",
+        "confirm": "Confirm",
+        "submit": "Submit",
+        "cancel": "Cancel",
+        "ok": "OK",
+        "yes": "Yes",
+        "no": "No",
+        "copyCell": "Copy Cell",
+        "copyRow": "Copy Row",
+        "copyTable": "Copy Table",
+        "close": "Close"
+      },
+      "status": {
+        "running": "Running",
+        "completed": "Completed",
+        "error": "Error",
+        "pending": "Pending"
+      }
+    },
+    "list": {
+      "empty": "You don't have any scripts yet. Create your first one!",
+      "actions": {
+        "edit": "Edit script",
+        "delete": "Delete script"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "Create Script",
+        "edit": "Edit Script"
+      },
+      "scriptDetails": "Script Details",
+      "scriptContent": "Script Content",
+      "helpTip": "Use @NEXTERM: directives for interactive features",
+      "fields": {
+        "name": "Name",
+        "description": "Description",
+        "osFilter": "Compatible OS"
+      },
+      "placeholders": {
+        "name": "Script name",
+        "description": "What does this script do?",
+        "osFilter": "All operating systems"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "create": "Create",
+        "update": "Update",
+        "creating": "Creating...",
+        "updating": "Updating..."
+      },
+      "errors": {
+        "nameRequired": "Script name is required",
+        "descriptionRequired": "Script description is required",
+        "contentRequired": "Script content is required",
+        "createFailed": "Failed to create script",
+        "updateFailed": "Failed to update script"
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "Script created successfully",
+        "updated": "Script updated successfully",
+        "deleted": "Script deleted successfully",
+        "reordered": "Script reordered successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load script data",
+        "deleteFailed": "Failed to delete script",
+        "reorderFailed": "Failed to reorder script"
+      }
+    },
+    "menu": {
+      "searchPlaceholder": "Search scripts...",
+      "noScripts": "No scripts available. Create some in the Scripts section.",
+      "noMatch": "No scripts match your search.",
+      "selectIdentity": "Select Identity"
+    }
+  },
+  "monitoring": {
+    "page": {
+      "title": "Server Monitoring",
+      "subtitle": "Real-time server statistics and health monitoring",
+      "searchPlaceholder": "Search servers...",
+      "filters": {
+        "all": "All ({{count}})",
+        "online": "Online ({{count}})",
+        "issues": "Issues ({{count}})"
+      }
+    },
+    "errors": {
+      "loadFailed": "Failed to load monitoring data",
+      "loadFailedDescription": "The monitoring data could not be retrieved. Check your connection and try again.",
+      "retry": "Retry"
+    },
+    "grid": {
+      "noServers": {
+        "title": "No Servers Found",
+        "subtitle": "No SSH servers available for monitoring.\nAdd some servers to start monitoring them."
+      },
+      "noResults": {
+        "title": "No matching servers",
+        "subtitle": "No monitored server matches your search."
+      },
+      "metrics": {
+        "loadAverage": "Load Average",
+        "processes": "Processes",
+        "uptime": "Uptime",
+        "nodes": "Nodes",
+        "vms": "VMs/Containers",
+        "cpu": "CPU",
+        "memory": "Memory"
+      },
+      "status": {
+        "serverOffline": "Server Offline",
+        "connectionError": "Connection Error",
+        "statusUnknown": "Status Unknown",
+        "offlineMessage": "The server is currently not responding to monitoring requests.",
+        "errorMessage": "Unable to establish connection to the server.",
+        "unknownMessage": "Server status could not be determined.",
+        "lastSeen": "Last seen: {{time}}",
+        "noRecentActivity": "No recent activity",
+        "waitingForData": "Waiting for data",
+        "pendingMessage": "Monitoring data will appear after the next monitoring cycle.",
+        "labels": {
+          "online": "Online",
+          "offline": "Offline",
+          "error": "Error",
+          "pending": "Pending",
+          "unknown": "Unknown"
+        }
+      },
+      "uptime": {
+        "unknown": "Unknown",
+        "format": {
+          "days": "{{days}}d {{hours}}h {{minutes}}m",
+          "hours": "{{hours}}h {{minutes}}m",
+          "minutes": "{{minutes}}m"
+        }
+      }
+    },
+    "details": {
+      "timeRanges": {
+        "1h": "1h",
+        "6h": "6h",
+        "24h": "24h"
+      },
+      "tabs": {
+        "overview": "Overview",
+        "storage": "Storage",
+        "network": "Network",
+        "processes": "Processes",
+        "nodes": "Nodes"
+      },
+      "overview": {
+        "systemInfo": {
+          "title": "System Information",
+          "hostname": "Hostname",
+          "os": "OS",
+          "version": "Version",
+          "kernel": "Kernel",
+          "architecture": "Architecture",
+          "uptime": "Uptime",
+          "unknown": "Unknown",
+          "noData": "No system information available"
+        },
+        "performance": {
+          "title": "Performance Metrics",
+          "loadAverage": "Load Average",
+          "processes": "Active Processes",
+          "total": "Total: {{value}}",
+          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}",
+          "memory": "Memory"
+        },
+        "uptime": {
+          "format": {
+            "full": "{{days}} days, {{hours}} hours, {{minutes}} minutes",
+            "hoursMinutes": "{{hours}} hours, {{minutes}} minutes",
+            "minutes": "{{minutes}} minutes"
+          }
+        }
+      },
+      "charts": {
+        "cpuUsage": "CPU Usage",
+        "memoryUsage": "Memory Usage",
+        "processes": "Active Processes",
+        "noData": "No data available for the selected time range"
+      },
+      "storage": {
+        "title": "Disk Usage",
+        "noData": "No disk usage data available",
+        "noPartitions": "No mounted partitions",
+        "usedOf": "{{used}} of {{total}} used",
+        "free": "{{value}} free",
+        "filesystems": "Filesystems",
+        "disks": "Disks",
+        "on": "{{volume}} on {{partition}}",
+        "swap": "Swap",
+        "unmounted": "Not mounted",
+        "unallocated": "Unallocated",
+        "inodes": "Inodes",
+        "inodesDetail": "{{used}} of {{total}}",
+        "health": {
+          "passed": "Healthy",
+          "warning": "Warning",
+          "failed": "Failing",
+          "denied": "SMART needs root",
+          "temperature": "Temperature",
+          "powerOn": "Power-on time",
+          "wear": "Wear",
+          "reallocated": "Reallocated sectors",
+          "pending": "Pending sectors",
+          "mediaErrors": "Media errors",
+          "years": "{{value}} years",
+          "days": "{{value}} days",
+          "hours": "{{value}} hours",
+          "failedTitle": "Disk failure predicted",
+          "failedMessage": "{{disks}} failed its SMART self-assessment. Back up the data and replace the disk."
+        }
+      },
+      "network": {
+        "speed": "Speed",
+        "noData": "No network interface data available",
+        "download": "Download",
+        "upload": "Upload",
+        "interface": "Interface",
+        "address": "Address",
+        "gateway": "Gateway",
+        "interfaces": "Interfaces",
+        "virtual": "Virtual interfaces",
+        "defaultRoute": "Default route",
+        "up": "Up",
+        "down": "Down",
+        "errors": "{{count}} errors",
+        "dropped": "{{count}} dropped",
+        "copy": "Copy {{address}}",
+        "total": "{{value}} total"
+      },
+      "processes": {
+        "searchPlaceholder": "Search processes...",
+        "showing": "Showing {{count}} of {{total}} processes",
+        "noData": "No process data available. Process data will appear after the next monitoring cycle.",
+        "noResults": "No processes match your search criteria.",
+        "columns": {
+          "command": "Command",
+          "cpu": "CPU",
+          "mem": "Memory"
+        }
+      },
+      "pve": {
+        "clusterInfo": "Cluster Information",
+        "onlineNodes": "Online Nodes",
+        "totalCPU": "Total CPU",
+        "totalMemory": "Total Memory",
+        "totalStorage": "Total Storage",
+        "storageUsage": "Storage Usage",
+        "cores": "Cores",
+        "uptime": "Uptime",
+        "qemuVMs": "QEMU VMs",
+        "lxcContainers": "LXC Containers",
+        "running": "{{count}} running",
+        "vmContainerCount": "VM/Container Count",
+        "cpu": "CPU",
+        "memory": "Memory",
+        "storage": "Storage",
+        "nodeOffline": "This node is currently offline",
+        "noNodes": "No nodes available"
+      }
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "userSettings": "USER SETTINGS",
+    "adminSettings": "ADMIN SETTINGS",
+    "pages": {
+      "account": "Account",
+      "appearance": "Appearance",
+      "terminal": "Terminal",
+      "fileManager": "File Manager",
+      "keymaps": "Keymaps",
+      "identities": "Identities",
+      "sessions": "Sessions",
+      "organizations": "Organizations",
+      "users": "Users",
+      "authentication": "Authentication",
+      "sources": "Sources",
+      "ai": "AI",
+      "monitoring": "Monitoring",
+      "backup": "Storage",
+      "engines": "Engines",
+      "permissions": "Roles & Permissions",
+      "trustedCertificates": "Trusted Certificates"
+    },
+    "account": {
+      "title": "Account",
+      "demo": {
+        "title": "Security",
+        "description": "Password, two-factor authentication, passkeys, API keys and profile pictures can't be changed while you're exploring as a guest."
+      },
+      "avatar": {
+        "label": "Picture",
+        "upload": "Change profile picture",
+        "remove": "Remove",
+        "updated": "Your profile picture has been updated",
+        "removed": "Your profile picture has been removed",
+        "tooLarge": "The selected image is larger than 10 MB",
+        "uploadFailed": "The profile picture could not be uploaded",
+        "removeFailed": "The profile picture could not be removed"
+      },
+      "accountDetails": "Account details",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "appearance": "Appearance",
+      "appearanceDescription": "Choose your preferred theme. Auto follows your system settings and adjusts based on time of day.",
+      "themeAuto": "Auto",
+      "themeLight": "Light",
+      "themeDark": "Dark",
+      "themeDarkHint": "Press three times to enable OLED mode.",
+      "themeOled": "OLED",
+      "oledEnabled": "OLED mode enabled",
+      "oledDisabled": "OLED mode disabled",
+      "themeLabel": "Theme",
+      "accentColor": "Accent Color",
+      "sizeLabel": "Size",
+      "sizeXS": "XS",
+      "sizeS": "S",
+      "sizeM": "M",
+      "sizeL": "L",
+      "sizeXL": "XL",
+      "twoFactor": "Two-factor authentication",
+      "twoFactorActive": "Active",
+      "twoFactorInactive": "Inactive",
+      "twoFactorDescription": "Add an extra layer of security to your account by enabling two-factor authentication.",
+      "enable2FA": "Enable 2FA",
+      "disable2FA": "Disable 2FA",
+      "changePassword": "Change password",
+      "changePasswordDescription": "Choose a new and secure password for your account here.",
+      "changePasswordButton": "Change password",
+      "language": "Language",
+      "languageDescription": "Select your preferred language for the interface.",
+      "currentLanguage": "Current Language",
+      "missingLanguage": "Missing your language?",
+      "helpTranslateLink": "Help translate Nexterm",
+      "syncLoginRequired": "Please log in to sync settings",
+      "appearanceSyncEnabled": "Appearance settings will now sync to your account",
+      "appearanceSyncDisabled": "Appearance settings will no longer sync",
+      "generalSyncEnabled": "General settings will now sync to your account",
+      "generalSyncDisabled": "General settings will no longer sync",
+      "customThemes": {
+        "title": "Custom Themes",
+        "description": "Create custom CSS themes or choose from synced source themes to personalize your interface.",
+        "newTheme": "New Theme",
+        "noThemesYet": "No themes yet",
+        "noThemesDescription": "Create a custom theme or add a source to get started.",
+        "editTheme": "Edit Theme",
+        "createTheme": "Create Theme",
+        "name": "Name",
+        "themeName": "Theme name",
+        "descriptionLabel": "Description",
+        "optionalDescription": "Optional description",
+        "saveChanges": "Save Changes",
+        "fromSource": "From source",
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleteConfirm": "Are you sure you want to delete the theme \"{{name}}\"?",
+        "failedToLoadTheme": "Failed to load theme",
+        "nameAndCssRequired": "Name and CSS are required",
+        "themeUpdated": "Theme updated",
+        "themeCreated": "Theme created",
+        "failedToSaveTheme": "Failed to save theme",
+        "themeDeleted": "Theme deleted",
+        "failedToDeleteTheme": "Failed to delete theme",
+        "failedToActivateTheme": "Failed to activate theme"
+      },
+      "sessionSynchronization": "Session Synchronization",
+      "sessionSyncDescription": "Control how your server sessions are stored and synchronized across devices and browser tabs.",
+      "sessionSyncAcrossDevices": "Across devices",
+      "sessionSyncSameBrowser": "Same browser",
+      "sessionSyncSameTab": "Same tab",
+      "sessionSyncAcrossDevicesDesc": "Sessions will be available across devices and synced",
+      "sessionSyncSameBrowserDesc": "Sessions will synchronize for the current user session",
+      "sessionSyncSameTabDesc": "Sessions will synchronize inside your browser tab",
+      "showAgentSessionsDesc": "Show sessions opened by the AI assistant or MCP agents as view-only tabs",
+      "twoFactorDialog": {
+        "title": "Enable 2FA",
+        "description": "Scan the code with your authenticator app or enter <span class=\"totp-code\">{{secret}}</span> manually.",
+        "codePlaceholder": "Enter 2FA code",
+        "enableButton": "Enable",
+        "messages": {
+          "setupFailed": "2FA setup failed. Please try again."
+        }
+      },
+      "passkeys": {
+        "sectionTitle": "Passkeys",
+        "sectionDescription": "Use passkeys for faster, more secure sign-in without passwords.",
+        "addButton": "Add Passkey",
+        "addDialogTitle": "Add Passkey",
+        "addDialogDescription": "Give your passkey a name to help you identify it later.",
+        "namePlaceholder": "Passkey name",
+        "enterName": "Enter a name for this passkey:",
+        "defaultName": "My Passkey",
+        "confirmDelete": "Are you sure you want to delete this passkey?",
+        "createdAt": "Created {{date}}",
+        "registerError": "Failed to register passkey. Please try again.",
+        "noPasskeys": "No passkeys registered yet",
+        "rename": "Rename",
+        "delete": "Delete"
+      },
+      "apiKeys": {
+        "sectionTitle": "API Keys",
+        "sectionDescription": "Create API keys to access Nexterm programmatically from scripts and integrations.",
+        "addButton": "Create API Key",
+        "createTitle": "Create API Key",
+        "createDescription": "Give your key a name. The token will be shown only once after creation.",
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Deployment script",
+        "nameRequired": "Name is required",
+        "expiryLabel": "Expiration",
+        "expiryNever": "Never",
+        "expiry30": "30 days",
+        "expiry90": "90 days",
+        "expiry365": "1 year",
+        "createButton": "Create",
+        "createdTitle": "API Key Created",
+        "createdWarning": "Copy this token now. For security reasons you won't be able to see it again.",
+        "tokenLabel": "Token",
+        "doneButton": "Done",
+        "createError": "Failed to create API key.",
+        "copyError": "Failed to copy to clipboard.",
+        "confirmDelete": "Are you sure you want to revoke this API key? Any system using it will lose access.",
+        "noKeys": "No API keys yet",
+        "lastUsed": "Last used {{date}}",
+        "neverUsed": "Never used",
+        "expires": "Expires {{date}}",
+        "delete": "Delete"
+      },
+      "remoteDesktop": "Remote Desktop",
+      "remoteDesktopDescription": "Default display scale for remote desktop sessions. Connections can override it, and a scale picked during a session is remembered on that device.",
+      "remoteDesktopScale": "Display Scale",
+      "remoteDesktopScaleAuto": "Automatic (match device)",
+      "remoteDesktopSyncEnabled": "Remote desktop settings will now sync across devices",
+      "remoteDesktopSyncDisabled": "Remote desktop settings are now saved on this device only"
+    },
+    "passwordChange": {
+      "title": "Change password",
+      "description": "A strong password contains special characters, numbers, and letters in both uppercase and lowercase.",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "changePasswordButton": "Change password",
+      "currentPassword": "Current password",
+      "descriptionOwn": "Enter your current password and choose a new one. You will be signed out on all other devices.",
+      "descriptionOther": "Choose a new password for this user. They will be signed out on all devices.",
+      "successOwn": "Your password was changed. Other devices were signed out.",
+      "successOther": "The password was changed and the user was signed out everywhere."
+    },
+    "organizations": {
+      "title": "Your Organizations",
+      "createOrganization": "Create Organization",
+      "noOrganizations": "You don't have any organizations yet.",
+      "noOrganizationsDescription": "Create one to start collaborating with your team.",
+      "invite": "Invite",
+      "delete": "Delete",
+      "leave": "Leave",
+      "members": "Members",
+      "auditSettings": {
+        "auditSettingsTab": "Audit Settings",
+        "sessionRecordingHeading": "Session Recording",
+        "sessionRecordingDescription": "Record terminal and remote desktop sessions for playback",
+        "enableSessionRecordingLabel": "Enable Session Recording",
+        "enableSessionRecordingDescription": "Record SSH, Telnet, RDP, and VNC sessions for later playback",
+        "recordingRetentionLabel": "Recording Retention (days)",
+        "recordingRetentionDescription": "How long to keep session recordings before automatic deletion (1-365 days)",
+        "connectionRequirementsHeading": "Connection Requirements",
+        "connectionRequirementsDescription": "Control connection behavior and requirements",
+        "requireConnectionReasonLabel": "Require Connection Reason",
+        "requireConnectionReasonDescription": "Require users to provide a reason when connecting to servers",
+        "activityLoggingHeading": "Activity Logging",
+        "activityLoggingDescription": "Choose which types of activities to log",
+        "fileOperationsLabel": "File Operations",
+        "fileOperationsDescription": "Log file uploads, downloads, deletions, and renames via SFTP",
+        "serverConnectionsLabel": "Server Connections",
+        "serverConnectionsDescription": "Log SSH, SFTP, and PVE connections and disconnections",
+        "identityManagementLabel": "Identity Management",
+        "identityManagementDescription": "Log creation, modification, and deletion of SSH identities",
+        "passwordPasteLabel": "Password Paste",
+        "passwordPasteDescription": "Log usage of the password paste action",
+        "serverManagementLabel": "Server Management",
+        "serverManagementDescription": "Log creation, modification, and deletion of server configurations",
+        "folderManagementLabel": "Folder Management",
+        "folderManagementDescription": "Log creation, modification, and deletion of folders",
+        "scriptExecutionLabel": "Script Execution",
+        "scriptExecutionDescription": "Log execution of scripts and automation tasks",
+        "agentOperationsLabel": "AI Agent Operations",
+        "agentOperationsDescription": "Log commands, input, screenshots and file changes performed by the AI assistant and by agents connected through the MCP server",
+        "actions": {
+          "save": "Save Settings"
+        },
+        "messages": {
+          "updated": "Audit settings updated successfully",
+          "updateFailed": "Failed to update audit settings"
+        }
+      },
+      "pendingInvitations": "Pending Invitations",
+      "invitedBy": "Invited by: {{name}}",
+      "deleteConfirmation": "This will permanently delete the organization and remove all members. This action cannot be undone.",
+      "leaveConfirmation": "Are you sure you want to leave this organization?",
+      "dialog": {
+        "title": "Create Organization",
+        "fields": {
+          "name": "Name",
+          "namePlaceholder": "Organization name",
+          "description": "Description (optional)",
+          "descriptionPlaceholder": "Brief description of your organization"
+        },
+        "actions": {
+          "cancel": "Cancel",
+          "create": "Create"
+        },
+        "messages": {
+          "nameRequired": "Organization name is required",
+          "createSuccess": "Organization created successfully",
+          "createFailed": "Failed to create organization"
+        }
+      },
+      "sessionSettings": {
+        "sessionSettingsTab": "Live Sessions",
+        "liveSharingHeading": "Live Session Sharing",
+        "liveSharingDescription": "Control how running sessions are shared in this organization.",
+        "enableLiveSessionSharingLabel": "Enable live session sharing",
+        "enableLiveSessionSharingDescription": "Members need the View or Control Live Sessions permission.",
+        "actions": {
+          "save": "Save Settings"
+        },
+        "messages": {
+          "updated": "Live session settings updated successfully",
+          "updateFailed": "Failed to update live session settings"
+        }
+      }
+    },
+    "users": {
+      "title": "{{count}} users",
+      "createNewUser": "Create new user",
+      "searchPlaceholder": "Search users...",
+      "twoFactorEnabled": "2FA enabled",
+      "twoFactorDisabled": "2FA disabled",
+      "noUsers": "No Users Found",
+      "noUsersDescription": "Create a new user to get started.",
+      "noSearchResults": "No Users Found",
+      "noSearchResultsDescription": "Try adjusting your search query.",
+      "table": {
+        "user": "User",
+        "twoFactor": "2FA",
+        "roles": "Roles"
+      },
+      "contextMenu": {
+        "changePassword": "Change password",
+        "deleteUser": "Delete user",
+        "loginAsUser": "Login as user",
+        "deleteConfirm": "This will permanently delete the user and all associated data.",
+        "managePermissions": "Manage permissions",
+        "allowExternalLink": "Allow SSO/LDAP linking",
+        "cancelExternalLink": "Cancel SSO/LDAP linking",
+        "unlinkExternal": "Unlink SSO/LDAP sign-in"
+      }
+    },
+    "userDialog": {
+      "title": "Create new user",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "username": "Username",
+      "password": "Password",
+      "firstNamePlaceholder": "First name",
+      "lastNamePlaceholder": "Last name",
+      "usernamePlaceholder": "Username",
+      "passwordPlaceholder": "Password",
+      "create": "Create",
+      "errorOccurred": "An error occurred"
+    },
+    "sessions": {
+      "title": "Sessions",
+      "lastActivity": "Last activity: {{date}} from {{ip}}",
+      "currentSession": "Current session",
+      "logout": "Logout",
+      "revoke": "Revoke",
+      "browserOn": "{{browser}} {{version}} on {{os}} {{osVersion}}"
+    },
+    "keymaps": {
+      "title": "Keymaps",
+      "description": "Customize keyboard shortcuts to match your workflow.",
+      "resetAll": "Reset All",
+      "actions": {
+        "search": {
+          "title": "Search",
+          "description": "Open the search input"
+        },
+        "quickaction": {
+          "title": "Quick Action",
+          "description": "Open the quick action menu"
+        },
+        "aimenu": {
+          "title": "AI Menu",
+          "description": "Open the AI command menu"
+        },
+        "aiaccepttool": {
+          "title": "AI Accept Action",
+          "description": "Approve the pending AI tool action in the assistant"
+        },
+        "aicommand": {
+          "title": "Generate Command",
+          "description": "Ask for a command suggestion inside the terminal"
+        },
+        "snippets": {
+          "title": "Snippets",
+          "description": "Open the snippets dialog"
+        },
+        "keyboardshortcuts": {
+          "title": "Keyboard Shortcuts",
+          "description": "Open the keyboard shortcuts menu"
+        },
+        "broadcast": {
+          "title": "Broadcast Mode",
+          "description": "Toggle broadcast mode when using split view"
+        },
+        "copy": {
+          "title": "Copy",
+          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+        },
+        "paste": {
+          "title": "Paste",
+          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
+        },
+        "fullscreen": {
+          "title": "Full-Screen",
+          "description": "Toggle full-screen mode"
+        },
+        "pasteidentitypassword": {
+          "title": "Paste Identity Password",
+          "description": "Paste the password of the current SSH connection's identity"
+        }
+      },
+      "recorder": {
+        "pressKeys": "Press keys...",
+        "save": "Save",
+        "cancel": "Cancel",
+        "disabled": "Disabled",
+        "reset": "Reset"
+      },
+      "messages": {
+        "updateSuccess": "Keybind updated successfully",
+        "updateFailed": "Failed to update keybind",
+        "resetSuccess": "Keybind reset to default",
+        "resetFailed": "Failed to reset keybind",
+        "resetAllSuccess": "All keybinds reset to defaults",
+        "resetAllFailed": "Failed to reset keybinds"
+      }
+    },
+    "terminal": {
+      "title": "Terminal",
+      "syncLoginRequired": "Please log in to sync terminal settings",
+      "font": {
+        "title": "Font",
+        "description": "Customize the font family and size for your terminal.",
+        "fontFamily": "Font Family",
+        "fontSize": "Font Size",
+        "syncEnabled": "Font settings will now sync to your account",
+        "syncDisabled": "Font settings will no longer sync"
+      },
+      "cursor": {
+        "title": "Cursor",
+        "description": "Customize the appearance and behavior of your terminal cursor.",
+        "cursorStyle": "Cursor Style",
+        "cursorBlinking": "Cursor Blinking",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "syncEnabled": "Cursor settings will now sync to your account",
+        "syncDisabled": "Cursor settings will no longer sync"
+      },
+      "input": {
+        "title": "Input",
+        "description": "Control how keyboard shortcuts behave inside the terminal.",
+        "copyPasteBehavior": "Copy/Paste Behavior",
+        "copyPasteBehaviorNone": "None",
+        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
+        "copyPasteBehaviorSmart": "Smart Ctrl+C",
+        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
+        "copyPasteBehaviorKeyboard": "Keyboard",
+        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
+        "copyPasteBehaviorMouse": "Mouse",
+        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
+        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
+        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
+        "passwordPromptDetection": "Password input detection",
+        "autoReconnect": "Auto-reconnect",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "syncEnabled": "Input settings will now sync to your account",
+        "syncDisabled": "Input settings will no longer sync"
+      },
+      "theme": {
+        "title": "Theme",
+        "description": "Choose a color theme for your terminal.",
+        "syncEnabled": "Theme settings will now sync to your account",
+        "syncDisabled": "Theme settings will no longer sync"
+      },
+      "preview": {
+        "text": "$ echo 'Hi, Nexterm!'\nHi, Nexterm!\n$ "
+      }
+    },
+    "fileManager": {
+      "title": "File Manager",
+      "description": "Configure how files and folders are displayed and managed.",
+      "syncLoginRequired": "Please log in to sync file manager settings",
+      "syncEnabled": "File manager settings will now sync to your account",
+      "syncDisabled": "File manager settings will no longer sync",
+      "view": {
+        "title": "View",
+        "description": "How files and folders are shown when you open the file manager."
+      },
+      "behavior": {
+        "title": "Behavior",
+        "description": "What happens when you open, delete and move files."
+      },
+      "defaultView": {
+        "title": "Default View Mode",
+        "description": "Choose the default layout when opening the file manager.",
+        "list": "List View",
+        "listDescription": "Show files in a detailed list with size and date columns",
+        "grid": "Grid View",
+        "gridDescription": "Show files as icons in a grid layout with thumbnails",
+        "compact": "Compact View",
+        "compactDescription": "Show only names in dense columns to fit many files on screen",
+        "label": "Default view"
+      },
+      "thumbnails": {
+        "title": "Image Thumbnails",
+        "description": "Show image thumbnails in grid view. This uses additional bandwidth to generate previews.",
+        "enabled": "Show Thumbnails",
+        "enabledDescription": "Display image previews in grid view for quick visual identification",
+        "disabled": "Hide Thumbnails",
+        "disabledDescription": "Show only file icons to save bandwidth and improve performance",
+        "label": "Image thumbnails",
+        "show": "Show",
+        "hide": "Hide"
+      },
+      "hiddenFiles": {
+        "title": "Hidden Files",
+        "description": "Control visibility of hidden files and folders (names starting with a dot).",
+        "show": "Show Hidden Files",
+        "showDescription": "Display all files including .dotfiles and system directories",
+        "hide": "Hide Hidden Files",
+        "hideDescription": "Only show regular files and folders",
+        "label": "Hidden files",
+        "showShort": "Show",
+        "hideShort": "Hide"
+      },
+      "deleteConfirmation": {
+        "title": "Delete Confirmation",
+        "description": "Require confirmation before deleting files and folders.",
+        "enabled": "Confirm Deletions",
+        "enabledDescription": "Show a confirmation dialog before deleting items",
+        "disabled": "Delete Immediately",
+        "disabledDescription": "Delete files without asking for confirmation",
+        "label": "Before deleting",
+        "ask": "Ask for confirmation",
+        "immediately": "Delete immediately"
+      },
+      "dragDropAction": {
+        "title": "Drag & Drop Action",
+        "description": "Default action when dragging files to a new location.",
+        "move": "Move",
+        "copy": "Copy",
+        "ask": "Ask",
+        "label": "When dropping files"
+      },
+      "singleClickOpen": {
+        "title": "Open with single click",
+        "description": "Open files and folders with a single click instead of selecting them. Double-click opens when this is off.",
+        "single": "Single click",
+        "double": "Double click",
+        "label": "Open items with"
+      },
+      "sharedDrive": {
+        "title": "Shared Drive",
+        "description": "What remote desktops can see of this computer through their shared drive. Changes apply to new connections.",
+        "mode": {
+          "title": "Share",
+          "folder": "One folder",
+          "disk": "Entire disk",
+          "off": "Nothing",
+          "diskWarning": "Remote desktops can read, change and delete every file on this computer."
+        },
+        "folder": {
+          "title": "Shared folder",
+          "default": "Nexterm Shared in your home folder",
+          "choose": "Choose folder",
+          "reset": "Use default"
+        },
+        "folderError": "The shared folder could not be prepared"
+      }
+    },
+    "authentication": {
+      "title": "{{count}} Authentication Providers",
+      "internalProviderName": "Internal Authentication",
+      "addProvider": "Add Provider",
+      "addLdapProvider": "Add LDAP",
+      "system": "System",
+      "systemDescription": "Username and password authentication",
+      "registration": {
+        "title": "Self-Registration",
+        "description": "Allow visitors to create their own account from the login screen"
+      },
+      "deleteConfirm": "This will permanently delete this authentication provider.",
+      "errors": {
+        "deleteProvider": "Error deleting provider",
+        "toggleProvider": "Error toggling provider"
+      },
+      "providerDialog": {
+        "createTitle": "Add Authentication Provider",
+        "editTitle": "Edit Authentication Provider",
+        "fields": {
+          "displayName": "Display Name",
+          "displayNamePlaceholder": "e.g. Company SSO",
+          "issuerUrl": "Issuer URL",
+          "issuerUrlPlaceholder": "https://auth.company.com",
+          "clientId": "Client ID",
+          "clientIdPlaceholder": "Client ID",
+          "clientSecret": "Client Secret",
+          "clientSecretPlaceholder": "Client Secret",
+          "clientSecretPlaceholderEdit": "Leave blank to keep existing",
+          "redirectUri": "Redirect URI",
+          "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
+          "endSessionEndpoint": "End Session Endpoint (Optional)",
+          "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
+          "scope": "Scope",
+          "scopePlaceholder": "openid profile",
+          "usernameAttribute": "Username Attribute",
+          "usernameAttributePlaceholder": "preferred_username",
+          "firstNameAttribute": "First Name Attribute",
+          "firstNameAttributePlaceholder": "given_name",
+          "lastNameAttribute": "Last Name Attribute",
+          "lastNameAttributePlaceholder": "family_name"
+        },
+        "advanced": {
+          "show": "Show Advanced Settings",
+          "hide": "Hide Advanced Settings"
+        },
+        "actions": {
+          "addProvider": "Add Provider",
+          "saveChanges": "Save Changes"
+        },
+        "messages": {
+          "saveFailed": "Failed to save provider"
+        },
+        "groupSync": {
+          "title": "Group Sync",
+          "hint": "Automatically add users to organizations and control access based on group claims from your identity provider.",
+          "groupsAttribute": "Groups Claim",
+          "groupsAttributePlaceholder": "groups",
+          "requiredGroup": "Required Group",
+          "requiredGroupPlaceholder": "nexterm-users",
+          "requiredGroupHint": "If set, only users whose groups claim contains this value are allowed to log in.",
+          "mappings": "Organization Mappings",
+          "mappingsHint": "Map a group claim value to an organization. Membership is kept in sync on every login.",
+          "mappingValuePlaceholder": "Group value",
+          "roleMember": "Member",
+          "roleOwner": "Owner",
+          "addMapping": "Add Mapping"
+        }
+      },
+      "ldapDialog": {
+        "createTitle": "Add LDAP Provider",
+        "editTitle": "Edit LDAP Provider",
+        "fields": {
+          "displayName": "Display Name",
+          "displayNamePlaceholder": "e.g. Company LDAP",
+          "host": "Host",
+          "hostPlaceholder": "ldap.company.com",
+          "port": "Port",
+          "bindDN": "Bind DN",
+          "bindDNPlaceholder": "cn=admin,dc=company,dc=com",
+          "bindPassword": "Bind Password",
+          "bindPasswordPlaceholder": "Bind password",
+          "bindPasswordPlaceholderEdit": "Leave blank to keep existing",
+          "baseDN": "Base DN",
+          "baseDNPlaceholder": "dc=company,dc=com",
+          "userSearchFilter": "User Search Filter",
+          "userSearchFilterPlaceholder": "(uid={{username}}) or (sAMAccountName={{username}})",
+          "useTLS": "Use TLS/SSL",
+          "usernameAttribute": "Username Attribute",
+          "usernameAttributePlaceholder": "uid",
+          "emailAttribute": "Email Attribute",
+          "emailAttributePlaceholder": "mail",
+          "firstNameAttribute": "First Name Attribute",
+          "firstNameAttributePlaceholder": "givenName",
+          "lastNameAttribute": "Last Name Attribute",
+          "lastNameAttributePlaceholder": "sn"
+        },
+        "advanced": {
+          "show": "Show Advanced Settings",
+          "hide": "Hide Advanced Settings"
+        },
+        "actions": {
+          "addProvider": "Add Provider",
+          "saveChanges": "Save Changes",
+          "testConnection": "Test Connection",
+          "testing": "Testing..."
+        },
+        "messages": {
+          "saveFailed": "Failed to save provider",
+          "saveFirst": "Save the provider first to test the connection",
+          "testSuccess": "Connection test successful",
+          "testFailed": "Connection test failed"
+        }
+      },
+      "sessions": {
+        "title": "Sessions",
+        "description": "When signed-in devices, including the mobile and desktop apps, have to sign in again.",
+        "idle": "Sign out after inactivity",
+        "lifetime": "Maximum session length",
+        "days_one": "{{count}} day",
+        "days_other": "{{count}} days",
+        "never": "Never",
+        "loadError": "Failed to load the session settings",
+        "saveError": "Failed to save the session settings"
+      }
+    },
+    "ai": {
+      "title": "AI Assistant Configuration",
+      "description": "Configure the AI provider used by the assistant, which can operate your servers through its own sessions.",
+      "loading": "Loading AI settings...",
+      "enable": {
+        "title": "Enable AI Assistant",
+        "description": "Allow users to open the AI assistant inside server sessions"
+      },
+      "provider": {
+        "title": "AI Provider",
+        "description": "Choose your AI service provider"
+      },
+      "model": {
+        "title": "Model",
+        "description": "Select the AI model the assistant should use"
+      },
+      "apiKey": {
+        "title": "API Key",
+        "setPlaceholder": "API key is set (leave blank to keep current)",
+        "genericDescription": "API key used to authenticate with the selected provider",
+        "genericPlaceholder": "Enter your {{provider}} API key"
+      },
+      "authMethod": {
+        "title": "Authentication",
+        "description": "Authenticate with an API key or your provider subscription",
+        "apiKey": "API Key",
+        "subscription": "Subscription"
+      },
+      "subscription": {
+        "title": "{{provider}} Subscription",
+        "description": "Sign in with your {{provider}} subscription to use its models without an API key",
+        "connectedDescription": "Your {{provider}} subscription is connected",
+        "connect": "Connect",
+        "connecting": "Connecting...",
+        "complete": "Complete",
+        "disconnect": "Disconnect",
+        "codePlaceholder": "Paste the authorization code here",
+        "codePlaceholderUrl": "Paste the full callback URL (or code) here",
+        "connectSuccess": "{{provider}} subscription connected",
+        "startError": "Failed to start authorization",
+        "exchangeError": "Failed to connect subscription",
+        "disconnectError": "Failed to disconnect subscription"
+      },
+      "baseUrl": {
+        "title": "API URL",
+        "description": "Base URL of the provider's OpenAI-compatible endpoint",
+        "placeholder": "https://api.example.com/v1"
+      },
+      "selectProvider": "Select a provider...",
+      "selectModel": "Select a model...",
+      "loadingModels": "Loading models...",
+      "noModels": "No models available",
+      "saveSettings": "Save Settings",
+      "testConnection": "Test Connection",
+      "testing": "Testing...",
+      "saveSuccess": "AI settings saved successfully",
+      "testSuccess": "AI connection test successful",
+      "errors": {
+        "loadSettings": "Failed to load AI settings",
+        "saveSettings": "Failed to save AI settings",
+        "testConnection": "AI connection test failed"
+      }
+    },
+    "monitoring": {
+      "loading": "Loading monitoring settings...",
+      "saveSettings": "Save Settings",
+      "saveSuccess": "Monitoring settings saved successfully",
+      "seconds": "seconds",
+      "hours": "hours",
+      "servers": "servers",
+      "statusChecker": {
+        "title": "Status Checker",
+        "description": "Configure how Nexterm checks the online/offline status of your servers.",
+        "enable": {
+          "title": "Enable Status Checker",
+          "description": "Automatically check if servers are online or offline. When disabled, all servers will be marked as online."
+        },
+        "interval": {
+          "title": "Check Interval",
+          "description": "How often to check server status (10-300 seconds)"
+        }
+      },
+      "dataCollection": {
+        "title": "Data Collection",
+        "description": "Configure monitoring data collection for CPU, memory, disk, and network metrics.",
+        "enable": {
+          "title": "Enable Monitoring",
+          "description": "Collect detailed performance metrics from servers with monitoring enabled."
+        },
+        "interval": {
+          "title": "Collection Interval",
+          "description": "How often to collect monitoring data (30-600 seconds)"
+        },
+        "retention": {
+          "title": "Data Retention",
+          "description": "How long to keep monitoring data (1-24 hours)"
+        }
+      },
+      "advanced": {
+        "title": "Advanced Settings",
+        "description": "Fine-tune monitoring performance and resource usage.",
+        "timeout": {
+          "title": "Connection Timeout",
+          "description": "Maximum time to wait for a server response (5-120 seconds)"
+        },
+        "batchSize": {
+          "title": "Batch Size",
+          "description": "Number of servers to check simultaneously (1-50)"
+        }
+      },
+      "errors": {
+        "loadSettings": "Failed to load monitoring settings",
+        "saveSettings": "Failed to save monitoring settings"
+      }
+    },
+    "identities": {
+      "title": "SSH Keys & Credentials",
+      "description": "Identities you can link to any server. Server-specific ones live in that server's settings.",
+      "createIdentity": "Create Identity",
+      "personal": "Personal",
+      "noUsername": "No username",
+      "notInUse": "Not in use",
+      "notInUseHint": "Not linked to any server or folder",
+      "sshKey": "SSH Key",
+      "password": "Password",
+      "editIdentity": "Edit identity",
+      "deleteIdentity": "Delete identity",
+      "noIdentities": "No Identities Found",
+      "noIdentitiesDescription": "Create your first identity to get started with server connections",
+      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone and will remove this identity from all servers that use it.",
+      "deleteSuccess": "Identity deleted successfully",
+      "deleteError": "Failed to delete identity",
+      "dialog": {
+        "createTitle": "Create New Identity",
+        "editTitle": "Edit Identity",
+        "fields": {
+          "name": "Identity Name",
+          "namePlaceholder": "Enter identity name",
+          "username": "Username",
+          "usernamePlaceholder": "Username (optional)",
+          "authType": "Authentication Type",
+          "password": "Password",
+          "passwordPlaceholder": "Enter password",
+          "passwordPlaceholderEdit": "Leave blank to keep current password",
+          "sshKey": "SSH Private Key",
+          "passphrase": "Passphrase (optional)",
+          "passphrasePlaceholder": "Enter passphrase (optional)",
+          "passphrasePlaceholderEdit": "Leave blank to keep current passphrase"
+        },
+        "authTypes": {
+          "password": "Password",
+          "password-only": "No Username",
+          "ssh": "SSH Key",
+          "both": "Key+Pass"
+        },
+        "actions": {
+          "cancel": "Cancel",
+          "create": "Create Identity",
+          "update": "Update Identity"
+        },
+        "messages": {
+          "nameRequired": "Identity name is required",
+          "passwordRequired": "Password is required",
+          "sshKeyRequired": "SSH key is required",
+          "createSuccess": "Identity created successfully",
+          "updateSuccess": "Identity updated successfully",
+          "createFailed": "Failed to create identity",
+          "updateFailed": "Failed to update identity"
+        }
+      }
+    },
+    "sources": {
+      "title": "Script & Snippet Sources",
+      "description": "Configure external sources to automatically sync scripts and snippets.",
+      "loading": "Loading sources...",
+      "noSources": "No Sources Configured",
+      "noSourcesDescription": "Add external sources to automatically sync scripts and snippets.",
+      "addSource": "Add Source",
+      "snippets": "snippets",
+      "scripts": "scripts",
+      "themes": "themes",
+      "neverSynced": "Never synced",
+      "sync": "Sync now",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirm": "Are you sure you want to delete the source \"{{name}}\"? All synced scripts and snippets from this source will also be deleted.",
+      "status": {
+        "success": "Synced",
+        "error": "Error",
+        "pending": "Pending",
+        "syncing": "Syncing",
+        "disabled": "Disabled"
+      },
+      "dialog": {
+        "createTitle": "Add Source",
+        "editTitle": "Edit Source",
+        "name": "Name",
+        "namePlaceholder": "e.g. Company Scripts",
+        "url": "Source URL",
+        "urlPlaceholder": "https://scripts.example.com",
+        "enabled": "Enabled",
+        "enabledDescription": "When disabled, this source will not be synced",
+        "validating": "Validating URL...",
+        "validationSuccess": "Valid source found: {{snippets}} snippets, {{scripts}} scripts, {{themes}} themes",
+        "create": "Create"
+      },
+      "messages": {
+        "created": "Source created successfully",
+        "updated": "Source updated successfully",
+        "deleted": "Source deleted successfully",
+        "synced": "Source synced successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load sources",
+        "saveFailed": "Failed to save source",
+        "deleteFailed": "Failed to delete source",
+        "syncFailed": "Failed to sync source",
+        "validationFailed": "Failed to validate URL",
+        "requiredFields": "Name and URL are required"
+      }
+    },
+    "backup": {
+      "loading": "Loading storage settings...",
+      "storage": {
+        "title": "Storage",
+        "description": "View disk usage for your Nexterm data.",
+        "database": "Database",
+        "recordings": "Recordings",
+        "logs": "Logs",
+        "total": "Total"
+      },
+      "backupsSection": {
+        "title": "Backups",
+        "description": "Configure backup providers and schedule automatic backups."
+      },
+      "addProvider": "Add Provider",
+      "editProvider": "Edit Provider",
+      "providerName": "Provider Name",
+      "providerNamePlaceholder": "My Backup",
+      "providerType": "Type",
+      "providerTypes": {
+        "local": "Local",
+        "smb": "SMB Share",
+        "webdav": "WebDAV"
+      },
+      "localPath": "Backup Path",
+      "localPathPlaceholder": "/path/to/backups",
+      "smbShare": "SMB Share",
+      "smbSharePlaceholder": "\\\\server\\share",
+      "smbFolder": "Folder (optional)",
+      "smbFolderPlaceholder": "backups",
+      "smbUsername": "Username",
+      "smbUsernamePlaceholder": "user",
+      "smbPassword": "Password",
+      "smbPasswordPlaceholder": "password",
+      "smbDomain": "Domain (optional)",
+      "smbDomainPlaceholder": "WORKGROUP",
+      "webdavUrl": "Server URL",
+      "webdavUrlPlaceholder": "https://cloud.example.com/remote.php/dav/files/user",
+      "webdavFolder": "Folder (optional)",
+      "webdavFolderPlaceholder": "backups",
+      "webdavUsername": "Username",
+      "webdavUsernamePlaceholder": "user",
+      "webdavPassword": "Password",
+      "webdavPasswordPlaceholder": "password",
+      "passwordUnchanged": "Leave empty to keep current",
+      "schedule": {
+        "title": "Automatic Backup",
+        "disabled": "Disabled",
+        "hourly": "Every hour",
+        "every6h": "Every 6 hours",
+        "every12h": "Every 12 hours",
+        "daily": "Daily",
+        "weekly": "Weekly"
+      },
+      "retention": {
+        "title": "Retention Policy"
+      },
+      "backups": "backups",
+      "includes": {
+        "title": "Include in Backups",
+        "database": "Database",
+        "recordings": "Recordings",
+        "logs": "Logs"
+      },
+      "providers": "Providers",
+      "saveSettings": "Save Settings",
+      "noProviders": "No Backup Providers",
+      "noProvidersDescription": "Add a backup provider to start creating backups.",
+      "backupList": "Backups - {{name}}",
+      "loadingBackups": "Loading backups...",
+      "noBackups": "No backups found",
+      "restoreConfirm": "Are you sure you want to restore \"{{name}}\"? This will overwrite your current data and restart the server.",
+      "deleteProviderConfirm": "Are you sure you want to delete \"{{name}}\"? This will not delete existing backups.",
+      "providerCreated": "Backup provider created",
+      "providerUpdated": "Backup provider updated",
+      "providerDeleted": "Backup provider deleted",
+      "backupCreated": "Backup created successfully",
+      "restoreStarted": "Restore started, server will restart",
+      "saveSuccess": "Settings saved successfully",
+      "errors": {
+        "loadFailed": "Failed to load backup settings",
+        "saveFailed": "Failed to save settings",
+        "deleteFailed": "Failed to delete",
+        "backupFailed": "Failed to create backup",
+        "loadBackupsFailed": "Failed to load backups",
+        "restoreFailed": "Failed to restore backup",
+        "exportFailed": "Failed to export data",
+        "nameRequired": "Provider name is required"
+      },
+      "noFiles": "No files found"
+    },
+    "engines": {
+      "title": "Engines",
+      "description": "Manage engine instances that handle remote connections.",
+      "addEngine": "Add Engine",
+      "noEngines": "No Engines",
+      "noEnginesDescription": "Add an engine to start connecting to remote servers.",
+      "status": {
+        "connected": "Connected",
+        "disconnected": "Disconnected"
+      },
+      "lastSeen": "Last seen {{date}}",
+      "neverConnected": "Never connected",
+      "regenerateToken": "Regenerate token",
+      "deleteEngine": "Delete engine",
+      "dismiss": "Dismiss",
+      "copyToken": "Copy token",
+      "transport": {
+        "encrypted": "Encrypted",
+        "unencrypted": "Unencrypted"
+      },
+      "tokenLabel": "Registration token for <strong>{{name}}</strong>",
+      "tokenHint": "Set this in <code1>config.yaml</code1> or as <code2>REGISTRATION_TOKEN</code2> env variable.",
+      "dialog": {
+        "title": "Add Engine",
+        "engineName": "Engine Name",
+        "namePlaceholder": "e.g. Office Network",
+        "create": "Create Engine"
+      },
+      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+      "messages": {
+        "deleted": "Engine deleted successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load engines",
+        "createFailed": "Failed to create engine",
+        "deleteFailed": "Failed to delete engine",
+        "regenerateFailed": "Failed to regenerate token"
+      }
+    },
+    "permissions": {
+      "subtitle": "Create roles with granular permissions or assign permissions to individual users. The Default role applies to everyone automatically.",
+      "createRole": "Create role",
+      "rolesTitle": "Roles",
+      "rolesTab": "Roles",
+      "overridesTab": "Direct permissions",
+      "permissionsTab": "Permissions",
+      "membersTab": "Members",
+      "settingsTab": "Settings",
+      "managePermissions": "Manage permissions",
+      "memberCount_one": "{{count}} member",
+      "memberCount_other": "{{count}} members",
+      "dangerousHint": "Granting this gives broad or destructive access. Assign it with care.",
+      "roleName": "Role name",
+      "roleNamePlaceholder": "e.g. Operators",
+      "roleColor": "Color",
+      "nameRequired": "Please enter a name for the role.",
+      "saveError": "Could not save your changes.",
+      "loadError": "Could not load permissions.",
+      "userSaved": "Permissions updated.",
+      "noAssignableRoles": "No roles available yet. Create one first.",
+      "noMembers": "This role has no members yet.",
+      "addMemberPlaceholder": "Search users to add…",
+      "deleteRole": "Delete role",
+      "deleteConfirm": "This will permanently delete the role \"{{name}}\" and remove it from all members.",
+      "inheritsAllow": "Inherits: Allowed",
+      "inheritsDeny": "Inherits: Denied"
+    },
+    "search": "Search settings",
+    "trustedCertificates": {
+      "title": "Trusted Certificates",
+      "description": "Certificates and host keys you accepted when connecting. Remove one to be asked again the next time.",
+      "personal": "Personal",
+      "system": "System",
+      "kinds": {
+        "ssh": "SSH host key",
+        "tls": "TLS certificate"
+      },
+      "empty": "Nothing trusted yet",
+      "emptyDescription": "Certificates and host keys appear here once you accept them for a connection.",
+      "remove": "Remove",
+      "removeConfirm": "Stop trusting {{endpoint}}? The next connection asks again.",
+      "removeSuccess": "Trusted certificate removed",
+      "removeError": "Failed to remove the trusted certificate",
+      "ignore": {
+        "title": "Ignore certificate warnings",
+        "description": "Connect to your personal servers without checking their certificate or host key. Connections can then be intercepted without you noticing. Organization servers are always checked.",
+        "error": "Failed to save the setting"
+      }
+    }
+  },
+  "tunnel": {
+    "title": "Port Forward",
+    "identity": "Identity",
+    "remoteHost": "Remote Host",
+    "remotePort": "Remote Port",
+    "localPort": "Local Port",
+    "start": "Start Tunnel",
+    "stop": "Stop Tunnel",
+    "status": {
+      "idle": "Not connected",
+      "starting": "Starting...",
+      "listening": "Listening on localhost:{{port}}",
+      "error": "Error",
+      "stopped": "Stopped"
+    },
+    "error": {
+      "fillAllFields": "Please fill in all fields"
+    }
+  },
+  "share": {
+    "errors": {
+      "unableToConnect": "Unable to Connect",
+      "failedToJoin": "Failed to join session"
+    },
+    "sessionEnded": {
+      "title": "Session Ended",
+      "description": "The shared session has been closed"
+    }
+  },
+  "servers": {
+    "addServerNote": "Right-click to add a new server",
+    "searchPlaceholder": "Search",
+    "time": {
+      "justNow": "Just now",
+      "minuteAgo": "{{count}} min ago",
+      "minutesAgo": "{{count}} mins ago",
+      "hourAgo": "{{count}} hour ago",
+      "hoursAgo": "{{count}} hours ago",
+      "dayAgo": "{{count}} day ago",
+      "daysAgo": "{{count}} days ago"
+    },
+    "tags": {
+      "title": "Tags",
+      "createNewTag": "Create new tag",
+      "tagName": "Tag name",
+      "create": "Create",
+      "filterByTags": "Filter by Tags",
+      "clearAll": "Clear all",
+      "noTagsCreated": "No tags created yet",
+      "editTag": "Edit tag",
+      "deleteTag": "Delete tag"
+    },
+    "contextMenu": {
+      "createFolder": "Create Folder",
+      "deleteFolder": "Delete Folder",
+      "renameFolder": "Rename Folder",
+      "folderSettings": "Folder Settings",
+      "new": "New",
+      "sshServer": "SSH Server",
+      "telnetServer": "Telnet Server",
+      "rdpServer": "RDP Server",
+      "vncServer": "VNC Server",
+      "demoServer": "Demo Connection",
+      "sftpServer": "SFTP Server",
+      "ftpServer": "FTP Server",
+      "ftpsServer": "FTPS Server",
+      "createServer": "Create Server",
+      "import": "Import",
+      "pve": "Proxmox VE",
+      "sshConfig": "SSH-Config",
+      "syncIntegration": "Sync now",
+      "syncSuccess": "Integration synced",
+      "syncFailed": "Failed to sync integration",
+      "removeIntegration": "Remove Integration",
+      "connect": "Connect",
+      "quickConnect": "Quick Connect",
+      "openSFTP": "Open SFTP",
+      "openBrowser": "Open Browser",
+      "forwardPort": "Forward Port",
+      "runScript": "Run Script",
+      "openNotes": "Open Notes",
+      "addNotes": "Add Notes",
+      "editServer": "Edit Server",
+      "editIntegration": "Edit Integration",
+      "duplicateServer": "Duplicate Server",
+      "pasteIdentityPassword": "Paste Password",
+      "deleteServer": "Delete Server",
+      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "deleteFailServer": "Failed to delete \"{{name}}\".",
+      "deleteFailFolder": "Failed to delete the folder \"{{name}}\".",
+      "wakeOnLan": "Wake-On-LAN",
+      "shutdown": "Shutdown",
+      "stop": "Stop",
+      "start": "Start",
+      "joinSession": "Join Session",
+      "joinSessionOf": "Join session of {{user}}"
+    },
+    "passwordHint": {
+      "paste": "paste password",
+      "pasteFor": "paste {{username}} password",
+      "cycle": "Use the arrow keys to switch identity"
+    },
+    "tabs": {
+      "contextMenu": {
+        "popOut": "Pop Out",
+        "startSharing": "Start Sharing",
+        "readOnly": "Read-only",
+        "readWrite": "Read & Write",
+        "copyShareLink": "Copy Share Link",
+        "changePermissions": "Change Permissions",
+        "stopSharing": "Stop Sharing",
+        "duplicate": "Duplicate",
+        "openNotes": "Open Notes",
+        "hibernateSession": "Hibernate",
+        "reconnect": "Reconnect",
+        "closeSession": "Disconnect",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom",
+        "displayScale": "Display Scale ({{scale}}%)",
+        "displayScaleAuto": "Automatic ({{scale}}%)",
+        "displayScaleReset": "Use Default"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
+    },
+    "wol": {
+      "successDescription": "Magic packet sent to {{name}}",
+      "errorDescription": "Failed to send magic packet"
+    },
+    "messages": {
+      "fillRequiredFields": "Please fill in all required fields",
+      "serverCreated": "Server created successfully",
+      "serverUpdated": "Server updated successfully",
+      "folderUpdated": "Folder updated successfully",
+      "createFailed": "Failed to create server",
+      "updateFailed": "Failed to update server",
+      "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination."
+    },
+    "dialog": {
+      "addServer": "Add server",
+      "addProtocolServer": "Add {{protocol}} server",
+      "editServer": "Edit server",
+      "actions": {
+        "save": "Save",
+        "create": "Create"
+      },
+      "fields": {
+        "name": "Name",
+        "icon": "Icon",
+        "serverIp": "Host",
+        "port": "Port",
+        "protocol": "Protocol",
+        "username": "Username",
+        "password": "Password",
+        "host": "Host",
+        "macAddress": "MAC Address",
+        "wolBroadcastAddress": "Broadcast Address",
+        "engine": "Engine"
+      },
+      "placeholders": {
+        "serverName": "Server name",
+        "serverIp": "Hostname or IP",
+        "port": "Port",
+        "username": "Username",
+        "password": "Password",
+        "host": "Host",
+        "macAddress": "AA:BB:CC:DD:EE:FF",
+        "wolBroadcastAddress": "255.255.255.255"
+      },
+      "engineOffline": "(offline)",
+      "settings": {
+        "jumpHosts": {
+          "title": "Jump Hosts",
+          "description": "Connect through intermediate servers to reach this target server",
+          "addButton": "Add Jump Host",
+          "removeTooltip": "Remove jump host",
+          "noServersAvailable": "No SSH servers available for jump hosts. Create SSH servers first."
+        },
+        "monitoring": {
+          "title": "Enable Performance Monitoring",
+          "description": "Collect CPU, memory, disk, and network metrics for this server"
+        },
+        "wakeOnLan": {
+          "title": "Enable Wake-On-LAN",
+          "description": "Allow waking this server remotely using its MAC address"
+        },
+        "rdpSecurity": {
+          "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
+          "method": "Security Method"
+        },
+        "keyboardLayout": {
+          "title": "Keyboard Layout",
+          "description": "Select the keyboard layout to use for this connection."
+        },
+        "display": {
+          "title": "Display Settings",
+          "description": "Configure color depth, resize behavior and scaling for the remote display",
+          "colorDepth": "Color Depth",
+          "resizeMethod": "Resize Method",
+          "displayScale": "Display Scale",
+          "displayScaleAuto": "Automatic (match this device)",
+          "displayScaleAccount": "Account default"
+        },
+        "performance": {
+          "title": "Performance Settings",
+          "description": "Toggle visual effects that may impact performance over slower connections",
+          "enableWallpaper": "Enable Wallpaper",
+          "enableWallpaperDesc": "Show the desktop wallpaper on the remote system",
+          "enableTheming": "Enable Theming",
+          "enableThemingDesc": "Use themed windows and controls on the remote system",
+          "enableFontSmoothing": "Enable Font Smoothing",
+          "enableFontSmoothingDesc": "Render text with smooth edges for better readability",
+          "enableFullWindowDrag": "Enable Full Window Drag",
+          "enableFullWindowDragDesc": "Display window contents while dragging windows",
+          "enableDesktopComposition": "Enable Desktop Composition",
+          "enableDesktopCompositionDesc": "Enable transparent windows and visual effects",
+          "enableMenuAnimations": "Enable Menu Animations",
+          "enableMenuAnimationsDesc": "Enable menu open and close animations"
+        },
+        "audio": {
+          "enableAudio": "Enable Audio",
+          "enableAudioDesc": "Stream audio from the remote system to your browser"
+        },
+        "terminal": {
+          "title": "Terminal Compatibility",
+          "description": "Adjust key behavior for different terminal types",
+          "backspace": "Backspace",
+          "delete": "Delete",
+          "functionKeys": "Function Keys"
+        }
+      },
+      "identities": {
+        "identityName": "Identity Name",
+        "username": "Username",
+        "authentication": "Authentication",
+        "passwordField": "Password",
+        "userPassword": "Password",
+        "passwordOnly": "No Username",
+        "sshKey": "SSH Key",
+        "both": "Key+Pass",
+        "sshPrivateKey": "SSH Private Key",
+        "passphrase": "Passphrase (optional)",
+        "add": "Add identity",
+        "linkGlobal": "Link global identity · {{count}}",
+        "empty": "No identities yet.",
+        "removeIdentity": "Remove identity",
+        "unlinkIdentity": "Unlink identity",
+        "moveToOrg": "Move to organization",
+        "noUsername": "No username",
+        "globalToggle": "Use on other servers",
+        "globalInUse": "This identity is used by {{count}} servers. Unlink it from the others first.",
+        "shareToggle": "Share with organization",
+        "inheritedHint": "Inherited from the folder settings.",
+        "onlyMe": "Only me",
+        "onlyMeHint": "Only you can see and use this identity."
+      },
+      "sections": {
+        "general": "General",
+        "connection": "Connection",
+        "identities": "Identities",
+        "options": "Options",
+        "credentials": "Credentials"
+      },
+      "useInherited": "Use inherited value",
+      "reset": "Reset"
+    },
+    "proxmoxDialog": {
+      "title": {
+        "import": "Add Proxmox VE",
+        "edit": "Edit Proxmox VE"
+      },
+      "fields": {
+        "username": "Username",
+        "password": "Password",
+        "nodeName": "Node Name (Optional)",
+        "monitoring": "Performance Monitoring"
+      },
+      "monitoringDescription": "Collect cluster-wide CPU, memory, and storage metrics",
+      "placeholders": {
+        "name": "Name",
+        "username": "Username (e.g. root@pam)",
+        "password": "Password",
+        "specificNode": "Specific node name"
+      },
+      "actions": {
+        "import": "Add",
+        "edit": "Save"
+      },
+      "messages": {
+        "created": "Proxmox integration created successfully",
+        "updated": "Proxmox integration updated successfully",
+        "createFailed": "Failed to create Proxmox integration",
+        "updateFailed": "Failed to update Proxmox integration"
+      },
+      "credentialsDescription": "Proxmox user with API access, e.g. root@pam or a dedicated API user."
+    },
+    "connectionReasonDialog": {
+      "title": "Connection Reason Required",
+      "reasonLabel": "Please provide a reason for connecting to <strong>{{serverName}}</strong>:",
+      "placeholder": "Enter your reason for this connection...",
+      "characterCount": "{{count}}/500",
+      "actions": {
+        "cancel": "Cancel",
+        "connect": "Connect"
+      }
+    },
+    "sshConfigImport": {
+      "title": "Import SSH Config",
+      "configContent": {
+        "label": "SSH Config Content",
+        "placeholder": "Paste your SSH config content here..."
+      },
+      "keyFiles": {
+        "label": "SSH Key Files ({{count}} found)",
+        "userLabel": "User: {{username}}",
+        "uploaded": "✓ Uploaded",
+        "uploadButton": "Upload"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "import": "Import",
+        "importing": "Importing..."
+      },
+      "messages": {
+        "noContent": "Please provide SSH config content",
+        "noFolder": "No folder selected",
+        "uploadSuccess": "Key {{name}} uploaded successfully",
+        "uploadFailed": "Failed to upload key {{name}}",
+        "importFailed": "Failed to import SSH config"
+      }
+    },
+    "fileManager": {
+      "dropOverlay": "Drop files or folders to upload",
+      "createFile": {
+        "title": "Create File",
+        "placeholder": "File Name",
+        "button": "Create File"
+      },
+      "createFolder": {
+        "title": "Create Folder",
+        "placeholder": "Folder Name",
+        "button": "Create Folder"
+      },
+      "renameItem": {
+        "title": "Rename",
+        "placeholder": "New name",
+        "button": "Rename"
+      },
+      "fileEditor": {
+        "title": "File Editor",
+        "save": "Save",
+        "cancel": "Cancel",
+        "loading": "Loading...",
+        "saving": "Saving...",
+        "saveSuccess": "File saved successfully",
+        "saveFailed": "Failed to save file",
+        "loadFailed": "Failed to load file",
+        "unsavedChanges": "You have unsaved changes. Are you sure you want to close this file?"
+      },
+      "contextMenu": {
+        "open": "Open",
+        "download": "Download",
+        "rename": "Rename",
+        "delete": "Delete",
+        "copy": "Copy",
+        "cut": "Cut",
+        "paste": "Paste",
+        "createFolder": "Create Folder",
+        "upload": "Upload File",
+        "edit": "Edit",
+        "preview": "Preview",
+        "moveHere": "Move here",
+        "copyHere": "Copy here",
+        "bigFileConfirm": "This file is {{size}} MB large. Are you sure you want to edit it?",
+        "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+        "selectAll": "Select All",
+        "insertSnippet": "Insert Snippet",
+        "sendCtrlC": "Send Ctrl+C",
+        "clearTerminal": "Clear Terminal",
+        "properties": "Properties",
+        "openTerminal": "Open Terminal Here",
+        "downloadFolder": "Download Folder",
+        "newFile": "New File",
+        "newFolder": "New Folder"
+      },
+      "properties": {
+        "general": "General",
+        "permissions": "Permissions",
+        "checksum": "Checksum",
+        "folder": "Folder",
+        "file": "File",
+        "path": "Location",
+        "size": "Size",
+        "calculateSize": "Calculate",
+        "owner": "Owner",
+        "group": "Group",
+        "modified": "Modified",
+        "accessed": "Accessed",
+        "calculating": "Calculating...",
+        "calculate": "Calculate"
+      },
+      "permissions": {
+        "owner": "Owner",
+        "group": "Group",
+        "others": "Others",
+        "read": "Read",
+        "write": "Write",
+        "execute": "Execute",
+        "octal": "Octal",
+        "preview": "Preview",
+        "apply": "Apply"
+      },
+      "filePreview": {
+        "title": "File Preview",
+        "loading": "Loading...",
+        "cannotPreview": "Cannot Preview File",
+        "unsupportedFileType": "This file type is not supported for preview",
+        "videoNotSupported": "Your browser does not support video playback",
+        "audioNotSupported": "Your browser does not support audio playback",
+        "download": "Download",
+        "close": "Close"
+      },
+      "selection": {
+        "itemsSelected": "{{count}} items selected",
+        "filesSelected": "{{count}} file(s) selected",
+        "foldersSelected": "{{count}} folder(s) selected",
+        "clearSelection": "Clear selection",
+        "downloadSelected": "Download selected",
+        "deleteSelected": "Delete selected",
+        "download": "Download",
+        "delete": "Delete",
+        "deleteConfirm": "Are you sure you want to delete {{count}} item(s)?"
+      },
+      "header": {
+        "name": "Name",
+        "size": "Size",
+        "permissions": "Permissions",
+        "modified": "Modified"
+      },
+      "actionBar": {
+        "enterDirectory": "Enter directory path...",
+        "hiddenDirectories": "{{count}} hidden directories",
+        "switchToGrid": "Switch to grid view",
+        "switchToList": "Switch to list view",
+        "uploadFile": "Upload file(s)",
+        "uploadFolder": "Upload folder",
+        "search": "Search files",
+        "closeSearch": "Close search",
+        "refresh": "Refresh",
+        "back": "Back",
+        "forward": "Forward",
+        "up": "Parent directory",
+        "home": "Home directory",
+        "switchToCompact": "Switch to compact view"
+      },
+      "item": {
+        "link": "link",
+        "expand": "Expand folder",
+        "collapse": "Collapse folder"
+      },
+      "search": {
+        "placeholder": "Filter files in this folder...",
+        "results_one": "{{count}} result",
+        "results_other": "{{count}} results",
+        "noResultsTitle": "No matches",
+        "noResults": "No files match \"{{query}}\""
+      },
+      "states": {
+        "loading": "Loading files...",
+        "accessDenied": "Access Denied",
+        "emptyFolder": "This folder is empty",
+        "dropFilesHint": "Drop files here to upload them"
+      },
+      "toast": {
+        "uploadFailed": "Upload failed: {{message}}",
+        "connectionLost": "SFTP connection lost. Please reconnect.",
+        "error": "An error occurred"
+      },
+      "transfers": {
+        "title": "Transfers",
+        "activeCount": "{{count}} active",
+        "allDone": "All done",
+        "clearFinished": "Clear finished",
+        "queued": "Queued",
+        "cancelling": "Cancelling...",
+        "completed": "Completed",
+        "savedTo": "Saved to {{path}}",
+        "cancelled": "Cancelled",
+        "failed": "Failed: {{message}}",
+        "dismiss": "Dismiss"
+      },
+      "status": {
+        "folders_one": "{{count}} folder",
+        "folders_other": "{{count}} folders",
+        "files_one": "{{count}} file",
+        "files_other": "{{count}} files",
+        "hidden_one": "{{count}} hidden",
+        "hidden_other": "{{count}} hidden",
+        "selected": "{{count}} selected",
+        "showHidden": "Show hidden files",
+        "hideHidden": "Hide hidden files"
+      },
+      "conflict": {
+        "title_one": "Item already exists",
+        "title_other": "{{count}} items already exist",
+        "upload_one": "A file with this name already exists in the destination. What would you like to do?",
+        "upload_other": "These files already exist in the destination. What would you like to do with them?",
+        "move_one": "An item with this name already exists in the destination. Moving will replace it.",
+        "move_other": "These items already exist in the destination. Moving will replace them.",
+        "copy_one": "An item with this name already exists in the destination. Copying will replace it.",
+        "copy_other": "These items already exist in the destination. Copying will replace them.",
+        "more": "+ {{count}} more",
+        "skip": "Skip",
+        "rename": "Keep both",
+        "overwrite": "Overwrite"
+      }
+    },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
+    },
+    "remoteDesktop": {
+      "dropOverlay": "Drop files to upload to remote",
+      "toast": {
+        "uploadedSingle": "Uploaded \"{{name}}\" to remote drive",
+        "uploadedMultiple": "Uploaded {{count}} files to remote drive",
+        "uploadFailed": "{{count}} file(s) failed to upload",
+        "uploadPartial": "{{failed}} file(s) failed to upload, {{succeeded}} succeeded",
+        "downloaded": "Downloaded \"{{name}}\" from remote"
+      }
+    },
+    "automatedSession": {
+      "viewOnlyAi": "The AI assistant is working in this session. You can watch, but not type.",
+      "viewOnlyMcp": "An external agent (MCP) is working in this session. You can watch, but not type."
+    },
+    "aiAssistant": {
+      "title": "AI Assistant",
+      "open": "AI Assistant",
+      "empty": "Ask the assistant to inspect or change your servers. It opens its own sessions to the servers you add below, runs commands, edits files and can even operate remote desktops.",
+      "addServer": "Add server",
+      "removeServer": "Remove server",
+      "searchServers": "Search servers...",
+      "noMatches": "No matching servers",
+      "current": "current",
+      "openSessions": "{{count}} open session(s)",
+      "approval": {
+        "ask": "Ask before actions",
+        "askDescription": "Commands, input and file changes wait for your approval",
+        "allow": "Allow all",
+        "allowDescription": "Runs tool calls without asking",
+        "readonly": "Read-only",
+        "readonlyDescription": "Only inspects servers; anything that changes them is denied"
+      },
+      "placeholder": "Message the assistant...",
+      "connecting": "Connecting...",
+      "send": "Send",
+      "copyMessage": "Copy message",
+      "copied": "Copied",
+      "editMessage": "Edit message",
+      "stop": "Stop",
+      "connectionError": "Connection to the assistant was lost.",
+      "reconnecting": "Connection lost. Reconnecting...",
+      "confirmPrompt": "Allow this action?",
+      "allow": "Allow",
+      "allowShortcut": "Allow ({{key}})",
+      "deny": "Deny",
+      "denied": "You denied this action.",
+      "stopped": "Stopped.",
+      "continuePrompt": "The assistant paused after a long run of steps. Continue?",
+      "continue": "Continue",
+      "compacted": "Earlier messages were summarised to free up context.",
+      "retryPrompt": "The last step failed. Retry from where it stopped?",
+      "retry": "Retry",
+      "questionOther": "Or type another answer...",
+      "questionAnswer": "Type your answer...",
+      "questionSend": "Answer",
+      "questionPickOne": "Pick one or type an answer",
+      "questionPickMany": "Pick any that apply",
+      "exitCode": "exit {{code}}",
+      "truncated": "[truncated]",
+      "toolSummary": {
+        "recursive": "{{path}} (recursive)",
+        "doubleClick": "{{target}} ×2"
+      },
+      "tools": {
+        "list_entries": "List servers",
+        "get_entry": "Inspect server",
+        "list_folders": "List folders",
+        "list_organizations": "List organizations",
+        "list_identities": "List identities",
+        "list_snippets": "List snippets",
+        "list_scripts": "List scripts",
+        "list_tags": "List tags",
+        "list_users": "List users",
+        "get_permissions": "Check permissions",
+        "get_monitoring": "Read monitoring",
+        "list_sessions": "List sessions",
+        "open_session": "Open session",
+        "get_session": "Inspect session",
+        "close_session": "Close session",
+        "close_all_sessions": "Close all sessions",
+        "terminal_run": "Run command",
+        "terminal_send": "Send input",
+        "terminal_read": "Read terminal",
+        "terminal_resize": "Resize terminal",
+        "run_command": "Run command",
+        "exec_command": "Run command",
+        "file_list": "List directory",
+        "file_stat": "Inspect path",
+        "file_read": "Read file",
+        "file_write": "Write file",
+        "file_edit": "Edit file",
+        "file_mkdir": "Create directory",
+        "file_delete": "Delete",
+        "file_move": "Move",
+        "file_chmod": "Change permissions",
+        "file_search_dirs": "Find directories",
+        "desktop_screenshot": "Screenshot",
+        "desktop_info": "Inspect desktop",
+        "desktop_click": "Click",
+        "desktop_mouse_move": "Move mouse",
+        "desktop_drag": "Drag",
+        "desktop_scroll": "Scroll",
+        "desktop_type": "Type text",
+        "desktop_key": "Press keys",
+        "desktop_resize": "Resize desktop",
+        "desktop_clipboard_set": "Set clipboard",
+        "desktop_clipboard_get": "Read clipboard",
+        "batch": "Run several actions",
+        "ask_user": "Question"
+      }
+    },
+    "commandSuggestion": {
+      "open": "Generate Command",
+      "placeholder": "Describe the command...",
+      "generating": "Generating...",
+      "accept": "Accept command",
+      "cycle": "Cycle suggestions",
+      "error": "Failed to generate a command."
+    },
+    "snippets": {
+      "title": "Snippets",
+      "noSnippets": "No snippets available",
+      "searchPlaceholder": "Search snippets...",
+      "createNew": "Create New Snippet"
+    },
+    "toolbar": {
+      "drag": "Drag to move",
+      "shortcuts": "Keyboard shortcuts",
+      "holdModifier": "Hold {{key}}",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
+    },
+    "monitors": {
+      "title": "Monitor {{number}}",
+      "select": "Switch to monitor {{number}}",
+      "selectOrPopOut": "Switch to monitor {{number}} (double-click to open in its own window)",
+      "add": "Add monitor",
+      "remove": "Remove last monitor"
+    },
+    "terminalActions": {
+      "menuTitle": "Terminal Actions",
+      "snippets": "Snippets",
+      "keyboardShortcuts": "Keyboard Shortcuts",
+      "broadcasting": "Broadcasting",
+      "fullScreen": "Full-Screen",
+      "exitFullScreen": "Exit Full-Screen Mode",
+      "badgeOn": "ON"
+    },
+    "notesPanel": {
+      "title": "Notes",
+      "placeholder": "Write notes for this server…",
+      "showInList": "Show in list",
+      "showInListTooltip": "Display the first line of these notes under the server name in the sidebar.",
+      "status": {
+        "saving": "Saving",
+        "saved": "Saved",
+        "unsaved": "Unsaved",
+        "error": "Save failed"
+      }
+    },
+    "liveSessions": {
+      "activeOn": "Live sessions: {{users}}",
+      "unknownUser": "Unknown user"
+    },
+    "folderSettings": {
+      "name": "Folder name",
+      "nameRequired": "Folder name is required",
+      "loadFailed": "Unable to load folder settings",
+      "protocol": "Defaults for",
+      "protocolHint": "Servers in this folder use what you set below unless they set their own value. Each protocol has its own defaults.",
+      "unset": "Remove from folder"
+    },
+    "trust": {
+      "certificate": "certificate",
+      "hostKey": "host key",
+      "newTitle": "Trust this {{subject}}?",
+      "newMessage": "This is the first connection to {{endpoint}}. Check the fingerprint before you continue.",
+      "changedTitle": "The {{subject}} has changed",
+      "changedMessage": "{{endpoint}} presents a different {{subject}} than before. Only continue if you expect this.",
+      "fingerprint": "Fingerprint",
+      "previous": "Trusted until now",
+      "presented": "Presented now",
+      "subject": "Issued to",
+      "issuer": "Issued by",
+      "selfSigned": "Self-signed",
+      "validUntil": "Valid until",
+      "blocked": "Only certificate managers of {{organization}} can accept this change.",
+      "accept": "Trust and connect",
+      "cancel": "Cancel",
+      "acceptChanged": "Trust the new one",
+      "disconnect": "Disconnect",
+      "failed": "Your decision could not be saved",
+      "acceptOnly": "Trust certificate"
+    }
+  },
+  "support": {
+    "title": "Get Support",
+    "subtitle": "Need help or want to contribute?",
+    "footer": "Thank you for using Nexterm!",
+    "issues": {
+      "title": "Report an Issue",
+      "description": "Found a bug or have a feature request?"
+    },
+    "discord": {
+      "title": "Join Discord",
+      "description": "Chat with the community and get help."
+    },
+    "docs": {
+      "title": "View Documentation",
+      "description": "Read the documentation and learn how to use Nexterm."
+    },
+    "github": {
+      "title": "View on GitHub",
+      "description": "Browse source code and contribute."
+    }
+  },
+  "welcome": {
+    "hello": "Hi",
+    "defaultName": "User",
+    "subtitle": "Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.",
+    "downloadApps": "Download Apps",
+    "connectDevice": "Connect Device",
+    "recentConnections": "Recent Connections",
+    "getStarted": "Get Started",
+    "getStartedHint": "Add a server from the sidebar to begin managing your infrastructure.",
+    "hibernated": "Hibernated",
+    "demo": {
+      "explore": "Start exploring"
+    }
+  },
+  "downloadApps": {
+    "title": "Download Apps",
+    "subtitle": "Get Nexterm on your devices",
+    "platforms": {
+      "windows": "Windows",
+      "macos": "macOS",
+      "linux": "Linux",
+      "android": "Android",
+      "ios": "iOS"
+    },
+    "recommended": "Recommended",
+    "versionUnavailable": "The server version could not be determined, so direct downloads are unavailable. You can still browse the releases on GitHub.",
+    "sourceHint": "Downloads are served from the GitHub releases.",
+    "allReleases": "All releases"
+  }
+}
