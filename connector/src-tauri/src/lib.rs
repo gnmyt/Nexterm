@@ -158,6 +158,8 @@ pub fn run() {
             list_tunnels,
             get_tunnel_status,
             get_user_agent,
+            host_fs::host_fs_configure,
+            host_fs::host_fs_release,
             host_fs::host_fs_open,
             host_fs::host_fs_read,
             host_fs::host_fs_write,

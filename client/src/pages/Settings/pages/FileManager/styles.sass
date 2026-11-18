@@ -1,121 +1,90 @@
 @use "@/common/styles/colors"
+@use "@/common/styles/fonts"
 @use "@/common/styles/breakpoints"
 
 .file-manager-settings
   display: flex
   flex-direction: column
   margin-top: 1rem
-  gap: 2rem
+  gap: 2.5rem
 
-.settings-section
+  @media (max-width: breakpoints.$mobile)
+    gap: 1.5rem
+
+.file-manager-section
   .section-header
     display: flex
     justify-content: space-between
     align-items: center
-    margin-bottom: 0.5rem
+    margin-bottom: 1rem
 
   h2
     margin: 0
-    color: colors.$white
-    font-size: 1.25rem
 
-    @media (max-width: breakpoints.$mobile)
-      font-size: 1.1rem
+    svg
+      opacity: 0.7
 
-  > p
-    margin: 0 0 1.5rem 0
+  p
     color: colors.$subtext
-    font-size: 0.9rem
+    margin: 0
 
-.setting-item
+  .section-inner
+    margin-top: 1rem
+
+.file-manager-fields
   display: flex
-  align-items: center
-  justify-content: space-between
-  padding: 1rem 0
-  border-bottom: 1px solid colors.$gray
+  flex-wrap: wrap
+  gap: 1.5rem 2rem
 
   @media (max-width: breakpoints.$mobile)
     flex-direction: column
-    align-items: flex-start
-    gap: 0.75rem
+    gap: 1rem
 
-  &:last-child
-    border-bottom: none
-
-  .setting-info
-    display: flex
-    align-items: flex-start
-    gap: 0.75rem
-    flex: 1
-    margin-right: 2rem
-
-    @media (max-width: breakpoints.$mobile)
-      margin-right: 0
-
-  .setting-icon
-    display: flex
-    align-items: center
-    justify-content: center
-    width: 2rem
-    height: 2rem
-    border-radius: 0.5rem
-    background-color: colors.$gray
-    flex-shrink: 0
-    margin-top: 0.1rem
-
-    svg
-      color: colors.$primary
-
-  .setting-label
-    flex: 1
-
-    h4
-      margin: 0 0 0.25rem 0
-      color: colors.$white
-      font-size: 1rem
-      font-weight: 600
-
-    p
-      margin: 0
-      color: colors.$subtext
-      font-size: 0.85rem
-
-.view-options
+.file-manager-field
   display: flex
+  flex-direction: column
   gap: 0.5rem
+  min-width: 200px
 
   @media (max-width: breakpoints.$mobile)
-    width: 100%
+    min-width: 100%
 
-  &.three-options
-    @media (max-width: breakpoints.$mobile)
-      flex-wrap: wrap
+  &--wide
+    flex: 1 1 100%
 
-.view-option
+.file-manager-field__label
+  font-weight: 600
+  color: colors.$subtext
+  font-size: 0.875rem
+
+.file-manager-folder
+  display: flex
+  align-items: center
+  flex-wrap: wrap
+  gap: 0.5rem
+
+.file-manager-folder__path
+  flex: 1 1 16rem
+  min-width: 0
+  padding: 0.75rem 0.875rem
+  background: colors.$lighter-background
+  border: 1px solid colors.$border
+  border-radius: 0.5rem
+  font-family: fonts.$mono
+  font-size: 0.85rem
+  color: colors.$white
+  word-break: break-all
+  user-select: text
+
+  &--placeholder
+    font-family: inherit
+    color: colors.$subtext
+
+.file-manager-warning
+  flex: 1 1 100%
   display: flex
   align-items: center
   gap: 0.5rem
-  padding: 0.5rem 0.75rem
-  border-radius: 0.5rem
-  border: 1px solid colors.$gray
-  background: colors.$lighter-background
-  cursor: pointer
-  transition: all 0.15s ease
-  color: colors.$subtext
-
-  @media (max-width: breakpoints.$mobile)
-    flex: 1
-    justify-content: center
-
-  &:hover
-    border-color: colors.$primary
-    color: colors.$white
-
-  &.selected
-    border-color: colors.$primary
-    background: colors.$primary-opacity
-    color: colors.$white
-
-  span
-    font-size: 0.85rem
-    font-weight: 500
+  color: colors.$warning
+  font-size: 0.85rem
+  font-weight: 500
