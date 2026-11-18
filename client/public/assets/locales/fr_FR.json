@@ -549,6 +549,13 @@
           "unknown": "Inconnu",
           "noData": "Aucune information sur le système n'est disponible"
         },
+        "memory": {
+          "title": "Memory",
+          "summary": "{{used}} of {{total}} ({{percent}}%)",
+          "used": "Used",
+          "cache": "Buffers / Cache",
+          "free": "Free"
+        },
         "performance": {
           "title": "Métriques de Performance",
           "loadAverage": "Moyenne de la charge",
