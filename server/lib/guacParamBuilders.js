@@ -75,6 +75,11 @@ const buildVncParams = async (cfg, identity) => {
         "ignore-cert": "true",
     };
 
+    // Leave the classic VNC default unchanged unless explicitly configured.
+    if (["ISO8859-1", "UTF-8", "UTF-16", "CP1252"].includes(cfg.clipboardEncoding)) {
+        params["clipboard-encoding"] = cfg.clipboardEncoding;
+    }
+
     if (identity) {
         const credentials = await resolveCredentials(identity);
         if (identity.username) params.username = identity.username;

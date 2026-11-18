@@ -179,6 +179,9 @@ rfbClient* guac_vnc_get_client(guac_client* client) {
 
         /* Clipboard */
         rfb_client->GotXCutText = guac_vnc_cut_text;
+#ifdef LIBVNC_CLIENT_HAS_EXTENDED_CLIPBOARD
+        rfb_client->GotXCutTextUTF8 = guac_vnc_cut_text_utf8;
+#endif
 
         /* Set remote cursor */
         if (vnc_settings->remote_cursor) {

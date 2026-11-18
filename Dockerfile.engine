@@ -1,3 +1,14 @@
+FROM alpine:3.22 AS libvnc-builder
+
+WORKDIR /src
+
+COPY scripts/build-engine-release.sh ./scripts/build-engine-release.sh
+RUN sh scripts/build-engine-release.sh deps-libvnc
+
+COPY vendor/patches/ ./vendor/patches/
+RUN sh scripts/build-engine-release.sh libvnc
+
+
 FROM alpine:3.22 AS guac-builder
 
 WORKDIR /src
@@ -6,6 +17,7 @@ COPY scripts/build-engine-release.sh ./scripts/build-engine-release.sh
 RUN sh scripts/build-engine-release.sh deps-guac
 
 COPY vendor/guacamole-server/ ./vendor/guacamole-server/
+COPY --from=libvnc-builder /src/vendor/libvncserver/dist/ ./vendor/libvncserver/dist/
 
 RUN sh scripts/build-engine-release.sh guac
 
@@ -67,16 +79,6 @@ RUN meson setup build \
     && ninja -C build install \
     && rm -rf /usr/local/lib/pkgconfig /usr/local/include /usr/local/share
 
-
-FROM alpine:3.22 AS libvnc-builder
-
-WORKDIR /src
-
-COPY scripts/build-engine-release.sh ./scripts/build-engine-release.sh
-RUN sh scripts/build-engine-release.sh deps-libvnc
-
-COPY vendor/patches/ ./vendor/patches/
-RUN sh scripts/build-engine-release.sh libvnc
 
 FROM alpine:3.22
 

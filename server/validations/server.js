@@ -13,6 +13,7 @@ const configValidation = Joi.object({
     ip: Joi.string().optional(),
     port: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
     keyboardLayout: Joi.string().optional(),
+    clipboardEncoding: Joi.string().valid("ISO8859-1", "UTF-8", "UTF-16", "CP1252").allow("").optional(),
     monitoringEnabled: Joi.boolean().optional(),
     nodeName: Joi.string().optional(),
     vmid: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),

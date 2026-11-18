@@ -76,5 +76,9 @@ guac_user_end_handler guac_vnc_clipboard_end_handler;
  */
 void guac_vnc_cut_text(rfbClient* client, const char* text, int textlen);
 
+#ifdef LIBVNC_CLIENT_HAS_EXTENDED_CLIPBOARD
+/** Handler for UTF-8 text received through Extended Clipboard. */
+void guac_vnc_cut_text_utf8(rfbClient* client, const char* text, int textlen);
 #endif
 
+#endif
