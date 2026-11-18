@@ -23,7 +23,6 @@ const buildPveQemuParams = async (entry) => {
         hostname: server.ip,
         port: String(vncTicket.port),
         password: vncTicket.ticket,
-        "ignore-cert": "true",
     };
 };
 
@@ -31,7 +30,6 @@ const buildRdpParams = async (cfg, identity, accountId) => {
     const params = {
         hostname: cfg.ip,
         port: String(cfg.port || 3389),
-        "ignore-cert": "true",
         "server-layout": cfg.keyboardLayout || "en-us-qwerty",
         "resize-method": (cfg.resizeMethod && cfg.resizeMethod !== "none") ? cfg.resizeMethod : "display-update",
         "secondary-monitors": 3,
@@ -72,7 +70,6 @@ const buildVncParams = async (cfg, identity) => {
     const params = {
         hostname: cfg.ip,
         port: String(cfg.port || 5900),
-        "ignore-cert": "true",
     };
 
     if (identity) {

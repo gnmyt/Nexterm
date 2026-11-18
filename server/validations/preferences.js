@@ -42,6 +42,10 @@ const sessionsSchema = Joi.object({
     showAgentSessions: Joi.boolean(),
 }).unknown(false);
 
+const securitySchema = Joi.object({
+    ignoreCertificateWarnings: Joi.boolean(),
+}).unknown(false);
+
 module.exports.preferencesValidation = Joi.object({
     terminal: terminalSchema,
     theme: themeSchema,
@@ -49,4 +53,5 @@ module.exports.preferencesValidation = Joi.object({
     remoteDesktop: remoteDesktopSchema,
     general: generalSchema,
     sessions: sessionsSchema,
+    security: securitySchema,
 }).unknown(false);

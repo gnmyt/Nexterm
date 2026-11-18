@@ -32,6 +32,7 @@ export const Permission = Object.freeze({
     ORG_MANAGE: "org.manage",
     ORG_DELETE: "org.delete",
     ORG_MEMBERS_MANAGE: "org.members.manage",
+    ORG_CERTIFICATES_MANAGE: "org.certificates.manage",
     ORG_AUDIT_VIEW: "org.audit.view",
     ORG_AUDIT_RECORDINGS: "org.audit.recordings",
     ORG_SESSIONS_VIEW: "org.sessions.view",

@@ -9,6 +9,7 @@ module.exports.createPVEServerValidation = Joi.object({
     username: Joi.string().required(),
     password: Joi.string().required(),
     monitoringEnabled: Joi.boolean().optional(),
+    acceptFingerprint: Joi.string().max(200).optional(),
 });
 
 module.exports.updatePVEServerValidation = Joi.object({

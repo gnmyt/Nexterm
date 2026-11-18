@@ -5,6 +5,7 @@ const MonitoringData = require("../models/MonitoringData");
 const MonitoringSnapshot = require("../models/MonitoringSnapshot");
 const { Op } = require("sequelize");
 const { getProvider } = require("../lib/hypervisors");
+const hostTrust = require("./hostTrust");
 const { getMonitoringSettingsInternal } = require("../controllers/monitoring");
 
 let monitoringInterval = null;
@@ -55,7 +56,9 @@ const monitorIntegration = async (integration) => {
         if (!credential) return saveMonitoringData(integration.id, { status: "error", errorMessage: "No credentials configured" });
 
         const { ip, port, username } = integration.config;
-        const data = await provider.collectMetrics({ ip, port, username, password: credential.secret });
+        const scope = await hostTrust.scopeForIntegration(integration);
+        const data = await hostTrust.withScope(scope,
+            () => provider.collectMetrics({ ip, port, username, password: credential.secret }));
         await saveMonitoringData(integration.id, data);
     } catch (error) {
         logger.error("Error monitoring integration", { integrationId: integration.id, error: error.message });

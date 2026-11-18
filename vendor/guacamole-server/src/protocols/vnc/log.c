@@ -20,6 +20,7 @@
 #include "config.h"
 
 #include "client.h"
+#include "log.h"
 #include "common/iconv.h"
 
 #include <cairo/cairo.h>
@@ -33,17 +34,31 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <syslog.h>
+
+static __thread guac_client* guac_vnc_log_client = NULL;
+
+void guac_vnc_client_log_set_client(guac_client* client) {
+    guac_vnc_log_client = client;
+}
 
 void guac_vnc_client_log_info(const char* format, ...) {
 
-    char message[2048];
+    char message[8192];
 
     /* Copy log message into buffer */
     va_list args;
     va_start(args, format);
     vsnprintf(message, sizeof(message), format, args);
     va_end(args);
+
+    if (guac_vnc_log_client != NULL && strncmp(message,
+                GUAC_VNC_UNTRUSTED_CERT_MARKER, strlen(GUAC_VNC_UNTRUSTED_CERT_MARKER)) == 0) {
+        message[strcspn(message, "\r\n")] = '\0';
+        guac_client_log(guac_vnc_log_client, GUAC_LOG_WARNING, "%s", message);
+        return;
+    }
 
     /* Log to syslog */
     syslog(LOG_INFO, "%s", message);

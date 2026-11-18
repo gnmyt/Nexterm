@@ -71,6 +71,7 @@ set(ENGINE_SOURCES
     src/core/io.c
     src/core/log.c
     src/core/session.c
+    src/core/trust.c
     src/net/connection.c
     src/net/ssh.c
     src/net/ssh_common.c

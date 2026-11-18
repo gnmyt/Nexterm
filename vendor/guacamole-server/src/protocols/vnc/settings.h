@@ -59,6 +59,10 @@ typedef struct guac_vnc_settings {
      */
     char* password;
 
+    bool ignore_certificate;
+
+    char* trusted_certificates;
+
     /**
      * Disable the VNC client messages to request that the remote (server)
      * display resize to match the client resolution.

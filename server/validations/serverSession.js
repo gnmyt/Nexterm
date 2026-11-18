@@ -12,6 +12,7 @@ module.exports.createSessionValidation = Joi.object({
     displayHeight: Joi.number().integer().min(200).max(8192).optional(),
     scriptId: Joi.number().allow(null).optional(),
     startPath: Joi.string().allow(null).optional(),
+    trustPrompt: Joi.boolean().optional(),
     directIdentity: Joi.object({
         username: Joi.string().max(255).optional(),
         type: Joi.string().valid("password", "ssh", "both", "password-only").required(),
@@ -37,4 +38,9 @@ module.exports.resumeSessionValidation = Joi.object({
 module.exports.duplicateSessionValidation = Joi.object({
     tabId: Joi.string().allow(null).optional(),
     browserId: Joi.string().allow(null).optional()
+});
+
+module.exports.trustDecisionValidation = Joi.object({
+    fingerprint: Joi.string().max(200).required(),
+    accept: Joi.boolean().required(),
 });

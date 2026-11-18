@@ -11,6 +11,7 @@ import XtermRenderer from "@/pages/Servers/components/ViewContainer/renderer/Xte
 import FileRenderer from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer";
 import ScriptRenderer from "@/pages/Servers/components/ViewContainer/renderer/ScriptRenderer";
 import NotesRenderer from "@/pages/Servers/components/ViewContainer/renderer/NotesRenderer";
+import TrustPrompt from "@/pages/Servers/components/ViewContainer/renderer/components/TrustPrompt";
 import { useTauriWindow } from "@/common/hooks/useTauriWindow.js";
 import { useBodyClass } from "@/common/hooks/useBodyClass.js";
 
@@ -354,6 +355,12 @@ export const ViewContainer = ({
         const scopedConnected = (sessionId) => markSessionConnected(sessionId, connectionVersion);
         if (session.type === "notes") {
             return <NotesRenderer key={rendererKey} session={session} />;
+        }
+
+        if (session.trustChallenge) {
+            return <TrustPrompt key={`${rendererKey}-trust-${session.trustChallenge.fingerprint}`} session={session}
+                                challenge={session.trustChallenge}
+                                onClose={() => disconnectFromServer(session.id, { force: true })} />;
         }
 
         if (session.scriptId) {

@@ -96,7 +96,7 @@ app.patch("/:integrationId", async (req, res) => {
  * @return {object} 500 - Failed to sync integration
  */
 app.post("/:integrationId/sync", async (req, res) => {
-    const result = await syncIntegration(req.user.id, req.params.integrationId);
+    const result = await syncIntegration(req.user.id, req.params.integrationId, req.body?.acceptFingerprint || null);
     if (result?.code) return res.json(result);
 
     res.json(result);

@@ -13,7 +13,93 @@
 #include <errno.h>
 #include <stdlib.h>
 
-int nexterm_ssh_setup(const char* host, uint16_t port,
+#include <openssl/evp.h>
+
+#define SSH_HOSTKEY_METHODS \
+    "ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521," \
+    "rsa-sha2-512,rsa-sha2-256,ssh-rsa"
+
+static void ssh_prefer_pinned_hostkey(LIBSSH2_SESSION* session, const nexterm_trust_t* trust,
+                                      const char* host, uint16_t port) {
+    char pinned[64];
+    if (!nexterm_trust_pinned_algorithm(trust, NEXTERM_TRUST_KIND_SSH, host, port,
+                                        pinned, sizeof(pinned)))
+        return;
+
+    const char* first = strcmp(pinned, "ssh-rsa") == 0
+        ? "rsa-sha2-512,rsa-sha2-256,ssh-rsa" : pinned;
+
+    char methods[512];
+    snprintf(methods, sizeof(methods), "%s,%s", first, SSH_HOSTKEY_METHODS);
+    libssh2_session_method_pref(session, LIBSSH2_METHOD_HOSTKEY, methods);
+}
+
+static void ssh_hostkey_algorithm(const char* key, size_t key_len, char* out, size_t out_sz) {
+    snprintf(out, out_sz, "unknown");
+    if (key_len < 4) return;
+
+    const unsigned char* raw = (const unsigned char*)key;
+    size_t name_len = ((size_t)raw[0] << 24) | ((size_t)raw[1] << 16)
+                    | ((size_t)raw[2] << 8) | (size_t)raw[3];
+    if (name_len == 0 || name_len > key_len - 4 || name_len >= out_sz) return;
+
+    memcpy(out, key + 4, name_len);
+    out[name_len] = '\0';
+}
+
+static int ssh_verify_hostkey(LIBSSH2_SESSION* session, const nexterm_trust_t* trust,
+                              const char* host, uint16_t port) {
+    if (trust && trust->accept_any) return 0;
+
+    size_t key_len = 0;
+    int key_type = 0;
+    const char* key = libssh2_session_hostkey(session, &key_len, &key_type);
+    const char* digest = libssh2_hostkey_hash(session, LIBSSH2_HOSTKEY_HASH_SHA256);
+    if (!key || !digest) {
+        LOG_ERROR("SSH host key of %s:%u is not available", host, port);
+        return -1;
+    }
+
+    char encoded[64];
+    EVP_EncodeBlock((unsigned char*)encoded, (const unsigned char*)digest, 32);
+    size_t encoded_len = strlen(encoded);
+    while (encoded_len > 0 && encoded[encoded_len - 1] == '=')
+        encoded[--encoded_len] = '\0';
+
+    char fingerprint[128];
+    snprintf(fingerprint, sizeof(fingerprint), "SHA256:%s", encoded);
+
+    if (nexterm_trust_is_pinned(trust, NEXTERM_TRUST_KIND_SSH, host, port, fingerprint))
+        return 0;
+
+    char algorithm[64];
+    ssh_hostkey_algorithm(key, key_len, algorithm, sizeof(algorithm));
+    nexterm_trust_reject(NEXTERM_TRUST_KIND_SSH, host, port, algorithm, fingerprint,
+                         (const unsigned char*)key, key_len);
+    return -1;
+}
+
+static int ssh_handshake_trusted(LIBSSH2_SESSION* session, int sock, const nexterm_trust_t* trust,
+                                 const char* host, uint16_t port) {
+    libssh2_session_set_timeout(session, 30000);
+    ssh_prefer_pinned_hostkey(session, trust, host, port);
+
+    if (libssh2_session_handshake(session, sock) != 0) {
+        char* errmsg = NULL;
+        libssh2_session_last_error(session, &errmsg, NULL, 0);
+        LOG_ERROR("SSH handshake with %s:%u failed: %s", host, port, errmsg ? errmsg : "unknown");
+        return -1;
+    }
+
+    if (ssh_verify_hostkey(session, trust, host, port) != 0) {
+        libssh2_session_disconnect(session, "Host key not trusted");
+        return -1;
+    }
+
+    return 0;
+}
+
+int nexterm_ssh_setup(const char* host, uint16_t port, const nexterm_trust_t* trust,
                       int* out_sock, LIBSSH2_SESSION** out_session) {
     int sock = nexterm_tcp_connect(host, port);
     if (sock < 0) return -1;
@@ -24,12 +110,7 @@ int nexterm_ssh_setup(const char* host, uint16_t port,
         return -1;
     }
 
-    libssh2_session_set_timeout(session, 30000);
-
-    if (libssh2_session_handshake(session, sock) != 0) {
-        char* errmsg = NULL;
-        libssh2_session_last_error(session, &errmsg, NULL, 0);
-        LOG_ERROR("SSH handshake failed: %s", errmsg ? errmsg : "unknown");
+    if (ssh_handshake_trusted(session, sock, trust, host, port) != 0) {
         libssh2_session_free(session);
         close(sock);
         return -1;
@@ -133,6 +214,8 @@ static int ssh_setup_on_channel(jump_chain_t* chain,
                                 LIBSSH2_SESSION* parent_session,
                                 int parent_sock,
                                 LIBSSH2_CHANNEL* channel,
+                                const nexterm_trust_t* trust,
+                                const char* host, uint16_t port,
                                 LIBSSH2_SESSION** out_session,
                                 int* out_proxy_sock) {
     int sv[2];
@@ -169,12 +252,7 @@ static int ssh_setup_on_channel(jump_chain_t* chain,
         return -1;
     }
 
-    libssh2_session_set_timeout(session, 30000);
-
-    if (libssh2_session_handshake(session, sv[0]) != 0) {
-        char* errmsg = NULL;
-        libssh2_session_last_error(session, &errmsg, NULL, 0);
-        LOG_ERROR("SSH handshake over tunnel failed: %s", errmsg ? errmsg : "unknown");
+    if (ssh_handshake_trusted(session, sv[0], trust, host, port) != 0) {
         libssh2_session_free(session);
         close(sv[0]);
         return -1;
@@ -187,6 +265,7 @@ static int ssh_setup_on_channel(jump_chain_t* chain,
 
 int nexterm_ssh_setup_with_jumphosts(const char* target_host, uint16_t target_port,
                                      const jump_host_t* jump_hosts, int jump_count,
+                                     const nexterm_trust_t* trust,
                                      int* out_sock, LIBSSH2_SESSION** out_session,
                                      jump_chain_t* chain) {
     memset(chain, 0, sizeof(jump_chain_t));
@@ -194,12 +273,12 @@ int nexterm_ssh_setup_with_jumphosts(const char* target_host, uint16_t target_po
         chain->sockets[i] = -1;
 
     if (jump_count <= 0 || jump_count > MAX_JUMP_HOSTS)
-        return nexterm_ssh_setup(target_host, target_port, out_sock, out_session);
+        return nexterm_ssh_setup(target_host, target_port, trust, out_sock, out_session);
 
     const jump_host_t* jh = &jump_hosts[0];
     LOG_INFO("Jump host chain: connecting to hop 1 (%s:%u)", jh->host, jh->port);
 
-    if (nexterm_ssh_setup(jh->host, jh->port,
+    if (nexterm_ssh_setup(jh->host, jh->port, trust,
                           &chain->sockets[0], &chain->sessions[0]) != 0) {
         LOG_ERROR("Failed to connect to jump host 1 (%s:%u)", jh->host, jh->port);
         return -1;
@@ -231,6 +310,7 @@ int nexterm_ssh_setup_with_jumphosts(const char* target_host, uint16_t target_po
 
         int proxy_sock = -1;
         if (ssh_setup_on_channel(chain, chain->sessions[i - 1], chain->sockets[i - 1], fwd,
+                                 trust, next_jh->host, next_jh->port,
                                  &chain->sessions[i], &proxy_sock) != 0) {
             LOG_ERROR("Failed SSH handshake over tunnel to jump host %d", i + 1);
             nexterm_jump_chain_teardown(chain);
@@ -262,6 +342,7 @@ int nexterm_ssh_setup_with_jumphosts(const char* target_host, uint16_t target_po
 
     int target_proxy_sock = -1;
     if (ssh_setup_on_channel(chain, chain->sessions[jump_count - 1], chain->sockets[jump_count - 1], target_fwd,
+                             trust, target_host, target_port,
                              out_session, &target_proxy_sock) != 0) {
         LOG_ERROR("Failed SSH handshake to target over jump host chain");
         nexterm_jump_chain_teardown(chain);

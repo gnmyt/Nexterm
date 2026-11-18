@@ -13,6 +13,7 @@ const { Permission } = require("../permissions/registry");
 const Entry = require("../models/Entry");
 const TransferRegistry = require("../lib/TransferRegistry");
 const logger = require("../utils/logger");
+const { TRUST_CLOSE_CODE, TRUST_CLOSE_REASON } = require("../utils/hostTrust");
 
 const OP = {
     READY: 0x0, LIST_FILES: 0x1, CREATE_FILE: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6,
@@ -228,6 +229,7 @@ module.exports = async (ws, req) => {
         return;
     }
 
+    if (serverSession?.trustChallenge) return ws.close(TRUST_CLOSE_CODE, TRUST_CLOSE_REASON);
     if (serverSession) SessionManager.resume(serverSession.sessionId);
 
     const sessionId = serverSession?.sessionId;
@@ -320,6 +322,10 @@ module.exports = async (ws, req) => {
             try { await updateAuditLogWithSessionDuration(auditLogId, startTime); } catch {}
         });
     } catch (err) {
+        if (SessionManager.get(sessionId)?.trustChallenge) {
+            try { ws.close(TRUST_CLOSE_CODE, TRUST_CLOSE_REASON); } catch {}
+            return;
+        }
         sendError(ws, "Connection failed: " + err.message);
         try { ws.close(4005); } catch {}
     }

@@ -6,12 +6,14 @@ const Session = require("../models/Session");
 const { genSalt, hash } = require("bcrypt");
 const crypto = require("crypto");
 const logger = require("../utils/logger");
+const hostTrust = require("../utils/hostTrust");
 
-const createLdapClient = (provider) => {
+const createLdapClient = async (provider) => {
     const url = `${provider.useTLS ? "ldaps" : "ldap"}://${provider.host}:${provider.port}`;
-    const options = { url };
-    if (provider.useTLS) options.tlsOptions = { rejectUnauthorized: false };
-    return new Client(options);
+    if (!provider.useTLS) return new Client({ url });
+
+    const socket = await hostTrust.openTrustedTlsSocket(hostTrust.SYSTEM_SCOPE, provider.host, provider.port);
+    return new Client({ url, createSecureConnection: () => socket });
 };
 
 const hasOtherEnabledProvider = async (excludeLdapId = null) => {
@@ -71,16 +73,20 @@ module.exports.deleteProvider = async (id) => {
     return { message: "Provider deleted successfully" };
 };
 
-module.exports.testConnection = async (id) => {
+module.exports.testConnection = async (id, accountId = null, acceptFingerprint = null) => {
     const provider = await LDAPProvider.findByPk(id);
     if (!provider) return { code: 404, message: "Provider not found" };
 
-    const client = createLdapClient(provider);
     try {
-        await client.bind(provider.bindDN, provider.bindPassword || "");
-        await client.unbind();
+        await hostTrust.runTrusted(hostTrust.SYSTEM_SCOPE, accountId, acceptFingerprint, async () => {
+            const client = await createLdapClient(provider);
+            await client.bind(provider.bindDN, provider.bindPassword || "");
+            await client.unbind();
+        });
         return { success: true, message: "Connection test successful" };
     } catch (error) {
+        const trustFailure = await hostTrust.trustFailureResponse(hostTrust.SYSTEM_SCOPE, error, accountId);
+        if (trustFailure) return trustFailure;
         logger.error("LDAP connection test failed", { providerId: id, error: error.message });
         return { code: 400, message: `Connection failed: ${error.message}` };
     }
@@ -90,8 +96,9 @@ module.exports.authenticateUser = async (username, password, userInfo) => {
     const provider = await LDAPProvider.findOne({ where: { enabled: true } });
     if (!provider) return null;
 
-    const client = createLdapClient(provider);
+    let client = null;
     try {
+        client = await createLdapClient(provider);
         await client.bind(provider.bindDN, provider.bindPassword || "");
 
         const { searchEntries } = await client.search(provider.baseDN, {
@@ -103,7 +110,7 @@ module.exports.authenticateUser = async (username, password, userInfo) => {
         if (!searchEntries.length) { await client.unbind(); return null; }
 
         const userEntry = searchEntries[0];
-        const userClient = createLdapClient(provider);
+        const userClient = await createLdapClient(provider);
         try {
             await userClient.bind(userEntry.dn, password);
             await userClient.unbind();
@@ -132,7 +139,7 @@ module.exports.authenticateUser = async (username, password, userInfo) => {
         return { token: session.token, user: { id: account.id, username: account.username, ...userData } };
     } catch (error) {
         logger.error("LDAP authentication failed", { error: error.message });
-        try { await client.unbind(); } catch {}
+        try { await client?.unbind(); } catch {}
         return null;
     }
 };
