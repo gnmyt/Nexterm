@@ -30,8 +30,8 @@ importers:
         specifier: ^7.12.0
         version: 7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       sass:
-        specifier: ^1.97.2
-        version: 1.97.2
+        specifier: ^1.108.2
+        version: 1.108.2
     devDependencies:
       '@types/react':
         specifier: ^19.2.8
@@ -41,7 +41,7 @@ importers:
         version: 19.2.3(@types/react@19.2.8)
       '@vitejs/plugin-react':
         specifier: ^5.1.2
-        version: 5.1.2(supports-color@7.2.0)(vite@7.3.1(sass@1.97.2))
+        version: 5.1.2(supports-color@7.2.0)(vite@7.3.1(sass@1.108.2))
       eslint:
         specifier: ^9.39.2
         version: 9.39.2(supports-color@7.2.0)
@@ -56,7 +56,7 @@ importers:
         version: 0.4.26(eslint@9.39.2(supports-color@7.2.0))
       vite:
         specifier: ^7.3.1
-        version: 7.3.1(sass@1.97.2)
+        version: 7.3.1(sass@1.108.2)
 
 packages:
 
@@ -425,36 +425,42 @@ packages:
     engines: {node: '>= 10.0.0'}
     cpu: [arm]
     os: [linux]
+    libc: [glibc]
 
   '@parcel/watcher-linux-arm-musl@2.5.4':
     resolution: {integrity: sha512-kGO8RPvVrcAotV4QcWh8kZuHr9bXi9a3bSZw7kFarYR0+fGliU7hd/zevhjw8fnvIKG3J9EO5G6sXNGCSNMYPQ==}
     engines: {node: '>= 10.0.0'}
     cpu: [arm]
     os: [linux]
+    libc: [musl]
 
   '@parcel/watcher-linux-arm64-glibc@2.5.4':
     resolution: {integrity: sha512-KU75aooXhqGFY2W5/p8DYYHt4hrjHZod8AhcGAmhzPn/etTa+lYCDB2b1sJy3sWJ8ahFVTdy+EbqSBvMx3iFlw==}
     engines: {node: '>= 10.0.0'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@parcel/watcher-linux-arm64-musl@2.5.4':
     resolution: {integrity: sha512-Qx8uNiIekVutnzbVdrgSanM+cbpDD3boB1f8vMtnuG5Zau4/bdDbXyKwIn0ToqFhIuob73bcxV9NwRm04/hzHQ==}
     engines: {node: '>= 10.0.0'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@parcel/watcher-linux-x64-glibc@2.5.4':
     resolution: {integrity: sha512-UYBQvhYmgAv61LNUn24qGQdjtycFBKSK3EXr72DbJqX9aaLbtCOO8+1SkKhD/GNiJ97ExgcHBrukcYhVjrnogA==}
     engines: {node: '>= 10.0.0'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@parcel/watcher-linux-x64-musl@2.5.4':
     resolution: {integrity: sha512-YoRWCVgxv8akZrMhdyVi6/TyoeeMkQ0PGGOf2E4omODrvd1wxniXP+DBynKoHryStks7l+fDAMUBRzqNHrVOpg==}
     engines: {node: '>= 10.0.0'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@parcel/watcher-win32-arm64@2.5.4':
     resolution: {integrity: sha512-iby+D/YNXWkiQNYcIhg8P5hSjzXEHaQrk2SLrWOUD7VeC4Ohu0WQvmV+HDJokZVJ2UjJ4AGXW3bx7Lls9Ln4TQ==}
@@ -732,9 +738,9 @@ packages:
     resolution: {integrity: sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==}
     engines: {node: '>=10'}
 
-  chokidar@4.0.3:
-    resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
-    engines: {node: '>= 14.16.0'}
+  chokidar@5.0.0:
+    resolution: {integrity: sha512-TQMmc3w+5AxjpL8iIiwebF73dRDF4fBIieAqGn9RGCWaEVwQ6Fb2cGe31Yns0RRIzii5goJ1Y7xbMwo1TxMplw==}
+    engines: {node: '>= 20.19.0'}
 
   color-convert@2.0.1:
     resolution: {integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==}
@@ -1037,8 +1043,8 @@ packages:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
     engines: {node: '>= 4'}
 
-  immutable@5.1.4:
-    resolution: {integrity: sha512-p6u1bG3YSnINT5RQmx/yRZBpenIl30kVxkTLDyHLIMk0gict704Q9n+thfDI7lTRm9vXdDYutVzXhzcThxTnXA==}
+  immutable@5.2.1:
+    resolution: {integrity: sha512-CgXNM1BhKqpMjFHTyqQSk09OWqzHNJ/U4BdeBgXoBdR2DdgBdOSv131cO1/YMgzopqnka3B/i949UaMLEKUxOA==}
 
   import-fresh@3.3.1:
     resolution: {integrity: sha512-TR3KfrTZTYLPB6jUjfx6MF9WcWrHL9su5TObK4ZkYgBdWKPOFoSoQIdEuTuR82pmtxH2spWG9h6etwfr1pLBqQ==}
@@ -1351,9 +1357,9 @@ packages:
     resolution: {integrity: sha512-Ku/hhYbVjOQnXDZFv2+RibmLFGwFdeeKHFcOTlrt7xplBnya5OGn/hIRDsqDiSUcfORsDC7MPxwork8jBwsIWA==}
     engines: {node: '>=0.10.0'}
 
-  readdirp@4.1.2:
-    resolution: {integrity: sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==}
-    engines: {node: '>= 14.18.0'}
+  readdirp@5.1.1:
+    resolution: {integrity: sha512-Kko+Y5XQ6fM+Ce3dq3m9YGxnacYZYl9cA1wZjaF3Vbry2L3i1qVg8+CAgNPsXRArPMUMCaOR7oa9Nqntc43JKA==}
+    engines: {node: '>= 20.19.0'}
 
   reflect.getprototypeof@1.0.10:
     resolution: {integrity: sha512-00o4I+DVrefhv+nX0ulyi3biSHCPDe+yLv5o/p6d/UVlirijB8E16FtfwSAi4g3tcqrQ4lRAqQSoFEZJehYEcw==}
@@ -1388,9 +1394,9 @@ packages:
     resolution: {integrity: sha512-x/+Cz4YrimQxQccJf5mKEbIa1NzeCRNI5Ecl/ekmlYaampdNLPalVyIcCZNNH3MvmqBugV5TMYZXv0ljslUlaw==}
     engines: {node: '>= 0.4'}
 
-  sass@1.97.2:
-    resolution: {integrity: sha512-y5LWb0IlbO4e97Zr7c3mlpabcbBtS+ieiZ9iwDooShpFKWXf62zz5pEPdwrLYm+Bxn1fnbwFGzHuCLSA9tBmrw==}
-    engines: {node: '>=14.0.0'}
+  sass@1.108.2:
+    resolution: {integrity: sha512-kugK8djotnG9HQRPTOf36asKYlxg8rWWsNLYHOgWDIVOiZQqlRfKBgF4XXM6kfw146kIDMvm57B4GIkvDSyTzA==}
+    engines: {node: '>=20.19.0'}
     hasBin: true
 
   scheduler@0.27.0:
@@ -2056,7 +2062,7 @@ snapshots:
     dependencies:
       csstype: 3.2.3
 
-  '@vitejs/plugin-react@5.1.2(supports-color@7.2.0)(vite@7.3.1(sass@1.97.2))':
+  '@vitejs/plugin-react@5.1.2(supports-color@7.2.0)(vite@7.3.1(sass@1.108.2))':
     dependencies:
       '@babel/core': 7.28.6(supports-color@7.2.0)
       '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.28.6(supports-color@7.2.0))
@@ -2064,7 +2070,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.0-beta.53
       '@types/babel__core': 7.20.5
       react-refresh: 0.18.0
-      vite: 7.3.1(sass@1.97.2)
+      vite: 7.3.1(sass@1.108.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -2193,9 +2199,9 @@ snapshots:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
 
-  chokidar@4.0.3:
+  chokidar@5.0.0:
     dependencies:
-      readdirp: 4.1.2
+      readdirp: 5.1.1
 
   color-convert@2.0.1:
     dependencies:
@@ -2624,7 +2630,7 @@ snapshots:
 
   ignore@5.3.2: {}
 
-  immutable@5.1.4: {}
+  immutable@5.2.1: {}
 
   import-fresh@3.3.1:
     dependencies:
@@ -2937,7 +2943,7 @@ snapshots:
 
   react@19.2.3: {}
 
-  readdirp@4.1.2: {}
+  readdirp@5.1.1: {}
 
   reflect.getprototypeof@1.0.10:
     dependencies:
@@ -3017,10 +3023,10 @@ snapshots:
       es-errors: 1.3.0
       is-regex: 1.2.1
 
-  sass@1.97.2:
+  sass@1.108.2:
     dependencies:
-      chokidar: 4.0.3
-      immutable: 5.1.4
+      chokidar: 5.0.0
+      immutable: 5.2.1
       source-map-js: 1.2.1
     optionalDependencies:
       '@parcel/watcher': 2.5.4
@@ -3205,7 +3211,7 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  vite@7.3.1(sass@1.97.2):
+  vite@7.3.1(sass@1.108.2):
     dependencies:
       esbuild: 0.27.2
       fdir: 6.5.0(picomatch@4.0.3)
@@ -3215,7 +3221,7 @@ snapshots:
       tinyglobby: 0.2.15
     optionalDependencies:
       fsevents: 2.3.3
-      sass: 1.97.2
+      sass: 1.108.2
 
   which-boxed-primitive@1.1.1:
     dependencies:
