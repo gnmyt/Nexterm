@@ -33,6 +33,13 @@ jobs:
         uses: actions/configure-pages@v6
       - name: Install dependencies
         run: yarn install
+      - name: Install flatc
+        run: |
+          curl -sSL -o /tmp/flatc.zip https://github.com/google/flatbuffers/releases/download/v25.12.19/Linux.flatc.binary.g++-13.zip
+          sudo unzip -o /tmp/flatc.zip -d /usr/local/bin
+          sudo chmod +x /usr/local/bin/flatc
+      - name: Generate schema
+        run: yarn schema:generate
       - name: Build with VitePress
         run: yarn run docs:build
       - name: Upload artifact
