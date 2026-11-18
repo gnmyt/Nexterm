@@ -224,7 +224,8 @@
         "rdpSessionConflict": "The session was disconnected by the server because another connection was opened.",
         "rdpSessionTimeout": "The RDP session was disconnected because its session time limit was reached.",
         "rdpSessionClosed": "The RDP session was ended by the remote server or an administrator."
-      }
+      },
+      "accountLinkRequired": "An account with this username already exists. Ask an administrator to allow linking it to your sign-in."
     },
     "messages": {
       "invitationAccepted": "接受邀請",
@@ -672,7 +673,8 @@
       "monitoring": "監控",
       "backup": "儲存",
       "engines": "引擎",
-      "permissions": "角色與權限"
+      "permissions": "角色與權限",
+      "trustedCertificates": "Trusted Certificates"
     },
     "account": {
       "title": "帳戶",
@@ -829,7 +831,12 @@
       "description": "強大的密碼包含特殊字符、數字和大小楷字母。",
       "newPassword": "新密碼",
       "confirmPassword": "確認新密碼",
-      "changePasswordButton": "變更密碼"
+      "changePasswordButton": "變更密碼",
+      "currentPassword": "Current password",
+      "descriptionOwn": "Enter your current password and choose a new one. You will be signed out on all other devices.",
+      "descriptionOther": "Choose a new password for this user. They will be signed out on all devices.",
+      "successOwn": "Your password was changed. Other devices were signed out.",
+      "successOther": "The password was changed and the user was signed out everywhere."
     },
     "organizations": {
       "title": "您的組織",
@@ -935,7 +942,10 @@
         "deleteUser": "刪除使用者",
         "loginAsUser": "以使用者身分登入",
         "deleteConfirm": "這將永久刪除使用者及所有相關資料。",
-        "managePermissions": "管理權限"
+        "managePermissions": "管理權限",
+        "allowExternalLink": "Allow SSO/LDAP linking",
+        "cancelExternalLink": "Cancel SSO/LDAP linking",
+        "unlinkExternal": "Unlink SSO/LDAP sign-in"
       }
     },
     "userDialog": {
@@ -1087,6 +1097,14 @@
       "syncLoginRequired": "請登入同步檔案管理員設定",
       "syncEnabled": "檔案管理員設定現在會同步至您的帳戶",
       "syncDisabled": "檔案管理員設定將不再同步",
+      "view": {
+        "title": "View",
+        "description": "How files and folders are shown when you open the file manager."
+      },
+      "behavior": {
+        "title": "Behavior",
+        "description": "What happens when you open, delete and move files."
+      },
       "defaultView": {
         "title": "預設檢視模式",
         "description": "開啟檔案管理器時選擇預設版面。",
@@ -1095,7 +1113,8 @@
         "grid": "網格檢視",
         "gridDescription": "在縮圖的網格佈局中以圖示顯示檔案",
         "compact": "Compact View",
-        "compactDescription": "Show only names in dense columns to fit many files on screen"
+        "compactDescription": "Show only names in dense columns to fit many files on screen",
+        "label": "Default view"
       },
       "thumbnails": {
         "title": "圖片縮圖",
@@ -1103,7 +1122,10 @@
         "enabled": "顯示縮圖",
         "enabledDescription": "在網格檢視中顯示影像預覽，以便快速視覺辨識",
         "disabled": "隱藏縮圖",
-        "disabledDescription": "只顯示檔案圖示，以節省頻寬並提昇效能"
+        "disabledDescription": "只顯示檔案圖示，以節省頻寬並提昇效能",
+        "label": "Image thumbnails",
+        "show": "Show",
+        "hide": "Hide"
       },
       "hiddenFiles": {
         "title": "隱藏檔案",
@@ -1111,7 +1133,10 @@
         "show": "顯示隱藏檔案",
         "showDescription": "顯示所有檔案，包括 .dotfiles 和系統目錄",
         "hide": "隱藏隱藏檔案",
-        "hideDescription": "只顯示一般檔案和資料夾"
+        "hideDescription": "只顯示一般檔案和資料夾",
+        "label": "Hidden files",
+        "showShort": "Show",
+        "hideShort": "Hide"
       },
       "deleteConfirmation": {
         "title": "刪除確認",
@@ -1119,18 +1144,43 @@
         "enabled": "確認刪除",
         "enabledDescription": "刪除項目前會顯示確認對話框",
         "disabled": "立即刪除",
-        "disabledDescription": "無需要求確認即可刪除檔案"
+        "disabledDescription": "無需要求確認即可刪除檔案",
+        "label": "Before deleting",
+        "ask": "Ask for confirmation",
+        "immediately": "Delete immediately"
       },
       "dragDropAction": {
         "title": "拖曳動作",
         "description": "將檔案拖曳到新位置時的預設動作。",
         "move": "移動",
         "copy": "複製",
-        "ask": "詢問"
+        "ask": "詢問",
+        "label": "When dropping files"
       },
       "singleClickOpen": {
         "title": "Open with single click",
-        "description": "Open files and folders with a single click instead of selecting them. Double-click opens when this is off."
+        "description": "Open files and folders with a single click instead of selecting them. Double-click opens when this is off.",
+        "single": "Single click",
+        "double": "Double click",
+        "label": "Open items with"
+      },
+      "sharedDrive": {
+        "title": "Shared Drive",
+        "description": "What remote desktops can see of this computer through their shared drive. Changes apply to new connections.",
+        "mode": {
+          "title": "Share",
+          "folder": "One folder",
+          "disk": "Entire disk",
+          "off": "Nothing",
+          "diskWarning": "Remote desktops can read, change and delete every file on this computer."
+        },
+        "folder": {
+          "title": "Shared folder",
+          "default": "Nexterm Shared in your home folder",
+          "choose": "Choose folder",
+          "reset": "Use default"
+        },
+        "folderError": "The shared folder could not be prepared"
       }
     },
     "authentication": {
@@ -1246,6 +1296,17 @@
           "testSuccess": "連線測試成功",
           "testFailed": "連線測試失敗"
         }
+      },
+      "sessions": {
+        "title": "Sessions",
+        "description": "When signed-in devices, including the mobile and desktop apps, have to sign in again.",
+        "idle": "Sign out after inactivity",
+        "lifetime": "Maximum session length",
+        "days_one": "{{count}} day",
+        "days_other": "{{count}} days",
+        "never": "Never",
+        "loadError": "Failed to load the session settings",
+        "saveError": "Failed to save the session settings"
       }
     },
     "ai": {
@@ -1627,7 +1688,28 @@
       "inheritsAllow": "繼承：允許",
       "inheritsDeny": "繼承：駁回"
     },
-    "search": "Search settings"
+    "search": "Search settings",
+    "trustedCertificates": {
+      "title": "Trusted Certificates",
+      "description": "Certificates and host keys you accepted when connecting. Remove one to be asked again the next time.",
+      "personal": "Personal",
+      "system": "System",
+      "kinds": {
+        "ssh": "SSH host key",
+        "tls": "TLS certificate"
+      },
+      "empty": "Nothing trusted yet",
+      "emptyDescription": "Certificates and host keys appear here once you accept them for a connection.",
+      "remove": "Remove",
+      "removeConfirm": "Stop trusting {{endpoint}}? The next connection asks again.",
+      "removeSuccess": "Trusted certificate removed",
+      "removeError": "Failed to remove the trusted certificate",
+      "ignore": {
+        "title": "Ignore certificate warnings",
+        "description": "Connect to your personal servers without checking their certificate or host key. Connections can then be intercepted without you noticing. Organization servers are always checked.",
+        "error": "Failed to save the setting"
+      }
+    }
   },
   "tunnel": {
     "title": "連接埠轉寄",
@@ -2330,6 +2412,28 @@
       "protocol": "Defaults for",
       "protocolHint": "Servers in this folder use what you set below unless they set their own value. Each protocol has its own defaults.",
       "unset": "Remove from folder"
+    },
+    "trust": {
+      "certificate": "certificate",
+      "hostKey": "host key",
+      "newTitle": "Trust this {{subject}}?",
+      "newMessage": "This is the first connection to {{endpoint}}. Check the fingerprint before you continue.",
+      "changedTitle": "The {{subject}} has changed",
+      "changedMessage": "{{endpoint}} presents a different {{subject}} than before. Only continue if you expect this.",
+      "fingerprint": "Fingerprint",
+      "previous": "Trusted until now",
+      "presented": "Presented now",
+      "subject": "Issued to",
+      "issuer": "Issued by",
+      "selfSigned": "Self-signed",
+      "validUntil": "Valid until",
+      "blocked": "Only certificate managers of {{organization}} can accept this change.",
+      "accept": "Trust and connect",
+      "cancel": "Cancel",
+      "acceptChanged": "Trust the new one",
+      "disconnect": "Disconnect",
+      "failed": "Your decision could not be saved",
+      "acceptOnly": "Trust certificate"
     }
   },
   "support": {
