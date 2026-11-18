@@ -1,0 +1,35 @@
+@use "@/common/styles/colors"
+
+.session-drop-zone
+  position: absolute
+  z-index: 20
+  overflow: hidden
+
+  .drop-preview
+    position: absolute
+    inset: 0
+    opacity: 0
+    background-color: colors.$primary-opacity
+    border: 1px solid colors.$primary
+    border-radius: 0.4rem
+    box-sizing: border-box
+    pointer-events: none
+    transition: opacity 0.12s ease, inset 0.12s ease
+
+    &.center, &.left, &.right, &.top, &.bottom
+      opacity: 1
+
+    &.center
+      inset: 0.35rem
+
+    &.left
+      inset: 0.35rem 50% 0.35rem 0.35rem
+
+    &.right
+      inset: 0.35rem 0.35rem 0.35rem 50%
+
+    &.top
+      inset: 0.35rem 0.35rem 50% 0.35rem
+
+    &.bottom
+      inset: 50% 0.35rem 0.35rem 0.35rem

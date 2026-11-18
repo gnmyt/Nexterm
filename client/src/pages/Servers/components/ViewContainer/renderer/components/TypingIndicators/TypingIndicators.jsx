@@ -3,6 +3,10 @@ import { getAvatarColor, getAvatarIdentifier } from "@/common/utils/avatar.js";
 import "./styles.sass";
 
 const MAX_VISIBLE = 3;
+
+const colorOf = (participant) => participant.kind === "agent"
+    ? "var(--automation)"
+    : getAvatarColor(getAvatarIdentifier(participant));
 const REQUIRED_SPACE = 40;
 
 export const TypingIndicators = ({ anchor, participants }) => {
@@ -19,11 +23,11 @@ export const TypingIndicators = ({ anchor, participants }) => {
                  top: flipped ? anchor.top : anchor.top + anchor.height,
              }}>
             <span className="typing-indicators-pointer"
-                  style={{ "--typing-color": getAvatarColor(getAvatarIdentifier(visible[0])) }} />
+                  style={{ "--typing-color": colorOf(visible[0]) }} />
             <div className="typing-indicators-badges">
                 {visible.map(participant => (
                     <div key={participant.viewerId} className="typing-indicators-badge"
-                         style={{ "--typing-color": getAvatarColor(getAvatarIdentifier(participant)) }}>
+                         style={{ "--typing-color": colorOf(participant) }}>
                         <LetterAvatar user={participant} size="sm" />
                     </div>
                 ))}

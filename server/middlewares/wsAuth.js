@@ -1,4 +1,5 @@
 const Session = require("../models/Session");
+const { findActiveSession } = require("../utils/loginSession");
 const Account = require("../models/Account");
 const Entry = require("../models/Entry");
 const Integration = require("../models/Integration");
@@ -6,19 +7,22 @@ const SessionManager = require("../lib/SessionManager");
 const { validateEntryAccess } = require("../controllers/entry");
 const { getOrganizationAuditSettingsInternal } = require("../controllers/audit");
 const { resolveIdentity } = require("../utils/identityResolver");
+const { applyEffectiveEntryConfig } = require("../utils/folderInheritance");
+const { isGuestExpired } = require("../utils/demoMode");
 
-const SHARED_ENTRY_ATTRIBUTES = ["id", "type", "config", "integrationId"];
+const SHARED_ENTRY_ATTRIBUTES = ["id", "type", "config", "folderId", "organizationId", "accountId", "integrationId"];
 
 const authenticateToken = async (ws, sessionToken) => {
     if (!sessionToken) return ws.close(4001, "You need to provide the token in the 'sessionToken' parameter"), null;
 
-    const session = await Session.findOne({ where: { token: sessionToken } });
+    const session = await findActiveSession(sessionToken);
     if (!session) return ws.close(4003, "The token is not valid"), null;
 
     await Session.update({ lastActivity: new Date() }, { where: { id: session.id } });
 
     const user = await Account.findByPk(session.accountId);
     if (!user) return ws.close(4004, "The token is not valid"), null;
+    if (isGuestExpired(user)) return ws.close(4003, "Your demo session has expired"), null;
 
     return { session, user };
 };
@@ -47,6 +51,7 @@ const authenticateSharedSession = async (ws, query) => {
 
     const entry = await Entry.findByPk(session.entryId, { attributes: SHARED_ENTRY_ATTRIBUTES });
     if (!entry) return ws.close(4005, "Entry not found"), null;
+    await applyEffectiveEntryConfig(entry);
 
     return buildSharedContext(query, session, entry, { shareWritable: session.shareWritable });
 };
@@ -63,6 +68,7 @@ const authenticateOrganizationJoin = async (ws, query) => {
 
     const entry = await Entry.findByPk(access.session.entryId, { attributes: SHARED_ENTRY_ATTRIBUTES });
     if (!entry) return ws.close(4005, "Entry not found"), null;
+    await applyEffectiveEntryConfig(entry);
 
     SessionManager.updateActivity(joinSessionId);
 
@@ -164,6 +170,8 @@ module.exports = async (ws, req) => {
         return null;
     }
 
+    await applyEffectiveEntryConfig(entry);
+
     return {
         entry,
         integration,
@@ -179,3 +187,4 @@ module.exports = async (ws, req) => {
 };
 
 module.exports.authenticateWebSocket = authenticateWebSocket;
+module.exports.authenticateToken = authenticateToken;

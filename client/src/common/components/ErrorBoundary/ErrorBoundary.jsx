@@ -3,6 +3,7 @@ import { useRouteError } from "react-router-dom";
 import Icon from "@mdi/react";
 import { mdiAlertCircleOutline, mdiRefresh, mdiHome, mdiBug, mdiContentCopy, mdiCheck } from "@mdi/js";
 import "./styles.sass";
+import Button from "@/common/components/Button";
 
 const ErrorDisplay = ({ error, errorInfo, is404 = false }) => {
     const [copied, setCopied] = useState(false);
@@ -51,21 +52,11 @@ const ErrorDisplay = ({ error, errorInfo, is404 = false }) => {
                 )}
                 
                 <div className="error-boundary-actions">
+                    {!is404 && <Button icon={mdiRefresh} text="Refresh Page" onClick={handleRefresh} />}
+                    <Button type={is404 ? undefined : "secondary"} icon={mdiHome} text="Go Home" onClick={handleGoHome} />
                     {!is404 && (
-                        <button className="error-btn primary" onClick={handleRefresh}>
-                            <Icon path={mdiRefresh} />
-                            <span>Refresh Page</span>
-                        </button>
-                    )}
-                    <button className={`error-btn ${is404 ? "primary" : "secondary"}`} onClick={handleGoHome}>
-                        <Icon path={mdiHome} />
-                        <span>Go Home</span>
-                    </button>
-                    {!is404 && (
-                        <button className="error-btn secondary" onClick={handleCopyError}>
-                            <Icon path={copied ? mdiCheck : mdiContentCopy} />
-                            <span>{copied ? "Copied!" : "Copy Error"}</span>
-                        </button>
+                        <Button type="secondary" icon={copied ? mdiCheck : mdiContentCopy}
+                                text={copied ? "Copied!" : "Copy Error"} onClick={handleCopyError} />
                     )}
                 </div>
             </div>

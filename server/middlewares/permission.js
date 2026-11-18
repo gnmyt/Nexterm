@@ -1,7 +1,7 @@
 const { getSystemPermissions, getOrganizationPermissions } = require("../permissions/engine");
 const { ADMIN_WILDCARD } = require("../permissions/registry");
 
-const requirePermission = (permission) => async (req, res, next) => {
+const requirePermission = (permission) => Object.assign(async (req, res, next) => {
     if (!req.user) return res.status(401).json({ code: 401, message: "Unauthorized" });
 
     const resolved = req.permissions || (req.permissions = await getSystemPermissions(req.user.id));
@@ -9,9 +9,9 @@ const requirePermission = (permission) => async (req, res, next) => {
     if (resolved.isAdmin || resolved.permissions.includes(permission)) return next();
 
     return res.status(403).json({ code: 403, message: "Forbidden" });
-};
+}, { permission });
 
-const requireOrgPermission = (permission, resolveOrgId) => async (req, res, next) => {
+const requireOrgPermission = (permission, resolveOrgId) => Object.assign(async (req, res, next) => {
     if (!req.user) return res.status(401).json({ code: 401, message: "Unauthorized" });
 
     const organizationId = resolveOrgId ? resolveOrgId(req) : req.params.organizationId || req.params.id;
@@ -22,7 +22,7 @@ const requireOrgPermission = (permission, resolveOrgId) => async (req, res, next
     if (resolved.permissions.includes(permission)) return next();
 
     return res.status(403).json({ code: 403, message: "Forbidden" });
-};
+}, { permission });
 
 module.exports = {
     requirePermission,

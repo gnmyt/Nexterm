@@ -7,8 +7,7 @@ module.exports.updateAISettingsValidation = Joi.object({
     model: Joi.string().max(100).allow(null),
     apiKey: Joi.string().allow('', null),
     apiUrl: Joi.string().allow(null),
-    authMethod: Joi.string().valid('api_key', 'subscription'),
-    requireConfirmation: Joi.boolean()
+    authMethod: Joi.string().valid('api_key', 'subscription')
 });
 
 module.exports.generateCommandValidation = Joi.object({
@@ -21,4 +20,8 @@ module.exports.generateCommandValidation = Joi.object({
 module.exports.oauthExchangeValidation = Joi.object({
     code: Joi.string().required(),
     provider: Joi.string().valid(...providerIds())
+});
+
+module.exports.oauthProviderValidation = Joi.object({
+    provider: Joi.string().valid(...providerIds()).description("Defaults to the configured provider"),
 });

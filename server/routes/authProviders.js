@@ -1,24 +1,47 @@
 const { Router } = require("express");
+const { route } = require("../utils/route");
+const { objectList, acceptFingerprintValidation } = require("../validations/common");
 const { authenticate } = require("../middlewares/auth");
 const { requirePermission } = require("../middlewares/permission");
 const { Permission } = require("../permissions/registry");
 const oidc = require("../controllers/oidc");
 const ldap = require("../controllers/ldap");
-const { validateSchema } = require("../utils/schema");
 const { oidcProviderValidation, oidcProviderUpdateValidation } = require("../validations/oidc");
 const { ldapProviderValidation, ldapProviderUpdateValidation } = require("../validations/ldap");
 
+const Joi = require("joi");
+const { getSessionSettings, updateSessionSettings } = require("../utils/loginSession");
+
 const app = Router();
 
-/**
- * GET /auth/providers
- * @summary List Public Auth Providers
- * @description Retrieves all authentication providers for the login dialog. Returns enabled OIDC and LDAP providers along with internal auth status.
- * @tags Auth Providers
- * @produces application/json
- * @return {array} 200 - List of auth providers with id, name, and enabled status
- */
-app.get("/providers", async (req, res) => {
+const sessionSettingsValidation = Joi.object({
+    idleTimeoutDays: Joi.number().integer().min(0).max(3650),
+    maxLifetimeDays: Joi.number().integer().min(0).max(3650),
+}).min(1);
+
+app.get("/sessions/settings", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), route({
+    summary: "Get session limits",
+    description: "Returns after how many idle days and after how many days in total a login session ends. 0 means never.",
+    tag: "Auth providers",
+}), async (req, res) => {
+    res.json(await getSessionSettings());
+});
+
+app.patch("/sessions/settings", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), route({
+    summary: "Update session limits",
+    description: "Updates after how many idle days and after how many days in total a login session ends. 0 means never.",
+    tag: "Auth providers",
+    body: sessionSettingsValidation,
+}), async (req, res) => {
+    res.json(await updateSessionSettings(req.body));
+});
+
+app.get("/providers", route({
+    summary: "List public auth providers",
+    description: "Retrieves all authentication providers for the login dialog. Returns enabled OIDC and LDAP providers along with internal auth status.",
+    tag: "Auth providers",
+    returns: objectList,
+}), async (req, res) => {
     try {
         const providers = await oidc.listProviders(false, true);
         res.json(providers);
@@ -27,18 +50,11 @@ app.get("/providers", async (req, res) => {
     }
 });
 
-/**
- * GET /auth/providers/admin
- * @summary List All Auth Providers (Admin)
- * @description Retrieves all OIDC and LDAP providers with their full configurations for administrative management.
- * @tags Auth Providers
- * @produces application/json
- * @security BearerAuth
- * @return {object} 200 - Object containing oidc and ldap provider arrays
- * @return {object} 401 - User is not authenticated
- * @return {object} 403 - User is not an administrator
- */
-app.get("/providers/admin", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
+app.get("/providers/admin", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), route({
+    summary: "List all auth providers (admin)",
+    description: "Retrieves all OIDC and LDAP providers with their full configurations for administrative management.",
+    tag: "Auth providers",
+}), async (req, res) => {
     try {
         const [oidcProviders, ldapProviders] = await Promise.all([
             oidc.listProviders(false),
@@ -50,20 +66,24 @@ app.get("/providers/admin", authenticate, requirePermission(Permission.SETTINGS_
     }
 });
 
-/**
- * GET /auth/providers/admin/oidc/{id}
- * @summary Get OIDC Provider
- * @description Retrieves a specific OIDC provider by ID with its configuration. Client secret is masked.
- * @tags Auth Providers
- * @produces application/json
- * @security BearerAuth
- * @param {string} id.path.required - OIDC provider ID
- * @return {object} 200 - OIDC provider configuration
- * @return {object} 401 - User is not authenticated
- * @return {object} 403 - User is not an administrator
- * @return {object} 404 - Provider not found
- */
-app.get("/providers/admin/oidc/:id", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
+app.get("/providers/admin/organizations", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), route({
+    summary: "List organizations for group mapping",
+    description: "Retrieves a lightweight list of every organization, used to configure OIDC group-to-organization mappings.",
+    tag: "Auth providers",
+    returns: objectList,
+}), async (req, res) => {
+    try {
+        res.json(await oidc.listOrganizationsForMapping());
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+app.get("/providers/admin/oidc/:id", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), route({
+    summary: "Get OIDC provider",
+    description: "Retrieves a specific OIDC provider by ID with its configuration. Client secret is masked.",
+    tag: "Auth providers",
+}), async (req, res) => {
     try {
         const provider = await oidc.getProvider(req.params.id);
         if (!provider) return res.status(404).json({ message: "Provider not found" });
@@ -74,22 +94,14 @@ app.get("/providers/admin/oidc/:id", authenticate, requirePermission(Permission.
     }
 });
 
-/**
- * PUT /auth/providers/admin/oidc
- * @summary Create OIDC Provider
- * @description Creates a new OIDC authentication provider with the specified configuration.
- * @tags Auth Providers
- * @produces application/json
- * @security BearerAuth
- * @param {OIDCProvider} request.body.required - OIDC provider configuration including name, issuer, clientId, clientSecret, redirectUri, and scope
- * @return {object} 201 - Provider created successfully with ID
- * @return {object} 400 - Validation error
- * @return {object} 401 - User is not authenticated
- * @return {object} 403 - User is not an administrator
- */
-app.put("/providers/admin/oidc", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
+app.put("/providers/admin/oidc", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), route({
+    summary: "Create OIDC provider",
+    status: 201,
+    description: "Creates a new OIDC authentication provider with the specified configuration.",
+    tag: "Auth providers",
+    body: oidcProviderValidation,
+}), async (req, res) => {
     try {
-        if (validateSchema(res, oidcProviderValidation, req.body)) return;
         const provider = await oidc.createProvider(req.body);
         res.status(201).json({ message: "Provider created successfully", id: provider.id });
     } catch (error) {
@@ -97,24 +109,13 @@ app.put("/providers/admin/oidc", authenticate, requirePermission(Permission.SETT
     }
 });
 
-/**
- * PATCH /auth/providers/admin/oidc/{id}
- * @summary Update OIDC Provider
- * @description Updates an existing OIDC provider's configuration. At least one provider must remain enabled.
- * @tags Auth Providers
- * @produces application/json
- * @security BearerAuth
- * @param {string} id.path.required - OIDC provider ID
- * @param {OIDCProviderUpdate} request.body.required - Updated OIDC provider configuration
- * @return {object} 200 - Provider updated successfully
- * @return {object} 400 - Validation error or cannot disable last provider
- * @return {object} 401 - User is not authenticated
- * @return {object} 403 - User is not an administrator
- * @return {object} 404 - Provider not found
- */
-app.patch("/providers/admin/oidc/:id", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
+app.patch("/providers/admin/oidc/:id", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), route({
+    summary: "Update OIDC provider",
+    description: "Updates an existing OIDC provider's configuration. At least one provider must remain enabled.",
+    tag: "Auth providers",
+    body: oidcProviderUpdateValidation,
+}), async (req, res) => {
     try {
-        if (validateSchema(res, oidcProviderUpdateValidation, req.body)) return;
         const result = await oidc.updateProvider(req.params.id, req.body);
         if (result.code) return res.status(result.code).json({ message: result.message });
         res.json(result);
@@ -123,21 +124,11 @@ app.patch("/providers/admin/oidc/:id", authenticate, requirePermission(Permissio
     }
 });
 
-/**
- * DELETE /auth/providers/admin/oidc/{id}
- * @summary Delete OIDC Provider
- * @description Deletes an OIDC provider. Cannot delete internal provider or the last enabled provider.
- * @tags Auth Providers
- * @produces application/json
- * @security BearerAuth
- * @param {string} id.path.required - OIDC provider ID
- * @return {object} 200 - Provider deleted successfully
- * @return {object} 400 - Cannot delete internal provider or last enabled provider
- * @return {object} 401 - User is not authenticated
- * @return {object} 403 - User is not an administrator
- * @return {object} 404 - Provider not found
- */
-app.delete("/providers/admin/oidc/:id", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
+app.delete("/providers/admin/oidc/:id", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), route({
+    summary: "Delete OIDC provider",
+    description: "Deletes an OIDC provider. Cannot delete internal provider or the last enabled provider.",
+    tag: "Auth providers",
+}), async (req, res) => {
     try {
         const result = await oidc.deleteProvider(req.params.id);
         if (result.code) return res.status(result.code).json({ message: result.message });
@@ -147,20 +138,11 @@ app.delete("/providers/admin/oidc/:id", authenticate, requirePermission(Permissi
     }
 });
 
-/**
- * GET /auth/providers/admin/ldap/{id}
- * @summary Get LDAP Provider
- * @description Retrieves a specific LDAP provider by ID with its configuration. Bind password is masked.
- * @tags Auth Providers
- * @produces application/json
- * @security BearerAuth
- * @param {string} id.path.required - LDAP provider ID
- * @return {object} 200 - LDAP provider configuration
- * @return {object} 401 - User is not authenticated
- * @return {object} 403 - User is not an administrator
- * @return {object} 404 - Provider not found
- */
-app.get("/providers/admin/ldap/:id", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
+app.get("/providers/admin/ldap/:id", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), route({
+    summary: "Get LDAP provider",
+    description: "Retrieves a specific LDAP provider by ID with its configuration. Bind password is masked.",
+    tag: "Auth providers",
+}), async (req, res) => {
     try {
         const provider = await ldap.getProvider(req.params.id);
         if (!provider) return res.status(404).json({ message: "Provider not found" });
@@ -171,22 +153,14 @@ app.get("/providers/admin/ldap/:id", authenticate, requirePermission(Permission.
     }
 });
 
-/**
- * PUT /auth/providers/admin/ldap
- * @summary Create LDAP Provider
- * @description Creates a new LDAP authentication provider with the specified configuration.
- * @tags Auth Providers
- * @produces application/json
- * @security BearerAuth
- * @param {LDAPProvider} request.body.required - LDAP provider configuration including name, host, port, bindDN, bindPassword, baseDN, and userSearchFilter
- * @return {object} 201 - Provider created successfully with ID
- * @return {object} 400 - Validation error
- * @return {object} 401 - User is not authenticated
- * @return {object} 403 - User is not an administrator
- */
-app.put("/providers/admin/ldap", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
+app.put("/providers/admin/ldap", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), route({
+    summary: "Create LDAP provider",
+    status: 201,
+    description: "Creates a new LDAP authentication provider with the specified configuration.",
+    tag: "Auth providers",
+    body: ldapProviderValidation,
+}), async (req, res) => {
     try {
-        if (validateSchema(res, ldapProviderValidation, req.body)) return;
         const provider = await ldap.createProvider(req.body);
         res.status(201).json({ message: "Provider created successfully", id: provider.id });
     } catch (error) {
@@ -194,24 +168,13 @@ app.put("/providers/admin/ldap", authenticate, requirePermission(Permission.SETT
     }
 });
 
-/**
- * PATCH /auth/providers/admin/ldap/{id}
- * @summary Update LDAP Provider
- * @description Updates an existing LDAP provider's configuration. At least one provider must remain enabled.
- * @tags Auth Providers
- * @produces application/json
- * @security BearerAuth
- * @param {string} id.path.required - LDAP provider ID
- * @param {LDAPProviderUpdate} request.body.required - Updated LDAP provider configuration
- * @return {object} 200 - Provider updated successfully
- * @return {object} 400 - Validation error or cannot disable last provider
- * @return {object} 401 - User is not authenticated
- * @return {object} 403 - User is not an administrator
- * @return {object} 404 - Provider not found
- */
-app.patch("/providers/admin/ldap/:id", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
+app.patch("/providers/admin/ldap/:id", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), route({
+    summary: "Update LDAP provider",
+    description: "Updates an existing LDAP provider's configuration. At least one provider must remain enabled.",
+    tag: "Auth providers",
+    body: ldapProviderUpdateValidation,
+}), async (req, res) => {
     try {
-        if (validateSchema(res, ldapProviderUpdateValidation, req.body)) return;
         const result = await ldap.updateProvider(req.params.id, req.body);
         if (result.code) return res.status(result.code).json({ message: result.message });
         res.json(result);
@@ -220,21 +183,11 @@ app.patch("/providers/admin/ldap/:id", authenticate, requirePermission(Permissio
     }
 });
 
-/**
- * DELETE /auth/providers/admin/ldap/{id}
- * @summary Delete LDAP Provider
- * @description Deletes an LDAP provider. Cannot delete if it's the last enabled provider.
- * @tags Auth Providers
- * @produces application/json
- * @security BearerAuth
- * @param {string} id.path.required - LDAP provider ID
- * @return {object} 200 - Provider deleted successfully
- * @return {object} 400 - Cannot delete last enabled provider
- * @return {object} 401 - User is not authenticated
- * @return {object} 403 - User is not an administrator
- * @return {object} 404 - Provider not found
- */
-app.delete("/providers/admin/ldap/:id", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
+app.delete("/providers/admin/ldap/:id", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), route({
+    summary: "Delete LDAP provider",
+    description: "Deletes an LDAP provider. Cannot delete if it's the last enabled provider.",
+    tag: "Auth providers",
+}), async (req, res) => {
     try {
         const result = await ldap.deleteProvider(req.params.id);
         if (result.code) return res.status(result.code).json({ message: result.message });
@@ -244,41 +197,26 @@ app.delete("/providers/admin/ldap/:id", authenticate, requirePermission(Permissi
     }
 });
 
-/**
- * POST /auth/providers/admin/ldap/{id}/test
- * @summary Test LDAP Connection
- * @description Tests the connection to an LDAP server using the provider's configuration.
- * @tags Auth Providers
- * @produces application/json
- * @security BearerAuth
- * @param {string} id.path.required - LDAP provider ID
- * @return {object} 200 - Connection test successful
- * @return {object} 400 - Connection test failed with error details
- * @return {object} 401 - User is not authenticated
- * @return {object} 403 - User is not an administrator
- * @return {object} 404 - Provider not found
- */
-app.post("/providers/admin/ldap/:id/test", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
+app.post("/providers/admin/ldap/:id/test", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), route({
+    summary: "Test LDAP connection",
+    description: "Tests the connection to an LDAP server using the provider's configuration.",
+    tag: "Auth providers",
+    body: acceptFingerprintValidation,
+}), async (req, res) => {
     try {
-        const result = await ldap.testConnection(req.params.id);
-        if (result.code) return res.status(result.code).json({ message: result.message });
+        const result = await ldap.testConnection(req.params.id, req.user.id, req.body.acceptFingerprint || null);
+        if (result.code) return res.status(result.code).json({ message: result.message, untrustedPeer: result.untrustedPeer });
         res.json(result);
     } catch (error) {
         res.status(500).json({ message: "Internal server error" });
     }
 });
 
-/**
- * POST /auth/oidc/login/{providerId}
- * @summary Initiate OIDC Login
- * @description Initiates the OIDC authentication flow for the specified provider. Returns an authorization URL to redirect the user.
- * @tags Auth Providers
- * @produces application/json
- * @param {string} providerId.path.required - OIDC provider ID
- * @return {object} 200 - Authorization URL for redirect
- * @return {object} 404 - Provider not found or disabled
- */
-app.post("/oidc/login/:providerId", async (req, res) => {
+app.post("/oidc/login/:providerId", route({
+    summary: "Initiate OIDC login",
+    description: "Initiates the OIDC authentication flow for the specified provider. Returns an authorization URL to redirect the user.",
+    tag: "Auth providers",
+}), async (req, res) => {
     try {
         const result = await oidc.initiateOIDCLogin(req.params.providerId);
         if (result.code) return res.status(result.code).json({ message: result.message });
@@ -288,17 +226,15 @@ app.post("/oidc/login/:providerId", async (req, res) => {
     }
 });
 
-/**
- * GET /auth/oidc/callback
- * @summary OIDC Callback
- * @description Handles the OIDC callback after user authentication. Redirects to the app with a session token or error.
- * @tags Auth Providers
- * @produces application/json
- * @param {string} code.query.required - Authorization code from OIDC provider
- * @param {string} state.query.required - State parameter for CSRF protection
- * @return {redirect} 302 - Redirects to app with token or error
- */
-app.get("/oidc/callback", async (req, res) => {
+app.get("/oidc/callback", route({
+    summary: "OIDC callback",
+    description: "Handles the OIDC callback after user authentication. Redirects to the app with a session token or error.",
+    tag: "Auth providers",
+    query: Joi.object({
+        code: Joi.string().required().description("Authorization code from OIDC provider"),
+        state: Joi.string().required().description("State parameter for CSRF protection"),
+    }),
+}), async (req, res) => {
     try {
         const { code, state } = req.query;
         if (!code || !state) return res.status(400).json({ message: "Missing required parameters" });
@@ -311,6 +247,14 @@ app.get("/oidc/callback", async (req, res) => {
     } catch (error) {
         res.redirect(`/?error=${encodeURIComponent("Authentication failed")}`);
     }
+});
+
+app.get("/oidc/logout/callback", route({
+    summary: "OIDC logout callback",
+    description: "Returns the browser to Nexterm after the identity provider completes logout.",
+    tag: "Auth providers",
+}), (req, res) => {
+    res.redirect("/");
 });
 
 module.exports = app;

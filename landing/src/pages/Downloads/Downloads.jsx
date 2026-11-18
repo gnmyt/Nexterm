@@ -42,8 +42,13 @@ const platforms = [
         id: 'android',
         icon: faAndroid,
         name: 'Android',
+        store: {
+            url: 'https://play.google.com/store/apps/details?id=dev.gnm.nexterm',
+            icon: '/store-icons/google-play.svg',
+            label: 'Google Play'
+        },
         assets: [
-            { pattern: 'universal.apk', label: 'Download APK', primary: true },
+            { pattern: 'universal.apk', label: 'Universal' },
             { pattern: 'arm64-v8a.apk', label: 'ARM64' },
             { pattern: 'armeabi-v7a.apk', label: 'ARM32' }
         ]
@@ -52,9 +57,13 @@ const platforms = [
         id: 'ios',
         icon: faApple,
         name: 'iOS',
-        note: 'Requires sideloading',
+        store: {
+            url: 'https://apps.apple.com/app/nexterm/id6761635144',
+            icon: '/store-icons/app-store.svg',
+            label: 'App Store'
+        },
         assets: [
-            { pattern: '.ipa', label: 'Download IPA', primary: true }
+            { pattern: '.ipa', label: 'IPA'}
         ]
     }
 ];
@@ -121,20 +130,28 @@ export const Downloads = () => {
                                         {platform.note && <span className="platform-note">{platform.note}</span>}
                                     </div>
                                     <div className="platform-downloads">
-                                        {platform.assets.map((asset, i) => {
-                                            const url = findAsset(assets, asset.pattern);
-                                            if (!url) return null;
-                                            return asset.primary ? (
-                                                <a key={i} href={url} className="download-btn primary">
-                                                    <FontAwesomeIcon icon={faDownload} />
-                                                    {asset.label}
-                                                </a>
-                                            ) : (
-                                                <a key={i} href={url} className="download-btn secondary">
-                                                    {asset.label}
-                                                </a>
-                                            );
-                                        })}
+                                        {platform.store && (
+                                            <a href={platform.store.url} target="_blank" rel="noopener noreferrer" className="download-btn primary store-link">
+                                                <img src={platform.store.icon} alt="" className="store-icon" />
+                                                {platform.store.label}
+                                            </a>
+                                        )}
+                                        <div className="alt-downloads">
+                                            {platform.assets.map((asset, i) => {
+                                                const url = findAsset(assets, asset.pattern);
+                                                if (!url) return null;
+                                                return asset.primary ? (
+                                                    <a key={i} href={url} className="download-btn primary">
+                                                        <FontAwesomeIcon icon={faDownload} />
+                                                        {asset.label}
+                                                    </a>
+                                                ) : (
+                                                    <a key={i} href={url} className="download-btn secondary">
+                                                        {asset.label}
+                                                    </a>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
                                 </div>
                             ))}

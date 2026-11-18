@@ -5,13 +5,15 @@ import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { Permission } from "@/common/utils/permissions.js";
 import { deleteRequest, getRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
-import { mdiPlus, mdiTrashCan, mdiPencil, mdiKey, mdiAccount, mdiDomain } from "@mdi/js";
+import { mdiPlus, mdiTrashCan, mdiPencil, mdiKey, mdiAccount, mdiDomain, mdiLinkOff } from "@mdi/js";
 import Icon from "@mdi/react";
 import Button from "@/common/components/Button";
 import SelectBox from "@/common/components/SelectBox";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import IdentityDialog from "./components/IdentityDialog";
 import "./styles.sass";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
+import EmptyState from "@/common/components/EmptyState";
 
 export const IdentityCard = ({ identity, onEdit, onDelete }) => {
     const { t } = useTranslation();
@@ -30,16 +32,20 @@ export const IdentityCard = ({ identity, onEdit, onDelete }) => {
                 <div className="identity-details">
                     <h3>{identity.name}</h3>
                     <p className="identity-username">{identity.username || t("settings.identities.noUsername")}</p>
-                    <span className="identity-type">{getIdentityTypeLabel(identity.type)}</span>
+                    <div className="identity-tags">
+                        <span className="identity-type">{getIdentityTypeLabel(identity.type)}</span>
+                        {identity.inUse === false && (
+                            <span className="identity-unused" title={t("settings.identities.notInUseHint")}>
+                                <Icon path={mdiLinkOff} />
+                                {t("settings.identities.notInUse")}
+                            </span>
+                        )}
+                    </div>
                 </div>
             </div>
             <div className="identity-actions">
-                <button className="action-btn edit-btn" onClick={() => onEdit(identity)} title={t("settings.identities.editIdentity")}>
-                    <Icon path={mdiPencil} size={0.8} />
-                </button>
-                <button className="action-btn delete-btn" onClick={() => onDelete(identity)} title={t("settings.identities.deleteIdentity")}>
-                    <Icon path={mdiTrashCan} size={0.8} />
-                </button>
+                <Button icon={mdiPencil} onClick={() => onEdit(identity)} title={t("settings.identities.editIdentity")} />
+                <Button type="danger" icon={mdiTrashCan} onClick={() => onDelete(identity)} title={t("settings.identities.deleteIdentity")} />
             </div>
         </div>
     );
@@ -81,11 +87,11 @@ export const IdentitiesPage = () => {
     }, [organizations, t]);
 
     const filteredIdentities = useMemo(() => {
-        if (!identities) return [];
+        const globalIdentities = (identities || []).filter(i => !i.entryId);
         if (selectedScope === null) {
-            return identities.filter(i => i.scope === 'personal');
+            return globalIdentities.filter(i => i.scope === 'personal');
         }
-        return identities.filter(i => i.scope === 'organization' && i.organizationId === selectedScope);
+        return globalIdentities.filter(i => i.scope === 'organization' && i.organizationId === selectedScope);
     }, [identities, selectedScope]);
 
     const handleCreateNew = () => {
@@ -127,7 +133,7 @@ export const IdentitiesPage = () => {
             <div className="identities-section">
                 <div className="section-header">
                     <div className="header-content">
-                        <h2>{t("settings.identities.title")}</h2>
+                        <SettingsHeading>{t("settings.identities.title")}</SettingsHeading>
                         <p>{t("settings.identities.description")}</p>
                     </div>
                     <div className="header-actions">
@@ -150,11 +156,8 @@ export const IdentitiesPage = () => {
                                                                        onEdit={handleEdit}
                                                                        onDelete={handleDeleteRequest} />)
                         ) :
-                        <div className="no-identities">
-                            <Icon path={mdiKey} />
-                            <h2>{t("settings.identities.noIdentities")}</h2>
-                            <p>{t("settings.identities.noIdentitiesDescription")}</p>
-                        </div>
+                        <EmptyState icon={mdiKey} title={t("settings.identities.noIdentities")}
+                                    description={t("settings.identities.noIdentitiesDescription")} />
                     }
                 </div>
             </div>

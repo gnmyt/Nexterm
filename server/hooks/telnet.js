@@ -5,11 +5,11 @@ const { translateKeys } = require("../utils/keyTranslation");
 const controlPlane = require("../lib/controlPlane/ControlPlaneServer");
 const { buildParticipant, createWriteGuard } = require("../utils/sessionParticipant");
 
-const bindHandlers = (ws, conn, sessionId, config, isShared, canWrite) => {
+const bindHandlers = (ws, conn, sessionId, config, canWrite) => {
     const { dataSocket } = conn;
 
     const msgHandler = (data) => {
-        if (isShared && !canWrite()) return;
+        if (!canWrite()) return;
         const msg = data.toString();
         const resize = parseResizeMessage(msg);
         if (resize) {
@@ -48,9 +48,9 @@ module.exports = async (ws, ctx) => {
     const canWrite = createWriteGuard(ctx, sessionId);
 
     SessionManager.addWebSocket(sessionId, ws, isShared, buildParticipant(ctx));
-    if (!isShared || canWrite()) SessionManager.setActiveWs(sessionId, ws);
+    if (canWrite()) SessionManager.setActiveWs(sessionId, ws);
 
-    const { msgHandler, dataHandler } = bindHandlers(ws, conn, sessionId, entry?.config, isShared, canWrite);
+    const { msgHandler, dataHandler } = bindHandlers(ws, conn, sessionId, entry?.config, canWrite);
 
     ws.on("close", async () => {
         conn.dataSocket.removeListener("data", dataHandler);

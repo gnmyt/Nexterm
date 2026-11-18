@@ -1,4 +1,7 @@
 const { Router } = require("express");
+const { route } = require("../utils/route");
+const { objectList } = require("../validations/common");
+const { updateBackupSettingsValidation, createBackupProviderValidation, updateBackupProviderValidation } = require("../validations/backup");
 const fs = require("fs");
 const path = require("path");
 const {
@@ -14,16 +17,10 @@ const app = Router();
 const validateType = (type) => VALID_TYPES.includes(type);
 const getFilePath = (type, filename) => path.join(DATA_DIR, type, path.basename(filename));
 
-/**
- * GET /backup/files/{type}
- * @summary List files in recordings or logs directory
- * @tags Backup
- * @security BearerAuth
- * @param {string} type.path.required - File type (recordings or logs)
- * @return {array<object>} 200 - List of files with name, size, and modified date
- * @return {object} 400 - Invalid type
- */
-app.get("/files/:type", (req, res) => {
+app.get("/files/:type", route({
+    summary: "List files in recordings or logs directory",
+    returns: objectList,
+}), (req, res) => {
     const { type } = req.params;
     if (!validateType(type)) return res.status(400).json({ message: "Invalid type" });
     
@@ -41,18 +38,9 @@ app.get("/files/:type", (req, res) => {
     res.json(files);
 });
 
-/**
- * DELETE /backup/files/{type}/{filename}
- * @summary Delete a file from recordings or logs
- * @tags Backup
- * @security BearerAuth
- * @param {string} type.path.required - File type (recordings or logs)
- * @param {string} filename.path.required - Name of the file to delete
- * @return {object} 200 - File deleted successfully
- * @return {object} 400 - Invalid type
- * @return {object} 404 - File not found
- */
-app.delete("/files/:type/:filename", (req, res) => {
+app.delete("/files/:type/:filename", route({
+    summary: "Delete a file from recordings or logs",
+}), (req, res) => {
     const { type, filename } = req.params;
     if (!validateType(type)) return res.status(400).json({ message: "Invalid type" });
     
@@ -63,14 +51,9 @@ app.delete("/files/:type/:filename", (req, res) => {
     res.json({ message: "File deleted" });
 });
 
-/**
- * GET /backup/settings
- * @summary Get Backup Settings
- * @tags Backup
- * @security BearerAuth
- * @return {object} 200 - Backup settings
- */
-app.get("/settings", async (req, res) => {
+app.get("/settings", route({
+    summary: "Get backup settings",
+}), async (req, res) => {
     try {
         res.json(await getSettings());
     } catch (error) {
@@ -78,14 +61,10 @@ app.get("/settings", async (req, res) => {
     }
 });
 
-/**
- * PATCH /backup/settings
- * @summary Update Backup Settings
- * @tags Backup
- * @security BearerAuth
- * @return {object} 200 - Updated settings
- */
-app.patch("/settings", async (req, res) => {
+app.patch("/settings", route({
+    summary: "Update backup settings",
+    body: updateBackupSettingsValidation,
+}), async (req, res) => {
     try {
         res.json(await updateSettings(req.body));
     } catch (error) {
@@ -93,14 +72,11 @@ app.patch("/settings", async (req, res) => {
     }
 });
 
-/**
- * POST /backup/providers
- * @summary Add Backup Provider
- * @tags Backup
- * @security BearerAuth
- * @return {object} 201 - Created provider
- */
-app.post("/providers", async (req, res) => {
+app.post("/providers", route({
+    summary: "Add backup provider",
+    status: 201,
+    body: createBackupProviderValidation,
+}), async (req, res) => {
     try {
         const provider = await addProvider(req.body);
         res.status(201).json(provider);
@@ -109,14 +85,10 @@ app.post("/providers", async (req, res) => {
     }
 });
 
-/**
- * PATCH /backup/providers/:providerId
- * @summary Update Backup Provider
- * @tags Backup
- * @security BearerAuth
- * @return {object} 200 - Updated provider
- */
-app.patch("/providers/:providerId", async (req, res) => {
+app.patch("/providers/:providerId", route({
+    summary: "Update backup provider",
+    body: updateBackupProviderValidation,
+}), async (req, res) => {
     try {
         const result = await updateProvider(req.params.providerId, req.body);
         if (result?.code) return res.status(result.code).json(result);
@@ -126,14 +98,9 @@ app.patch("/providers/:providerId", async (req, res) => {
     }
 });
 
-/**
- * DELETE /backup/providers/:providerId
- * @summary Delete Backup Provider
- * @tags Backup
- * @security BearerAuth
- * @return {object} 200 - Success
- */
-app.delete("/providers/:providerId", async (req, res) => {
+app.delete("/providers/:providerId", route({
+    summary: "Delete backup provider",
+}), async (req, res) => {
     try {
         const result = await deleteProvider(req.params.providerId);
         if (result?.code) return res.status(result.code).json(result);
@@ -143,14 +110,9 @@ app.delete("/providers/:providerId", async (req, res) => {
     }
 });
 
-/**
- * GET /backup/storage
- * @summary Get Storage Statistics
- * @tags Backup
- * @security BearerAuth
- * @return {object} 200 - Storage stats
- */
-app.get("/storage", async (req, res) => {
+app.get("/storage", route({
+    summary: "Get storage statistics",
+}), async (req, res) => {
     try {
         res.json(getStorageStats());
     } catch (error) {
@@ -158,14 +120,10 @@ app.get("/storage", async (req, res) => {
     }
 });
 
-/**
- * GET /backup/providers/:providerId/backups
- * @summary List Backups for Provider
- * @tags Backup
- * @security BearerAuth
- * @return {array} 200 - List of backups
- */
-app.get("/providers/:providerId/backups", async (req, res) => {
+app.get("/providers/:providerId/backups", route({
+    summary: "List backups for provider",
+    returns: objectList,
+}), async (req, res) => {
     try {
         res.json(await listBackups(req.params.providerId));
     } catch (error) {
@@ -173,14 +131,10 @@ app.get("/providers/:providerId/backups", async (req, res) => {
     }
 });
 
-/**
- * POST /backup/providers/:providerId/backups
- * @summary Create Backup
- * @tags Backup
- * @security BearerAuth
- * @return {object} 201 - Created backup
- */
-app.post("/providers/:providerId/backups", async (req, res) => {
+app.post("/providers/:providerId/backups", route({
+    summary: "Create backup",
+    status: 201,
+}), async (req, res) => {
     try {
         const name = await createBackup(req.params.providerId);
         res.status(201).json({ name });
@@ -189,14 +143,9 @@ app.post("/providers/:providerId/backups", async (req, res) => {
     }
 });
 
-/**
- * POST /backup/providers/:providerId/backups/:backupName/restore
- * @summary Restore Backup
- * @tags Backup
- * @security BearerAuth
- * @return {object} 200 - Restore initiated
- */
-app.post("/providers/:providerId/backups/:backupName/restore", async (req, res) => {
+app.post("/providers/:providerId/backups/:backupName/restore", route({
+    summary: "Restore backup",
+}), async (req, res) => {
     try {
         res.json({ message: "Restore initiated, server will restart" });
         await restoreBackup(req.params.providerId, req.params.backupName);

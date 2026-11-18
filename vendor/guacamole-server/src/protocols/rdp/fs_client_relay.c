@@ -1,6 +1,7 @@
 #include "fs.h"
 #include "fs_client_relay.h"
 #include "rdp.h"
+#include "settings.h"
 
 #include <guacamole/client.h>
 #include <guacamole/mem.h>
@@ -80,6 +81,7 @@ typedef struct relay_pending {
 } relay_pending;
 
 typedef struct relay_fs_data {
+    guac_client* client;
     pthread_mutex_t lock;
     relay_pending* head;
     int next_req_id;
@@ -96,8 +98,12 @@ typedef struct relay_file_data {
     int entry_index;
 } relay_file_data;
 
+static void relay_claim_any(relay_fs_data* data);
+
 static relay_pending* pending_alloc(relay_fs_data* data, relay_req_type type,
         int* out_req_id) {
+
+    relay_claim_any(data);
 
     relay_pending* p = guac_mem_zalloc(sizeof(*p));
     pthread_mutex_init(&p->mutex, NULL);
@@ -320,6 +326,7 @@ static int relay_init(guac_rdp_fs* fs, const char* drive_path,
     (void) create_drive_path;
 
     relay_fs_data* data = guac_mem_zalloc(sizeof(*data));
+    data->client = fs->client;
     pthread_mutex_init(&data->lock, NULL);
     data->next_req_id = 1;
     data->owner = NULL;
@@ -728,6 +735,49 @@ const guac_rdp_fs_backend guac_rdp_fs_backend_client_relay = {
     .get_info = relay_get_info,
 };
 
+static int relay_user_eligible(guac_user* user) {
+    guac_rdp_settings* settings = (guac_rdp_settings*) user->data;
+    return !user->owner && settings != NULL && settings->drive_enabled;
+}
+
+static int relay_try_claim(relay_fs_data* data, guac_user* user) {
+
+    if (!relay_user_eligible(user))
+        return 0;
+
+    pthread_mutex_lock(&data->lock);
+    int claimed = (data->owner == NULL);
+    if (claimed) {
+        data->owner = user;
+        user->nfs_resp_handler = relay_handle_resp;
+    }
+    pthread_mutex_unlock(&data->lock);
+
+    if (claimed)
+        guac_user_log(user, GUAC_LOG_DEBUG, "Serving RDP filesystem from this user.");
+
+    return claimed;
+}
+
+static void* relay_claim_callback(guac_user* user, void* arg) {
+    relay_try_claim((relay_fs_data*) arg, user);
+    return NULL;
+}
+
+/* Must not be called with data->lock held: the user list locks are taken
+ * first and relay_try_claim then takes data->lock. */
+static void relay_claim_any(relay_fs_data* data) {
+
+    pthread_mutex_lock(&data->lock);
+    int has_owner = (data->owner != NULL);
+    pthread_mutex_unlock(&data->lock);
+    if (has_owner)
+        return;
+
+    guac_client_foreach_user(data->client, relay_claim_callback, data);
+    guac_client_foreach_pending_user(data->client, relay_claim_callback, data);
+}
+
 void guac_rdp_fs_client_relay_attach_owner(guac_rdp_fs* fs, guac_user* user) {
     if (fs == NULL
             || fs->backend->type != GUAC_RDP_FS_BACKEND_CLIENT_RELAY)
@@ -735,20 +785,18 @@ void guac_rdp_fs_client_relay_attach_owner(guac_rdp_fs* fs, guac_user* user) {
     relay_fs_data* data = (relay_fs_data*) fs->backend_data;
     if (data == NULL) return;
 
-    pthread_mutex_lock(&data->lock);
-    int claimed = (data->owner == NULL);
-    if (claimed)
-        data->owner = user;
-    pthread_mutex_unlock(&data->lock);
-
-    if (!claimed) {
+    if (!relay_try_claim(data, user) && relay_user_eligible(user))
         guac_user_log(user, GUAC_LOG_DEBUG, "Filesystem relay already held by "
                 "another user; not serving files from this one.");
-        return;
-    }
+}
 
-    user->nfs_resp_handler = relay_handle_resp;
-    guac_user_log(user, GUAC_LOG_DEBUG, "Serving RDP filesystem from this user.");
+void guac_rdp_fs_client_relay_claim(guac_rdp_fs* fs) {
+    if (fs == NULL
+            || fs->backend->type != GUAC_RDP_FS_BACKEND_CLIENT_RELAY)
+        return;
+    relay_fs_data* data = (relay_fs_data*) fs->backend_data;
+    if (data == NULL) return;
+    relay_claim_any(data);
 }
 
 static relay_fs_data* relay_data_for(guac_user* user) {
@@ -794,7 +842,7 @@ static int relay_read_stream_end(guac_user* user, guac_stream* stream) {
 }
 
 int guac_rdp_fs_client_relay_attach_read_stream(guac_rdp_fs* fs,
-        guac_stream* stream, const char* name) {
+        guac_user* user, guac_stream* stream, const char* name) {
     if (fs == NULL || stream == NULL || name == NULL) return 0;
     if (fs->backend->type != GUAC_RDP_FS_BACKEND_CLIENT_RELAY) return 0;
     relay_fs_data* data = (relay_fs_data*) fs->backend_data;
@@ -805,7 +853,7 @@ int guac_rdp_fs_client_relay_attach_read_stream(guac_rdp_fs* fs,
     /* Existence check under the lock; the blob/end handlers will re-find. */
     pthread_mutex_lock(&data->lock);
     relay_pending* p = pending_find_locked(data, req_id);
-    int valid = (p != NULL && p->type == REQ_READ);
+    int valid = (data->owner == user && p != NULL && p->type == REQ_READ);
     pthread_mutex_unlock(&data->lock);
     if (!valid)
         return 0;
@@ -833,4 +881,6 @@ void guac_rdp_fs_client_relay_detach_owner(guac_rdp_fs* fs, guac_user* user) {
 
     user->nfs_resp_handler = NULL;
     pending_abort_all(data);
+
+    relay_claim_any(data);
 }

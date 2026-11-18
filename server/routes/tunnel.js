@@ -4,7 +4,8 @@ const { v4: uuidv4 } = require("uuid");
 const { getIdentityCredentials } = require("../controllers/identity");
 const { SessionType } = require("../lib/generated/control_plane_generated");
 const controlPlane = require("../lib/controlPlane/ControlPlaneServer");
-const { buildSSHParams, resolveJumpHosts } = require("../lib/ConnectionService");
+const { buildSSHParams, resolveJumpHosts, resolveTrust } = require("../lib/ConnectionService");
+const hostTrust = require("../utils/hostTrust");
 const { hasResourcePermission } = require("../utils/permission");
 const { Permission } = require("../permissions/registry");
 
@@ -67,10 +68,12 @@ module.exports = async (ws, req) => {
             remotePort: String(remotePort),
         };
 
-        const jumpHosts = await resolveJumpHosts(entry);
+        const jumpHosts = await resolveJumpHosts(entry, user.id);
 
+        const trust = await resolveTrust(entry, hostTrust.KIND.SSH, host, port, jumpHosts);
         const dataSocketPromise = controlPlane.waitForDataConnection(sessionId);
-        await controlPlane.openSession(sessionId, SessionType.Tunnel, host, port, params, jumpHosts);
+        dataSocketPromise.catch(() => {});
+        await controlPlane.openSession(sessionId, SessionType.Tunnel, host, port, { ...params, ...trust.params }, jumpHosts);
         dataSocket = await dataSocketPromise;
 
         logger.info(`Tunnel established`, { user: user.username, server: entry.name, remoteHost, remotePort });
@@ -111,7 +114,11 @@ module.exports = async (ws, req) => {
 
     } catch (error) {
         logger.error(`Tunnel setup failed`, { error: error.message, stack: error.stack });
-        ws.close(4004, `Tunnel setup failed: ${error.message}`);
+        if (hostTrust.isUntrustedError(error)) {
+            ws.close(hostTrust.TRUST_CLOSE_CODE, hostTrust.unattendedMessage(error.peer).slice(0, 120));
+        } else {
+            ws.close(4004, `Tunnel setup failed: ${error.message}`);
+        }
         cleanup();
     }
 };

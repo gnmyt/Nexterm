@@ -1,6 +1,5 @@
 const Folder = require("../models/Folder");
 const Entry = require("../models/Entry");
-const EntryIdentity = require("../models/EntryIdentity");
 const Identity = require("../models/Identity");
 const Organization = require("../models/Organization");
 const OrganizationMember = require("../models/OrganizationMember");
@@ -9,68 +8,202 @@ const { hasOrganizationAccess, hasOrganizationPermission, hasAccountPermission }
 const { Permission } = require("../permissions/registry");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
 const stateBroadcaster = require("../lib/StateBroadcaster");
-const logger = require("../utils/logger");
 const SessionManager = require("../lib/SessionManager");
+const { getFolderInheritance, getLocalProfiles, getProfilesError, getTemporaryIdentityReferenceError, withProfiles } = require("../utils/folderInheritance");
+const { collectSubtreeEntries, getAllowedPersonalAccountIds, removeUnavailableEntryIdentities } = require("../utils/scopeMove");
+const sequelize = require("../utils/database");
+const FolderIdentityProfile = require("../models/FolderIdentityProfile");
+const { createIdentityInTransaction, listIdentities, updateIdentityInTransaction } = require("./identity");
+const { isIdentityAllowedForScope, isSameSecurityScope, validateJumpHostIds } = require("../utils/resourceValidation");
 
-const cleanupOrganizationIdentities = async (entryIds, oldOrganizationId) => {
-    if (!entryIds.length || !oldOrganizationId) return;
-
-    for (const entryId of entryIds) {
-        await SessionManager.removeAllByEntryId(entryId);
-    }
-
-    const entryIdentities = await EntryIdentity.findAll({
-        where: { entryId: { [Op.in]: entryIds } }
-    });
-    const identityIds = [...new Set(entryIdentities.map(ei => ei.identityId))];
-
-    if (identityIds.length > 0) {
-        const oldOrgIdentities = await Identity.findAll({
-            where: {
-                id: { [Op.in]: identityIds },
-                organizationId: oldOrganizationId,
-            }
-        });
-
-        const oldOrgIdentityIds = oldOrgIdentities.map(i => i.id);
-        if (oldOrgIdentityIds.length > 0) {
-            await EntryIdentity.destroy({
-                where: {
-                    entryId: { [Op.in]: entryIds },
-                    identityId: { [Op.in]: oldOrgIdentityIds }
-                }
-            });
-            logger.info(`Removed organization identities from entries after folder move`, { 
-                entryCount: entryIds.length, 
-                identityCount: oldOrgIdentityIds.length, 
-                oldOrganizationId 
-            });
-        }
-    }
+const filterFolderIdentityProfiles = async (folder, organizationId, allowedPersonalAccountIds, transaction) => {
+    const rows = await FolderIdentityProfile.findAll({ where: { folderId: folder.id }, transaction });
+    if (!rows.length) return 0;
+    const identities = await Identity.findAll({ where: { id: rows.map((row) => row.identityId) }, transaction });
+    const identitiesById = new Map(identities.map((identity) => [identity.id, identity]));
+    const invalidRowIds = rows.filter((row) => {
+        const identity = identitiesById.get(row.identityId);
+        if (!isIdentityAllowedForScope(identity, organizationId, allowedPersonalAccountIds)) return true;
+        return row.accountId !== (identity.organizationId !== null ? null : identity.accountId);
+    }).map((row) => row.id);
+    if (invalidRowIds.length) await FolderIdentityProfile.destroy({ where: { id: { [Op.in]: invalidRowIds } }, transaction });
+    return invalidRowIds.length;
 };
 
-const updateFolderContext = async (folderId, organizationId, accountId, oldOrganizationId = null) => {
-    const entries = await Entry.findAll({ where: { folderId }, attributes: ['id'] });
-    const entryIds = entries.map(e => e.id);
+const saveFolderIdentityProfiles = async (folder, accountId, profiles, transaction) => {
+    const accessible = await listIdentities(accountId, { transaction });
+    const accessibleById = new Map(accessible.map((identity) => [identity.id, identity]));
+    const rows = [];
+    for (const [protocol, identityIds] of Object.entries(profiles)) {
+        if (!Array.isArray(identityIds) || identityIds.some((identityId) => !Number.isInteger(identityId)
+            || !isIdentityAllowedForScope(accessibleById.get(identityId), folder.organizationId || null, accountId))) {
+            return { code: 403, message: "One or more identities are not available in this folder scope" };
+        }
+        if (identityIds.some((identityId) => accessibleById.get(identityId).entryId)) {
+            return { code: 400, message: "Identities bound to a server cannot be inherited. Make them global first." };
+        }
+        [...new Set(identityIds)].forEach((identityId, position) => {
+            const identity = accessibleById.get(identityId);
+            const shared = folder.organizationId && identity.organizationId === folder.organizationId;
+            rows.push({ folderId: folder.id, protocol, identityId, accountId: shared ? null : accountId, position });
+        });
+    }
+    await FolderIdentityProfile.destroy({
+        where: { folderId: folder.id, [Op.or]: [{ accountId }, { accountId: null }] },
+        transaction,
+    });
+    if (rows.length) await FolderIdentityProfile.bulkCreate(rows, { transaction });
+    return { success: true };
+};
+
+const validateFolderProfiles = async (accountId, profiles, folderScope, options = {}) => {
+    const profilesError = getProfilesError(profiles);
+    if (profilesError) return { code: 400, message: profilesError };
+    for (const profile of Object.values(profiles)) {
+        if (profile.jumpHosts === undefined) continue;
+        const result = await validateJumpHostIds(accountId, profile.jumpHosts, {
+            enforceScope: true,
+            organizationId: folderScope.organizationId || null,
+            ownerAccountId: folderScope.accountId || accountId,
+            excludedFolderId: folderScope.id,
+            movingFolderId: options.movingFolderId,
+        });
+        if (!result.valid) return result.error;
+    }
+    return { success: true };
+};
+
+const validateFolderSubtreeProfiles = async (accountId, folder, organizationId, ownerAccountId, movingFolderId = folder.id) => {
+    const validation = await validateFolderProfiles(accountId, getLocalProfiles(folder), {
+        id: folder.id,
+        organizationId,
+        accountId: ownerAccountId,
+    }, { movingFolderId });
+    if (validation.code) return validation;
+    const children = await Folder.findAll({ where: { parentId: folder.id } });
+    for (const child of children) {
+        const result = await validateFolderSubtreeProfiles(accountId, child, organizationId, ownerAccountId, movingFolderId);
+        if (result.code) return result;
+    }
+    return { success: true };
+};
+
+const updateFolderContext = async (folderId, organizationId, accountId, oldOrganizationId = null, transaction = null, allowedPersonalAccountIds = null) => {
+    if (oldOrganizationId !== organizationId && !allowedPersonalAccountIds) {
+        allowedPersonalAccountIds = await getAllowedPersonalAccountIds(organizationId, accountId, transaction);
+    }
+    const folder = await Folder.findByPk(folderId, { transaction });
+    let removedIdentityCount = oldOrganizationId !== organizationId
+        ? await filterFolderIdentityProfiles(folder, organizationId, allowedPersonalAccountIds, transaction)
+        : 0;
 
     await Folder.update(
         { organizationId, accountId },
-        { where: { id: folderId } }
+        { where: { id: folderId }, transaction }
     );
 
     await Entry.update(
         { organizationId, accountId },
-        { where: { folderId } }
+        { where: { folderId }, transaction }
     );
 
-    if (oldOrganizationId && oldOrganizationId !== organizationId) {
-        await cleanupOrganizationIdentities(entryIds, oldOrganizationId);
+    const subfolders = await Folder.findAll({ where: { parentId: folderId }, transaction });
+    for (const subfolder of subfolders) {
+        removedIdentityCount += await updateFolderContext(subfolder.id, organizationId, accountId, oldOrganizationId, transaction, allowedPersonalAccountIds);
+    }
+    return removedIdentityCount;
+};
+
+const moveFolder = async (accountId, folder, configuration) => {
+    if (configuration.profiles !== undefined || configuration.identityProfiles !== undefined
+        || configuration.identityCreates !== undefined || configuration.identityUpdates !== undefined) {
+        return { code: 400, message: "Move the folder separately from changing its settings" };
     }
 
-    const subfolders = await Folder.findAll({ where: { parentId: folderId } });
-    for (const subfolder of subfolders) {
-        await updateFolderContext(subfolder.id, organizationId, accountId, oldOrganizationId);
+    const targetParentId = configuration.parentId;
+    let targetFolder = null;
+    let targetOrganizationId = configuration.organizationId ?? null;
+    let targetAccountId = targetOrganizationId ? null : accountId;
+
+    if (targetParentId !== null) {
+        targetFolder = await Folder.findByPk(targetParentId);
+        if (!targetFolder) return { code: 302, message: "Target parent folder does not exist" };
+
+        if (targetFolder.organizationId) {
+            if (!(await hasOrganizationPermission(accountId, targetFolder.organizationId, Permission.RESOURCES_MANAGE))) {
+                return { code: 403, message: "You don't have permission to manage resources in the target organization" };
+            }
+        } else if (targetFolder.accountId !== accountId) {
+            return { code: 403, message: "You don't have access to the target parent folder" };
+        } else if (!(await hasAccountPermission(accountId, Permission.RESOURCES_MANAGE))) {
+            return { code: 403, message: "You don't have permission to manage resources in the target location" };
+        }
+
+        let current = targetFolder;
+        while (current) {
+            if (current.id === folder.id) return { code: 303, message: "Cannot move folder to its own subfolder" };
+            current = current.parentId ? await Folder.findByPk(current.parentId) : null;
+        }
+        targetOrganizationId = targetFolder.organizationId || null;
+        targetAccountId = targetOrganizationId ? null : accountId;
+    } else if (targetOrganizationId && !(await hasOrganizationPermission(accountId, targetOrganizationId, Permission.RESOURCES_MANAGE))) {
+        return { code: 403, message: "You don't have permission to manage resources in the target organization" };
+    } else if (!targetOrganizationId && !(await hasAccountPermission(accountId, Permission.RESOURCES_MANAGE))) {
+        return { code: 403, message: "You don't have permission to manage resources in the target location" };
     }
+    const profileValidation = await validateFolderSubtreeProfiles(accountId, folder, targetOrganizationId, targetAccountId);
+    if (profileValidation.code) return profileValidation;
+
+    const changesScope = !isSameSecurityScope(
+        { organizationId: folder.organizationId || null, accountId: folder.accountId || null },
+        { organizationId: targetOrganizationId, accountId: targetAccountId }
+    );
+    const subtreeEntries = changesScope ? await collectSubtreeEntries(folder.id) : [];
+    for (const entry of subtreeEntries) {
+        const jumpHostValidation = await validateJumpHostIds(accountId, entry.config?.jumpHosts, {
+            enforceScope: true,
+            skipMissing: true,
+            organizationId: targetOrganizationId,
+            ownerAccountId: targetAccountId,
+            movingFolderId: folder.id,
+        });
+        if (!jumpHostValidation.valid) return jumpHostValidation.error;
+    }
+
+    const changesOrganization = (folder.organizationId || null) !== targetOrganizationId;
+    const update = { ...configuration };
+    delete update.organizationId;
+    delete update.accountId;
+
+    let removedIdentityCount = 0;
+    let movedEntryIds = [];
+    await sequelize.transaction(async (transaction) => {
+        movedEntryIds = (await collectSubtreeEntries(folder.id, transaction)).map((entry) => entry.id);
+
+        removedIdentityCount = await updateFolderContext(folder.id, targetOrganizationId, targetAccountId, folder.organizationId, transaction);
+        await Folder.update(update, { where: { id: folder.id }, transaction });
+
+        if (changesOrganization) {
+            const allowedPersonalAccountIds = await getAllowedPersonalAccountIds(targetOrganizationId, accountId, transaction);
+            removedIdentityCount += await removeUnavailableEntryIdentities(movedEntryIds, targetOrganizationId, allowedPersonalAccountIds, transaction);
+        }
+    });
+
+    if (changesOrganization) {
+        for (const entryId of movedEntryIds) await SessionManager.removeAllByEntryId(entryId);
+    }
+
+    await createAuditLog({
+        action: AUDIT_ACTIONS.FOLDER_MGMT_UPDATE,
+        accountId,
+        organizationId: targetOrganizationId,
+        resource: RESOURCE_TYPES.FOLDER,
+        resourceId: folder.id,
+        details: { action: "move", parentId: targetParentId, removedIdentityCount },
+    });
+    stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: folder.organizationId });
+    if (changesOrganization) stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: targetOrganizationId });
+    return { success: true, removedIdentityCount };
 };
 
 module.exports.createFolder = async (accountId, configuration) => {
@@ -187,89 +320,80 @@ module.exports.editFolder = async (accountId, folderId, configuration) => {
         return { code: 403, message: "Integration nodes cannot be moved out of their integration folder" };
     }
 
-    if (configuration.parentId !== undefined) {
-        if (configuration.parentId === null) {
-            if (configuration.organizationId !== undefined) {
-                const targetOrgId = configuration.organizationId;
-                if (targetOrgId !== null) {
-                    const hasAccess = await hasOrganizationPermission(accountId, targetOrgId, Permission.RESOURCES_MANAGE);
-                    if (!hasAccess) {
-                        return { code: 403, message: "You don't have permission to manage resources in the target organization" };
-                    }
-                }
-                
-                const newOrganizationId = targetOrgId;
-                const newAccountId = targetOrgId ? null : accountId;
-                
-                if (folder.organizationId !== newOrganizationId) {
-                    await updateFolderContext(parseInt(folderId), newOrganizationId, newAccountId, folder.organizationId);
-                }
-            } else {
-                const newOrganizationId = null;
-                const newAccountId = accountId;
-                
-                if (folder.organizationId !== newOrganizationId) {
-                    await updateFolderContext(parseInt(folderId), newOrganizationId, newAccountId, folder.organizationId);
-                }
-            }
-        } else {
-            let targetFolder = await Folder.findByPk(configuration.parentId);
-            if (!targetFolder) {
-                return { code: 302, message: "Target parent folder does not exist" };
-            }
-
-            if (folder.organizationId && !targetFolder.organizationId) {
-                const hasOrgAccess = await hasOrganizationPermission(accountId, folder.organizationId, Permission.RESOURCES_MANAGE);
-                if (!hasOrgAccess) {
-                    return { code: 403, message: "You don't have permission to manage resources in this organization" };
-                }
-            }
-
-            if (targetFolder.organizationId && !folder.organizationId) {
-                const hasOrgAccess = await hasOrganizationPermission(accountId, targetFolder.organizationId, Permission.RESOURCES_MANAGE);
-                if (!hasOrgAccess) {
-                    return { code: 403, message: "You don't have permission to manage resources in the target organization" };
-                }
-            }
-
-            if (folder.organizationId && targetFolder.organizationId && targetFolder.organizationId !== folder.organizationId) {
-                const hasSourceAccess = await hasOrganizationPermission(accountId, folder.organizationId, Permission.RESOURCES_MANAGE);
-                const hasTargetAccess = await hasOrganizationPermission(accountId, targetFolder.organizationId, Permission.RESOURCES_MANAGE);
-                if (!hasSourceAccess || !hasTargetAccess) {
-                    return { code: 403, message: "You don't have permission to manage resources in one or both organizations" };
-                }
-            } else if (!folder.organizationId && !targetFolder.organizationId) {
-                if (targetFolder.accountId !== accountId) {
-                    return { code: 403, message: "You don't have access to the target parent folder" };
-                }
-            }
-
-            let currentFolder = targetFolder;
-            while (currentFolder) {
-                if (currentFolder.id === parseInt(folderId)) {
-                    return { code: 303, message: "Cannot move folder to its own subfolder" };
-                }
-
-                if (currentFolder.parentId === null) {
-                    break;
-                }
-
-                currentFolder = await Folder.findByPk(currentFolder.parentId);
-            }
-
-            const newOrganizationId = targetFolder.organizationId || null;
-            const newAccountId = targetFolder.organizationId ? null : accountId;
-            
-            if (folder.organizationId !== newOrganizationId) {
-                await updateFolderContext(parseInt(folderId), newOrganizationId, newAccountId, folder.organizationId);
-            }
-        }
+    const changesParent = configuration.parentId !== undefined && configuration.parentId !== folder.parentId;
+    const changesRootContext = configuration.parentId === null
+        && (configuration.organizationId ?? null) !== (folder.organizationId ?? null);
+    if (changesParent || changesRootContext) {
+        return moveFolder(accountId, folder, configuration);
     }
 
-    delete configuration.accountId;
-    delete configuration.organizationId;
+    const { profiles, identityProfiles, identityCreates = [], identityUpdates = [], ...update } = configuration;
+    delete update.accountId;
+    delete update.organizationId;
 
-    await Folder.update(configuration, { where: { id: folderId } });
+    const identityReferenceError = getTemporaryIdentityReferenceError(identityProfiles, identityCreates);
+    if (identityReferenceError) return { code: 400, message: identityReferenceError };
+
+    if (profiles !== undefined) {
+        const profileValidation = await validateFolderProfiles(accountId, profiles, folder);
+        if (profileValidation.code) return profileValidation;
+    }
+
+    const identityAuditEvents = [];
+    let resolvedIdentityProfiles = identityProfiles;
+    try {
+        await sequelize.transaction(async (transaction) => {
+            const transactionalFolder = await Folder.findByPk(folderId, { transaction, lock: transaction.LOCK.UPDATE });
+            if (profiles !== undefined) update.config = withProfiles(transactionalFolder.config, profiles);
+
+            const createdIdentityIds = new Map();
+            for (const identityCreate of identityCreates) {
+                const identity = await createIdentityInTransaction(accountId, identityCreate.config, transaction);
+                if (identity.code) {
+                    const error = new Error(identity.message);
+                    error.lifecycleError = identity;
+                    throw error;
+                }
+                createdIdentityIds.set(identityCreate.temporaryId, identity.id);
+                identityAuditEvents.push({ action: "create", identity, config: identityCreate.config });
+            }
+
+            for (const identityUpdate of identityUpdates) {
+                const identityResult = await updateIdentityInTransaction(
+                    accountId, identityUpdate.id, identityUpdate.config, transaction
+                );
+                if (identityResult.code) {
+                    const error = new Error(identityResult.message);
+                    error.lifecycleError = identityResult;
+                    throw error;
+                }
+                identityAuditEvents.push({ action: "update", identity: identityResult.identity, config: identityUpdate.config });
+            }
+
+            if (identityProfiles !== undefined) {
+                resolvedIdentityProfiles = Object.fromEntries(Object.entries(identityProfiles).map(([protocol, identityIds]) => [
+                    protocol,
+                    identityIds.map((identityId) => typeof identityId === "string" ? createdIdentityIds.get(identityId) : identityId),
+                ]));
+                if (Object.values(resolvedIdentityProfiles).some((identityIds) => identityIds.some((identityId) => !Number.isInteger(identityId)))) {
+                    const error = new Error("Identity profiles contain an unknown temporary identity");
+                    error.lifecycleError = { code: 400, message: error.message };
+                    throw error;
+                }
+                const identityResult = await saveFolderIdentityProfiles(transactionalFolder, accountId, resolvedIdentityProfiles, transaction);
+                if (identityResult.code) {
+                    const error = new Error(identityResult.message);
+                    error.lifecycleError = identityResult;
+                    throw error;
+                }
+            }
+
+            if (Object.keys(update).length) await Folder.update(update, { where: { id: folderId }, transaction });
+        });
+    } catch (error) {
+        if (error.lifecycleError) return error.lifecycleError;
+        throw error;
+    }
 
     await createAuditLog({
         action: AUDIT_ACTIONS.FOLDER_MGMT_UPDATE,
@@ -277,10 +401,36 @@ module.exports.editFolder = async (accountId, folderId, configuration) => {
         organizationId: folder.organizationId,
         resource: RESOURCE_TYPES.FOLDER,
         resourceId: folderId,
-        details: configuration,
+        details: {
+            ...update,
+            ...(resolvedIdentityProfiles !== undefined ? { identityProfiles: resolvedIdentityProfiles } : {}),
+        },
     });
 
+    for (const event of identityAuditEvents) {
+        const isCreate = event.action === "create";
+        await createAuditLog({
+            action: isCreate ? AUDIT_ACTIONS.IDENTITY_CREATE : AUDIT_ACTIONS.IDENTITY_UPDATE,
+            accountId,
+            organizationId: event.identity.organizationId || null,
+            resource: RESOURCE_TYPES.IDENTITY,
+            resourceId: event.identity.id,
+            details: isCreate ? {
+                identityName: event.config.name,
+                identityType: event.config.type,
+                scope: event.config.organizationId ? "organization" : "personal",
+            } : {
+                identityName: event.config.name || event.identity.name,
+                identityType: event.config.type || event.identity.type,
+                updatedFields: Object.keys(event.config).filter((key) => !["password", "sshKey", "passphrase"].includes(key)),
+            },
+        });
+    }
+
     stateBroadcaster.broadcast("ENTRIES", { accountId, organizationId: folder.organizationId });
+    if (identityCreates.length || identityUpdates.length) {
+        stateBroadcaster.broadcast("IDENTITIES", { accountId, organizationId: folder.organizationId });
+    }
 
     return { success: true };
 };
@@ -303,7 +453,6 @@ module.exports.listFolders = async (accountId) => {
     }
 
     const allFolders = [...personalFolders, ...organizationFolders];
-
     const folderMap = new Map();
     let rootFolders = [];
 
@@ -369,7 +518,7 @@ module.exports.listFolders = async (accountId) => {
     return result;
 };
 
-module.exports.getFolderById = async (accountId, folderId) => {
+module.exports.getFolderById = async (accountId, folderId, protocol = null) => {
     const folder = await Folder.findByPk(folderId);
 
     if (!folder) {
@@ -385,5 +534,26 @@ module.exports.getFolderById = async (accountId, folderId) => {
         }
     }
 
-    return folder;
+    const inheritance = await getFolderInheritance(folder.id, protocol, { accountId });
+    const inherited = folder.parentId
+        ? await getFolderInheritance(folder.parentId, protocol, { accountId })
+        : { profiles: {}, identityProfiles: {} };
+    const localIdentityRows = protocol ? [] : await FolderIdentityProfile.findAll({
+        where: { folderId: folder.id, [Op.or]: [{ accountId }, { accountId: null }] },
+        order: [["position", "ASC"], ["id", "ASC"]],
+    });
+    const localIdentityProfiles = {};
+    localIdentityRows.forEach((row) => {
+        localIdentityProfiles[row.protocol] = [...(localIdentityProfiles[row.protocol] || []), row.identityId];
+    });
+
+    return {
+        ...folder,
+        config: inheritance.config,
+        identities: inheritance.identities,
+        localProfiles: getLocalProfiles(folder),
+        localIdentityProfiles,
+        inheritedProfiles: inherited.profiles,
+        inheritedIdentityProfiles: inherited.identityProfiles,
+    };
 };

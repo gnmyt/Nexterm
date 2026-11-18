@@ -1,5 +1,8 @@
 @use "@/common/styles/colors"
 
+.tooltip-trigger-as-child
+  display: contents
+
 .tooltip
   position: fixed
   padding: 0
@@ -11,25 +14,24 @@
   align-items: center
 
   .tooltip-content
-    background-color: colors.$lighter-background
+    background-color: colors.$gray-full
     color: colors.$white
-    padding: 10px 14px
-    border-radius: 8px
-    font-size: 0.875rem
+    padding: 6px 10px
+    border-radius: 6px
+    font-size: 0.8rem
     font-weight: 500
-    line-height: 1.3
+    line-height: 1.35
     box-shadow: colors.$shadow-md
-    border: 1px solid colors.$gray
+    border: 1px solid colors.$border
     word-wrap: break-word
     overflow-wrap: anywhere
     text-align: center
     white-space: normal
-    backdrop-filter: blur(10px)
 
 @keyframes tooltipFadeIn
   from
     opacity: 0
-    transform: translateX(-3px) scale(0.95)
+    transform: translateX(-2px) scale(0.97)
   to
     opacity: 1
     transform: translateX(0) scale(1)

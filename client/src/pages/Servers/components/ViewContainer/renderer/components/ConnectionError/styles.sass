@@ -83,25 +83,25 @@
   line-height: 1.5
   word-break: break-word
 
-.connection-error__action
-  display: inline-flex
+.connection-error__countdown
+  display: flex
+  flex-direction: column
   align-items: center
-  gap: 0.5rem
-  background: transparent
-  color: colors.$subtext
-  border: 1px solid colors.$dark-gray
-  border-radius: 0.5rem
-  padding: 0.65rem 1.25rem
-  font-size: 0.95rem
+  gap: 0.25rem
+  text-align: center
+
+.connection-error__countdown-text
+  font-size: 1rem
   font-weight: 500
-  cursor: pointer
-  transition: color 0.15s ease-out, border-color 0.15s ease-out, background 0.15s ease-out
+  color: colors.$white
 
-  svg
-    width: 1.15rem
-    height: 1.15rem
+.connection-error__countdown-attempt
+  font-size: 0.85rem
+  color: colors.$subtext
 
-  &:hover
-    color: colors.$white
-    border-color: colors.$gray
-    background: colors.$lighter-background
+.connection-error__actions
+  display: flex
+  align-items: center
+  justify-content: center
+  flex-wrap: wrap
+  gap: 0.75rem

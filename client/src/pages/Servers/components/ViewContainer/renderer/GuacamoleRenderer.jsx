@@ -3,17 +3,23 @@ import Guacamole from "guacamole-common-js";
 import Icon from "@mdi/react";
 import { mdiCloudUpload } from "@mdi/js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
+import { useKeymaps, matchesKeybind, isMac } from "@/common/contexts/KeymapContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
-import ConnectionError, { mapConnectionError } from "./components/ConnectionError";
-import SessionToolbar from "./components/SessionToolbar";
+import ConnectionError from "./components/ConnectionError";
+import { classifyConnectionError } from "@/common/utils/ConnectionErrorUtil.js";
 import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 import { openPopout, onPopoutClosed } from "@/common/utils/PopoutUtil.js";
 import { createHostFsProvider } from "@/common/utils/HostFsProvider.js";
 import { createBrowserFsProvider } from "@/common/utils/BrowserFsProvider.js";
+import {
+    AUTO_SCALE, getDeviceScale, getDeviceScaleOverride, rememberViewInset, resolveScale, resolveScaleSetting,
+    setDeviceScaleOverride, toDisplayHeight, toDisplayWidth, watchDeviceScale,
+} from "@/common/utils/displayScale.js";
 import "./styles/guacamole.sass";
+import "./styles/automated-session.sass";
 
 const SIZE_RESEND_INTERVAL = 5000;
 const SIZE_CONFIRM_INTERVAL = 500;
@@ -21,11 +27,17 @@ const SIZE_CONFIRM_ATTEMPTS = 6;
 
 const SHORTCUT_HOLD = 50;
 
+const CLIPBOARD_SYNC_TIMEOUT = 1000;
+
+const CLIPBOARD_POLL_INTERVAL = 250;
+
 const ZOOM_MIN = 1;
 
 const ZOOM_MAX = 4;
 
 const ZOOM_STEP = 0.25;
+
+const NATIVE_SNAP_TOLERANCE = 1.02;
 
 const resumeAudioContext = () => {
     const context = Guacamole.AudioContextFactory.getAudioContext();
@@ -34,16 +46,25 @@ const resumeAudioContext = () => {
     }
 };
 
+const TRUST_REQUIRED_REASON = "Certificate verification required";
+
 const GuacamoleRenderer = ({
                                session,
                                disconnectFromServer,
+                               reconnectSession,
+                               reconnectNow,
+                               markSessionConnected,
+                               reconnectInfo,
                                markSessionErrored,
                                getSessionError,
                                registerGuacamoleRef,
-                               fullscreenEnabled,
                                onFullscreenToggle,
+                               onControlsChange = null,
                                isShared = false,
                                pinnedMonitor = null,
+                               interceptPaste = true,
+                               sendScancodes = true,
+                               onClientReady = null,
                            }) => {
     const ref = useRef(null);
     const { sessionToken } = useContext(UserContext);
@@ -51,7 +72,8 @@ const GuacamoleRenderer = ({
     const scaleRef = useRef(1);
     const offsetRef = useRef({ x: 0, y: 0 });
 
-    const ownsSession = !isShared && pinnedMonitor === null;
+    const isAutomated = session.automated;
+    const ownsSession = !isShared && !isAutomated && pinnedMonitor === null;
     const initialMonitor = pinnedMonitor ?? 0;
 
     const [ready, setReady] = useState(false);
@@ -65,9 +87,15 @@ const GuacamoleRenderer = ({
 
     const [heldModifiers, setHeldModifiers] = useState(() => new Set());
     const heldModifiersRef = useRef(heldModifiers);
-    const draggingRef = useRef(false);
 
     const [zoom, setZoom] = useState(ZOOM_MIN);
+    const entryId = session.server?.id;
+    const isRdp = (session.server?.config?.protocol || session.server?.protocol || session.server?.type) === "rdp";
+    const { defaultDisplayScale } = usePreferences();
+    const [scaleSetting, setScaleSetting] = useState(() =>
+        resolveScaleSetting(entryId, session.server?.displayScale, defaultDisplayScale));
+    const scaleSettingRef = useRef(scaleSetting);
+    const [deviceScale, setDeviceScale] = useState(getDeviceScale);
     const zoomRef = useRef(ZOOM_MIN);
     const panRef = useRef({ x: 0, y: 0 });
     const panDragRef = useRef(null);
@@ -76,7 +104,7 @@ const GuacamoleRenderer = ({
     const activeMonitorRef = useRef(initialMonitor);
     const maxMonitorsRef = useRef(1);
     const layoutRef = useRef(null);
-    const lastSentRef = useRef({ w: 0, h: 0, monitor: -1, at: 0 });
+    const lastSentRef = useRef({ w: 0, h: 0, monitor: -1, scale: 0, at: 0 });
     const confirmAttemptsRef = useRef(0);
     const { getParsedKeybind } = useKeymaps();
     const { sendToast } = useToast();
@@ -88,16 +116,21 @@ const GuacamoleRenderer = ({
     const [isDragOver, setIsDragOver] = useState(false);
     const browserFsRef = useRef(null);
     const clipboardIntervalRef = useRef(null);
+    const clipboardReadInFlightRef = useRef(false);
+    const clipboardSyncRef = useRef(null);
+    const ctrlPressedRef = useRef(false);
     const errorMessageRef = useRef(null);
     const [connectionError, setConnectionError] = useState(() => getSessionError?.(session.id) || null);
     const errorShownRef = useRef(!!connectionError);
 
-    const reportError = (rawMessage) => {
+    const reportError = (rawMessage, statusCode = null) => {
         if (errorShownRef.current) return;
         errorShownRef.current = true;
-        const mapped = mapConnectionError(rawMessage, t);
-        markSessionErrored?.(session.id, mapped);
-        setConnectionError(mapped);
+        if (rawMessage === TRUST_REQUIRED_REASON) return;
+        const protocol = session.server?.config?.protocol || session.server?.protocol || session.server?.type;
+        const failure = classifyConnectionError({ rawMessage, statusCode, protocol, t });
+        markSessionErrored?.(session.id, failure.message, { autoReconnect: failure.autoReconnect });
+        setConnectionError(failure.message);
     };
 
     useEffect(() => {
@@ -112,11 +145,18 @@ const GuacamoleRenderer = ({
         return () => registerGuacamoleRef?.(session.id, null);
     }, [session.id, registerGuacamoleRef, clientRef.current]);
 
+    const samplingFor = (scale) => Math.abs(scale * (window.devicePixelRatio || 1) - 1) < 0.001 ? "pixelated" : "auto";
+
     const applyDisplayStyles = (el, x, y, scale, width, height) => Object.assign(el.style, {
         position: "absolute", width: width + "px", height: height + "px",
         transform: `translate(${x}px, ${y}px) scale(${scale})`, transformOrigin: "0 0",
-        imageRendering: "crisp-edges", backfaceVisibility: "hidden", willChange: "transform",
+        imageRendering: samplingFor(scale), backfaceVisibility: "hidden", willChange: "transform",
     });
+
+    const snapToDevicePixel = (value) => {
+        const density = window.devicePixelRatio || 1;
+        return Math.round(value * density) / density;
+    };
 
     const clampPan = (pan, visible, scaled) => {
         const limit = Math.max((scaled - visible) / 2, 0);
@@ -140,7 +180,10 @@ const GuacamoleRenderer = ({
         const mh = monitor?.height || display.getHeight();
         if (!mw || !mh) return;
 
-        const scale = Math.min(cw / mw, ch / mh) * zoomRef.current;
+        const density = window.devicePixelRatio || 1;
+        const fit = Math.min(cw / mw, ch / mh);
+        const fitsNatively = mw / density <= cw && mh / density <= ch && fit * density < NATIVE_SNAP_TOLERANCE;
+        const scale = (fitsNatively ? 1 / density : fit) * zoomRef.current;
         scaleRef.current = scale;
 
         panRef.current = {
@@ -149,8 +192,8 @@ const GuacamoleRenderer = ({
         };
 
         offsetRef.current = {
-            x: (cw - mw * scale) / 2 - mx * scale + panRef.current.x,
-            y: (ch - mh * scale) / 2 - my * scale + panRef.current.y,
+            x: snapToDevicePixel((cw - mw * scale) / 2 - mx * scale + panRef.current.x),
+            y: snapToDevicePixel((ch - mh * scale) / 2 - my * scale + panRef.current.y),
         };
 
         applyDisplayStyles(el, offsetRef.current.x, offsetRef.current.y, scale,
@@ -180,12 +223,13 @@ const GuacamoleRenderer = ({
 
         if (cw > 0 && ch > 0) {
             const density = window.devicePixelRatio || 1;
-            const dw = Math.round(cw * density);
-            const dh = Math.round(ch * density);
+            const dw = toDisplayWidth(Math.round(cw * density));
+            const dh = toDisplayHeight(Math.round(ch * density));
 
             const monitor = activeMonitorRef.current;
+            const scale = resolveScale(scaleSettingRef.current);
             const last = lastSentRef.current;
-            const changed = last.w !== dw || last.h !== dh || last.monitor !== monitor;
+            const changed = last.w !== dw || last.h !== dh || last.monitor !== monitor || last.scale !== scale;
 
             const display = clientRef.current.getDisplay();
             const applied = display.getWidth() === dw && display.getHeight() === dh;
@@ -193,13 +237,24 @@ const GuacamoleRenderer = ({
             const elapsed = Date.now() - last.at;
 
             if (changed || elapsed >= (retrying ? SIZE_CONFIRM_INTERVAL : SIZE_RESEND_INTERVAL)) {
-                clientRef.current.sendSize(dw, dh, monitor, 0);
-                lastSentRef.current = { w: dw, h: dh, monitor, at: Date.now() };
+                clientRef.current.sendSize(dw, dh, monitor, 0, scale);
+                lastSentRef.current = { w: dw, h: dh, monitor, scale, at: Date.now() };
                 confirmAttemptsRef.current = changed ? 0 : confirmAttemptsRef.current + 1;
             }
         }
 
         applyViewport();
+    };
+
+    const changeDisplayScale = (setting) => {
+        setDeviceScaleOverride(entryId, setting);
+        applyScaleSetting(resolveScaleSetting(entryId, session.server?.displayScale, defaultDisplayScale));
+    };
+
+    const applyScaleSetting = (next) => {
+        scaleSettingRef.current = next;
+        setScaleSetting(next);
+        resizeHandler();
     };
 
     const toggleModifier = (keysym) => {
@@ -231,6 +286,40 @@ const GuacamoleRenderer = ({
         setTimeout(() => {
             [...keys].reverse().forEach((key) => clientRef.current?.sendKeyEvent(0, key));
         }, SHORTCUT_HOLD);
+    };
+
+    const sendClipboardShortcut = () => {
+        if (!clientRef.current) return;
+        if (ctrlPressedRef.current || heldModifiersRef.current.has(0xffe3)) {
+            clientRef.current.sendKeyEvent(1, 0x0076);
+            clientRef.current.sendKeyEvent(0, 0x0076);
+            return;
+        }
+        sendShortcut([0xffe3, 0x0076]);
+    };
+
+    const pasteText = (text) => {
+        if (!text) return;
+        const sync = sendClipboardToServer(text);
+        if (sync.pasteInFlight) return;
+        sync.pasteInFlight = true;
+        const sendShortcut = () => {
+            if (clipboardSyncRef.current === sync) sendClipboardShortcut();
+            queueMicrotask(() => sync.pasteInFlight = false);
+        };
+        if (sync.ready) sendShortcut();
+        else sync.promise.then(sendShortcut);
+    };
+
+    // macOS only fires a paste event for ⌘V, so Ctrl+V reads the clipboard itself
+    const pasteFromLocalClipboard = async () => {
+        let text = "";
+        try {
+            text = await navigator.clipboard.readText();
+        } catch {
+        }
+        if (text) pasteText(text);
+        else sendClipboardShortcut();
     };
 
     const selectMonitor = (index) => {
@@ -296,14 +385,48 @@ const GuacamoleRenderer = ({
     }, [session.id, ownsSession]);
 
     const sendClipboardToServer = (text) => {
-        if (!clientRef.current || !text) return;
+        const current = clipboardSyncRef.current;
+        if (current?.text === text) return current;
+
+        current?.complete();
+
+        let resolve;
+        const sync = {
+            text,
+            ready: false,
+            promise: new Promise((done) => resolve = done),
+            timeout: null,
+            complete: null,
+            pasteInFlight: false,
+        };
+        const complete = () => {
+            if (sync.ready) return;
+            sync.ready = true;
+            if (sync.timeout) clearTimeout(sync.timeout);
+            resolve();
+        };
+
+        sync.complete = complete;
+        sync.timeout = setTimeout(complete, CLIPBOARD_SYNC_TIMEOUT);
+        clipboardSyncRef.current = sync;
+
+        if (!clientRef.current || !text) {
+            complete();
+            return sync;
+        }
+
         try {
             const writer = new Guacamole.StringWriter(clientRef.current.createClipboardStream("text/plain"));
+            writer.onack = (status) => {
+                if (!status.isError()) complete();
+            };
             writer.sendText(text);
             writer.sendEnd();
         } catch (e) {
             console.error("Failed to send clipboard to server:", e);
         }
+
+        return sync;
     };
 
     const uploadFileToRemote = useCallback((file) => {
@@ -402,7 +525,10 @@ const GuacamoleRenderer = ({
 
     const startClipboardPolling = (initialValue = "") => {
         let cached = initialValue;
-        clipboardIntervalRef.current = setInterval(async () => {
+        sendClipboardToServer(initialValue);
+        const pollClipboard = async () => {
+            if (clipboardReadInFlightRef.current) return;
+            clipboardReadInFlightRef.current = true;
             try {
                 const t = await navigator.clipboard.readText();
                 if (t !== cached) {
@@ -410,17 +536,19 @@ const GuacamoleRenderer = ({
                     sendClipboardToServer(t);
                 }
             } catch {
+            } finally {
+                clipboardReadInFlightRef.current = false;
             }
-        }, 500);
+        };
+        clipboardIntervalRef.current = setInterval(pollClipboard, CLIPBOARD_POLL_INTERVAL);
     };
 
     const initClipboardPolling = async () => {
         try {
             const status = await navigator.permissions.query({ name: "clipboard-read" });
             if (status.state === "granted") {
-                startClipboardPolling();
+                startClipboardPolling(await navigator.clipboard.readText());
             } else if (status.state === "prompt") {
-                // Calling readText() triggers the browser permission dialog
                 try {
                     startClipboardPolling(await navigator.clipboard.readText());
                 } catch {
@@ -428,7 +556,6 @@ const GuacamoleRenderer = ({
                 }
             }
         } catch {
-            // permissions API not supported — try readText() directly to prompt
             try {
                 startClipboardPolling(await navigator.clipboard.readText());
             } catch {
@@ -455,30 +582,25 @@ const GuacamoleRenderer = ({
         initClipboardPolling();
         const onPaste = (e) => {
             if (e.clipboardData?.files?.length > 0) {
+            if (!ref.current?.contains(e.target)) return;
+            e.stopImmediatePropagation();
                 e.preventDefault();
                 uploadFiles(Array.from(e.clipboardData.files));
                 return;
             }
-            const text = e.clipboardData?.getData("text");
-            if (text) {
-                sendClipboardToServer(text);
-                // After clipboard syncs, send V key to RDP (Ctrl is already held)
-                setTimeout(() => {
-                    if (clientRef.current) {
-                        clientRef.current.sendKeyEvent(1, 0x0076);
-                        clientRef.current.sendKeyEvent(0, 0x0076);
-                    }
-                }, 100);
-            }
+            if (!ref.current?.contains(e.target)) return;
+            if (!interceptPaste) return;
             e.preventDefault();
+            pasteText(e.clipboardData?.getData("text"));
         };
-        ref.current.addEventListener("paste", onPaste);
+        document.addEventListener("paste", onPaste, true);
         return () => {
-            ref.current?.removeEventListener("paste", onPaste);
+            document.removeEventListener("paste", onPaste, true);
             if (clipboardIntervalRef.current) {
                 clearInterval(clipboardIntervalRef.current);
                 clipboardIntervalRef.current = null;
             }
+            clipboardSyncRef.current?.complete();
         };
     };
 
@@ -494,6 +616,7 @@ const GuacamoleRenderer = ({
         const tunnelUrl = getWebSocketUrl("/api/ws/guac/", {});
         const tunnel = new Guacamole.WebSocketTunnel(tunnelUrl);
         const client = new Guacamole.Client(tunnel);
+        onClientReady?.(client);
         client.getDisplay().onresize = resizeHandler;
 
         client.onmultimonlayout = (layout) => {
@@ -535,15 +658,23 @@ const GuacamoleRenderer = ({
                 setReady(true);
             }
             if (opcode === "error" && args?.length) {
-                errorMessageRef.current = args[0] || "Connection failed";
+                errorMessageRef.current = {
+                    message: args[0] || "Connection failed",
+                    statusCode: args[1] ?? null,
+                };
             }
             clientOnInstruction?.(opcode, args);
+        };
+
+        client.onerror = (status) => {
+            const error = errorMessageRef.current;
+            reportError(status?.message || error?.message || t("common.errors.connection.error"), status?.code ?? error?.statusCode);
         };
 
         clientRef.current = client;
         const display = client.getDisplay().getElement();
         display.style.position = "absolute";
-        display.style.imageRendering = "crisp-edges";
+        display.style.imageRendering = samplingFor(scaleRef.current);
         ref.current.appendChild(display);
 
         client.onaudio = (stream, mimetype) => {
@@ -566,8 +697,6 @@ const GuacamoleRenderer = ({
         const mouse = new Guacamole.Mouse(display);
         mouse.onmousedown = mouse.onmouseup = mouse.onmousemove = (state) => {
             if (!scaleRef.current || !offsetRef.current) return;
-
-            if (draggingRef.current) return;
 
             if (zoomRef.current > ZOOM_MIN && state.middle) {
                 const previous = panDragRef.current;
@@ -596,6 +725,8 @@ const GuacamoleRenderer = ({
         ref.current.focus();
 
         const handleKeyDown = (e) => {
+            if (e.key === "Control") ctrlPressedRef.current = true;
+            if (!ref.current?.contains(e.target)) return;
             const kb = getParsedKeybind("fullscreen");
             if (kb && matchesKeybind(e, kb)) {
                 e.preventDefault();
@@ -603,44 +734,70 @@ const GuacamoleRenderer = ({
                 onFullscreenToggleRef.current?.();
                 return false;
             }
-            // Intercept Ctrl+V so the browser fires the paste event
-            // (Guacamole.Keyboard's preventDefault blocks it otherwise)
-            if ((e.ctrlKey || e.metaKey) && (e.key === "v" || e.key === "V")) {
+
+            if (interceptPaste && (e.ctrlKey || e.metaKey) && (e.key === "v" || e.key === "V")) {
+                e.stopImmediatePropagation();
+                if (isMac() && e.ctrlKey && !e.metaKey) {
+                    e.preventDefault();
+                    if (!e.repeat) void pasteFromLocalClipboard();
+                }
+            }
+        };
+        const handleKeyUp = (e) => {
+            if (!ref.current?.contains(e.target)) return;
+            if (e.key === "Control") ctrlPressedRef.current = false;
+            if (interceptPaste && (e.ctrlKey || e.metaKey) && (e.key === "v" || e.key === "V")) {
                 e.stopImmediatePropagation();
             }
         };
+        const handleKeyPress = (e) => {
+            if (!ref.current?.contains(e.target)) return;
+            if (interceptPaste && (e.ctrlKey || e.metaKey) && (e.key === "v" || e.key === "V")) {
+                e.stopImmediatePropagation();
+            }
+        };
+        document.addEventListener("keydown", handleKeyDown, true);
+        document.addEventListener("keypress", handleKeyPress, true);
+        document.addEventListener("keyup", handleKeyUp, true);
+        ref.current.addEventListener("keypress", handleKeyPress, true);
+        const handleBlur = () => ctrlPressedRef.current = false;
         ref.current.addEventListener("keydown", handleKeyDown, true);
+        ref.current.addEventListener("keyup", handleKeyUp, true);
+        ref.current.addEventListener("blur", handleBlur, true);
 
         const keyboard = new Guacamole.Keyboard(ref.current);
         keyboard.onkeydown = (k, sc) => {
             resumeAudioContext();
-            client.sendKeyEvent(1, k, sc);
+            client.sendKeyEvent(1, k, sendScancodes ? sc : 0);
         };
-        keyboard.onkeyup = (k, sc) => client.sendKeyEvent(0, k, sc);
+        keyboard.onkeyup = (k, sc) => client.sendKeyEvent(0, k, sendScancodes ? sc : 0);
 
         client.onstatechange = (st) => {
             if (isCleaningUp) return;
             if (st === Guacamole.Client.State.CONNECTED) {
-                lastSentRef.current = { w: 0, h: 0, monitor: -1, at: 0 };
+                lastSentRef.current = { w: 0, h: 0, monitor: -1, scale: 0, at: 0 };
                 confirmAttemptsRef.current = 0;
                 resizeHandler();
+                rememberViewInset();
+                markSessionConnected?.(session.id);
             }
             if (st === Guacamole.Client.State.DISCONNECTED || st === Guacamole.Client.State.ERROR) {
                 if (errorShownRef.current) return;
-                if (errorMessageRef.current) reportError(errorMessageRef.current);
+                if (errorMessageRef.current) reportError(errorMessageRef.current.message, errorMessageRef.current.statusCode);
                 else disconnectFromServer(s.id);
             }
         };
         tunnel.onstatechange = (st) => {
             if (isCleaningUp || st !== Guacamole.Tunnel.State.CLOSED) return;
             if (errorShownRef.current) return;
-            if (errorMessageRef.current) reportError(errorMessageRef.current);
+            if (errorMessageRef.current) reportError(errorMessageRef.current.message, errorMessageRef.current.statusCode);
             else disconnectFromServer(s.id);
         };
         tunnel.onerror = (status) => {
             if (isCleaningUp) return;
-            const message = status?.message || errorMessageRef.current || t("common.errors.connection.error");
-            reportError(message);
+            const error = errorMessageRef.current;
+            const message = status?.message || error?.message || t("common.errors.connection.error");
+            reportError(message, status?.code ?? error?.statusCode);
         };
         const cleanupClipboard = handleClipboardEvents();
 
@@ -668,20 +825,26 @@ const GuacamoleRenderer = ({
             isCleaningUp = true;
             errorShownRef.current = false;
             cleanupClipboard?.();
+            document.removeEventListener("keydown", handleKeyDown, true);
+            document.removeEventListener("keypress", handleKeyPress, true);
+            document.removeEventListener("keyup", handleKeyUp, true);
+            ref.current?.removeEventListener("keypress", handleKeyPress, true);
             ref.current?.removeEventListener("keydown", handleKeyDown, true);
-            client.onstatechange = tunnel.onstatechange = tunnel.onerror = null;
+            ref.current?.removeEventListener("keyup", handleKeyUp, true);
+            ref.current?.removeEventListener("blur", handleBlur, true);
+            client.onstatechange = client.onerror = tunnel.onstatechange = tunnel.onerror = null;
             audioPlayersRef.current = [];
             tunnel.disconnect();
             clientRef.current = null;
 
             layoutRef.current = null;
-            lastSentRef.current = { w: 0, h: 0, monitor: -1, at: 0 };
+            lastSentRef.current = { w: 0, h: 0, monitor: -1, scale: 0, at: 0 };
             confirmAttemptsRef.current = 0;
             monitorCountRef.current = 1;
             activeMonitorRef.current = initialMonitor;
             maxMonitorsRef.current = 1;
             heldModifiersRef.current = new Set();
-            draggingRef.current = false;
+            ctrlPressedRef.current = false;
             zoomRef.current = ZOOM_MIN;
             panRef.current = { x: 0, y: 0 };
             panDragRef.current = null;
@@ -695,14 +858,66 @@ const GuacamoleRenderer = ({
     };
 
     useEffect(() => {
-        const cleanup = connect();
-        return () => cleanup?.();
+        let cleanup;
+        const connectTimer = window.setTimeout(() => {
+            cleanup = connect();
+        });
+
+        return () => {
+            window.clearTimeout(connectTimer);
+            cleanup?.();
+        };
     }, [sessionToken, session.id, isShared]);
 
     useEffect(() => {
         window.addEventListener("blur", releaseModifiers);
         return () => window.removeEventListener("blur", releaseModifiers);
     }, []);
+
+    useEffect(() => {
+        if (!onControlsChange) return;
+        onControlsChange(ready ? {
+            monitorCount,
+            activeMonitor,
+            maxMonitors,
+            heldModifiers,
+            poppedOutMonitors,
+            zoom,
+            minZoom: ZOOM_MIN,
+            maxZoom: ZOOM_MAX,
+            readOnly: isShared || isAutomated,
+            allowMonitors: pinnedMonitor === null,
+            selectMonitor,
+            addMonitor,
+            removeMonitor,
+            popOutMonitor,
+            toggleModifier,
+            sendShortcut,
+            zoomIn,
+            zoomOut,
+            resetZoom,
+            displayScale: isRdp && !isShared ? {
+                setting: scaleSetting,
+                deviceScale,
+                effective: scaleSetting === AUTO_SCALE ? deviceScale : scaleSetting,
+                overridden: getDeviceScaleOverride(entryId) !== null,
+                set: changeDisplayScale,
+            } : null,
+            focus: () => ref.current?.focus(),
+        } : null);
+    }, [ready, monitorCount, activeMonitor, maxMonitors, heldModifiers, poppedOutMonitors, zoom, isShared, pinnedMonitor, scaleSetting, deviceScale]);
+
+    useEffect(() => {
+        const next = resolveScaleSetting(entryId, session.server?.displayScale, defaultDisplayScale);
+        if (next !== scaleSettingRef.current) applyScaleSetting(next);
+    }, [defaultDisplayScale, session.server?.displayScale]);
+
+    useEffect(() => watchDeviceScale((scale) => {
+        setDeviceScale(scale);
+        resizeHandler();
+    }), []);
+
+    useEffect(() => () => onControlsChange?.(null), []);
 
     useEffect(() => {
         window.addEventListener("resize", resizeHandler);
@@ -737,23 +952,14 @@ const GuacamoleRenderer = ({
                     <h2>{t("servers.remoteDesktop.dropOverlay")}</h2>
                 </div>
             </div>
-            <ConnectionLoader onReady={(loader) => {
+            {isAutomated && <div className="automated-session-frame" aria-hidden="true" />}
+            <ConnectionLoader sessionId={session.id} onReady={(loader) => {
                 connectionLoaderRef.current = loader;
             }} />
-            {ready && (
-                <SessionToolbar containerRef={ref} monitorCount={monitorCount} activeMonitor={activeMonitor}
-                                maxMonitors={maxMonitors} heldModifiers={heldModifiers} readOnly={isShared}
-                                poppedOutMonitors={poppedOutMonitors} allowMonitors={pinnedMonitor === null}
-                                onSelectMonitor={selectMonitor} onAddMonitor={addMonitor}
-                                onRemoveMonitor={removeMonitor} onPopOutMonitor={popOutMonitor}
-                                onToggleModifier={toggleModifier} onSendShortcut={sendShortcut}
-                                zoom={zoom} minZoom={ZOOM_MIN} maxZoom={ZOOM_MAX}
-                                onZoomIn={zoomIn} onZoomOut={zoomOut} onResetZoom={resetZoom}
-                                fullscreenEnabled={fullscreenEnabled} onFullscreenToggle={onFullscreenToggle}
-                                onDraggingChange={(dragging) => draggingRef.current = dragging} />
-            )}
             {connectionError && (
-                <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)} />
+                <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)}
+                                 onReconnect={() => (reconnectNow || reconnectSession)?.(session.id)}
+                                 reconnectInfo={reconnectInfo} />
             )}
         </div>
     );

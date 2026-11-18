@@ -9,6 +9,7 @@
 #include "http_fetch.h"
 #include "websocket.h"
 #include "log.h"
+#include "trust.h"
 
 #include <errno.h>
 #include <stdbool.h>
@@ -24,6 +25,7 @@
 
 #include "control_plane_builder.h"
 #include "control_plane_reader.h"
+#include "peer_identity.h"
 
 #define CP_MAX_FRAME_SIZE (16 * 1024 * 1024)
 
@@ -36,6 +38,23 @@ static int finalize_and_send(flatcc_builder_t* b, int fd, SSL* ssl, pthread_mute
     flatcc_builder_clear(b);
     free(buf);
     return ret;
+}
+
+Nexterm_ControlPlane_PeerIdentity_ref_t nexterm_cp_build_peer(flatcc_builder_t* b,
+                                                              const nexterm_peer_t* peer) {
+    Nexterm_ControlPlane_PeerIdentity_start(b);
+    Nexterm_ControlPlane_PeerIdentity_kind_create_str(b, peer->kind);
+    Nexterm_ControlPlane_PeerIdentity_host_create_str(b, peer->host);
+    Nexterm_ControlPlane_PeerIdentity_port_add(b, peer->port);
+    Nexterm_ControlPlane_PeerIdentity_algorithm_create_str(b, peer->algorithm);
+    Nexterm_ControlPlane_PeerIdentity_fingerprint_create_str(b, peer->fingerprint);
+    if (peer->raw)
+        Nexterm_ControlPlane_PeerIdentity_raw_create_str(b, peer->raw);
+    if (peer->subject[0] != '\0')
+        Nexterm_ControlPlane_PeerIdentity_subject_create_str(b, peer->subject);
+    if (peer->issuer[0] != '\0')
+        Nexterm_ControlPlane_PeerIdentity_issuer_create_str(b, peer->issuer);
+    return Nexterm_ControlPlane_PeerIdentity_end(b);
 }
 
 static int cp_send(nexterm_control_plane_t* cp, flatcc_builder_t* b) {
@@ -82,6 +101,7 @@ static session_type_t map_session_type(Nexterm_ControlPlane_SessionType_enum_t t
         case Nexterm_ControlPlane_SessionType_Tunnel: return SESSION_TYPE_TUNNEL;
         case Nexterm_ControlPlane_SessionType_WebSocket: return SESSION_TYPE_WEBSOCKET;
         case Nexterm_ControlPlane_SessionType_Demo:   return SESSION_TYPE_DEMO;
+        case Nexterm_ControlPlane_SessionType_Web:    return SESSION_TYPE_WEB;
         default: return SESSION_TYPE_VNC;
     }
 }
@@ -93,6 +113,7 @@ static int start_session_connection(nexterm_session_t* session,
         case SESSION_TYPE_VNC:
         case SESSION_TYPE_RDP:
         case SESSION_TYPE_DEMO:
+        case SESSION_TYPE_WEB:
             return nexterm_connection_start_guac(session, cp);
         case SESSION_TYPE_SSH:
             return nexterm_connection_start_ssh(session, cp);
@@ -318,6 +339,8 @@ static void extract_ssh_credentials(Nexterm_ControlPlane_ConnectionParam_vec_t p
     creds->password = NULL;
     creds->private_key = NULL;
     creds->passphrase = NULL;
+    creds->trust_mode = NULL;
+    creds->trust_pins = NULL;
     if (!params) return;
 
     size_t n = Nexterm_ControlPlane_ConnectionParam_vec_len(params);
@@ -330,6 +353,8 @@ static void extract_ssh_credentials(Nexterm_ControlPlane_ConnectionParam_vec_t p
         else if (strcmp(key, "password") == 0) creds->password = val;
         else if (strcmp(key, "privateKey") == 0) creds->private_key = val;
         else if (strcmp(key, "passphrase") == 0) creds->passphrase = val;
+        else if (strcmp(key, "trust_mode") == 0) creds->trust_mode = val;
+        else if (strcmp(key, "trust_pins") == 0) creds->trust_pins = val;
     }
 }
 
@@ -433,6 +458,24 @@ static void handle_exec_batch(nexterm_control_plane_t* cp,
     free(commands);
 }
 
+#define PORT_CHECK_BANNER_WAIT_MS 2000u
+#define PORT_CHECK_SSH_IDENT "SSH-2.0-Nexterm_StatusCheck\r\n"
+
+/* SSH servers log a probe that closes before sending its identification
+ * string as an error, so answer an SSH banner before closing. */
+static void close_port_probe(int fd, uint32_t timeout_ms) {
+    uint32_t wait_ms = timeout_ms < PORT_CHECK_BANNER_WAIT_MS ? timeout_ms : PORT_CHECK_BANNER_WAIT_MS;
+    struct pollfd pfd = { .fd = fd, .events = POLLIN };
+    char banner[8];
+
+    if (poll(&pfd, 1, (int)wait_ms) == 1
+        && recv(fd, banner, sizeof(banner), 0) >= 4
+        && memcmp(banner, "SSH-", 4) == 0)
+        send(fd, PORT_CHECK_SSH_IDENT, sizeof(PORT_CHECK_SSH_IDENT) - 1, MSG_NOSIGNAL);
+
+    close(fd);
+}
+
 static bool check_port_open(const char* host, uint16_t port, uint32_t timeout_ms) {
     struct addrinfo hints = {0};
     hints.ai_family = AF_UNSPEC;
@@ -460,7 +503,7 @@ static bool check_port_open(const char* host, uint16_t port, uint32_t timeout_ms
     freeaddrinfo(res);
 
     if (rc == 0) {
-        close(fd);
+        close_port_probe(fd, timeout_ms);
         return true;
     }
 
@@ -480,8 +523,13 @@ static bool check_port_open(const char* host, uint16_t port, uint32_t timeout_ms
     int err = 0;
     socklen_t len = sizeof(err);
     getsockopt(fd, SOL_SOCKET, SO_ERROR, &err, &len);
-    close(fd);
-    return err == 0;
+    if (err != 0) {
+        close(fd);
+        return false;
+    }
+
+    close_port_probe(fd, timeout_ms);
+    return true;
 }
 
 typedef struct {
@@ -506,6 +554,27 @@ static void free_port_check_ctx(port_check_ctx_t* ctx) {
     free(ctx);
 }
 
+#define PORT_CHECK_MAX_WORKERS 32
+
+typedef struct {
+    port_check_ctx_t* ctx;
+    bool* results;
+    pthread_mutex_t lock;
+    size_t next;
+} port_check_work_t;
+
+static void* port_check_worker(void* arg) {
+    port_check_work_t* work = (port_check_work_t*)arg;
+    for (;;) {
+        pthread_mutex_lock(&work->lock);
+        size_t i = work->next++;
+        pthread_mutex_unlock(&work->lock);
+        if (i >= work->ctx->count) return NULL;
+        work->results[i] = check_port_open(work->ctx->hosts[i], work->ctx->ports[i],
+                                           work->ctx->timeout_ms);
+    }
+}
+
 static void* port_check_thread(void* arg) {
     port_check_ctx_t* ctx = (port_check_ctx_t*)arg;
     bool* results = calloc(ctx->count, sizeof(bool));
@@ -514,8 +583,19 @@ static void* port_check_thread(void* arg) {
         return NULL;
     }
 
-    for (size_t i = 0; i < ctx->count; i++)
-        results[i] = check_port_open(ctx->hosts[i], ctx->ports[i], ctx->timeout_ms);
+    port_check_work_t work = { .ctx = ctx, .results = results, .next = 0 };
+    pthread_mutex_init(&work.lock, NULL);
+
+    size_t worker_count = ctx->count < PORT_CHECK_MAX_WORKERS ? ctx->count : PORT_CHECK_MAX_WORKERS;
+    pthread_t workers[PORT_CHECK_MAX_WORKERS];
+    size_t started = 0;
+    while (started < worker_count
+           && pthread_create(&workers[started], NULL, port_check_worker, &work) == 0)
+        started++;
+
+    if (started == 0) port_check_worker(&work);
+    for (size_t i = 0; i < started; i++) pthread_join(workers[i], NULL);
+    pthread_mutex_destroy(&work.lock);
 
     nexterm_cp_send_port_check_result(ctx->cp, ctx->request_id,
                                       (const char**)ctx->ids, results, ctx->count);
@@ -578,7 +658,9 @@ static void handle_http_fetch(nexterm_control_plane_t* cp,
     const char* url = Nexterm_ControlPlane_HttpFetch_url(fetch_msg);
     const char* body = Nexterm_ControlPlane_HttpFetch_body(fetch_msg);
     uint32_t timeout_ms = Nexterm_ControlPlane_HttpFetch_timeout_ms(fetch_msg);
-    bool insecure = Nexterm_ControlPlane_HttpFetch_insecure(fetch_msg);
+    const char* trust_mode = Nexterm_ControlPlane_HttpFetch_trust_mode(fetch_msg);
+    const char* trust_pins = Nexterm_ControlPlane_HttpFetch_trust_pins(fetch_msg);
+    bool trust_ca = Nexterm_ControlPlane_HttpFetch_trust_ca(fetch_msg);
 
     if (!req_id || !method || !url) {
         LOG_WARN("HttpFetch: missing required fields");
@@ -604,7 +686,8 @@ static void handle_http_fetch(nexterm_control_plane_t* cp,
     }
 
     nexterm_http_fetch(cp, req_id, method, url, header_names, header_values,
-                       header_count, body, timeout_ms, insecure);
+                       header_count, body, timeout_ms,
+                       trust_mode, trust_pins, trust_ca);
 
     free(header_names);
     free(header_values);
@@ -865,6 +948,18 @@ int nexterm_cp_send_session_result(nexterm_control_plane_t* cp,
                                    bool success,
                                    const char* error_message,
                                    const char* connection_id) {
+    return nexterm_cp_send_session_result_meta(cp, session_id, success,
+                                               error_message, connection_id, NULL);
+}
+
+int nexterm_cp_send_session_result_meta(nexterm_control_plane_t* cp,
+                                        const char* session_id,
+                                        bool success,
+                                        const char* error_message,
+                                        const char* connection_id,
+                                        const char* metadata) {
+    nexterm_peer_t* rejected = nexterm_trust_take_rejected();
+
     flatcc_builder_t builder;
     flatcc_builder_init(&builder);
 
@@ -876,16 +971,48 @@ int nexterm_cp_send_session_result(nexterm_control_plane_t* cp,
     Nexterm_ControlPlane_SessionOpenResult_success_add(&builder, success);
 
     if (!success) {
-        Nexterm_ControlPlane_SessionOpenResult_error_code_add(&builder,
-            Nexterm_ControlPlane_ErrorCode_ConnectionFailed);
+        Nexterm_ControlPlane_SessionOpenResult_error_code_add(&builder, rejected
+            ? Nexterm_ControlPlane_ErrorCode_HostUntrusted
+            : Nexterm_ControlPlane_ErrorCode_ConnectionFailed);
         if (error_message)
             Nexterm_ControlPlane_SessionOpenResult_error_message_create_str(&builder, error_message);
+        if (rejected)
+            Nexterm_ControlPlane_SessionOpenResult_peer_add(&builder, nexterm_cp_build_peer(&builder, rejected));
     }
+    nexterm_peer_free(rejected);
 
     if (connection_id)
         Nexterm_ControlPlane_SessionOpenResult_connection_id_create_str(&builder, connection_id);
 
+    if (metadata)
+        Nexterm_ControlPlane_SessionOpenResult_metadata_create_str(&builder, metadata);
+
     Nexterm_ControlPlane_Envelope_session_open_result_end(&builder);
+    Nexterm_ControlPlane_Envelope_end_as_root(&builder);
+
+    return cp_send(cp, &builder);
+}
+
+int nexterm_cp_send_connection_error(nexterm_control_plane_t* cp,
+                                     const char* session_id,
+                                     const char* error_message,
+                                     const nexterm_peer_t* peer) {
+    flatcc_builder_t builder;
+    flatcc_builder_init(&builder);
+
+    Nexterm_ControlPlane_Envelope_start_as_root(&builder);
+    Nexterm_ControlPlane_Envelope_msg_type_add(&builder, Nexterm_ControlPlane_MessageType_ConnectionError);
+
+    Nexterm_ControlPlane_Envelope_connection_error_start(&builder);
+    Nexterm_ControlPlane_ConnectionError_session_id_create_str(&builder, session_id);
+    Nexterm_ControlPlane_ConnectionError_error_code_add(&builder, peer
+        ? Nexterm_ControlPlane_ErrorCode_HostUntrusted
+        : Nexterm_ControlPlane_ErrorCode_ConnectionFailed);
+    if (error_message)
+        Nexterm_ControlPlane_ConnectionError_error_message_create_str(&builder, error_message);
+    if (peer)
+        Nexterm_ControlPlane_ConnectionError_peer_add(&builder, nexterm_cp_build_peer(&builder, peer));
+    Nexterm_ControlPlane_Envelope_connection_error_end(&builder);
     Nexterm_ControlPlane_Envelope_end_as_root(&builder);
 
     return cp_send(cp, &builder);
@@ -977,6 +1104,8 @@ int nexterm_cp_send_exec_result(nexterm_control_plane_t* cp,
                                 const char* stderr_data,
                                 int32_t exit_code,
                                 const char* error_message) {
+    nexterm_peer_t* rejected = nexterm_trust_take_rejected();
+
     flatcc_builder_t builder;
     flatcc_builder_init(&builder);
 
@@ -995,6 +1124,9 @@ int nexterm_cp_send_exec_result(nexterm_control_plane_t* cp,
         Nexterm_ControlPlane_ExecCommandResult_stderr_data_create_str(&builder, stderr_data);
     if (error_message)
         Nexterm_ControlPlane_ExecCommandResult_error_message_create_str(&builder, error_message);
+    if (rejected && !success)
+        Nexterm_ControlPlane_ExecCommandResult_peer_add(&builder, nexterm_cp_build_peer(&builder, rejected));
+    nexterm_peer_free(rejected);
 
     Nexterm_ControlPlane_Envelope_exec_command_result_end(&builder);
     Nexterm_ControlPlane_Envelope_end_as_root(&builder);
@@ -1008,6 +1140,8 @@ int nexterm_cp_send_exec_batch_result(nexterm_control_plane_t* cp,
                                       const char* error_message,
                                       const exec_batch_entry_t* entries,
                                       size_t count) {
+    nexterm_peer_t* rejected = nexterm_trust_take_rejected();
+
     flatcc_builder_t builder;
     flatcc_builder_init(&builder);
 
@@ -1039,6 +1173,10 @@ int nexterm_cp_send_exec_batch_result(nexterm_control_plane_t* cp,
         }
         Nexterm_ControlPlane_ExecBatchResult_results_end(&builder);
     }
+
+    if (rejected && !success)
+        Nexterm_ControlPlane_ExecBatchResult_peer_add(&builder, nexterm_cp_build_peer(&builder, rejected));
+    nexterm_peer_free(rejected);
 
     Nexterm_ControlPlane_Envelope_exec_batch_result_end(&builder);
     Nexterm_ControlPlane_Envelope_end_as_root(&builder);

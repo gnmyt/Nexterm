@@ -1,5 +1,6 @@
-import { DialogProvider } from "@/common/components/Dialog";
-import { useState, useEffect, useRef } from "react";
+import { DialogProvider, DialogCancelButton } from "@/common/components/Dialog";
+import { useState, useEffect, useMemo } from "react";
+import { useUnsavedChanges } from "@/common/hooks/useUnsavedChanges.js";
 import { useTranslation } from "react-i18next";
 import { patchRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
@@ -28,7 +29,9 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
     const [passphrase, setPassphrase] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     
-    const initialValues = useRef({ name: '', username: '', authType: 'password', password: '', sshKey: null, passphrase: '' });
+    const draft = useMemo(() => ({ name, username, authType, password, sshKey, passphrase }),
+        [name, username, authType, password, sshKey, passphrase]);
+    const { isDirty, markClean } = useUnsavedChanges(draft);
 
     useEffect(() => {
         if (open) {
@@ -39,14 +42,14 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                 setPassword("********");
                 setSshKey(identity.sshKey || null);
                 setPassphrase("********");
-                initialValues.current = {
-                    name: identity.name || '',
-                    username: identity.username || '',
-                    authType: identity.type || 'password',
-                    password: '********',
+                markClean({
+                    name: identity.name || "",
+                    username: identity.username || "",
+                    authType: identity.type || "password",
+                    password: "********",
                     sshKey: identity.sshKey || null,
-                    passphrase: '********'
-                };
+                    passphrase: "********",
+                });
             } else {
                 resetForm();
             }
@@ -60,7 +63,7 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
         setPassword("");
         setSshKey(null);
         setPassphrase("");
-        initialValues.current = { name: '', username: '', authType: 'password', password: '', sshKey: null, passphrase: '' };
+        markClean({ name: "", username: "", authType: "password", password: "", sshKey: null, passphrase: "" });
     };
 
     const readFile = (event) => {
@@ -133,18 +136,6 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
         }
     };
 
-    const handleClose = (event) => {
-        if (event) event.preventDefault();
-        onClose();
-    };
-
-    const isDirty = name !== initialValues.current.name || 
-                     username !== initialValues.current.username || 
-                     authType !== initialValues.current.authType ||
-                     password !== initialValues.current.password || 
-                     sshKey !== initialValues.current.sshKey || 
-                     passphrase !== initialValues.current.passphrase;
-
     return (
         <DialogProvider open={open} onClose={onClose} isDirty={isDirty}>
             <div className="identity-dialog">
@@ -211,7 +202,7 @@ export const IdentityDialog = ({ open, onClose, identity, organizationId }) => {
                     </div>
 
                     <div className="dialog-actions">
-                        <Button text={t('settings.identities.dialog.actions.cancel')} onClick={handleClose} type="secondary" buttonType="button" />
+                        <DialogCancelButton text={t('settings.identities.dialog.actions.cancel')} />
                         <Button text={isEditing ? t('settings.identities.dialog.actions.update') : t('settings.identities.dialog.actions.create')} buttonType="submit"
                                 disabled={isLoading} />
                     </div>

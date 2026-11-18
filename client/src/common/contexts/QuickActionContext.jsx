@@ -2,7 +2,7 @@ import { createContext, useState, useEffect, useCallback } from "react";
 import QuickAction from "@/common/components/QuickAction";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 
-const QuickActionContext = createContext({});
+export const QuickActionContext = createContext({});
 
 export const QuickActionProvider = ({ children }) => {
     const [isOpen, setIsOpen] = useState(false);

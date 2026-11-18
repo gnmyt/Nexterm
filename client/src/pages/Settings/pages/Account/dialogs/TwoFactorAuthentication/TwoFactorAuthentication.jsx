@@ -39,10 +39,13 @@ export const TwoFactorAuthentication = ({open, onClose}) => {
     }
 
     useEffect(() => {
-        getRequest("accounts/totp/secret").then((response) => {
-            if (response.secret)  setTotpObj(response);
-        });
-    }, []);
+        if (!open) return;
+        setTotpObj(null);
+        setCode("");
+        getRequest("accounts/totp/secret")
+            .then((response) => { if (response.secret) setTotpObj(response); })
+            .catch((error) => sendToast("Error", error.message));
+    }, [open]);
 
     return (
         <DialogProvider open={open} onClose={onClose}>

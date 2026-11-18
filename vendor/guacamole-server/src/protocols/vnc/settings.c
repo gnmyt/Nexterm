@@ -47,6 +47,8 @@ const char* GUAC_VNC_CLIENT_ARGS[] = {
     "cursor",
     "autoretry",
     "clipboard-encoding",
+    "ignore-cert",
+    "trusted-certs",
 
 #ifdef ENABLE_VNC_REPEATER
     "dest-host",
@@ -178,6 +180,10 @@ enum VNC_ARGS_IDX {
      * VNC standard), "UTF-8", "UTF-16", and "CP2252".
      */
     IDX_CLIPBOARD_ENCODING,
+
+    IDX_IGNORE_CERT,
+
+    IDX_TRUSTED_CERTS,
 
 #ifdef ENABLE_VNC_REPEATER
     /**
@@ -463,6 +469,14 @@ guac_vnc_settings* guac_vnc_parse_args(guac_user* user,
     settings->password =
         guac_user_parse_args_string(user, GUAC_VNC_CLIENT_ARGS, argv,
                 IDX_PASSWORD, NULL);
+
+    settings->ignore_certificate =
+        guac_user_parse_args_boolean(user, GUAC_VNC_CLIENT_ARGS, argv,
+                IDX_IGNORE_CERT, false);
+
+    settings->trusted_certificates =
+        guac_user_parse_args_string(user, GUAC_VNC_CLIENT_ARGS, argv,
+                IDX_TRUSTED_CERTS, NULL);
     
     /* Remote cursor */
     if (strcmp(argv[IDX_CURSOR], "remote") == 0) {
@@ -736,6 +750,7 @@ void guac_vnc_settings_free(guac_vnc_settings* settings) {
     guac_mem_free(settings->encodings);
     guac_mem_free(settings->hostname);
     guac_mem_free(settings->password);
+    guac_mem_free(settings->trusted_certificates);
     guac_mem_free(settings->recording_name);
     guac_mem_free(settings->recording_path);
     guac_mem_free(settings->username);

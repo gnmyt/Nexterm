@@ -72,14 +72,13 @@ const SummaryDialog = ({ open, onClose, summaryData }) => {
                                     </div>
                                     <div className="action-buttons">
                                         {isURL(pair.value) && (
-                                            <button className="open-button" onClick={() => openInNewTab(pair.value)}
-                                                    title="Open in new tab">
+                                            <button className="open-button" onClick={() => openInNewTab(pair.value)} aria-label="Open in new tab">
                                                 <Icon path={mdiOpenInNew} />
                                             </button>
                                         )}
                                         <button className="copy-button"
                                                 onClick={() => copyToClipboard(pair.value, pair.key)}
-                                                title={`Copy ${pair.key}`}>
+                                                aria-label={`Copy ${pair.key}`}>
                                             <Icon path={mdiContentCopy} />
                                         </button>
                                     </div>

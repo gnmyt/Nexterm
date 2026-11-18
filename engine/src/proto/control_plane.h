@@ -8,6 +8,8 @@
 
 #define NEXTERM_ENGINE_VERSION "1.2.2-BETA"
 
+struct nexterm_peer;
+
 typedef struct nexterm_control_plane {
     int sock_fd;
     bool connected;
@@ -51,9 +53,21 @@ int nexterm_cp_send_session_result(nexterm_control_plane_t* cp,
                                    const char* error_message,
                                    const char* connection_id);
 
+int nexterm_cp_send_session_result_meta(nexterm_control_plane_t* cp,
+                                        const char* session_id,
+                                        bool success,
+                                        const char* error_message,
+                                        const char* connection_id,
+                                        const char* metadata);
+
 int nexterm_cp_send_session_closed(nexterm_control_plane_t* cp,
                                     const char* session_id,
                                     const char* reason);
+
+int nexterm_cp_send_connection_error(nexterm_control_plane_t* cp,
+                                     const char* session_id,
+                                     const char* error_message,
+                                     const struct nexterm_peer* untrusted_peer);
 
 int nexterm_cp_open_data_connection(const nexterm_control_plane_t* cp,
                                     const char* session_id);

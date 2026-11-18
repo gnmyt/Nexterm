@@ -1,7 +1,7 @@
 import "./styles.sass";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { getRequest, deleteRequest, postRequest } from "@/common/utils/RequestUtil.js";
+import { getRequest, deleteRequest, postRequest, patchRequest } from "@/common/utils/RequestUtil.js";
 import Button from "@/common/components/Button";
 import PaginatedTable from "@/common/components/PaginatedTable";
 import Icon from "@mdi/react";
@@ -17,6 +17,8 @@ import {
     mdiMagnify,
     mdiAccountCircleOutline,
     mdiAccountGroupOutline,
+    mdiLinkVariant,
+    mdiLinkVariantOff,
 } from "@mdi/js";
 import CreateUserDialog from "./components/CreateUserDialog";
 import UserPermissionsDialog from "@/pages/Settings/pages/Permissions/components/UserPermissionsDialog";
@@ -28,6 +30,7 @@ import { useTranslation } from "react-i18next";
 import { Permission } from "@/common/utils/permissions.js";
 import { getFullName } from "@/common/utils/avatar.js";
 import LetterAvatar from "@/common/components/LetterAvatar";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
 
 const ITEMS_PER_PAGE = 25;
 
@@ -104,6 +107,12 @@ export const Users = () => {
         deleteRequest(`users/${userId}`).then(() => {
             loadUsers();
         });
+    };
+
+    const contextUser = users.find((current) => current.id === contextUserId);
+
+    const setExternalLink = (userId, allow) => {
+        patchRequest(`users/${userId}/external-link`, { allow }).then(loadUsers);
     };
 
     const loginAsUser = (userId) => {
@@ -197,7 +206,7 @@ export const Users = () => {
                             accountId={contextUserId} />
 
             <div className="users-header">
-                <h2>{t("settings.users.title", { count: total })}</h2>
+                <SettingsHeading>{t("settings.users.title", { count: total })}</SettingsHeading>
                 <div className="header-actions">
                     <div className="search-box">
                         <Icon path={mdiMagnify} />
@@ -237,6 +246,20 @@ export const Users = () => {
                     label={t("settings.users.contextMenu.changePassword")}
                     onClick={() => setPasswordChangeDialogOpen(true)}
                 />
+
+                {contextUser && (contextUser.externalProvider || contextUser.allowExternalLink ? (
+                    <ContextMenuItem
+                        icon={mdiLinkVariantOff}
+                        label={t(contextUser.externalProvider ? "settings.users.contextMenu.unlinkExternal" : "settings.users.contextMenu.cancelExternalLink")}
+                        onClick={() => setExternalLink(contextUserId, false)}
+                    />
+                ) : (
+                    <ContextMenuItem
+                        icon={mdiLinkVariant}
+                        label={t("settings.users.contextMenu.allowExternalLink")}
+                        onClick={() => setExternalLink(contextUserId, true)}
+                    />
+                ))}
 
                 {canManagePermissions && (
                     <ContextMenuItem

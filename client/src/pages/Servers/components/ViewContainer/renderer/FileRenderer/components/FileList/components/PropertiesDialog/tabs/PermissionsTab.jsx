@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { mdiContentCopy, mdiCheck } from "@mdi/js";
 import Checkbox from "@/common/components/Checkbox/index.js";
 import Button from "@/common/components/Button/index.js";
+import Tooltip from "@/common/components/Tooltip";
 import { formatOctal, permissionsToMode, parsePermissions } from "../../../utils/fileUtils.js";
 
 export const PermissionsTab = ({
@@ -59,9 +60,11 @@ export const PermissionsTab = ({
                 <div className="grid-header">
                     <div className="grid-cell" />
                     {permissionLabels.map(p => (
-                        <div key={p.key} className="grid-cell permission-label" title={p.label}>
-                            {p.short}
-                        </div>
+                        <Tooltip key={p.key} text={p.label} delay={500} asChild>
+                            <div className="grid-cell permission-label">
+                                {p.short}
+                            </div>
+                        </Tooltip>
                     ))}
                 </div>
                 {permissionCategories.map(cat => (

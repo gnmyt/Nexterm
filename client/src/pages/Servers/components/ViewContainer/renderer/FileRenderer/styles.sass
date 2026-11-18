@@ -10,10 +10,7 @@
 
   .drag-overlay
     position: absolute
-    top: 0
-    left: 0
-    width: 100%
-    height: 100%
+    inset: 0
     display: flex
     justify-content: center
     align-items: center
@@ -21,7 +18,7 @@
     backdrop-filter: blur(0.3rem)
     z-index: 100
     opacity: 0
-    transition: opacity 0.2s
+    transition: opacity 0.15s
     pointer-events: none
 
     &.active
@@ -29,25 +26,25 @@
       pointer-events: auto
 
     .drag-item
-      padding: 3rem 2rem
-      max-width: 24rem
+      padding: 2.5rem 2rem
+      max-width: 22rem
       border: 2px dashed colors.$primary
       border-radius: 0.75rem
       display: flex
       flex-direction: column
       align-items: center
-      gap: 1rem
+      gap: 0.75rem
       background-color: colors.$primary-opacity
 
       svg
-        width: 4rem
-        height: 4rem
+        width: 3rem
+        height: 3rem
         color: colors.$primary
 
       h2
         margin: 0
         font-weight: 600
-        font-size: 1.125rem
+        font-size: 1rem
         text-align: center
         color: colors.$white
 
@@ -57,12 +54,3 @@
     display: flex
     flex-direction: column
     overflow: hidden
-
-  .upload-progress
-    position: absolute
-    bottom: 0
-    left: 0
-    height: 0.25rem
-    background-color: colors.$primary
-    transition: width 0.3s ease
-    z-index: 101

@@ -125,7 +125,13 @@ static void ssh_apply_pending_resize(nexterm_session_t* session,
         LOG_DEBUG("SSH session %s: resized to %ux%u", session->session_id, cols, rows);
 }
 
-static bool ssh_bridge_poll(nexterm_session_t* session, int data_fd, int ssh_sock,
+typedef enum {
+    SSH_END_CONTINUE = 0,
+    SSH_END_NORMAL,
+    SSH_END_DISCONNECTED,
+} ssh_end_reason_t;
+
+static ssh_end_reason_t ssh_bridge_poll(nexterm_session_t* session, int data_fd, int ssh_sock,
                            LIBSSH2_CHANNEL* channel) {
     char buf[SSH_READ_BUF_SIZE];
     struct pollfd fds[2] = {
@@ -135,42 +141,49 @@ static bool ssh_bridge_poll(nexterm_session_t* session, int data_fd, int ssh_soc
 
     ssh_apply_pending_resize(session, channel);
 
+    if (ssh_read_channel_to_fd(channel, data_fd) != 0)
+        return SSH_END_DISCONNECTED;
+
     int ret = poll(fds, 2, 200);
     if (ret < 0)
-        return errno == EINTR;
+        return errno == EINTR ? SSH_END_CONTINUE : SSH_END_DISCONNECTED;
     if (ret == 0)
-        return true;
+        return SSH_END_CONTINUE;
 
     if (fds[0].revents & POLLIN) {
         ssize_t n = read(data_fd, buf, sizeof(buf));
-        if (n <= 0) return false;
-        if (ssh_write_to_channel(channel, buf, (size_t)n) != 0) return false;
+        if (n <= 0) return SSH_END_NORMAL;
+        if (ssh_write_to_channel(channel, buf, (size_t)n) != 0) return SSH_END_DISCONNECTED;
     }
 
     if ((fds[1].revents & POLLIN)
             && ssh_read_channel_to_fd(channel, data_fd) != 0)
-        return false;
-
-    if (fds[0].revents & (POLLERR | POLLHUP))
-        return false;
-
-    if (libssh2_channel_eof(channel)) {
-        ssh_drain_channel(channel, data_fd);
-        return false;
-    }
+        return SSH_END_DISCONNECTED;
 
     if (fds[1].revents & (POLLERR | POLLHUP)) {
         ssh_drain_channel(channel, data_fd);
-        return false;
+        return SSH_END_DISCONNECTED;
     }
 
-    return true;
+    if (fds[0].revents & (POLLERR | POLLHUP))
+        return SSH_END_NORMAL;
+
+    if (libssh2_channel_eof(channel)) {
+        ssh_drain_channel(channel, data_fd);
+        return SSH_END_NORMAL;
+    }
+
+    return SSH_END_CONTINUE;
 }
 
-static void ssh_bridge_data(const nexterm_session_t* session, int data_fd,
+static ssh_end_reason_t ssh_bridge_data(nexterm_session_t* session, int data_fd,
                             LIBSSH2_CHANNEL* channel, int ssh_sock) {
-    while (session->state == SESSION_STATE_ACTIVE
-            && ssh_bridge_poll(session, data_fd, ssh_sock, channel));
+    ssh_end_reason_t reason = SSH_END_NORMAL;
+    while (session->state == SESSION_STATE_ACTIVE) {
+        ssh_end_reason_t r = ssh_bridge_poll(session, data_fd, ssh_sock, channel);
+        if (r != SSH_END_CONTINUE) { reason = r; break; }
+    }
+    return reason;
 }
 
 static void* ssh_session_thread(void* arg) {
@@ -182,6 +195,7 @@ static void* ssh_session_thread(void* arg) {
     LIBSSH2_SESSION* ssh_session = NULL;
     LIBSSH2_CHANNEL* channel = NULL;
     jump_chain_t jump_chain = {0};
+    ssh_end_reason_t end_reason = SSH_END_NORMAL;
 
     session->state = SESSION_STATE_CONNECTING;
 
@@ -210,8 +224,11 @@ static void* ssh_session_thread(void* arg) {
         goto cleanup;
     }
 
+    nexterm_trust_t trust;
+    nexterm_trust_from_session(session, &trust);
+
     if (nexterm_ssh_setup_with_jumphosts(session->host, session->port,
-            jump_hosts, jump_count, &ssh_sock, &ssh_session, &jump_chain) != 0) {
+            jump_hosts, jump_count, &trust, &ssh_sock, &ssh_session, &jump_chain) != 0) {
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "Failed to connect to SSH host", NULL);
         goto cleanup;
@@ -255,9 +272,10 @@ static void* ssh_session_thread(void* arg) {
     LOG_INFO("SSH session %s active (target=%s:%d, user=%s)",
              session->session_id, session->host, session->port, username);
 
-    ssh_bridge_data(session, data_fd, channel, ssh_sock);
+    end_reason = ssh_bridge_data(session, data_fd, channel, ssh_sock);
 
-    LOG_INFO("SSH session %s ending", session->session_id);
+    LOG_INFO("SSH session %s ending (reason=%s)", session->session_id,
+        end_reason == SSH_END_DISCONNECTED ? "disconnected" : "normal");
 
 cleanup:
     session->ssh_session = NULL;
@@ -266,12 +284,14 @@ cleanup:
 
     nexterm_ssh_full_cleanup(ssh_session, channel, ssh_sock, &jump_chain, "Session ended");
 
+    char sid[MAX_SESSION_ID_LEN];
+    snprintf(sid, sizeof(sid), "%s", session->session_id);
+    nexterm_cp_send_session_closed(cp, sid,
+        end_reason == SSH_END_DISCONNECTED ? "connection lost" : "session ended");
+
     if (data_fd >= 0)
         close(data_fd);
 
-    char sid[MAX_SESSION_ID_LEN];
-    snprintf(sid, sizeof(sid), "%s", session->session_id);
-    nexterm_cp_send_session_closed(cp, sid, "session ended");
     nexterm_sm_finish(&g_session_manager, sid);
 
     free(args);
@@ -358,8 +378,11 @@ static void* tunnel_session_thread(void* arg) {
         return NULL;
     }
 
+    nexterm_trust_t trust;
+    nexterm_trust_from_session(session, &trust);
+
     if (nexterm_ssh_setup_with_jumphosts(session->host, session->port,
-            jump_hosts, jump_count, &ssh_sock, &ssh_session, &jump_chain) != 0) {
+            jump_hosts, jump_count, &trust, &ssh_sock, &ssh_session, &jump_chain) != 0) {
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "Failed to connect to SSH host", NULL);
         goto cleanup;
@@ -444,6 +467,8 @@ typedef struct {
     char* password;
     char* private_key;
     char* passphrase;
+    char* trust_mode;
+    char* trust_pins;
     char* command;
     jump_host_t jump_hosts[MAX_JUMP_HOSTS];
     int jump_count;
@@ -454,6 +479,8 @@ static void exec_cmd_free(exec_cmd_args_t* args) {
     free(args->password);
     free(args->private_key);
     free(args->passphrase);
+    free(args->trust_mode);
+    free(args->trust_pins);
     free(args->command);
     for (int i = 0; i < args->jump_count; i++) {
         free(args->jump_hosts[i].password);
@@ -470,8 +497,11 @@ static void* exec_command_thread(void* arg) {
     LIBSSH2_CHANNEL* channel = NULL;
     jump_chain_t jump_chain = {0};
 
+    nexterm_trust_t trust;
+    nexterm_trust_from_values(args->trust_mode, args->trust_pins, false, &trust);
+
     if (nexterm_ssh_setup_with_jumphosts(args->host, args->port,
-            args->jump_hosts, args->jump_count, &ssh_sock, &ssh, &jump_chain) != 0) {
+            args->jump_hosts, args->jump_count, &trust, &ssh_sock, &ssh, &jump_chain) != 0) {
         nexterm_cp_send_exec_result(args->cp, args->request_id, false,
                                     NULL, NULL, -1, "Failed to connect to SSH host");
         exec_cmd_free(args);
@@ -548,10 +578,12 @@ int nexterm_ssh_exec_command(nexterm_control_plane_t* cp,
     args->password = strdup(creds->password ? creds->password : "");
     args->private_key = strdup(creds->private_key ? creds->private_key : "");
     args->passphrase = strdup(creds->passphrase ? creds->passphrase : "");
+    args->trust_mode = strdup(creds->trust_mode ? creds->trust_mode : "");
+    args->trust_pins = strdup(creds->trust_pins ? creds->trust_pins : "");
     args->command = strdup(command ? command : "");
 
     if (!args->username || !args->password || !args->private_key ||
-        !args->passphrase || !args->command) {
+        !args->passphrase || !args->trust_mode || !args->trust_pins || !args->command) {
         exec_cmd_free(args);
         return -1;
     }
@@ -585,6 +617,8 @@ typedef struct {
     char* password;
     char* private_key;
     char* passphrase;
+    char* trust_mode;
+    char* trust_pins;
     char** ids;
     char** commands;
     int command_count;
@@ -597,6 +631,8 @@ static void exec_batch_free(exec_batch_args_t* args) {
     free(args->password);
     free(args->private_key);
     free(args->passphrase);
+    free(args->trust_mode);
+    free(args->trust_pins);
     if (args->ids) {
         for (int i = 0; i < args->command_count; i++) free(args->ids[i]);
         free(args->ids);
@@ -665,8 +701,11 @@ static void* exec_batch_thread(void* arg) {
     LIBSSH2_SESSION* ssh = NULL;
     jump_chain_t jump_chain = {0};
 
+    nexterm_trust_t trust;
+    nexterm_trust_from_values(a->trust_mode, a->trust_pins, false, &trust);
+
     if (nexterm_ssh_setup_with_jumphosts(a->host, a->port,
-            a->jump_hosts, a->jump_count, &ssh_sock, &ssh, &jump_chain) != 0) {
+            a->jump_hosts, a->jump_count, &trust, &ssh_sock, &ssh, &jump_chain) != 0) {
         nexterm_cp_send_exec_batch_result(a->cp, a->request_id, false,
                                           "Failed to connect to SSH host", NULL, 0);
         exec_batch_free(a);
@@ -743,12 +782,14 @@ int nexterm_ssh_exec_batch(nexterm_control_plane_t* cp,
     args->password = strdup(creds->password ? creds->password : "");
     args->private_key = strdup(creds->private_key ? creds->private_key : "");
     args->passphrase = strdup(creds->passphrase ? creds->passphrase : "");
+    args->trust_mode = strdup(creds->trust_mode ? creds->trust_mode : "");
+    args->trust_pins = strdup(creds->trust_pins ? creds->trust_pins : "");
 
     args->command_count = command_count;
     args->ids = calloc(command_count, sizeof(char*));
     args->commands = calloc(command_count, sizeof(char*));
     if (!args->username || !args->password || !args->private_key ||
-        !args->passphrase || !args->ids || !args->commands) {
+        !args->passphrase || !args->trust_mode || !args->trust_pins || !args->ids || !args->commands) {
         exec_batch_free(args);
         nexterm_cp_send_exec_batch_result(cp, request_id, false, "Out of memory", NULL, 0);
         return -1;

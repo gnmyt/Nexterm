@@ -45,9 +45,9 @@ const handleShared = (ws, ctx) => {
     });
 };
 
-const setupHandler = (ws, dataSocket, sessionId) => {
+const setupHandler = (ws, dataSocket, sessionId, canWrite = () => true) => {
     ws.on("message", (data) => {
-        if (dataSocket.destroyed) return;
+        if (dataSocket.destroyed || !canWrite()) return;
         data = data.toString();
         if (data.startsWith("\x01")) {
             const [w, h] = data.substring(1).split(",").map(Number);
@@ -80,16 +80,17 @@ module.exports = async (ws, context) => {
     const logs = SessionManager.getLogBuffer(serverSession.sessionId);
     if (logs && ws.readyState === ws.OPEN) ws.send(logs);
 
+    const canWrite = createWriteGuard(context, serverSession.sessionId);
     SessionManager.addWebSocket(serverSession.sessionId, ws, false, buildParticipant(context));
-    SessionManager.setActiveWs(serverSession.sessionId, ws);
-    setupHandler(ws, dataSocket, serverSession.sessionId);
+    if (canWrite()) SessionManager.setActiveWs(serverSession.sessionId, ws);
+    setupHandler(ws, dataSocket, serverSession.sessionId, canWrite);
 
     const onData = (data) => { const text = data.toString(); if (text !== "OK" && ws.readyState === ws.OPEN) ws.send(text); };
     dataSocket.on("data", onData);
 
     const onFirstResize = (data) => {
         data = data.toString();
-        if (data.startsWith("\x01")) {
+        if (canWrite() && data.startsWith("\x01")) {
             const [w, h] = data.substring(1).split(",").map(Number);
             if (!isNaN(w) && !isNaN(h)) {
                 dataSocket.write(`1:${w}:${h - 1}:`);

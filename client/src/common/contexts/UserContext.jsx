@@ -5,6 +5,7 @@ import { getRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { isTauri, getActiveServerUrl, setActiveServerUrl } from "@/common/utils/TauriUtil.js";
+import { markExplicitLogout } from "@/common/utils/OIDCLogoutUtil.js";
 import {
     getServers, getActiveServerId,
     removeServer, updateServerToken, switchServer as switchServerUtil
@@ -63,8 +64,11 @@ export const UserProvider = ({ children }) => {
     };
 
     const logout = async () => {
+        let result = null;
+        if (!isConnectorMode) markExplicitLogout();
+
         try {
-            await postRequest("auth/logout", { token: sessionToken });
+            result = await postRequest("auth/logout", { token: sessionToken });
         } catch {}
 
         if (isConnectorMode) {
@@ -83,6 +87,12 @@ export const UserProvider = ({ children }) => {
 
         localStorage.removeItem("sessionToken");
         localStorage.removeItem("overrideToken");
+
+        if (!isConnectorMode && result?.logoutUrl) {
+            window.location.href = result.logoutUrl;
+            return;
+        }
+
         window.location.reload();
     };
 
@@ -107,6 +117,12 @@ export const UserProvider = ({ children }) => {
             sendToast("Error", error);
         }
     }, [location]);
+
+    useEffect(() => {
+        if (!user?.demoExpiresAt) return;
+        const timer = setTimeout(logout, Math.max(0, new Date(user.demoExpiresAt).getTime() - Date.now()));
+        return () => clearTimeout(timer);
+    }, [user?.demoExpiresAt]);
 
     useEffect(() => {
         if (isConnectorMode && !hasActiveServer) return;

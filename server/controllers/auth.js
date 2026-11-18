@@ -1,12 +1,15 @@
 const Account = require("../models/Account");
 const Session = require("../models/Session");
-const speakeasy = require("speakeasy");
+const { hashSessionToken } = require("../models/Session");
+const { verifyTotpCode } = require("../utils/totp");
 const { compare } = require("bcrypt");
 const OIDCProvider = require("../models/OIDCProvider");
 const { authenticateUser: ldapAuth, getEnabledProvider: getLdapProvider } = require("./ldap");
 const logger = require("../utils/logger");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const sessionManager = require("../lib/SessionManager");
+const { createLogoutUrlForSession } = require("./oidc");
+const { logoutWithDependencies } = require("../utils/sessionLogout");
 
 module.exports.login = async (configuration, user) => {
     const internalProvider = await OIDCProvider.findOne({ where: { isInternal: true, enabled: true } });
@@ -17,7 +20,7 @@ module.exports.login = async (configuration, user) => {
     }
 
     if (ldapProvider) {
-        const ldapResult = await ldapAuth(configuration.username, configuration.password, user);
+        const ldapResult = await ldapAuth(configuration.username, configuration.password, user, configuration.code);
         if (ldapResult) return ldapResult;
         return { code: 201, message: "Username or password incorrect" };
     }
@@ -37,16 +40,8 @@ module.exports.login = async (configuration, user) => {
         return { code: 202, message: "TOTP is required for this account" };
 
     // Check if TOTP is correct
-    if (account.totpEnabled) {
-        const tokenCorrect = speakeasy.totp.verify({
-            secret: account.totpSecret || "",
-            encoding: "base32",
-            token: configuration.code,
-        });
-
-        if (!tokenCorrect)
-            return { code: 203, message: "Your provided code is invalid or has expired." };
-    }
+    if (account.totpEnabled && !verifyTotpCode(account, configuration.code))
+        return { code: 203, message: "Your provided code is invalid or has expired." };
 
     // Create Session
     const session = await Session.create({
@@ -60,15 +55,15 @@ module.exports.login = async (configuration, user) => {
     return { token: session.token, totpRequired: account.totpEnabled };
 };
 
-module.exports.logout = async token => {
-    const session = await Session.findOne({ where: { token } });
-
-    if (session === null)
-        return { code: 204, message: "Your session token is invalid" };
-
-    logger.system(`User logged out`, { accountId: session.accountId });
-
-    await Session.destroy({ where: { token } });
-    sessionManager.removeAllByAccountId(session.accountId);
-    stateBroadcaster.forceLogoutSession(session.id);
-};
+module.exports.logout = async token => logoutWithDependencies(token, {
+    logLogout: accountId => logger.system(`User logged out`, { accountId }),
+    findSession: value => Session.findOne({ where: { tokenHash: hashSessionToken(value) } }),
+    destroySession: value => Session.destroy({ where: { tokenHash: hashSessionToken(value) } }),
+    removeAccountSessions: accountId => sessionManager.removeAllByAccountId(accountId),
+    broadcastLogout: sessionId => stateBroadcaster.forceLogoutSession(sessionId),
+    createOIDCLogoutUrl: session => createLogoutUrlForSession(session),
+    warnOIDCLogout: providerId => logger.warn(
+        "OIDC provider logout could not be initiated; local logout completed",
+        { providerId },
+    ),
+});

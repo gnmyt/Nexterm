@@ -20,7 +20,7 @@ const cleanOldLogs = () => {
     } catch {}
 };
 
-setInterval(cleanOldLogs, 24 * 60 * 60 * 1000);
+setInterval(cleanOldLogs, 24 * 60 * 60 * 1000).unref();
 cleanOldLogs();
 
 winston.addColors({

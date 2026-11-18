@@ -26,4 +26,9 @@ module.exports = db.define("organization_members", {
         type: Sequelize.INTEGER,
         allowNull: false,
     },
+    managedByOidc: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    },
 }, { freezeTableName: true });

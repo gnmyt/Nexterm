@@ -130,7 +130,7 @@ int guac_rdp_user_file_handler(guac_user* user, guac_stream* stream,
     if (rdp_client->filesystem != NULL && mimetype != NULL
             && strcmp(mimetype, "application/x-nexterm-fs") == 0) {
         return guac_rdp_fs_client_relay_attach_read_stream(
-                rdp_client->filesystem, stream, filename);
+                rdp_client->filesystem, user, stream, filename);
     }
 
 #ifdef ENABLE_COMMON_SSH

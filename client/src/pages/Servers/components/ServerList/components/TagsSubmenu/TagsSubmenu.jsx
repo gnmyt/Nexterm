@@ -153,19 +153,16 @@ export const TagsSubmenu = ({ entryId, entryTags = [], onClose }) => {
                                 }}
                             />
                         ))}
-                        <label
-                            className={`color-option custom-color ${!TAG_COLORS.includes(selectedColor) ? "selected" : ""}`}
-                            style={!TAG_COLORS.includes(selectedColor) ? { background: selectedColor } : undefined}
-                            onClick={(e) => e.stopPropagation()}
-                            title="Custom color"
-                        >
+                        <span className={`color-option custom-color ${!TAG_COLORS.includes(selectedColor) ? "selected" : ""}`}
+                              style={!TAG_COLORS.includes(selectedColor) ? { background: selectedColor } : undefined}>
                             <input
                                 type="color"
+                                aria-label="Custom color"
                                 value={selectedColor}
                                 onChange={(e) => setSelectedColor(e.target.value)}
                                 onClick={(e) => e.stopPropagation()}
                             />
-                        </label>
+                        </span>
                     </div>
                     <div className="form-actions">
                         <button onClick={(e) => {
@@ -224,19 +221,16 @@ export const TagsSubmenu = ({ entryId, entryTags = [], onClose }) => {
                                             }}
                                         />
                                     ))}
-                                    <label
-                                        className={`color-option custom-color ${!TAG_COLORS.includes(editTagColor) ? "selected" : ""}`}
-                                        style={!TAG_COLORS.includes(editTagColor) ? { background: editTagColor } : undefined}
-                                        onClick={(e) => e.stopPropagation()}
-                                        title="Custom color"
-                                    >
+                                    <span className={`color-option custom-color ${!TAG_COLORS.includes(editTagColor) ? "selected" : ""}`}
+                                          style={!TAG_COLORS.includes(editTagColor) ? { background: editTagColor } : undefined}>
                                         <input
                                             type="color"
+                                            aria-label="Custom color"
                                             value={editTagColor}
                                             onChange={(e) => setEditTagColor(e.target.value)}
                                             onClick={(e) => e.stopPropagation()}
                                         />
-                                    </label>
+                                    </span>
                                 </div>
                                 <div className="form-actions">
                                     <button onClick={(e) => {

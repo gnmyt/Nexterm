@@ -4,9 +4,10 @@
   display: flex
   align-items: center
   justify-content: space-between
-  padding: 1rem 2rem 0.5rem
+  padding: 1.25rem 2rem 0.75rem
   flex-shrink: 0
   user-select: none
+  min-width: 0
 
   @media (max-width: 768px)
     padding: 0.875rem 1.5rem 0.5rem
@@ -45,8 +46,9 @@
       h1
         margin: 0
         color: colors.$white
-        font-size: 1.5rem
-        font-weight: 600
+        font-size: 1.375rem
+        font-weight: 700
+        letter-spacing: -0.01em
 
         @media (max-width: 768px)
           font-size: 1.25rem
@@ -54,7 +56,8 @@
       p
         margin: 0.25rem 0 0 0
         color: colors.$subtext
-        font-size: 0.9rem
+        font-size: 0.875rem
+        font-weight: 500
         line-height: 1.4
 
         @media (max-width: 768px)

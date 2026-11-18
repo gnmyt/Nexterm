@@ -43,7 +43,17 @@ Nexterm is an open-source server management software that allows you to:
 
 ## 🚀 Install
 
-You can install Nexterm by clicking [here](https://docs.nexterm.dev/installation).
+- **Try it first:** [Open the live demo](https://demo.nexterm.dev)
+- **Quick start with Docker:** [Install Nexterm](https://nexterm.dev/install)
+- **Full installation guide:** [Read the documentation](https://docs.nexterm.dev/installation)
+- **Desktop and mobile apps:** [Browse downloads](https://nexterm.dev/downloads)
+
+### Deploy on Hostinger
+
+Nexterm is available as a one-click Docker deployment on Hostinger, up and running within minutes, with full root
+access and a fixed monthly price.
+Want to see how it performs? Our [live demo](https://demo.nexterm.dev) runs on Hostinger as well.
+[Deploy Nexterm on Hostinger »](https://www.hostinger.com/applications/nexterm)
 
 ## 💻 Development
 
@@ -141,6 +151,8 @@ The server listens on port 6989 by default. You can modify this behavior using e
 - `TRUST_PROXY`: Number of reverse proxies in front of Nexterm, so logs and audits show the real client IP instead of the
   proxy's (default: disabled). Use `1` for a single Nginx/Traefik, or pass trusted addresses (`10.10.10.10,192.168.0.0/16`).
   Only enable this if your proxy sets `X-Forwarded-For`, otherwise clients can spoof their IP.
+- `SOURCES_ALLOWED_HOSTS`: Comma-separated hostnames, IPs or CIDR ranges of internal hosts that custom sources may be
+  loaded from (example: `git.example.lan,10.0.0.5`, default: none)
 
 ## 🛡️ Security
 
@@ -169,7 +181,21 @@ Contributions are welcome! Please feel free to:
 
 ## 💜 Powered by
 
-[![JetBrains logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://jb.gg/OpenSource)
+<p>
+  <a href="https://jb.gg/OpenSource">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/public/assets/sponsors/jetbrains-dark.svg">
+      <img src="docs/public/assets/sponsors/jetbrains.svg" alt="JetBrains logo" height="50">
+    </picture>
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://www.hostinger.com/applications/nexterm">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/public/assets/sponsors/hostinger-dark.svg">
+      <img src="docs/public/assets/sponsors/hostinger.svg" alt="Hostinger logo" height="50">
+    </picture>
+  </a>
+</p>
 
 ## 📄 License
 

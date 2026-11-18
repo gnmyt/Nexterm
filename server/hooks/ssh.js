@@ -6,11 +6,11 @@ const controlPlane = require("../lib/controlPlane/ControlPlaneServer");
 const { SCRIPT_MAGIC } = require("../lib/ScriptLayer");
 const { buildParticipant, createWriteGuard } = require("../utils/sessionParticipant");
 
-const bindHandlers = (ws, conn, sessionId, config, isShared, canWrite) => {
+const bindHandlers = (ws, conn, sessionId, config, canWrite) => {
     const { dataSocket, scriptLayer } = conn;
 
     const msgHandler = (data) => {
-        if (isShared && !canWrite()) return;
+        if (!canWrite()) return;
         const msg = data.toString();
 
         if (scriptLayer && msg.startsWith(SCRIPT_MAGIC)) return;
@@ -55,15 +55,15 @@ const handleSession = (ws, ctx, isShared) => {
     const canWrite = createWriteGuard(ctx, sessionId);
 
     SessionManager.addWebSocket(sessionId, ws, isShared, buildParticipant(ctx));
-    if (!isShared || canWrite()) SessionManager.setActiveWs(sessionId, ws);
+    if (canWrite()) SessionManager.setActiveWs(sessionId, ws);
 
-    const { msgHandler, dataHandler } = bindHandlers(ws, conn, sessionId, entry?.config, isShared, canWrite);
+    const { msgHandler, dataHandler } = bindHandlers(ws, conn, sessionId, entry?.config, canWrite);
 
     if (conn.scriptLayer) {
         conn.scriptLayer.createMessageHandler(ws);
     }
 
-    if (!isShared) {
+    if (!isShared && canWrite()) {
         const onResize = (data) => {
             const r = parseResizeMessage(data);
             if (r) {

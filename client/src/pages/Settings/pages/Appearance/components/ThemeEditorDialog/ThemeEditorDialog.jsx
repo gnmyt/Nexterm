@@ -88,7 +88,7 @@ export const ThemeEditorDialog = ({ open, onClose, editTheme, onSaved, actualThe
     return (
         <DialogProvider open={open} onClose={onClose}>
             <div className="theme-editor-dialog">
-                <div className="editor-header">
+                <div className="editor-header dialog-heading">
                     <h2>{editTheme ? t("settings.account.customThemes.editTheme") : t("settings.account.customThemes.createTheme")}</h2>
                 </div>
                 <div className="editor-meta">

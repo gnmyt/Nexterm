@@ -21,6 +21,7 @@
 #define GUAC_VNC_AUTH_H
 
 #include "config.h"
+#include "vnc.h"
 
 #include <rfb/rfbclient.h>
 #include <rfb/rfbproto.h>
@@ -57,6 +58,8 @@ char* guac_vnc_get_password(rfbClient* client);
  */
 rfbCredential* guac_vnc_get_credentials(rfbClient* client, int credentialType);
 #endif
+
+void guac_vnc_remove_trusted_certificates(guac_vnc_client* vnc_client);
 
 #endif
 

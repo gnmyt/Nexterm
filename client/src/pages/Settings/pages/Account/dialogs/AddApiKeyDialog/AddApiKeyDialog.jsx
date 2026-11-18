@@ -1,4 +1,4 @@
-import { DialogProvider } from "@/common/components/Dialog";
+import { DialogProvider, DialogCancelButton } from "@/common/components/Dialog";
 import IconInput from "@/common/components/IconInput";
 import { mdiKeyVariant, mdiContentCopy, mdiCheck } from "@mdi/js";
 import Button from "@/common/components/Button";
@@ -88,7 +88,7 @@ export const AddApiKeyDialog = ({ open, onClose, onCreated }) => {
                         </div>
 
                         <div className="btn-area">
-                            <Button text={t("common.actions.cancel")} type="secondary" onClick={onClose} />
+                            <DialogCancelButton />
                             <Button text={t("settings.account.apiKeys.createButton")} onClick={create} />
                         </div>
                     </>

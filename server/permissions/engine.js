@@ -42,13 +42,18 @@ const getSystemPermissions = async (accountId) => {
 
     const orderedGroupIds = groups.sort(byPriority).map((g) => g.id);
     const overrides = new Map(accountPerms.map((ap) => [ap.permission, ap.value]));
+    const defaultPermissions = new Set(registry.getDefaultPermissions(registry.SCOPES.SYSTEM));
+    const defaultGroupIds = new Set(groups.filter((g) => g.isDefault).map((g) => g.id));
 
     const resolve = (id) => {
         if (overrides.has(id)) return overrides.get(id);
         const perGroup = valuesByPermission.get(id);
         if (perGroup) for (const groupId of orderedGroupIds) {
             if (perGroup.has(groupId)) return perGroup.get(groupId);
+            if (defaultGroupIds.has(groupId) && defaultPermissions.has(id)) return "allow";
         }
+
+        if (defaultPermissions.has(id) && defaultGroupIds.size) return "allow";
     };
 
     const permissions = registry.allSystemIds().filter((id) => resolve(id) === "allow");

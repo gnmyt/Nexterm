@@ -40,6 +40,7 @@ enum SessionType : byte {
     Tunnel = 5,
     WebSocket = 6,
     Demo = 7,
+    Web = 8,
 }
 
 enum ErrorCode : byte {
@@ -49,6 +50,18 @@ enum ErrorCode : byte {
     ProtocolError = 3,
     Timeout = 4,
     Internal = 5,
+    HostUntrusted = 6,
+}
+
+table PeerIdentity {
+    kind: string;
+    host: string;
+    port: uint16;
+    algorithm: string;
+    fingerprint: string;
+    raw: string;
+    subject: string;
+    issuer: string;
 }
 
 table EngineHello {
@@ -99,6 +112,8 @@ table SessionOpenResult {
     error_code: ErrorCode;
     error_message: string;
     connection_id: string;
+    metadata: string;
+    peer: PeerIdentity;
 }
 
 table SessionClose {
@@ -136,6 +151,7 @@ table ExecCommandResult {
     stderr_data: string;
     exit_code: int32;
     error_message: string;
+    peer: PeerIdentity;
 }
 
 table ExecBatchCommand {
@@ -166,6 +182,7 @@ table ExecBatchResult {
     success: bool;
     error_message: string;
     results: [ExecBatchEntry];
+    peer: PeerIdentity;
 }
 
 table ConnectionReady {
@@ -182,6 +199,7 @@ table ConnectionError {
     session_id: string;
     error_code: ErrorCode;
     error_message: string;
+    peer: PeerIdentity;
 }
 
 table PortCheckTarget {
@@ -218,7 +236,10 @@ table HttpFetch {
     headers: [HttpHeader];
     body: string;
     timeout_ms: uint32;
-    insecure: bool;
+    insecure: bool (deprecated);
+    trust_mode: string;
+    trust_pins: string;
+    trust_ca: bool;
 }
 
 table HttpFetchResult {
@@ -228,6 +249,7 @@ table HttpFetchResult {
     headers: [HttpHeader];
     body: string;
     error_message: string;
+    peer: PeerIdentity;
 }
 
 table RecordingUpload {

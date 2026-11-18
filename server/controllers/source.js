@@ -104,13 +104,14 @@ module.exports.createSource = async (sourceData) => {
 
     const source = await Source.create({ name, url: normalizedUrl, enabled: true });
 
-    await module.exports.syncSource(source.id);
+    syncInBackground(source.id);
 
-    return source;
+    return withSyncState(source);
 };
 
 module.exports.listSources = async () => {
-    return await Source.findAll({ order: [["name", "ASC"]] });
+    const sources = await Source.findAll({ order: [["name", "ASC"]] });
+    return sources.map(withSyncState);
 };
 
 module.exports.getSource = async (sourceId) => {
@@ -118,7 +119,7 @@ module.exports.getSource = async (sourceId) => {
     if (!source) {
         return { code: 404, message: "Source not found" };
     }
-    return source;
+    return withSyncState(source);
 };
 
 module.exports.updateSource = async (sourceId, updates) => {
@@ -154,10 +155,10 @@ module.exports.updateSource = async (sourceId, updates) => {
     await Source.update(updateData, { where: { id: sourceId } });
 
     if (updateData.url) {
-        await module.exports.syncSource(sourceId);
+        syncInBackground(sourceId);
     }
 
-    return await Source.findByPk(sourceId);
+    return withSyncState(await Source.findByPk(sourceId));
 };
 
 module.exports.deleteSource = async (sourceId) => {
@@ -177,7 +178,158 @@ module.exports.deleteSource = async (sourceId) => {
     await Source.destroy({ where: { id: sourceId } });
 };
 
-module.exports.syncSource = async (sourceId) => {
+const FETCH_CONCURRENCY = 8;
+const FETCH_TIMEOUT_MS = 15000;
+const FETCH_RETRIES = 1;
+
+const activeSyncs = new Map();
+
+const stripExtension = (path) => path.split("/").pop().replace(/\.[^.]+$/, "");
+const stripThemeExtension = (path) => path.split("/").pop().replace(/\.theme\.css$/i, "");
+
+const SYNC_TYPES = [
+    {
+        key: "snippets",
+        model: Snippet,
+        countField: "snippetCount",
+        hashOf: (item) => calculateContentHash(reconstructSnippetFile(item)),
+        fallbackName: stripExtension,
+        parse: (content, path) => parseSnippetContent(content, stripExtension(path)),
+        toFields: (p) => ({ name: p.name, command: p.command, description: p.description, osFilter: p.osFilter }),
+        createDefaults: { accountId: null, organizationId: null },
+    },
+    {
+        key: "scripts",
+        model: Script,
+        countField: "scriptCount",
+        hashOf: (item) => calculateContentHash(item.content),
+        fallbackName: stripExtension,
+        parse: (content, path) => parseScriptContent(content, stripExtension(path)),
+        toFields: (p) => ({ name: p.name, content: p.content, description: p.description, osFilter: p.osFilter }),
+        createDefaults: { accountId: null, organizationId: null },
+    },
+    {
+        key: "themes",
+        model: Theme,
+        countField: "themeCount",
+        hashOf: (item) => calculateContentHash(item.css),
+        fallbackName: stripThemeExtension,
+        parse: (content, path) => parseThemeContent(content, path),
+        toFields: (p) => ({ name: p.name, css: p.css, description: p.description }),
+        createDefaults: { accountId: null },
+    },
+];
+
+const mapWithConcurrency = async (items, limit, fn) => {
+    const results = new Array(items.length);
+    let next = 0;
+    const worker = async () => {
+        while (next < items.length) {
+            const i = next++;
+            results[i] = await fn(items[i], i);
+        }
+    };
+    await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+    return results;
+};
+
+const buildFileUrl = (baseUrl, path) => {
+    const base = new URL(`${baseUrl}/`);
+    const url = new URL(`${baseUrl}/${path}`);
+
+    if (url.origin !== base.origin) throw new Error(`File outside source origin: ${path}`);
+    return url.href;
+};
+
+const fetchSourceFile = async (baseUrl, path) => {
+    let url;
+    try {
+        url = buildFileUrl(baseUrl, path);
+    } catch {
+        return null;
+    }
+
+    for (let attempt = 0; attempt <= FETCH_RETRIES; attempt++) {
+        try {
+            const response = await fetch(url, {
+                method: "GET",
+                headers: { "User-Agent": "Nexterm/1.0" },
+                signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+            });
+            if (response.ok) return await response.text();
+
+            if (response.status < 500 && response.status !== 429) return null;
+        } catch {
+        }
+    }
+    return null;
+};
+
+const groupBy = (items, keyOf) => {
+    const map = new Map();
+    for (const item of items) {
+        const key = keyOf(item);
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(item);
+    }
+    return map;
+};
+
+const syncType = async (type, source, indexEntries) => {
+    const sourceId = source.id;
+    const existing = await type.model.findAll({ where: { sourceId } });
+
+    const existingByHash = groupBy(existing, type.hashOf);
+    const existingByName = groupBy(existing, item => item.name);
+    const claimed = new Set();
+    const claim = (candidates) => {
+        const row = candidates?.find(item => !claimed.has(item.id));
+        if (row) claimed.add(row.id);
+        return row;
+    };
+
+    const toFetch = indexEntries.filter(entry => !claim(existingByHash.get(entry.hash)));
+
+    const contents = await mapWithConcurrency(toFetch, FETCH_CONCURRENCY,
+        entry => fetchSourceFile(source.url, entry.path));
+
+    let failed = 0;
+    const parsed = [];
+    toFetch.forEach((entry, i) => {
+        if (contents[i] == null) {
+            failed++;
+            logger.warn(`Failed to fetch ${type.key.slice(0, -1)}: ${entry.path}`);
+
+            claim(existingByName.get(type.fallbackName(entry.path)));
+            return;
+        }
+        parsed.push(type.toFields(type.parse(contents[i], entry.path)));
+    });
+
+    const updates = [];
+    const creates = [];
+    for (const fields of parsed) {
+        const row = claim(existingByName.get(fields.name));
+        if (row) updates.push([row.id, fields]);
+        else creates.push({ ...fields, ...type.createDefaults, sourceId });
+    }
+
+    for (const [id, fields] of updates) {
+        await type.model.update(fields, { where: { id } });
+    }
+    if (creates.length) {
+        await type.model.bulkCreate(creates);
+    }
+
+    return {
+        count: claimed.size + creates.length,
+        failed,
+        fetched: toFetch.length,
+        staleIds: existing.filter(item => !claimed.has(item.id)).map(item => item.id),
+    };
+};
+
+const runSync = async (sourceId) => {
     const source = await Source.findByPk(sourceId);
     if (!source) {
         return { success: false, error: "Source not found" };
@@ -187,212 +339,77 @@ module.exports.syncSource = async (sourceId) => {
         return { success: false, error: "Source is disabled" };
     }
 
+    const startedAt = Date.now();
+
     try {
         logger.info(`Syncing source: ${source.name} (${source.url})`);
 
         const validation = await module.exports.validateSourceUrl(source.url);
         if (!validation.valid) {
-            await Source.update({
-                lastSyncStatus: "error",
-            }, { where: { id: sourceId } });
+            await Source.update({ lastSyncStatus: "error" }, { where: { id: sourceId } });
             return { success: false, error: validation.error };
         }
 
-        const { snippets: indexSnippets, scripts: indexScripts, themes: indexThemes } = validation.index;
+        const results = [];
+        for (const type of SYNC_TYPES) {
+            results.push(await syncType(type, source, validation.index[type.key]));
+        }
 
-        const existingSnippets = await Snippet.findAll({ where: { sourceId } });
-        const existingScripts = await Script.findAll({ where: { sourceId } });
-        const existingThemes = await Theme.findAll({ where: { sourceId } });
+        const incompleteFetches = results.reduce((sum, r) => sum + r.failed, 0);
 
-        const existingSnippetMap = new Map(existingSnippets.map(s => [s.name, s]));
-        const existingScriptMap = new Map(existingScripts.map(s => [s.name, s]));
-        const existingThemeMap = new Map(existingThemes.map(t => [t.name, t]));
-
-        let snippetCount = 0;
-        let scriptCount = 0;
-        let themeCount = 0;
-
-        const processedSnippetNames = new Set();
-        const processedScriptNames = new Set();
-        const processedThemeNames = new Set();
-
-        for (const indexSnippet of indexSnippets) {
-            let existingByHash = null;
-            for (const [name, snippet] of existingSnippetMap) {
-                const reconstructed = reconstructSnippetFile(snippet);
-                const existingHash = calculateContentHash(reconstructed);
-                if (existingHash === indexSnippet.hash) {
-                    existingByHash = snippet;
-                    processedSnippetNames.add(name);
-                    break;
+        if (incompleteFetches > 0) {
+            logger.warn(`Skipping source cleanup for ${source.name}: ${incompleteFetches} file fetch failure(s); preserving existing content`);
+        } else {
+            for (let i = 0; i < SYNC_TYPES.length; i++) {
+                if (results[i].staleIds.length) {
+                    await SYNC_TYPES[i].model.destroy({ where: { id: results[i].staleIds } });
                 }
             }
-
-            if (existingByHash) {
-                snippetCount++;
-                continue;
-            }
-
-            const content = await fetchSourceFile(source.url, indexSnippet.path);
-            if (!content) {
-                logger.warn(`Failed to fetch snippet: ${indexSnippet.path}`);
-                continue;
-            }
-
-            const fallbackName = indexSnippet.path.split("/").pop().replace(/\.[^.]+$/, "");
-            const parsed = parseSnippetContent(content, fallbackName);
-            const existing = existingSnippetMap.get(parsed.name);
-
-            processedSnippetNames.add(parsed.name);
-
-            if (existing) {
-                await Snippet.update({
-                    name: parsed.name,
-                    command: parsed.command,
-                    description: parsed.description,
-                    osFilter: parsed.osFilter,
-                }, { where: { id: existing.id } });
-            } else {
-                await Snippet.create({
-                    name: parsed.name,
-                    command: parsed.command,
-                    description: parsed.description,
-                    osFilter: parsed.osFilter,
-                    accountId: null,
-                    organizationId: null,
-                    sourceId,
-                });
-            }
-            snippetCount++;
         }
 
-        for (const indexScript of indexScripts) {
-            let existingByHash = null;
-            for (const [name, script] of existingScriptMap) {
-                const existingHash = calculateContentHash(script.content);
-                if (existingHash === indexScript.hash) {
-                    existingByHash = script;
-                    processedScriptNames.add(name);
-                    break;
-                }
-            }
-
-            if (existingByHash) {
-                scriptCount++;
-                continue;
-            }
-
-            const content = await fetchSourceFile(source.url, indexScript.path);
-            if (!content) {
-                logger.warn(`Failed to fetch script: ${indexScript.path}`);
-                continue;
-            }
-
-            const fallbackName = indexScript.path.split("/").pop().replace(/\.[^.]+$/, "");
-            const parsed = parseScriptContent(content, fallbackName);
-            const existing = existingScriptMap.get(parsed.name);
-
-            processedScriptNames.add(parsed.name);
-
-            if (existing) {
-                await Script.update({
-                    name: parsed.name,
-                    content: parsed.content,
-                    description: parsed.description,
-                    osFilter: parsed.osFilter,
-                }, { where: { id: existing.id } });
-            } else {
-                await Script.create({
-                    name: parsed.name,
-                    content: parsed.content,
-                    description: parsed.description,
-                    osFilter: parsed.osFilter,
-                    accountId: null,
-                    organizationId: null,
-                    sourceId,
-                });
-            }
-            scriptCount++;
-        }
-
-        for (const indexTheme of indexThemes) {
-            let existingByHash = null;
-            for (const [name, theme] of existingThemeMap) {
-                const existingHash = calculateContentHash(theme.css);
-                if (existingHash === indexTheme.hash) {
-                    existingByHash = theme;
-                    processedThemeNames.add(name);
-                    break;
-                }
-            }
-
-            if (existingByHash) {
-                themeCount++;
-                continue;
-            }
-
-            const content = await fetchSourceFile(source.url, indexTheme.path);
-            if (!content) {
-                logger.warn(`Failed to fetch theme: ${indexTheme.path}`);
-                continue;
-            }
-
-            const parsed = parseThemeContent(content, indexTheme.path);
-            const existing = existingThemeMap.get(parsed.name);
-
-            processedThemeNames.add(parsed.name);
-
-            if (existing) {
-                await Theme.update({
-                    name: parsed.name,
-                    css: parsed.css,
-                    description: parsed.description,
-                }, { where: { id: existing.id } });
-            } else {
-                await Theme.create({
-                    name: parsed.name,
-                    css: parsed.css,
-                    description: parsed.description,
-                    accountId: null,
-                    sourceId,
-                });
-            }
-            themeCount++;
-        }
-
-        for (const [name, snippet] of existingSnippetMap) {
-            if (!processedSnippetNames.has(name)) {
-                await Snippet.destroy({ where: { id: snippet.id } });
-            }
-        }
-        for (const [name, script] of existingScriptMap) {
-            if (!processedScriptNames.has(name)) {
-                await Script.destroy({ where: { id: script.id } });
-            }
-        }
-        for (const [name, theme] of existingThemeMap) {
-            if (!processedThemeNames.has(name)) {
-                await Theme.destroy({ where: { id: theme.id } });
-            }
-        }
+        const counts = {};
+        SYNC_TYPES.forEach((type, i) => { counts[type.countField] = results[i].count; });
 
         await Source.update({
-            lastSyncStatus: "success",
-            snippetCount,
-            scriptCount,
-            themeCount,
+            lastSyncStatus: incompleteFetches > 0 ? "error" : "success",
+            ...counts,
         }, { where: { id: sourceId } });
 
-        logger.info(`Source sync completed: ${source.name} - ${snippetCount} snippets, ${scriptCount} scripts, ${themeCount} themes`);
+        if (incompleteFetches > 0) {
+            const error = `Sync incomplete: ${incompleteFetches} file(s) failed to download; existing content preserved`;
+            logger.warn(`Source sync incomplete: ${source.name} - ${error}`);
+            return { success: false, error };
+        }
+
+        const fetched = results.reduce((sum, r) => sum + r.fetched, 0);
+        logger.info(`Source sync completed: ${source.name} - ${counts.snippetCount} snippets, ${counts.scriptCount} scripts, ${counts.themeCount} themes (${fetched} file(s) downloaded in ${Date.now() - startedAt}ms)`);
         return { success: true };
 
     } catch (error) {
         logger.error(`Source sync failed: ${source.name}`, { error: error.message });
-        await Source.update({
-            lastSyncStatus: "error",
-        }, { where: { id: sourceId } });
+        await Source.update({ lastSyncStatus: "error" }, { where: { id: sourceId } });
         return { success: false, error: error.message };
     }
+};
+
+module.exports.syncSource = (sourceId) => {
+    if (activeSyncs.has(sourceId)) return activeSyncs.get(sourceId);
+    const promise = runSync(sourceId).finally(() => activeSyncs.delete(sourceId));
+    activeSyncs.set(sourceId, promise);
+    return promise;
+};
+
+module.exports.isSyncing = (sourceId) => activeSyncs.has(sourceId);
+
+const withSyncState = (source) => {
+    const data = typeof source?.toJSON === "function" ? source.toJSON() : source;
+    return { ...data, syncing: activeSyncs.has(data.id) };
+};
+
+const syncInBackground = (sourceId) => {
+    module.exports.syncSource(sourceId).catch(error => {
+        logger.error(`Background source sync failed for source ${sourceId}`, { error: error.message });
+    });
 };
 
 module.exports.syncAllSources = async () => {
@@ -400,28 +417,6 @@ module.exports.syncAllSources = async () => {
 
     for (const source of sources) {
         await module.exports.syncSource(source.id);
-    }
-};
-
-const fetchSourceFile = async (baseUrl, path) => {
-    try {
-        const url = `${baseUrl}/${path}`;
-        await assertPublicUrl(url);
-        const response = await fetch(url, {
-            method: "GET",
-            headers: {
-                "User-Agent": "Nexterm/1.0",
-            },
-            signal: AbortSignal.timeout(30000),
-        });
-
-        if (!response.ok) {
-            return null;
-        }
-
-        return await response.text();
-    } catch (error) {
-        return null;
     }
 };
 

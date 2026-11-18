@@ -6,17 +6,19 @@ const PreferencesContext = createContext({});
 export const usePreferences = () => useContext(PreferencesContext);
 
 const OVERRIDE_KEY_PREFIX = "pref-override-";
-const GROUPS = ["terminal.font", "terminal.cursor", "terminal.input", "terminal.theme", "appearance", "files", "general"];
+const GROUPS = ["terminal.font", "terminal.cursor", "terminal.input", "terminal.theme", "appearance", "files", "remoteDesktop", "general"];
 
 const PATH_TO_GROUP = {
     "terminal.fontFamily": "terminal.font", "terminal.fontSize": "terminal.font",
     "terminal.cursorStyle": "terminal.cursor", "terminal.cursorBlink": "terminal.cursor",
-    "terminal.smartCopyPaste": "terminal.input",
+    "terminal.copyPasteBehavior": "terminal.input",
     "terminal.passwordPromptDetection": "terminal.input",
+    "terminal.autoReconnect": "terminal.input",
     "terminal.theme": "terminal.theme",
     "theme.mode": "appearance", "theme.accentColor": "appearance", "theme.uiScale": "appearance",
     "files.showThumbnails": "files", "files.defaultViewMode": "files", "files.showHiddenFiles": "files",
-    "files.confirmBeforeDelete": "files", "files.dragDropAction": "files",
+    "files.confirmBeforeDelete": "files", "files.dragDropAction": "files", "files.openOnSingleClick": "files",
+    "remoteDesktop.displayScale": "remoteDesktop",
     "general.language": "general",
 };
 
@@ -463,7 +465,10 @@ export const PreferencesProvider = ({ children, user, refreshUser }) => {
     const cursorStyle = get("terminal.cursorStyle", "block");
     const cursorBlink = get("terminal.cursorBlink", true);
     const smartCopyPaste = get("terminal.smartCopyPaste", true);
+    const storedCopyPasteBehavior = get("terminal.copyPasteBehavior", smartCopyPaste ? "smart" : "none");
+    const copyPasteBehavior = storedCopyPasteBehavior === "shift" ? "keyboard" : storedCopyPasteBehavior;
     const passwordPromptDetection = get("terminal.passwordPromptDetection", true);
+    const autoReconnect = get("terminal.autoReconnect", true);
 
     const getTerminalTheme = useCallback((theme) => {
         const baseTheme = DEFAULT_TERMINAL_THEMES[theme] || DEFAULT_TERMINAL_THEMES.default;
@@ -498,23 +503,29 @@ export const PreferencesProvider = ({ children, user, refreshUser }) => {
     const setFontSize = useCallback((size) => set("terminal.fontSize", size), [set]);
     const setCursorStyle = useCallback((style) => set("terminal.cursorStyle", style), [set]);
     const setCursorBlink = useCallback((blink) => set("terminal.cursorBlink", blink), [set]);
-    const setSmartCopyPaste = useCallback((enabled) => set("terminal.smartCopyPaste", enabled), [set]);
+    const setCopyPasteBehavior = useCallback((behavior) => set("terminal.copyPasteBehavior", behavior), [set]);
     const setPasswordPromptDetection = useCallback((enabled) => set("terminal.passwordPromptDetection", enabled), [set]);
+    const setAutoReconnect = useCallback((enabled) => set("terminal.autoReconnect", enabled), [set]);
 
     const showThumbnails = get("files.showThumbnails", true);
     const defaultViewMode = get("files.defaultViewMode", "list");
     const showHiddenFiles = get("files.showHiddenFiles", false);
     const confirmBeforeDelete = get("files.confirmBeforeDelete", true);
     const dragDropAction = get("files.dragDropAction", "ask");
+    const openOnSingleClick = get("files.openOnSingleClick", false);
 
     const setShowThumbnails = useCallback((v) => set("files.showThumbnails", v), [set]);
     const setDefaultViewMode = useCallback((v) => set("files.defaultViewMode", v), [set]);
     const setShowHiddenFiles = useCallback((v) => set("files.showHiddenFiles", v), [set]);
     const setConfirmBeforeDelete = useCallback((v) => set("files.confirmBeforeDelete", v), [set]);
     const setDragDropAction = useCallback((v) => set("files.dragDropAction", v), [set]);
+    const setOpenOnSingleClick = useCallback((v) => set("files.openOnSingleClick", v), [set]);
     const toggleThumbnails = useCallback(() => setShowThumbnails(!showThumbnails), [setShowThumbnails, showThumbnails]);
     const toggleHiddenFiles = useCallback(() => setShowHiddenFiles(!showHiddenFiles), [setShowHiddenFiles, showHiddenFiles]);
     const toggleConfirmBeforeDelete = useCallback(() => setConfirmBeforeDelete(!confirmBeforeDelete), [setConfirmBeforeDelete, confirmBeforeDelete]);
+
+    const defaultDisplayScale = get("remoteDesktop.displayScale", "auto");
+    const setDefaultDisplayScale = useCallback((v) => set("remoteDesktop.displayScale", v), [set]);
 
     const language = get("general.language", null);
     const setLanguage = useCallback((lang) => set("general.language", lang), [set]);
@@ -533,8 +544,9 @@ export const PreferencesProvider = ({ children, user, refreshUser }) => {
             uiScale, setUiScale,
             selectedTheme, setSelectedTheme, selectedFont, setSelectedFont, fontSize, setFontSize,
             cursorStyle, setCursorStyle, cursorBlink, setCursorBlink,
-            smartCopyPaste, setSmartCopyPaste,
+            copyPasteBehavior, setCopyPasteBehavior,
             passwordPromptDetection, setPasswordPromptDetection,
+            autoReconnect, setAutoReconnect,
             getCurrentTheme, getTerminalTheme, getAvailableThemes, getAvailableFonts, getCursorStyles,
             isOledMode: themeMode === "oled",
             showThumbnails, setShowThumbnails, toggleThumbnails,
@@ -542,6 +554,8 @@ export const PreferencesProvider = ({ children, user, refreshUser }) => {
             showHiddenFiles, setShowHiddenFiles, toggleHiddenFiles,
             confirmBeforeDelete, setConfirmBeforeDelete, toggleConfirmBeforeDelete,
             dragDropAction, setDragDropAction,
+            defaultDisplayScale, setDefaultDisplayScale,
+            openOnSingleClick, setOpenOnSingleClick,
             language, setLanguage,
         }}>
             {children}

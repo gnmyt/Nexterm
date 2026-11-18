@@ -48,9 +48,7 @@
     },
     "confirmDialog": {
       "title": "Are you sure?",
-      "defaultText": "This action cannot be undone.",
-      "unsavedChangesTitle": "Unsaved Changes",
-      "unsavedChangesText": "You have unsaved changes. Are you sure you want to close?"
+      "defaultText": "This action cannot be undone."
     },
     "loginDialog": {
       "title": "Nexterm",
@@ -63,7 +61,31 @@
       "backToLogin": "Back to Login",
       "authenticating": "Authenticating...",
       "noAccount": "Don't have an account?",
-      "haveAccount": "Already have an account?"
+      "haveAccount": "Already have an account?",
+      "welcome": "Welcome back",
+      "subtitle": "Sign in to continue to Nexterm.",
+      "registrationSubtitle": "Create your account to get started.",
+      "firstTimeSubtitle": "Create the first administrator account for this instance.",
+      "twoFactorTitle": "Two-factor authentication",
+      "twoFactorDescription": "Enter the code from your authenticator app.",
+      "qrTitle": "Sign in with the app",
+      "demo": {
+        "title": "Try Nexterm",
+        "subtitle": "Explore a live instance with simulated servers, no account needed.",
+        "start": "Start the demo",
+        "orSignIn": "or sign in to your account",
+        "failed": "Could not start a demo session"
+      }
+    },
+    "demo": {
+      "timeLeft": "Demo · {{time}} left",
+      "end": "End demo",
+      "endConfirmText": "End your demo session? Everything you created will be removed.",
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min",
+      "hours_one": "{{count}} hour",
+      "hours_other": "{{count}} hours",
+      "hoursMinutes": "{{hours}}h {{minutes}}m"
     },
     "deviceLink": {
       "title": "Link Device",
@@ -157,8 +179,6 @@
     "quickAction": {
       "placeholder": "Search servers, snippets, or navigate...",
       "noResults": "No results found",
-      "navigation": "Navigation",
-      "settings": "Settings",
       "navigate": "Navigate",
       "select": "Select",
       "close": "Close",
@@ -186,6 +206,11 @@
       "connection": {
         "title": "Connection failed",
         "close": "Close tab",
+        "reconnect": "Reconnect",
+        "reconnectNow": "Reconnect",
+        "reconnecting": "Reconnecting…",
+        "reconnectingIn": "Reconnecting in {{seconds}}s",
+        "reconnectAttempt": "attempt {{count}} of {{max}}",
         "hostUnreachable": "Remote host unreachable",
         "refused": "Connection refused by remote host",
         "timeout": "Connection timed out",
@@ -195,8 +220,12 @@
         "closedUnexpectedly": "Connection closed unexpectedly",
         "error": "Connection error occurred",
         "scriptClosedUnexpectedly": "Script connection closed unexpectedly",
-        "scriptError": "Script connection error occurred"
-      }
+        "scriptError": "Script connection error occurred",
+        "rdpSessionConflict": "The session was disconnected by the server because another connection was opened.",
+        "rdpSessionTimeout": "The RDP session was disconnected because its session time limit was reached.",
+        "rdpSessionClosed": "The RDP session was ended by the remote server or an administrator."
+      },
+      "accountLinkRequired": "An account with this username already exists. Ask an administrator to allow linking it to your sign-in."
     },
     "messages": {
       "invitationAccepted": "Invitation accepted",
@@ -206,6 +235,11 @@
       "organizationDeleteError": "Failed to delete organization",
       "leftOrganization": "You have left the organization",
       "leaveOrganizationError": "Failed to leave organization"
+    },
+    "unsavedChanges": {
+      "title": "Unsaved changes",
+      "text": "Discard them, or keep editing and save when you're done.",
+      "keepEditing": "Keep editing"
     }
   },
   "audit": {
@@ -432,25 +466,35 @@
     "page": {
       "title": "Server Monitoring",
       "subtitle": "Real-time server statistics and health monitoring",
-      "searchPlaceholder": "Search servers..."
+      "searchPlaceholder": "Search servers...",
+      "filters": {
+        "all": "All ({{count}})",
+        "online": "Online ({{count}})",
+        "issues": "Issues ({{count}})"
+      }
     },
     "errors": {
-      "loadFailed": "Failed to load monitoring data"
+      "loadFailed": "Failed to load monitoring data",
+      "loadFailedDescription": "The monitoring data could not be retrieved. Check your connection and try again.",
+      "retry": "Retry"
     },
     "grid": {
-      "loading": "Loading monitoring data...",
       "noServers": {
         "title": "No Servers Found",
         "subtitle": "No SSH servers available for monitoring.\nAdd some servers to start monitoring them."
       },
+      "noResults": {
+        "title": "No matching servers",
+        "subtitle": "No monitored server matches your search."
+      },
       "metrics": {
-        "cpuUsage": "CPU Usage",
-        "memoryUsage": "Memory Usage",
         "loadAverage": "Load Average",
         "processes": "Processes",
         "uptime": "Uptime",
         "nodes": "Nodes",
-        "vms": "VMs/Containers"
+        "vms": "VMs/Containers",
+        "cpu": "CPU",
+        "memory": "Memory"
       },
       "status": {
         "serverOffline": "Server Offline",
@@ -460,7 +504,16 @@
         "errorMessage": "Unable to establish connection to the server.",
         "unknownMessage": "Server status could not be determined.",
         "lastSeen": "Last seen: {{time}}",
-        "noRecentActivity": "No recent activity"
+        "noRecentActivity": "No recent activity",
+        "waitingForData": "Waiting for data",
+        "pendingMessage": "Monitoring data will appear after the next monitoring cycle.",
+        "labels": {
+          "online": "Online",
+          "offline": "Offline",
+          "error": "Error",
+          "pending": "Pending",
+          "unknown": "Unknown"
+        }
       },
       "uptime": {
         "unknown": "Unknown",
@@ -479,7 +532,6 @@
       },
       "tabs": {
         "overview": "Overview",
-        "charts": "Charts",
         "storage": "Storage",
         "network": "Network",
         "processes": "Processes",
@@ -499,12 +551,11 @@
         },
         "performance": {
           "title": "Performance Metrics",
-          "cpuUsage": "CPU Usage",
-          "memoryUsage": "Memory Usage",
           "loadAverage": "Load Average",
           "processes": "Active Processes",
           "total": "Total: {{value}}",
-          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}"
+          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}",
+          "memory": "Memory"
         },
         "uptime": {
           "format": {
@@ -522,33 +573,67 @@
       },
       "storage": {
         "title": "Disk Usage",
-        "used": "Used: {{value}}",
-        "available": "Available: {{value}}",
-        "total": "Total: {{value}}",
-        "type": "Type: {{value}}",
         "noData": "No disk usage data available",
-        "noPartitions": "No mounted partitions"
+        "noPartitions": "No mounted partitions",
+        "usedOf": "{{used}} of {{total}} used",
+        "free": "{{value}} free",
+        "filesystems": "Filesystems",
+        "disks": "Disks",
+        "on": "{{volume}} on {{partition}}",
+        "swap": "Swap",
+        "unmounted": "Not mounted",
+        "unallocated": "Unallocated",
+        "inodes": "Inodes",
+        "inodesDetail": "{{used}} of {{total}}",
+        "health": {
+          "passed": "Healthy",
+          "warning": "Warning",
+          "failed": "Failing",
+          "denied": "SMART needs root",
+          "temperature": "Temperature",
+          "powerOn": "Power-on time",
+          "wear": "Wear",
+          "reallocated": "Reallocated sectors",
+          "pending": "Pending sectors",
+          "mediaErrors": "Media errors",
+          "years": "{{value}} years",
+          "days": "{{value}} days",
+          "hours": "{{value}} hours",
+          "failedTitle": "Disk failure predicted",
+          "failedMessage": "{{disks}} failed its SMART self-assessment. Back up the data and replace the disk."
+        }
       },
       "network": {
-        "title": "Network Interfaces",
-        "rxBytes": "RX Bytes",
-        "txBytes": "TX Bytes",
-        "mac": "MAC Address",
         "speed": "Speed",
-        "noData": "No network interface data available"
+        "noData": "No network interface data available",
+        "download": "Download",
+        "upload": "Upload",
+        "interface": "Interface",
+        "address": "Address",
+        "gateway": "Gateway",
+        "interfaces": "Interfaces",
+        "virtual": "Virtual interfaces",
+        "defaultRoute": "Default route",
+        "up": "Up",
+        "down": "Down",
+        "errors": "{{count}} errors",
+        "dropped": "{{count}} dropped",
+        "copy": "Copy {{address}}",
+        "total": "{{value}} total"
       },
       "processes": {
-        "title": "Running Processes",
         "searchPlaceholder": "Search processes...",
         "showing": "Showing {{count}} of {{total}} processes",
         "noData": "No process data available. Process data will appear after the next monitoring cycle.",
-        "noResults": "No processes match your search criteria."
+        "noResults": "No processes match your search criteria.",
+        "columns": {
+          "command": "Command",
+          "cpu": "CPU",
+          "mem": "Memory"
+        }
       },
       "pve": {
         "clusterInfo": "Cluster Information",
-        "resources": "Resource Usage",
-        "virtualMachines": "Virtual Machines",
-        "totalNodes": "Total Nodes",
         "onlineNodes": "Online Nodes",
         "totalCPU": "Total CPU",
         "totalMemory": "Total Memory",
@@ -588,10 +673,15 @@
       "monitoring": "Monitoring",
       "backup": "Storage",
       "engines": "Engines",
-      "permissions": "Roles & Permissions"
+      "permissions": "Roles & Permissions",
+      "trustedCertificates": "Trusted Certificates"
     },
     "account": {
       "title": "Account",
+      "demo": {
+        "title": "Security",
+        "description": "Password, two-factor authentication, passkeys, API keys and profile pictures can't be changed while you're exploring as a guest."
+      },
       "avatar": {
         "label": "Picture",
         "upload": "Change profile picture",
@@ -675,6 +765,7 @@
       "sessionSyncAcrossDevicesDesc": "Sessions will be available across devices and synced",
       "sessionSyncSameBrowserDesc": "Sessions will synchronize for the current user session",
       "sessionSyncSameTabDesc": "Sessions will synchronize inside your browser tab",
+      "showAgentSessionsDesc": "Show sessions opened by the AI assistant or MCP agents as view-only tabs",
       "twoFactorDialog": {
         "title": "Enable 2FA",
         "description": "Scan the code with your authenticator app or enter <span class=\"totp-code\">{{secret}}</span> manually.",
@@ -727,14 +818,25 @@
         "neverUsed": "Never used",
         "expires": "Expires {{date}}",
         "delete": "Delete"
-      }
+      },
+      "remoteDesktop": "Remote Desktop",
+      "remoteDesktopDescription": "Default display scale for remote desktop sessions. Connections can override it, and a scale picked during a session is remembered on that device.",
+      "remoteDesktopScale": "Display Scale",
+      "remoteDesktopScaleAuto": "Automatic (match device)",
+      "remoteDesktopSyncEnabled": "Remote desktop settings will now sync across devices",
+      "remoteDesktopSyncDisabled": "Remote desktop settings are now saved on this device only"
     },
     "passwordChange": {
       "title": "Change password",
       "description": "A strong password contains special characters, numbers, and letters in both uppercase and lowercase.",
       "newPassword": "New password",
       "confirmPassword": "Confirm new password",
-      "changePasswordButton": "Change password"
+      "changePasswordButton": "Change password",
+      "currentPassword": "Current password",
+      "descriptionOwn": "Enter your current password and choose a new one. You will be signed out on all other devices.",
+      "descriptionOther": "Choose a new password for this user. They will be signed out on all devices.",
+      "successOwn": "Your password was changed. Other devices were signed out.",
+      "successOther": "The password was changed and the user was signed out everywhere."
     },
     "organizations": {
       "title": "Your Organizations",
@@ -773,8 +875,8 @@
         "folderManagementDescription": "Log creation, modification, and deletion of folders",
         "scriptExecutionLabel": "Script Execution",
         "scriptExecutionDescription": "Log execution of scripts and automation tasks",
-        "aiOperationsLabel": "AI Operations",
-        "aiOperationsDescription": "Log commands and file changes performed by the AI assistant",
+        "agentOperationsLabel": "AI Agent Operations",
+        "agentOperationsDescription": "Log commands, input, screenshots and file changes performed by the AI assistant and by agents connected through the MCP server",
         "actions": {
           "save": "Save Settings"
         },
@@ -840,7 +942,10 @@
         "deleteUser": "Delete user",
         "loginAsUser": "Login as user",
         "deleteConfirm": "This will permanently delete the user and all associated data.",
-        "managePermissions": "Manage permissions"
+        "managePermissions": "Manage permissions",
+        "allowExternalLink": "Allow SSO/LDAP linking",
+        "cancelExternalLink": "Cancel SSO/LDAP linking",
+        "unlinkExternal": "Unlink SSO/LDAP sign-in"
       }
     },
     "userDialog": {
@@ -903,7 +1008,11 @@
         },
         "copy": {
           "title": "Copy",
-          "description": "Copy selected text to clipboard"
+          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+        },
+        "paste": {
+          "title": "Paste",
+          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
         },
         "fullscreen": {
           "title": "Full-Screen",
@@ -918,6 +1027,7 @@
         "pressKeys": "Press keys...",
         "save": "Save",
         "cancel": "Cancel",
+        "disabled": "Disabled",
         "reset": "Reset"
       },
       "messages": {
@@ -953,8 +1063,19 @@
       "input": {
         "title": "Input",
         "description": "Control how keyboard shortcuts behave inside the terminal.",
-        "smartCopyPaste": "Smart Ctrl+C",
+        "copyPasteBehavior": "Copy/Paste Behavior",
+        "copyPasteBehaviorNone": "None",
+        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
+        "copyPasteBehaviorSmart": "Smart Ctrl+C",
+        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
+        "copyPasteBehaviorKeyboard": "Keyboard",
+        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
+        "copyPasteBehaviorMouse": "Mouse",
+        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
+        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
+        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
         "passwordPromptDetection": "Password input detection",
+        "autoReconnect": "Auto-reconnect",
         "enabled": "Enabled",
         "disabled": "Disabled",
         "syncEnabled": "Input settings will now sync to your account",
@@ -976,13 +1097,24 @@
       "syncLoginRequired": "Please log in to sync file manager settings",
       "syncEnabled": "File manager settings will now sync to your account",
       "syncDisabled": "File manager settings will no longer sync",
+      "view": {
+        "title": "View",
+        "description": "How files and folders are shown when you open the file manager."
+      },
+      "behavior": {
+        "title": "Behavior",
+        "description": "What happens when you open, delete and move files."
+      },
       "defaultView": {
         "title": "Default View Mode",
         "description": "Choose the default layout when opening the file manager.",
         "list": "List View",
         "listDescription": "Show files in a detailed list with size and date columns",
         "grid": "Grid View",
-        "gridDescription": "Show files as icons in a grid layout with thumbnails"
+        "gridDescription": "Show files as icons in a grid layout with thumbnails",
+        "compact": "Compact View",
+        "compactDescription": "Show only names in dense columns to fit many files on screen",
+        "label": "Default view"
       },
       "thumbnails": {
         "title": "Image Thumbnails",
@@ -990,7 +1122,10 @@
         "enabled": "Show Thumbnails",
         "enabledDescription": "Display image previews in grid view for quick visual identification",
         "disabled": "Hide Thumbnails",
-        "disabledDescription": "Show only file icons to save bandwidth and improve performance"
+        "disabledDescription": "Show only file icons to save bandwidth and improve performance",
+        "label": "Image thumbnails",
+        "show": "Show",
+        "hide": "Hide"
       },
       "hiddenFiles": {
         "title": "Hidden Files",
@@ -998,7 +1133,10 @@
         "show": "Show Hidden Files",
         "showDescription": "Display all files including .dotfiles and system directories",
         "hide": "Hide Hidden Files",
-        "hideDescription": "Only show regular files and folders"
+        "hideDescription": "Only show regular files and folders",
+        "label": "Hidden files",
+        "showShort": "Show",
+        "hideShort": "Hide"
       },
       "deleteConfirmation": {
         "title": "Delete Confirmation",
@@ -1006,14 +1144,43 @@
         "enabled": "Confirm Deletions",
         "enabledDescription": "Show a confirmation dialog before deleting items",
         "disabled": "Delete Immediately",
-        "disabledDescription": "Delete files without asking for confirmation"
+        "disabledDescription": "Delete files without asking for confirmation",
+        "label": "Before deleting",
+        "ask": "Ask for confirmation",
+        "immediately": "Delete immediately"
       },
       "dragDropAction": {
         "title": "Drag & Drop Action",
         "description": "Default action when dragging files to a new location.",
         "move": "Move",
         "copy": "Copy",
-        "ask": "Ask"
+        "ask": "Ask",
+        "label": "When dropping files"
+      },
+      "singleClickOpen": {
+        "title": "Open with single click",
+        "description": "Open files and folders with a single click instead of selecting them. Double-click opens when this is off.",
+        "single": "Single click",
+        "double": "Double click",
+        "label": "Open items with"
+      },
+      "sharedDrive": {
+        "title": "Shared Drive",
+        "description": "What remote desktops can see of this computer through their shared drive. Changes apply to new connections.",
+        "mode": {
+          "title": "Share",
+          "folder": "One folder",
+          "disk": "Entire disk",
+          "off": "Nothing",
+          "diskWarning": "Remote desktops can read, change and delete every file on this computer."
+        },
+        "folder": {
+          "title": "Shared folder",
+          "default": "Nexterm Shared in your home folder",
+          "choose": "Choose folder",
+          "reset": "Use default"
+        },
+        "folderError": "The shared folder could not be prepared"
       }
     },
     "authentication": {
@@ -1047,6 +1214,8 @@
           "clientSecretPlaceholderEdit": "Leave blank to keep existing",
           "redirectUri": "Redirect URI",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
+          "endSessionEndpoint": "End Session Endpoint (Optional)",
+          "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
           "scope": "Scope",
           "scopePlaceholder": "openid profile",
           "usernameAttribute": "Username Attribute",
@@ -1066,6 +1235,21 @@
         },
         "messages": {
           "saveFailed": "Failed to save provider"
+        },
+        "groupSync": {
+          "title": "Group Sync",
+          "hint": "Automatically add users to organizations and control access based on group claims from your identity provider.",
+          "groupsAttribute": "Groups Claim",
+          "groupsAttributePlaceholder": "groups",
+          "requiredGroup": "Required Group",
+          "requiredGroupPlaceholder": "nexterm-users",
+          "requiredGroupHint": "If set, only users whose groups claim contains this value are allowed to log in.",
+          "mappings": "Organization Mappings",
+          "mappingsHint": "Map a group claim value to an organization. Membership is kept in sync on every login.",
+          "mappingValuePlaceholder": "Group value",
+          "roleMember": "Member",
+          "roleOwner": "Owner",
+          "addMapping": "Add Mapping"
         }
       },
       "ldapDialog": {
@@ -1112,11 +1296,22 @@
           "testSuccess": "Connection test successful",
           "testFailed": "Connection test failed"
         }
+      },
+      "sessions": {
+        "title": "Sessions",
+        "description": "When signed-in devices, including the mobile and desktop apps, have to sign in again.",
+        "idle": "Sign out after inactivity",
+        "lifetime": "Maximum session length",
+        "days_one": "{{count}} day",
+        "days_other": "{{count}} days",
+        "never": "Never",
+        "loadError": "Failed to load the session settings",
+        "saveError": "Failed to save the session settings"
       }
     },
     "ai": {
       "title": "AI Assistant Configuration",
-      "description": "Configure the AI assistant that can run commands and manage files directly over your server sessions.",
+      "description": "Configure the AI provider used by the assistant, which can operate your servers through its own sessions.",
       "loading": "Loading AI settings...",
       "enable": {
         "title": "Enable AI Assistant",
@@ -1129,10 +1324,6 @@
       "model": {
         "title": "Model",
         "description": "Select the AI model the assistant should use"
-      },
-      "requireConfirmation": {
-        "title": "Confirm before each action",
-        "description": "Require users to approve every command and file change the assistant wants to make"
       },
       "apiKey": {
         "title": "API Key",
@@ -1235,10 +1426,12 @@
     },
     "identities": {
       "title": "SSH Keys & Credentials",
-      "description": "Manage your SSH keys and login credentials for server connections",
+      "description": "Identities you can link to any server. Server-specific ones live in that server's settings.",
       "createIdentity": "Create Identity",
       "personal": "Personal",
       "noUsername": "No username",
+      "notInUse": "Not in use",
+      "notInUseHint": "Not linked to any server or folder",
       "sshKey": "SSH Key",
       "password": "Password",
       "editIdentity": "Edit identity",
@@ -1306,6 +1499,7 @@
         "success": "Synced",
         "error": "Error",
         "pending": "Pending",
+        "syncing": "Syncing",
         "disabled": "Disabled"
       },
       "dialog": {
@@ -1493,6 +1687,28 @@
       "deleteConfirm": "This will permanently delete the role \"{{name}}\" and remove it from all members.",
       "inheritsAllow": "Inherits: Allowed",
       "inheritsDeny": "Inherits: Denied"
+    },
+    "search": "Search settings",
+    "trustedCertificates": {
+      "title": "Trusted Certificates",
+      "description": "Certificates and host keys you accepted when connecting. Remove one to be asked again the next time.",
+      "personal": "Personal",
+      "system": "System",
+      "kinds": {
+        "ssh": "SSH host key",
+        "tls": "TLS certificate"
+      },
+      "empty": "Nothing trusted yet",
+      "emptyDescription": "Certificates and host keys appear here once you accept them for a connection.",
+      "remove": "Remove",
+      "removeConfirm": "Stop trusting {{endpoint}}? The next connection asks again.",
+      "removeSuccess": "Trusted certificate removed",
+      "removeError": "Failed to remove the trusted certificate",
+      "ignore": {
+        "title": "Ignore certificate warnings",
+        "description": "Connect to your personal servers without checking their certificate or host key. Connections can then be intercepted without you noticing. Organization servers are always checked.",
+        "error": "Failed to save the setting"
+      }
     }
   },
   "tunnel": {
@@ -1551,6 +1767,7 @@
       "createFolder": "Create Folder",
       "deleteFolder": "Delete Folder",
       "renameFolder": "Rename Folder",
+      "folderSettings": "Folder Settings",
       "new": "New",
       "sshServer": "SSH Server",
       "telnetServer": "Telnet Server",
@@ -1571,6 +1788,7 @@
       "connect": "Connect",
       "quickConnect": "Quick Connect",
       "openSFTP": "Open SFTP",
+      "openBrowser": "Open Browser",
       "forwardPort": "Forward Port",
       "runScript": "Run Script",
       "openNotes": "Open Notes",
@@ -1607,8 +1825,20 @@
         "duplicate": "Duplicate",
         "openNotes": "Open Notes",
         "hibernateSession": "Hibernate",
-        "closeSession": "Disconnect"
-      }
+        "reconnect": "Reconnect",
+        "closeSession": "Disconnect",
+        "splitRight": "Split Right",
+        "splitDown": "Split Down",
+        "sendShortcut": "Send Shortcut…",
+        "zoom": "Zoom ({{zoom}}%)",
+        "zoomReset": "Reset Zoom",
+        "displayScale": "Display Scale ({{scale}}%)",
+        "displayScaleAuto": "Automatic ({{scale}}%)",
+        "displayScaleReset": "Use Default"
+      },
+      "enableSplitView": "Enable Split View",
+      "disableSplitView": "Disable Split View",
+      "sessionMenu": "Session Menu"
     },
     "wol": {
       "successDescription": "Magic packet sent to {{name}}",
@@ -1618,20 +1848,15 @@
       "fillRequiredFields": "Please fill in all required fields",
       "serverCreated": "Server created successfully",
       "serverUpdated": "Server updated successfully",
+      "folderUpdated": "Folder updated successfully",
       "createFailed": "Failed to create server",
       "updateFailed": "Failed to update server",
-      "createIdentityFailed": "Failed to create identity",
-      "updateIdentityFailed": "Failed to update identity"
+      "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination."
     },
     "dialog": {
       "addServer": "Add server",
       "addProtocolServer": "Add {{protocol}} server",
       "editServer": "Edit server",
-      "tabs": {
-        "details": "Details",
-        "identities": "Identities",
-        "settings": "Settings"
-      },
       "actions": {
         "save": "Save",
         "create": "Create"
@@ -1677,7 +1902,6 @@
           "description": "Allow waking this server remotely using its MAC address"
         },
         "rdpSecurity": {
-          "title": "Security",
           "description": "Authentication method used to connect to the remote Windows machine. Use NLA for environments where NTLM is disabled (e.g. Protected Users group).",
           "method": "Security Method"
         },
@@ -1687,9 +1911,12 @@
         },
         "display": {
           "title": "Display Settings",
-          "description": "Configure color depth and resize behavior for the remote display",
+          "description": "Configure color depth, resize behavior and scaling for the remote display",
           "colorDepth": "Color Depth",
-          "resizeMethod": "Resize Method"
+          "resizeMethod": "Resize Method",
+          "displayScale": "Display Scale",
+          "displayScaleAuto": "Automatic (match this device)",
+          "displayScaleAccount": "Account default"
         },
         "performance": {
           "title": "Performance Settings",
@@ -1717,14 +1944,9 @@
           "backspace": "Backspace",
           "delete": "Delete",
           "functionKeys": "Function Keys"
-        },
-        "noSettings": "No additional settings available for this entry type."
+        }
       },
       "identities": {
-        "organizationIdentities": "Organization Identities",
-        "personalIdentities": "Personal Identities",
-        "orgDescription": "Shared with all organization members. Everyone can use these identities.",
-        "personalDescription": "Only visible to you. Other organization members cannot see these.",
         "identityName": "Identity Name",
         "username": "Username",
         "authentication": "Authentication",
@@ -1735,16 +1957,29 @@
         "both": "Key+Pass",
         "sshPrivateKey": "SSH Private Key",
         "passphrase": "Passphrase (optional)",
-        "new": "New",
+        "add": "Add identity",
+        "linkGlobal": "Link global identity · {{count}}",
+        "empty": "No identities yet.",
         "removeIdentity": "Remove identity",
         "unlinkIdentity": "Unlink identity",
         "moveToOrg": "Move to organization",
-        "selectOrganization": "Select Organization",
-        "availableToLink": "Available to Link",
         "noUsername": "No username",
-        "noOrgIdentities": "No organization identities. Create one to share with all members.",
-        "noPersonalIdentities": "No personal identities. Create one for your private use."
-      }
+        "globalToggle": "Use on other servers",
+        "globalInUse": "This identity is used by {{count}} servers. Unlink it from the others first.",
+        "shareToggle": "Share with organization",
+        "inheritedHint": "Inherited from the folder settings.",
+        "onlyMe": "Only me",
+        "onlyMeHint": "Only you can see and use this identity."
+      },
+      "sections": {
+        "general": "General",
+        "connection": "Connection",
+        "identities": "Identities",
+        "options": "Options",
+        "credentials": "Credentials"
+      },
+      "useInherited": "Use inherited value",
+      "reset": "Reset"
     },
     "proxmoxDialog": {
       "title": {
@@ -1752,9 +1987,6 @@
         "edit": "Edit Proxmox VE"
       },
       "fields": {
-        "name": "Name",
-        "serverIp": "Server-IP",
-        "port": "Port",
         "username": "Username",
         "password": "Password",
         "nodeName": "Node Name (Optional)",
@@ -1763,8 +1995,6 @@
       "monitoringDescription": "Collect cluster-wide CPU, memory, and storage metrics",
       "placeholders": {
         "name": "Name",
-        "serverIp": "Server-IP",
-        "port": "Port",
         "username": "Username (e.g. root@pam)",
         "password": "Password",
         "specificNode": "Specific node name"
@@ -1778,7 +2008,8 @@
         "updated": "Proxmox integration updated successfully",
         "createFailed": "Failed to create Proxmox integration",
         "updateFailed": "Failed to update Proxmox integration"
-      }
+      },
+      "credentialsDescription": "Proxmox user with API access, e.g. root@pam or a dedicated API user."
     },
     "connectionReasonDialog": {
       "title": "Connection Reason Required",
@@ -1932,10 +2163,17 @@
         "uploadFolder": "Upload folder",
         "search": "Search files",
         "closeSearch": "Close search",
-        "refresh": "Refresh"
+        "refresh": "Refresh",
+        "back": "Back",
+        "forward": "Forward",
+        "up": "Parent directory",
+        "home": "Home directory",
+        "switchToCompact": "Switch to compact view"
       },
       "item": {
-        "link": "link"
+        "link": "link",
+        "expand": "Expand folder",
+        "collapse": "Collapse folder"
       },
       "search": {
         "placeholder": "Filter files in this folder...",
@@ -1951,15 +2189,56 @@
         "dropFilesHint": "Drop files here to upload them"
       },
       "toast": {
-        "downloaded": "Downloaded {{name}}",
-        "downloadingItems": "Downloading {{count}} item(s)...",
-        "uploaded": "Uploaded {{name}}",
-        "uploadedItems": "Uploaded {{count}} files",
         "uploadFailed": "Upload failed: {{message}}",
-        "uploadFailedItems": "{{count}} files failed to upload: {{message}}",
         "connectionLost": "SFTP connection lost. Please reconnect.",
         "error": "An error occurred"
+      },
+      "transfers": {
+        "title": "Transfers",
+        "activeCount": "{{count}} active",
+        "allDone": "All done",
+        "clearFinished": "Clear finished",
+        "queued": "Queued",
+        "cancelling": "Cancelling...",
+        "completed": "Completed",
+        "savedTo": "Saved to {{path}}",
+        "cancelled": "Cancelled",
+        "failed": "Failed: {{message}}",
+        "dismiss": "Dismiss"
+      },
+      "status": {
+        "folders_one": "{{count}} folder",
+        "folders_other": "{{count}} folders",
+        "files_one": "{{count}} file",
+        "files_other": "{{count}} files",
+        "hidden_one": "{{count}} hidden",
+        "hidden_other": "{{count}} hidden",
+        "selected": "{{count}} selected",
+        "showHidden": "Show hidden files",
+        "hideHidden": "Hide hidden files"
+      },
+      "conflict": {
+        "title_one": "Item already exists",
+        "title_other": "{{count}} items already exist",
+        "upload_one": "A file with this name already exists in the destination. What would you like to do?",
+        "upload_other": "These files already exist in the destination. What would you like to do with them?",
+        "move_one": "An item with this name already exists in the destination. Moving will replace it.",
+        "move_other": "These items already exist in the destination. Moving will replace them.",
+        "copy_one": "An item with this name already exists in the destination. Copying will replace it.",
+        "copy_other": "These items already exist in the destination. Copying will replace them.",
+        "more": "+ {{count}} more",
+        "skip": "Skip",
+        "rename": "Keep both",
+        "overwrite": "Overwrite"
       }
+    },
+    "browser": {
+      "back": "Back",
+      "forward": "Forward",
+      "reload": "Reload",
+      "stop": "Stop",
+      "address": "Address",
+      "addressPlaceholder": "Enter an address"
     },
     "remoteDesktop": {
       "dropOverlay": "Drop files to upload to remote",
@@ -1971,13 +2250,34 @@
         "downloaded": "Downloaded \"{{name}}\" from remote"
       }
     },
+    "automatedSession": {
+      "viewOnlyAi": "The AI assistant is working in this session. You can watch, but not type.",
+      "viewOnlyMcp": "An external agent (MCP) is working in this session. You can watch, but not type."
+    },
     "aiAssistant": {
       "title": "AI Assistant",
       "open": "AI Assistant",
-      "empty": "Ask the assistant to inspect or change this server. It can run commands and read or edit files directly over the connection.",
+      "empty": "Ask the assistant to inspect or change your servers. It opens its own sessions to the servers you add below, runs commands, edits files and can even operate remote desktops.",
+      "addServer": "Add server",
+      "removeServer": "Remove server",
+      "searchServers": "Search servers...",
+      "noMatches": "No matching servers",
+      "current": "current",
+      "openSessions": "{{count}} open session(s)",
+      "approval": {
+        "ask": "Ask before actions",
+        "askDescription": "Commands, input and file changes wait for your approval",
+        "allow": "Allow all",
+        "allowDescription": "Runs tool calls without asking",
+        "readonly": "Read-only",
+        "readonlyDescription": "Only inspects servers; anything that changes them is denied"
+      },
       "placeholder": "Message the assistant...",
       "connecting": "Connecting...",
       "send": "Send",
+      "copyMessage": "Copy message",
+      "copied": "Copied",
+      "editMessage": "Edit message",
       "stop": "Stop",
       "connectionError": "Connection to the assistant was lost.",
       "reconnecting": "Connection lost. Reconnecting...",
@@ -1990,19 +2290,65 @@
       "continuePrompt": "The assistant paused after a long run of steps. Continue?",
       "continue": "Continue",
       "compacted": "Earlier messages were summarised to free up context.",
+      "retryPrompt": "The last step failed. Retry from where it stopped?",
+      "retry": "Retry",
+      "questionOther": "Or type another answer...",
+      "questionAnswer": "Type your answer...",
+      "questionSend": "Answer",
+      "questionPickOne": "Pick one or type an answer",
+      "questionPickMany": "Pick any that apply",
+      "exitCode": "exit {{code}}",
+      "truncated": "[truncated]",
+      "toolSummary": {
+        "recursive": "{{path}} (recursive)",
+        "doubleClick": "{{target}} ×2"
+      },
       "tools": {
-        "runCommand": "Run command",
-        "readFile": "Read file",
-        "writeFile": "Write file",
-        "editFile": "Edit file",
-        "listDirectory": "List directory",
-        "statPath": "Inspect path",
-        "makeDirectory": "Create directory",
-        "deleteFile": "Delete file",
-        "removeDirectory": "Remove directory",
-        "movePath": "Move",
-        "changePermissions": "Change permissions",
-        "findDirectories": "Find directories"
+        "list_entries": "List servers",
+        "get_entry": "Inspect server",
+        "list_folders": "List folders",
+        "list_organizations": "List organizations",
+        "list_identities": "List identities",
+        "list_snippets": "List snippets",
+        "list_scripts": "List scripts",
+        "list_tags": "List tags",
+        "list_users": "List users",
+        "get_permissions": "Check permissions",
+        "get_monitoring": "Read monitoring",
+        "list_sessions": "List sessions",
+        "open_session": "Open session",
+        "get_session": "Inspect session",
+        "close_session": "Close session",
+        "close_all_sessions": "Close all sessions",
+        "terminal_run": "Run command",
+        "terminal_send": "Send input",
+        "terminal_read": "Read terminal",
+        "terminal_resize": "Resize terminal",
+        "run_command": "Run command",
+        "exec_command": "Run command",
+        "file_list": "List directory",
+        "file_stat": "Inspect path",
+        "file_read": "Read file",
+        "file_write": "Write file",
+        "file_edit": "Edit file",
+        "file_mkdir": "Create directory",
+        "file_delete": "Delete",
+        "file_move": "Move",
+        "file_chmod": "Change permissions",
+        "file_search_dirs": "Find directories",
+        "desktop_screenshot": "Screenshot",
+        "desktop_info": "Inspect desktop",
+        "desktop_click": "Click",
+        "desktop_mouse_move": "Move mouse",
+        "desktop_drag": "Drag",
+        "desktop_scroll": "Scroll",
+        "desktop_type": "Type text",
+        "desktop_key": "Press keys",
+        "desktop_resize": "Resize desktop",
+        "desktop_clipboard_set": "Set clipboard",
+        "desktop_clipboard_get": "Read clipboard",
+        "batch": "Run several actions",
+        "ask_user": "Question"
       }
     },
     "commandSuggestion": {
@@ -2025,7 +2371,7 @@
       "holdModifier": "Hold {{key}}",
       "zoomIn": "Zoom in",
       "zoomOut": "Zoom out",
-      "zoomReset": "Reset zoom to fit (drag with the middle mouse button to pan)"
+      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
     },
     "monitors": {
       "title": "Monitor {{number}}",
@@ -2058,6 +2404,36 @@
     "liveSessions": {
       "activeOn": "Live sessions: {{users}}",
       "unknownUser": "Unknown user"
+    },
+    "folderSettings": {
+      "name": "Folder name",
+      "nameRequired": "Folder name is required",
+      "loadFailed": "Unable to load folder settings",
+      "protocol": "Defaults for",
+      "protocolHint": "Servers in this folder use what you set below unless they set their own value. Each protocol has its own defaults.",
+      "unset": "Remove from folder"
+    },
+    "trust": {
+      "certificate": "certificate",
+      "hostKey": "host key",
+      "newTitle": "Trust this {{subject}}?",
+      "newMessage": "This is the first connection to {{endpoint}}. Check the fingerprint before you continue.",
+      "changedTitle": "The {{subject}} has changed",
+      "changedMessage": "{{endpoint}} presents a different {{subject}} than before. Only continue if you expect this.",
+      "fingerprint": "Fingerprint",
+      "previous": "Trusted until now",
+      "presented": "Presented now",
+      "subject": "Issued to",
+      "issuer": "Issued by",
+      "selfSigned": "Self-signed",
+      "validUntil": "Valid until",
+      "blocked": "Only certificate managers of {{organization}} can accept this change.",
+      "accept": "Trust and connect",
+      "cancel": "Cancel",
+      "acceptChanged": "Trust the new one",
+      "disconnect": "Disconnect",
+      "failed": "Your decision could not be saved",
+      "acceptOnly": "Trust certificate"
     }
   },
   "support": {
@@ -2072,6 +2448,10 @@
       "title": "Join Discord",
       "description": "Chat with the community and get help."
     },
+    "docs": {
+      "title": "View Documentation",
+      "description": "Read the documentation and learn how to use Nexterm."
+    },
     "github": {
       "title": "View on GitHub",
       "description": "Browse source code and contribute."
@@ -2085,7 +2465,11 @@
     "connectDevice": "Connect Device",
     "recentConnections": "Recent Connections",
     "getStarted": "Get Started",
-    "getStartedHint": "Add a server from the sidebar to begin managing your infrastructure."
+    "getStartedHint": "Add a server from the sidebar to begin managing your infrastructure.",
+    "hibernated": "Hibernated",
+    "demo": {
+      "explore": "Start exploring"
+    }
   },
   "downloadApps": {
     "title": "Download Apps",
@@ -2096,6 +2480,10 @@
       "linux": "Linux",
       "android": "Android",
       "ios": "iOS"
-    }
+    },
+    "recommended": "Recommended",
+    "versionUnavailable": "The server version could not be determined, so direct downloads are unavailable. You can still browse the releases on GitHub.",
+    "sourceHint": "Downloads are served from the GitHub releases.",
+    "allReleases": "All releases"
   }
 }

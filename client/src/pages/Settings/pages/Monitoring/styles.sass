@@ -67,20 +67,27 @@
 
   input
     width: 80px
-    padding: 0.6rem 0.8rem
-    background: colors.$lighter-background
+    padding: 0.625rem 0.75rem
+    background: colors.$dark-gray
     border: 1px solid colors.$gray
-    border-radius: 0.5rem
+    border-radius: 0.625rem
     color: colors.$white
-    font-size: 14pt
+    font-size: 0.95rem
+    font-weight: 500
+    font-family: inherit
     outline: none
     text-align: center
+    transition: border-color 0.15s ease, box-shadow 0.15s ease
 
     @media (max-width: breakpoints.$mobile)
       flex: 1
 
+    &:hover
+      border-color: colors.$subtext
+
     &:focus
       border-color: colors.$primary
+      box-shadow: colors.$focus-ring
     &::-webkit-inner-spin-button, &::-webkit-outer-spin-button
       -webkit-appearance: none
   .unit

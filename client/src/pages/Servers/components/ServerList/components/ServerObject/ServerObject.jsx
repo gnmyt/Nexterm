@@ -5,18 +5,20 @@ import "./styles.sass";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { useLiveSessions } from "@/common/contexts/LiveSessionContext.jsx";
 import AvatarStack from "@/common/components/AvatarStack";
+import Tooltip from "@/common/components/Tooltip";
 import { getSessionOwnerLabel } from "@/common/utils/avatar.js";
 import { useTranslation } from "react-i18next";
 import { useContext, useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { patchRequest } from "@/common/utils/RequestUtil.js";
 import { DropIndicator } from "../DropIndicator";
+import { useMove } from "../../useMove.js";
 
 export const ServerObject = ({ id, name, position, folderId, organizationId, nestedLevel, icon, type, connectToServer, status, tags = [], hibernatedSessionCount = 0 }) => {
-    const { loadServers, getServerById } = useContext(ServerContext);
+    const { getServerById } = useContext(ServerContext);
     const { getLiveSessionsForEntry } = useLiveSessions();
     const { t } = useTranslation();
     const [dropPlacement, setDropPlacement] = useState(null);
+    const move = useMove();
     const elementRef = useRef(null);
 
     const isIntegrationEntry = Boolean(type?.startsWith("pve-"));
@@ -47,14 +49,12 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
             if (item.id === id) return;
             
             try {
-                await patchRequest(`entries/${item.id}/reposition`, {
+                await move(`entries/${item.id}/reposition`, {
                     targetId: id,
                     placement: dropPlacement || 'after',
                     folderId: folderId,
                     organizationId: organizationId,
                 });
-                
-                loadServers();
             } catch (error) {
                 console.error("Failed to reposition entry", error);
             }
@@ -88,7 +88,7 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
         ? (server?.notes || "").split(/\r?\n/)[0].trim()
         : "";
 
-    return (
+    return <>
         <div 
             className={"server-object"}
             style={{ paddingLeft: `${15 + (nestedLevel * 15)}px`, opacity, position: 'relative' }} 
@@ -112,26 +112,25 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
                 {noteLine && <span className="server-note truncate-text">{noteLine}</span>}
             </div>
             {hibernatedSessionCount > 0 && (
-                <div className="hibernation-indicator" title={`${hibernatedSessionCount} hibernated session${hibernatedSessionCount > 1 ? 's' : ''}`}>
-                    <Icon path={mdiSleep} />
-                    <span>{hibernatedSessionCount}</span>
-                </div>
+                <Tooltip text={`${hibernatedSessionCount} hibernated session${hibernatedSessionCount > 1 ? 's' : ''}`} delay={500} asChild>
+                    <div className="hibernation-indicator">
+                        <Icon path={mdiSleep} />
+                        <span>{hibernatedSessionCount}</span>
+                    </div>
+                </Tooltip>
             )}
             <AvatarStack className="live-session-avatars" users={liveSessionOwners} max={2}
                          title={liveSessionsTitle} getKey={owner => owner.sessionId} />
             {tags && tags.length > 0 && (
                 <div className="tag-circles">
                     {tags.map(tag => (
-                        <div
-                            key={tag.id}
-                            className="tag-circle"
-                            style={{ backgroundColor: tag.color }}
-                            title={tag.name}
-                        />
+                        <Tooltip key={tag.id} text={tag.name} delay={500} asChild>
+                            <div className="tag-circle" style={{ backgroundColor: tag.color }} />
+                        </Tooltip>
                     ))}
                 </div>
             )}
             <DropIndicator show={isOver && dropPlacement === 'after'} placement="after" />
         </div>
-    );
+    </>;
 };

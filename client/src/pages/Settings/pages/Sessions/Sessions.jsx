@@ -7,6 +7,7 @@ import Icon from "@mdi/react";
 import { mdiCellphone, mdiMonitor, mdiTablet, mdiApplication, mdiCellphoneLink } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import Button from "@/common/components/Button";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
 
 const parseNextermUserAgent = (ua) => {
     if (!ua) return null;
@@ -59,7 +60,7 @@ export const Sessions = () => {
     return (
         <div className="sessions-page">
             <div className="sessions-header">
-                <h2>{t("settings.sessions.title")}</h2>
+                <SettingsHeading>{t("settings.sessions.title")}</SettingsHeading>
             </div>
 
             <div className="vertical-list">

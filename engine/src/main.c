@@ -181,6 +181,13 @@ int main(int argc, char* argv[]) {
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
 
+#ifdef NEXTERM_HAVE_EXECINFO
+    /* backtrace() loads libgcc on first use, which is unsafe inside the
+     * crash handler, so load it now */
+    void* warmup_frame;
+    backtrace(&warmup_frame, 1);
+#endif
+
     struct sigaction crash_sa;
     memset(&crash_sa, 0, sizeof(crash_sa));
     crash_sa.sa_sigaction = crash_signal_handler;

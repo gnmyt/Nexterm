@@ -1,0 +1,76 @@
+:root {
+    --background: #000A12;
+    --gray: rgba(255, 255, 255, 0.1);
+    --primary: #314BD3;
+    --white: #FFFFFF;
+    --text: #FFFFFF;
+    --subtext: #B7B7B7;
+}
+
+body {
+    margin: 0;
+    background: var(--background);
+    color: var(--subtext);
+    font: 16px "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+.wrap {
+    max-width: 600px;
+    margin: 14vh auto 0;
+    padding: 0 24px;
+    line-height: 1.6;
+}
+
+.icon {
+    width: 72px;
+    height: 72px;
+    margin-bottom: 40px;
+    color: var(--primary);
+    opacity: .7;
+}
+
+h1 {
+    margin: 0 0 16px;
+    font-size: 1.6em;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.25;
+}
+
+p {
+    margin: 0 0 20px;
+}
+
+.url {
+    color: var(--text);
+    word-break: break-all;
+}
+
+.code {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--gray);
+    font-size: .8em;
+    text-transform: uppercase;
+    color: var(--subtext);
+    opacity: .7;
+}
+
+button {
+    margin-top: 32px;
+    float: right;
+    padding: .5rem 1rem;
+    border: 0;
+    border-radius: .5rem;
+    background: var(--primary);
+    color: var(--white);
+    font-family: inherit;
+    font-size: .875em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter .1s ease-out;
+}
+
+button:hover {
+    filter: brightness(1.15);
+}

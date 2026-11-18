@@ -40,6 +40,18 @@
 #define GUAC_RDP_DISP_MAX_SIZE 8192
 
 /**
+ * The minimum desktop scale, as a percentage, allowed by the RDP display
+ * update channel.
+ */
+#define GUAC_RDP_DISP_MIN_SCALE 100
+
+/**
+ * The maximum desktop scale, as a percentage, allowed by the RDP display
+ * update channel.
+ */
+#define GUAC_RDP_DISP_MAX_SCALE 500
+
+/**
  * The minimum amount of time that must elapse between display size updates,
  * in milliseconds.
  */
@@ -200,10 +212,14 @@ void guac_rdp_disp_load_plugin(rdpContext* context);
  *
  * @param top_offset
  *     The offset of the monitor from the top of the screen, in pixels.
+ *
+ * @param scale
+ *     The desired desktop scale, as a percentage, or 0 to keep the current
+ *     scale. Values outside 100 through 500 inclusive are ignored.
  */
 void guac_rdp_disp_set_size(guac_rdp_disp* disp, guac_rdp_settings* settings,
         freerdp* rdp_inst, int width, int height, int x_position,
-        int top_offset);
+        int top_offset, int scale);
 
 /**
  * Sends an actual display update request to the RDP server based on previous

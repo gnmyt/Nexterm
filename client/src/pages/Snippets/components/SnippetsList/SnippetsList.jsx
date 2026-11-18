@@ -8,7 +8,9 @@ import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import Button from "@/common/components/Button";
+import Tooltip from "@/common/components/Tooltip";
 import { parseOsFilter } from "@/common/utils/osUtils.js";
+import EmptyState from "@/common/components/EmptyState";
 
 const SnippetItem = ({ snippet, onEdit, onDelete, isReadOnly, onReposition, t }) => {
     const [{ isDragging }, drag] = useDrag({ type: "snippet", item: { id: snippet.id }, canDrag: !isReadOnly, collect: m => ({ isDragging: m.isDragging() }) });
@@ -22,10 +24,12 @@ const SnippetItem = ({ snippet, onEdit, onDelete, isReadOnly, onReposition, t })
                     <h3>{snippet.name}</h3>
                     <div className="snippet-badges">
                         {osFilter.length > 0 && (
-                            <span className="os-badge" title={osFilter.join(", ")}>
-                                <Icon path={mdiLinux} size={0.5} />
-                                {osFilter.length === 1 ? osFilter[0] : `${osFilter.length} OS`}
-                            </span>
+                            <Tooltip text={osFilter.join(", ")} delay={500} asChild>
+                                <span className="os-badge">
+                                    <Icon path={mdiLinux} size={0.5} />
+                                    {osFilter.length === 1 ? osFilter[0] : `${osFilter.length} OS`}
+                                </span>
+                            </Tooltip>
                         )}
                         {snippet.sourceId && <Icon path={mdiCloudDownloadOutline} size={0.65} className="source-badge" />}
                     </div>
@@ -35,8 +39,8 @@ const SnippetItem = ({ snippet, onEdit, onDelete, isReadOnly, onReposition, t })
             </div>
             {!isReadOnly && (
                 <div className="snippet-actions">
-                    <button className="action-button" onClick={e => { e.stopPropagation(); onEdit(snippet.id); }} title={t('snippets.list.actions.edit')}><Icon path={mdiPencil} /></button>
-                    <button className="action-button delete" onClick={e => { e.stopPropagation(); onDelete(snippet.id); }} title={t('snippets.list.actions.delete')}><Icon path={mdiTrashCan} /></button>
+                    <Button icon={mdiPencil} title={t('snippets.list.actions.edit')} onClick={e => { e.stopPropagation(); onEdit(snippet.id); }} />
+                    <Button type="danger" icon={mdiTrashCan} title={t('snippets.list.actions.delete')} onClick={e => { e.stopPropagation(); onDelete(snippet.id); }} />
                 </div>
             )}
         </div>
@@ -68,7 +72,7 @@ export const SnippetsList = ({ snippets, onEdit, selectedOrganization, isReadOnl
         } catch (e) { sendToast("Error", e.message || t('snippets.messages.errors.reorderFailed')); }
     };
 
-    if (!snippets?.length) return <div className="snippets-list-container"><div className="empty-snippets"><p>{t('snippets.list.empty')}</p></div></div>;
+    if (!snippets?.length) return <div className="snippets-list-container"><EmptyState compact description={t('snippets.list.empty')} /></div>;
 
     return (
         <div className="snippets-list-container">

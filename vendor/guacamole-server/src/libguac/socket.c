@@ -201,18 +201,19 @@ void guac_socket_free(guac_socket* socket) {
 
     guac_socket_flush(socket);
 
-    /* Call free handler if defined */
-    if (socket->free_handler)
-        socket->free_handler(socket);
-
     /* Mark as closed */
     socket->state = GUAC_SOCKET_CLOSED;
 
-    /* Stop keep-alive thread, if enabled */
+    /* Stop keep-alive thread, if enabled, before the free handler releases
+     * anything the thread may still be writing through */
     if (socket->__keep_alive_enabled) {
         pthread_cancel(socket->__keep_alive_thread);
         pthread_join(socket->__keep_alive_thread, NULL);
     }
+
+    /* Call free handler if defined */
+    if (socket->free_handler)
+        socket->free_handler(socket);
 
     guac_mem_free(socket);
 }

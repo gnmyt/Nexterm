@@ -6,9 +6,10 @@ const Entry = require("../models/Entry");
 const { hasOrganizationAccess, hasOrganizationPermission, hasAccountPermission, validateFolderAccess } = require("../utils/permission");
 const { Permission } = require("../permissions/registry");
 const { getProvider, entryKey } = require("../lib/hypervisors");
+const hostTrust = require("../utils/hostTrust");
 
 const validateIntegrationAccess = async (accountId, integration, requiredPermission = null) => {
-    if (!integration) return { valid: false, error: { code: 401, message: "Integration does not exist" } };
+    if (!integration) return { valid: false, error: { code: 404, message: "Integration does not exist" } };
 
     if (integration.organizationId) {
         const allowed = requiredPermission
@@ -20,6 +21,8 @@ const validateIntegrationAccess = async (accountId, integration, requiredPermiss
                 error: { code: 403, message: `You don't have access to this organization's integration` },
             };
         }
+    } else if (!integration.accountId || integration.accountId !== accountId) {
+        return { valid: false, error: { code: 404, message: "Integration does not exist" } };
     } else if (requiredPermission && !(await hasAccountPermission(accountId, requiredPermission))) {
         return { valid: false, error: { code: 403, message: "You don't have permission to manage resources" } };
     }
@@ -52,7 +55,7 @@ const ensureRootFolder = async (integration, ownerAccountId = null) => {
 
     const accountId = integration.organizationId
         ? null
-        : ownerAccountId ?? (sample ? sample.accountId : null);
+        : integration.accountId ?? ownerAccountId ?? (sample ? sample.accountId : null);
 
     if (!integration.organizationId && !accountId) {
         throw new Error("Cannot determine an owner for the integration root folder");
@@ -70,14 +73,16 @@ const ensureRootFolder = async (integration, ownerAccountId = null) => {
     });
 };
 
-const reconcileIntegration = async (integration, ownerAccountId = null) => {
+const reconcileIntegration = async (integration, ownerAccountId = null, acceptFingerprint = null) => {
     const provider = getProvider(integration.type);
     if (!provider) throw new Error(`No provider registered for integration type '${integration.type}'`);
 
     const credential = await Credential.findOne({ where: { integrationId: integration.id, type: "password" } });
     if (!credential) throw new Error("Integration credentials not found");
 
-    const nodes = await provider.discover(buildProviderConfig(integration, credential));
+    const scope = await hostTrust.scopeForIntegration(integration);
+    const nodes = await hostTrust.runTrusted(scope, ownerAccountId, acceptFingerprint,
+        () => provider.discover(buildProviderConfig(integration, credential)));
 
     const rootFolder = await ensureRootFolder(integration, ownerAccountId);
     const ownership = { accountId: rootFolder.accountId, organizationId: rootFolder.organizationId };
@@ -210,19 +215,24 @@ module.exports.createIntegration = async (accountId, configuration) => {
         }
     }
 
+    const scope = hostTrust.scopeOf(configuration.organizationId, accountId);
+
     try {
-        await provider.testConnection({
+        await hostTrust.runTrusted(scope, accountId, configuration.acceptFingerprint, () => provider.testConnection({
             ip: configuration.ip,
             port: configuration.port,
             username: configuration.username,
             password: configuration.password,
-        });
+        }));
     } catch (error) {
+        const trustFailure = await hostTrust.trustFailureResponse(scope, error, accountId);
+        if (trustFailure) return trustFailure;
         logger.error("Failed to connect to integration host", { ip: configuration.ip, port: configuration.port, error: error.message });
         return mapConnectionError(error, configuration.ip, configuration.port);
     }
 
     const integration = await Integration.create({
+        accountId: configuration.organizationId ? null : accountId,
         organizationId: configuration.organizationId || null,
         type,
         name: configuration.name,
@@ -367,7 +377,7 @@ module.exports.getIntegration = async (accountId, integrationId) => {
     return { ...integration, password: undefined };
 };
 
-module.exports.syncIntegration = async (accountId, integrationId) => {
+module.exports.syncIntegration = async (accountId, integrationId, acceptFingerprint = null) => {
     const integration = await Integration.findByPk(integrationId);
     const accessCheck = await validateIntegrationAccess(accountId, integration, Permission.RESOURCES_MANAGE);
 
@@ -379,7 +389,7 @@ module.exports.syncIntegration = async (accountId, integrationId) => {
 
     try {
         logger.info(`Starting integration sync`, { integrationId, name: integration.name });
-        const result = await reconcileIntegration(integration, accountId);
+        const result = await reconcileIntegration(integration, accountId, acceptFingerprint);
         logger.info(`Integration synced successfully`, { integrationId, ...result });
 
         return {
@@ -388,6 +398,8 @@ module.exports.syncIntegration = async (accountId, integrationId) => {
             ...result,
         };
     } catch (error) {
+        const trustFailure = await hostTrust.trustFailureResponse(await hostTrust.scopeForIntegration(integration), error, accountId);
+        if (trustFailure) return trustFailure;
         logger.error("Error syncing integration", { integrationId, error: error.message, stack: error.stack });
         await Integration.update({ status: "offline" }, { where: { id: integrationId } });
 
@@ -402,7 +414,7 @@ module.exports.performEntryAction = async (accountId, entryId, action) => {
     if (!entry.integrationId) return { code: 400, message: "Entry is not linked to an integration" };
 
     const integration = await Integration.findByPk(entry.integrationId);
-    const accessCheck = await validateIntegrationAccess(accountId, integration);
+    const accessCheck = await validateIntegrationAccess(accountId, integration, Permission.CONNECT_PROXMOX);
     if (!accessCheck.valid) return accessCheck.error;
 
     const provider = getProvider(integration.type);
@@ -414,7 +426,8 @@ module.exports.performEntryAction = async (accountId, entryId, action) => {
     if (!credential) return { code: 400, message: "Integration credentials not found" };
 
     try {
-        await provider.setPower(buildProviderConfig(integration, credential), entry, action);
+        await hostTrust.withScope(await hostTrust.scopeForIntegration(integration),
+            () => provider.setPower(buildProviderConfig(integration, credential), entry, action));
         return { success: true };
     } catch (error) {
         logger.error("Failed to perform power action", { entryId, action, error: error.message });

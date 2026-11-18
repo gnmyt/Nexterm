@@ -4,20 +4,55 @@ const logger = require("../utils/logger");
 const AuditLog = require("../models/AuditLog");
 const { isRecordingEnabled, getRecordingPath, compressRecording } = require("../utils/recordingService");
 const stateBroadcaster = require("./StateBroadcaster");
+const { TRUST_CLOSE_CODE, TRUST_CLOSE_REASON } = require("../utils/hostTrust");
 
 const MAX_LOG_BUFFER_SIZE = 200 * 1024;
 const sessions = new Map();
 const shareIndex = new Map();
-const CONTROL_PLANE_TYPES = new Set(["ssh", "sftp", "guac", "pve-lxc"]);
+const CONTROL_PLANE_TYPES = new Set(["ssh", "telnet", "sftp", "guac", "pve-lxc"]);
 
 const TYPING_DURATION_MS = 1500;
 const PRESENCE_THROTTLE_MS = 250;
+const AGENT_PARTICIPANT = Symbol("agent");
 
-module.exports.create = (accountId, entryId, configuration, connectionReason = null, tabId = null, browserId = null, auditLogId = null, organizationId = null) => {
-    const sessionId = uuidv4();
+const createAgentParticipant = (session, origin = session.origin) => ({
+    viewerId: `agent-${session.sessionId}`,
+    accountId: null,
+    username: null,
+    firstName: null,
+    lastName: null,
+    avatarHash: null,
+    kind: "agent",
+    origin: origin || "mcp",
+    writable: true,
+    typingUntil: 0,
+    typingTimer: null,
+    busy: 0,
+});
+
+module.exports.create = ({
+    accountId,
+    entryId,
+    configuration,
+    connectionReason = null,
+    tabId = null,
+    browserId = null,
+    auditLogId = null,
+    organizationId = null,
+    sessionId = uuidv4(),
+    connectionGeneration = 0,
+    automated = false,
+    origin = null,
+    apiKeyId = null,
+    watchable = true,
+}) => {
     const session = {
         sessionId, accountId, entryId, configuration, connectionReason,
-        tabId, browserId, auditLogId, organizationId,
+        tabId, browserId, auditLogId, organizationId, connectionGeneration,
+        automated: Boolean(automated),
+        origin: origin || null,
+        apiKeyId: apiKeyId || null,
+        watchable: watchable !== false,
         isHibernated: false,
         createdAt: new Date(),
         lastActivity: new Date(),
@@ -31,7 +66,8 @@ module.exports.create = (accountId, entryId, configuration, connectionReason = n
         shareWritable: false,
     };
     sessions.set(sessionId, session);
-    logger.info(`Session created`, { sessionId, accountId, entryId, organizationId });
+    if (session.automated) session.participants.set(AGENT_PARTICIPANT, createAgentParticipant(session));
+    logger.info(`Session created`, { sessionId, accountId, entryId, organizationId, automated: session.automated, origin: session.origin });
     return session;
 };
 
@@ -41,7 +77,7 @@ module.exports.getAll = (accountId, tabId = undefined, browserId = undefined) =>
     const results = [];
     for (const session of sessions.values()) {
         if (session.accountId !== accountId) continue;
-        if (session.isHibernated) {
+        if (session.isHibernated || session.automated) {
             results.push(session);
             continue;
         }
@@ -57,6 +93,14 @@ const sessionsOfOrganization = function* (organizationId) {
     for (const session of sessions.values()) {
         if (Number(session.organizationId) === numericOrgId) yield session;
     }
+};
+
+module.exports.getAutomated = (accountId) => {
+    const results = [];
+    for (const session of sessions.values()) {
+        if (session.accountId === accountId && session.automated) results.push(session);
+    }
+    return results;
 };
 
 module.exports.getOrganizationSessions = (organizationId, excludeAccountId = null) => {
@@ -97,11 +141,56 @@ module.exports.waitForGuacReady = (sessionId, timeoutMs = 30000) => {
     return new Promise((resolve, reject) => {
         const timeout = setTimeout(() => reject(new Error("Guac ready timeout")), timeoutMs);
         if (!session._guacReadyWaiters) session._guacReadyWaiters = [];
-        session._guacReadyWaiters.push(() => { clearTimeout(timeout); resolve(); });
+        session._guacReadyWaiters.push((error) => {
+            clearTimeout(timeout);
+            if (error) reject(error);
+            else resolve();
+        });
     });
 };
 
+const TRUST_CHALLENGE_TTL_MS = 10 * 60 * 1000;
+
+module.exports.setTrustChallenge = (sessionId, challenge) => {
+    const session = module.exports.get(sessionId);
+    if (!session) return false;
+    session.trustChallenge = challenge;
+    session.guacReady = false;
+    stateBroadcaster.broadcast("CONNECTIONS", { accountId: session.accountId });
+    return true;
+};
+
+module.exports.isTrustPending = (sessionId) => {
+    const session = module.exports.get(sessionId);
+    if (!session) return false;
+    return !!session.trustChallenge || require("./controlPlane/ControlPlaneServer").isTrustFailure(sessionId);
+};
+
+module.exports.detachConnection = async (sessionId) => {
+    const session = module.exports.get(sessionId);
+    if (!session) return;
+    session.guacReady = false;
+    closeAllWebSockets(sessionId, TRUST_CLOSE_CODE, TRUST_CLOSE_REASON);
+    const connection = session.masterConnection;
+    session.masterConnection = null;
+    if (connection) await cleanupConnection(connection, sessionId);
+};
+
+module.exports.clearTrustChallenge = (sessionId) => {
+    const session = module.exports.get(sessionId);
+    if (!session?.trustChallenge) return null;
+    const challenge = session.trustChallenge;
+    session.trustChallenge = null;
+    return challenge;
+};
+
 module.exports.getConnection = (sessionId) => module.exports.get(sessionId)?.masterConnection || null;
+
+module.exports.hasAttachedClients = (sessionId) => {
+    const session = module.exports.get(sessionId);
+    if (!session?.masterConnection) return false;
+    return session.connectedWs.size + session.sharedWs.size > 0;
+};
 
 module.exports.updateConnectionId = (sessionId, connectionId) => {
     const session = module.exports.get(sessionId);
@@ -113,6 +202,7 @@ module.exports.updateConnectionId = (sessionId, connectionId) => {
 module.exports.onMasterConnectionClosed = (sessionId, reason = "closed") => {
     const session = module.exports.get(sessionId);
     if (!session) return;
+    if (module.exports.isTrustPending(sessionId)) return;
     logger.info(`Master connection ${reason}, terminating session`, { sessionId });
     if (reason.startsWith("error:")) {
         module.exports.markFailed(sessionId, reason);
@@ -178,9 +268,23 @@ const finalizeTerminalRecording = async (sessionId) => {
 
 module.exports.getLogBuffer = (sessionId) => module.exports.get(sessionId)?.logBuffer || "";
 
+module.exports.injectTerminalOutput = (sessionId, text) => {
+    const session = module.exports.get(sessionId);
+    if (!session || !text) return;
+    module.exports.appendLog(sessionId, text);
+    for (const ws of [...session.connectedWs, ...session.sharedWs]) {
+        if (ws.readyState === ws.OPEN) ws.send(text);
+    }
+};
+
 module.exports.setActiveWs = (sessionId, ws) => {
     const session = module.exports.get(sessionId);
     if (session) session.activeWs = ws;
+};
+
+module.exports.claimActiveWs = (sessionId, ws) => {
+    const session = module.exports.get(sessionId);
+    if (session && !session.activeWs) session.activeWs = ws;
 };
 
 module.exports.isActiveWs = (sessionId, ws) => module.exports.get(sessionId)?.activeWs === ws;
@@ -225,6 +329,7 @@ const collectParticipants = (session) => {
             kind: participant.kind,
             writable: participant.writable,
             typing,
+            ...(participant.origin && { origin: participant.origin }),
         });
     }
     return [...byKey.values()];
@@ -269,6 +374,36 @@ module.exports.markTyping = (sessionId, ws) => {
     participant.typingTimer = setTimeout(() => {
         if (sessions.has(sessionId)) schedulePresence(session, true);
     }, TYPING_DURATION_MS + 50);
+};
+
+module.exports.beginAgentActivity = (sessionId, origin) => {
+    const session = module.exports.get(sessionId);
+    if (!session) return () => {};
+
+    let participant = session.participants.get(AGENT_PARTICIPANT);
+    if (!participant) {
+        participant = createAgentParticipant(session, origin);
+        session.participants.set(AGENT_PARTICIPANT, participant);
+    }
+    const wasTyping = participant.typingUntil > Date.now();
+    participant.busy++;
+    participant.typingUntil = Infinity;
+    clearTimeout(participant.typingTimer);
+    if (!wasTyping) schedulePresence(session, true);
+
+    let ended = false;
+    return () => {
+        if (ended) return;
+        ended = true;
+        participant.busy--;
+        if (participant.busy > 0) return;
+        participant.typingUntil = Date.now() + TYPING_DURATION_MS;
+        participant.typingTimer = setTimeout(() => {
+            if (!sessions.has(sessionId) || participant.busy > 0) return;
+            if (!session.automated) session.participants.delete(AGENT_PARTICIPANT);
+            schedulePresence(session, true);
+        }, TYPING_DURATION_MS + 50);
+    };
 };
 
 module.exports.addWebSocket = (sessionId, ws, isShared = false, participant = null) => {
@@ -334,6 +469,13 @@ module.exports.markFailed = (sessionId, reason) => {
     failedSessions.set(sessionId, { reason: reason || "Connection failed", timeout });
 };
 
+module.exports.clearFailedReason = (sessionId) => {
+    const entry = failedSessions.get(sessionId);
+    if (!entry) return;
+    clearTimeout(entry.timeout);
+    failedSessions.delete(sessionId);
+};
+
 module.exports.consumeFailedReason = (sessionId) => {
     const entry = failedSessions.get(sessionId);
     if (!entry) return null;
@@ -364,7 +506,7 @@ module.exports.resume = (sessionId, tabId = null, browserId = null) => {
 
 const cleanupConnection = async (conn, sessionId) => {
     if (CONTROL_PLANE_TYPES.has(conn.type)) {
-        try { require("./controlPlane/ControlPlaneServer").closeSession(sessionId); } catch {}
+        try { await require("./controlPlane/ControlPlaneServer").closeSessionAndWait(sessionId); } catch {}
     }
     for (const s of [conn.dataSocket, conn.socket]) {
         if (!s) continue;
@@ -377,7 +519,9 @@ const cleanupConnection = async (conn, sessionId) => {
     try { conn.sftpClient?.close(); } catch {}
     try { conn.transferClient?.close(); } catch {}
     try { conn.backgroundClient?.close(); } catch {}
-    try { conn.aiClient?.close(); } catch {}
+    try { conn.agentClient?.close(); } catch {}
+    try { conn.agentDisplay?.close(); } catch {}
+    try { conn.agentTerminal?.close(); } catch {}
     if (CONTROL_PLANE_TYPES.has(conn.type)) {
         for (const auxSessionId of conn.auxSessionIds || []) {
             try { require("./controlPlane/ControlPlaneServer").closeSession(auxSessionId); } catch {}
@@ -385,30 +529,36 @@ const cleanupConnection = async (conn, sessionId) => {
     }
 };
 
-module.exports.remove = async (sessionId, options = {}) => {
+module.exports.remove = (sessionId, options = {}) => {
     const session = module.exports.get(sessionId);
-    if (!session || session._removing) return false;
+    if (!session) return Promise.resolve(false);
+    if (session._removePromise) return session._removePromise;
     session._removing = true;
 
-    const { code = 1000, reason = "Session terminated" } = options;
-    closeAllWebSockets(sessionId, code, reason);
-    if (session.recording) await finalizeTerminalRecording(sessionId);
-    if (session.masterConnection) {
-        await cleanupConnection(session.masterConnection, sessionId);
-        session.masterConnection = null;
-    }
-    if (session.shareId) shareIndex.delete(session.shareId);
+    const { code = 1000, reason = "Session terminated", broadcast = true } = options;
+    session._removePromise = (async () => {
+        closeAllWebSockets(sessionId, code, reason);
+        if (session.recording) await finalizeTerminalRecording(sessionId);
+        if (session.masterConnection) {
+            await cleanupConnection(session.masterConnection, sessionId);
+            session.masterConnection = null;
+        }
+        if (session.shareId) shareIndex.delete(session.shareId);
 
-    if (session._presenceTimer) clearTimeout(session._presenceTimer);
-    for (const participant of session.participants.values()) clearTimeout(participant.typingTimer);
-    session.participants.clear();
+        if (session._presenceTimer) clearTimeout(session._presenceTimer);
+        for (const participant of session.participants.values()) clearTimeout(participant.typingTimer);
+        session.participants.clear();
 
-    const { accountId, organizationId } = session;
-    sessions.delete(sessionId);
-    logger.info("Session removed", { sessionId });
-    stateBroadcaster.broadcast("CONNECTIONS", { accountId });
-    if (organizationId) stateBroadcaster.broadcast("LIVE_SESSIONS", { organizationId });
-    return true;
+        const { accountId, organizationId } = session;
+        if (sessions.get(sessionId) === session) sessions.delete(sessionId);
+        logger.info("Session removed", { sessionId });
+        if (broadcast) {
+            stateBroadcaster.broadcast("CONNECTIONS", { accountId });
+            if (organizationId) stateBroadcaster.broadcast("LIVE_SESSIONS", { organizationId });
+        }
+        return true;
+    })();
+    return session._removePromise;
 };
 
 module.exports.updateActivity = (sessionId) => {
@@ -502,15 +652,25 @@ module.exports.removeAllByEntryId = async (entryId) => {
     return toRemove.length;
 };
 
-setInterval(() => {
-    const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
+const AUTOMATED_IDLE_MS = 60 * 60 * 1000;
+
+const cleanupIdleSessions = () => {
+    const now = Date.now();
+    const sixHoursAgo = now - 6 * 60 * 60 * 1000;
+    const automatedCutoff = now - AUTOMATED_IDLE_MS;
     let removed = 0;
     for (const [sessionId, session] of sessions) {
-        if (!session.isHibernated && new Date(session.lastActivity) < sixHoursAgo) {
-            logger.info("Removing old session", { sessionId });
-            module.exports.remove(sessionId);
-            removed++;
-        }
+        const lastActivity = new Date(session.lastActivity).getTime();
+        const unanswered = session.trustChallenge && session.trustChallenge.createdAt < now - TRUST_CHALLENGE_TTL_MS;
+        const expired = unanswered || (session.automated
+            ? lastActivity < automatedCutoff
+            : !session.isHibernated && lastActivity < sixHoursAgo);
+        if (!expired) continue;
+        logger.info(session.automated ? "Removing idle automated session" : "Removing old session", { sessionId });
+        module.exports.remove(sessionId);
+        removed++;
     }
     if (removed > 0) logger.info(`Cleaned up ${removed} old sessions`);
-}, 30 * 60 * 1000);
+};
+
+setInterval(cleanupIdleSessions, 60 * 1000).unref?.();

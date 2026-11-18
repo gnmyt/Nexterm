@@ -87,6 +87,11 @@ const RecordingPlayerContent = ({ auditLogId, recordingType }) => {
                     const displayElement = display.getElement();
                     containerRef.current.appendChild(displayElement);
 
+                    const snapToDevicePixel = (value) => {
+                        const density = window.devicePixelRatio || 1;
+                        return Math.round(value * density) / density;
+                    };
+
                     const scaleDisplay = () => {
                         const displayWidth = display.getWidth();
                         const displayHeight = display.getHeight();
@@ -94,11 +99,12 @@ const RecordingPlayerContent = ({ auditLogId, recordingType }) => {
                         const containerHeight = containerRef.current.clientHeight;
                         if (displayWidth && displayHeight && containerWidth && containerHeight) {
                             const scaleFactor = Math.min(containerWidth / displayWidth, containerHeight / displayHeight);
-                            const offsetX = (containerWidth - displayWidth * scaleFactor) / 2;
-                            const offsetY = (containerHeight - displayHeight * scaleFactor) / 2;
+                            const offsetX = snapToDevicePixel((containerWidth - displayWidth * scaleFactor) / 2);
+                            const offsetY = snapToDevicePixel((containerHeight - displayHeight * scaleFactor) / 2);
                             Object.assign(displayElement.style, {
                                 position: "absolute", transform: `translate(${offsetX}px, ${offsetY}px) scale(${scaleFactor})`,
-                                transformOrigin: "0 0", imageRendering: "crisp-edges"
+                                transformOrigin: "0 0",
+                                imageRendering: Math.abs(scaleFactor - 1) < 0.001 ? "pixelated" : "auto",
                             });
                         }
                     };

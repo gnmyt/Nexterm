@@ -1,198 +1,248 @@
 @use "@/common/styles/colors"
+@use "@/common/styles/breakpoints"
 
 .quick-action-overlay
   position: fixed
-  top: 0
-  left: 0
-  right: 0
-  bottom: 0
-  background: rgba(0, 0, 0, 0.5)
-  backdrop-filter: blur(4px)
+  inset: 0
+  background-color: colors.$dialog-background
+  -webkit-backdrop-filter: blur(0.3rem)
+  backdrop-filter: blur(0.3rem)
   display: flex
   justify-content: center
   align-items: flex-start
-  padding-top: 15vh
+  padding: 14vh 1rem 1rem
+  box-sizing: border-box
   z-index: 100000
-  animation: overlayFadeIn 0.15s ease-out
+  animation: quickActionOverlayIn 0.15s ease-out
+
+  @supports not (backdrop-filter: blur(0.3rem))
+    background-color: colors.$overlay-fallback
+
+  @media (max-width: breakpoints.$mobile)
+    padding-top: 8vh
 
   &.closing
-    animation: overlayFadeOut 0.1s ease-out forwards
+    animation: quickActionOverlayOut 0.1s ease-out forwards
 
 .quick-action-container
-  background: colors.$lighter-background
-  border: 1px solid colors.$dark-gray
-  border-radius: 1rem
+  display: flex
+  flex-direction: column
   width: 100%
-  max-width: 600px
+  max-width: 38rem
+  max-height: min(34rem, 80vh)
+  background-color: colors.$lighter-background
+  border: 1px solid colors.$border
+  border-radius: 1rem
   box-shadow: colors.$shadow-xl
   overflow: hidden
-  animation: containerSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)
+  animation: quickActionIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)
 
   &.closing
-    animation: containerSlideOut 0.1s ease-out forwards
+    animation: quickActionOut 0.1s ease-out forwards
+
+  kbd
+    display: inline-flex
+    align-items: center
+    justify-content: center
+    min-width: 1.375rem
+    height: 1.375rem
+    padding: 0 0.375rem
+    box-sizing: border-box
+    border: 1px solid colors.$gray
+    border-radius: 0.375rem
+    background-color: colors.$dark-gray
+    color: colors.$subtext
+    font-family: inherit
+    font-size: 0.68rem
+    font-weight: 600
+    letter-spacing: 0.02em
+    line-height: 1
 
 .quick-action-search
   display: flex
   align-items: center
-  padding: 1rem 1.25rem
-  border-bottom: 1px solid colors.$dark-gray
   gap: 0.75rem
+  padding: 0.875rem 1rem 0.875rem 1.125rem
+  border-bottom: 1px solid colors.$border
+  flex-shrink: 0
 
-  input
-    flex: 1
-    background: transparent
-    border: none
-    outline: none
-    color: colors.$white
-    font-size: 1.1rem
-    font-family: inherit
-
-    &::placeholder
-      color: colors.$subtext
-
-  kbd
-    background: colors.$gray
-    border: 1px solid colors.$dark-gray
-    border-radius: 0.25rem
-    padding: 0.2rem 0.5rem
-    font-size: 0.75rem
-    color: colors.$subtext
-    font-family: inherit
-
-.quick-action-results
-  max-height: 400px
-  overflow-y: auto
-  padding: 0.5rem
-
-  &::-webkit-scrollbar
-    width: 6px
-
-  &::-webkit-scrollbar-track
-    background: transparent
-
-  &::-webkit-scrollbar-thumb
-    background: colors.$gray
-    border-radius: 3px
-
-.quick-action-empty
-  padding: 2rem
-  text-align: center
-  color: colors.$subtext
-  font-size: 0.95rem
-
-.quick-action-item
-  display: flex
-  align-items: center
-  padding: 0.75rem 1rem
-  border-radius: 0.5rem
-  cursor: pointer
-  gap: 0.75rem
-  transition: background-color 0.1s ease
-
-  &:hover, &.selected
-    background: colors.$gray
-
-  &.selected
-    background: colors.$primary-opacity
-
-    .item-icon
-      color: colors.$primary
-
-  .item-icon
+  &__icon
     width: 1.25rem
     height: 1.25rem
     color: colors.$subtext
     flex-shrink: 0
+
+  input
+    flex: 1
+    min-width: 0
+    background: transparent
+    border: none
+    outline: none
+    color: colors.$white
+    font-size: 1rem
+    font-weight: 500
+    font-family: inherit
+
+    &::placeholder
+      color: colors.$subtext
+      opacity: 0.8
+
+.quick-action-results
+  flex: 1
+  min-height: 0
+  overflow-y: auto
+  padding: 0.5rem
+  display: flex
+  flex-direction: column
+  gap: 0.375rem
+
+.quick-action-empty
+  margin: 0.5rem
+
+.quick-action-group
+  display: flex
+  flex-direction: column
+  gap: 0.125rem
+
+  &__title
+    margin: 0
+    padding: 0.5rem 0.75rem 0.25rem
+    font-size: 0.68rem
+    font-weight: 700
+    letter-spacing: 0.08em
+    text-transform: uppercase
+    color: colors.$subtext
+
+.quick-action-item
+  display: flex
+  align-items: center
+  gap: 0.75rem
+  padding: 0.5rem 0.625rem
+  border-radius: 0.625rem
+  cursor: pointer
+  transition: background-color 0.1s ease, box-shadow 0.1s ease
+
+  .item-icon
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 2.125rem
+    height: 2.125rem
+    border-radius: 0.5625rem
+    background-color: colors.$dark-gray
+    color: colors.$subtext
+    flex-shrink: 0
+    transition: background-color 0.1s ease, color 0.1s ease
+
+    svg
+      width: 1.125rem
+      height: 1.125rem
 
   .item-content
     flex: 1
     min-width: 0
     display: flex
     flex-direction: column
-    gap: 0.15rem
+    gap: 0.1rem
 
   .item-name
     color: colors.$white
-    font-size: 0.95rem
+    font-size: 0.875rem
+    font-weight: 600
+    line-height: 1.25
     white-space: nowrap
     overflow: hidden
     text-overflow: ellipsis
+
+  .item-meta
     display: flex
     align-items: center
-    gap: 0.5rem
-
-    .protocol-badge
-      font-size: 0.65rem
-      padding: 0.1rem 0.35rem
-      background: colors.$gray
-      border-radius: 0.25rem
-      color: colors.$subtext
-      font-weight: 600
-      text-transform: uppercase
-
-  .item-path
+    min-width: 0
     color: colors.$subtext
-    font-size: 0.8rem
+    font-size: 0.72rem
+    font-weight: 500
+    line-height: 1.3
     white-space: nowrap
     overflow: hidden
     text-overflow: ellipsis
 
-  .item-type
-    color: colors.$subtext
-    font-size: 0.75rem
-    white-space: nowrap
+    &__part
+      min-width: 0
+      overflow: hidden
+      text-overflow: ellipsis
+
+      &:first-child
+        font-weight: 600
+        letter-spacing: 0.04em
+        flex-shrink: 0
+
+      & + &::before
+        content: "·"
+        margin: 0 0.4rem
+        opacity: 0.7
+
+  .item-enter
+    opacity: 0
     flex-shrink: 0
+    transition: opacity 0.1s ease
+
+  &.selected
+    background-color: colors.$dark-gray
+    box-shadow: inset 0 0 0 1px colors.$primary
+
+    .item-icon
+      background-color: colors.$gray
+      color: colors.$white
+
+    .item-enter
+      opacity: 1
 
 .quick-action-footer
   display: flex
-  justify-content: center
-  gap: 1.5rem
-  padding: 0.75rem 1rem
-  border-top: 1px solid colors.$dark-gray
-  background: colors.$background
+  align-items: center
+  gap: 1.25rem
+  padding: 0.625rem 1rem
+  border-top: 1px solid colors.$border
+  flex-shrink: 0
+
+  @media (max-width: breakpoints.$mobile)
+    display: none
 
   span
     display: flex
     align-items: center
-    gap: 0.35rem
+    gap: 0.375rem
     color: colors.$subtext
     font-size: 0.75rem
+    font-weight: 500
 
-    kbd
-      background: colors.$gray
-      border: 1px solid colors.$dark-gray
-      border-radius: 0.25rem
-      padding: 0.15rem 0.35rem
-      font-size: 0.7rem
-      color: colors.$subtext
-      font-family: inherit
-      min-width: 1.25rem
-      text-align: center
+    kbd + kbd
+      margin-left: -0.125rem
 
-@keyframes overlayFadeIn
+@keyframes quickActionOverlayIn
   from
     opacity: 0
   to
     opacity: 1
 
-@keyframes overlayFadeOut
+@keyframes quickActionOverlayOut
   from
     opacity: 1
   to
     opacity: 0
 
-@keyframes containerSlideIn
+@keyframes quickActionIn
   from
     opacity: 0
-    transform: translateY(-20px) scale(0.95)
+    transform: translateY(-12px) scale(0.97)
   to
     opacity: 1
     transform: translateY(0) scale(1)
 
-@keyframes containerSlideOut
+@keyframes quickActionOut
   from
     opacity: 1
     transform: translateY(0) scale(1)
   to
     opacity: 0
-    transform: translateY(-10px) scale(0.98)
+    transform: translateY(-8px) scale(0.98)

@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import Icon from "@mdi/react";
 import { mdiAutoFix, mdiKeyboardTab, mdiUnfoldMoreHorizontal } from "@mdi/js";
 import { useTranslation } from "react-i18next";
+import Tooltip from "@/common/components/Tooltip";
 import "./styles.sass";
 
 export const CommandSuggestion = ({ anchor, query, commands, selectedIndex, loading, error, onAccept, onCycle, foreground, fontFamily, fontSize }) => {
@@ -59,18 +60,18 @@ export const CommandSuggestion = ({ anchor, query, commands, selectedIndex, load
 
             {!loading && !error && command && (
                 <>
-                    <button type="button" className="command-suggestion__accept" onClick={() => onAccept(command)}
-                            title={t("servers.commandSuggestion.accept")}>
+                    <button type="button" className="command-suggestion__accept" onClick={() => onAccept(command)}>
                         <Icon path={mdiKeyboardTab} className="command-suggestion__key" />
                         <span className="command-suggestion__label">{command}</span>
                     </button>
                     {commands.length > 1 && (
-                        <button type="button" className="command-suggestion__cycle" onClick={() => onCycle(1)}
-                                title={t("servers.commandSuggestion.cycle")}
-                                aria-label={t("servers.commandSuggestion.cycle")}>
-                            <Icon path={mdiUnfoldMoreHorizontal} className="command-suggestion__cycle-icon" />
-                            <span className="command-suggestion__counter">{selectedIndex + 1}/{commands.length}</span>
-                        </button>
+                        <Tooltip text={t("servers.commandSuggestion.cycle")} delay={500} asChild>
+                            <button type="button" className="command-suggestion__cycle" onClick={() => onCycle(1)}
+                                    aria-label={t("servers.commandSuggestion.cycle")}>
+                                <Icon path={mdiUnfoldMoreHorizontal} className="command-suggestion__cycle-icon" />
+                                <span className="command-suggestion__counter">{selectedIndex + 1}/{commands.length}</span>
+                            </button>
+                        </Tooltip>
                     )}
                 </>
             )}

@@ -1,5 +1,6 @@
 const DeviceCode = require("../models/DeviceCode");
 const Session = require("../models/Session");
+const { issueNewToken } = require("../utils/loginSession");
 const { Op } = require("sequelize");
 const logger = require("../utils/logger");
 
@@ -81,9 +82,10 @@ module.exports.pollToken = async ({ token }) => {
         }
         
         await DeviceCode.destroy({ where: { id: deviceCode.id } });
+        const sessionToken = await issueNewToken(session);
         logger.system(`Device code redeemed for session`, { sessionId: session.id });
         
-        return { status: "authorized", token: session.token };
+        return { status: "authorized", token: sessionToken };
     }
 
     return { status: "pending" };

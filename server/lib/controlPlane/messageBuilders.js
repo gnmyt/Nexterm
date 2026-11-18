@@ -250,12 +250,14 @@ const buildPortCheck = (requestId, targets, timeoutMs) => {
     return finishEnvelope(builder, Envelope.endEnvelope(builder));
 };
 
-const buildHttpFetch = (requestId, method, url, headers = {}, body = null, timeoutMs = 30000, insecure = false) => {
+const buildHttpFetch = (requestId, method, url, headers = {}, body = null, timeoutMs = 30000, trust = null) => {
     const builder = new flatbuffers.Builder(1024);
     const reqIdOff = builder.createString(requestId);
     const methodOff = builder.createString(method);
     const urlOff = builder.createString(url);
     const bodyOff = body ? builder.createString(body) : 0;
+    const trustModeOff = builder.createString(trust?.trust_mode || "pinned");
+    const trustPinsOff = trust?.trust_pins ? builder.createString(trust.trust_pins) : 0;
 
     const headerEntries = Object.entries(headers);
     let headersVecOff = 0;
@@ -275,7 +277,9 @@ const buildHttpFetch = (requestId, method, url, headers = {}, body = null, timeo
     if (headersVecOff) HttpFetch.addHeaders(builder, headersVecOff);
     if (bodyOff) HttpFetch.addBody(builder, bodyOff);
     HttpFetch.addTimeoutMs(builder, timeoutMs);
-    HttpFetch.addInsecure(builder, insecure);
+    HttpFetch.addTrustMode(builder, trustModeOff);
+    if (trustPinsOff) HttpFetch.addTrustPins(builder, trustPinsOff);
+    HttpFetch.addTrustCa(builder, trust?.trust_ca === "true");
     const fetchOff = HttpFetch.endHttpFetch(builder);
 
     Envelope.startEnvelope(builder);

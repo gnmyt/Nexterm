@@ -27,6 +27,7 @@ const Permission = Object.freeze({
     CONNECT_SSH: "connect.ssh",
     CONNECT_RDP: "connect.rdp",
     CONNECT_VNC: "connect.vnc",
+    CONNECT_WEB: "connect.web",
     CONNECT_PROXMOX: "connect.proxmox",
     CONNECT_TUNNEL: "connect.tunnel",
     FILES_VIEW: "files.view",
@@ -38,6 +39,7 @@ const Permission = Object.freeze({
     ORG_MANAGE: "org.manage",
     ORG_DELETE: "org.delete",
     ORG_MEMBERS_MANAGE: "org.members.manage",
+    ORG_CERTIFICATES_MANAGE: "org.certificates.manage",
     ORG_AUDIT_VIEW: "org.audit.view",
     ORG_AUDIT_RECORDINGS: "org.audit.recordings",
     ORG_SESSIONS_VIEW: "org.sessions.view",
@@ -88,6 +90,7 @@ const PERMISSIONS = [
     { id: P.CONNECT_SSH, scopes: BOTH, category: "connections", default: true, label: "Connect via SSH / Telnet", description: "Open terminal sessions to servers." },
     { id: P.CONNECT_RDP, scopes: BOTH, category: "connections", default: true, label: "Connect via RDP", description: "Open remote desktop sessions to servers." },
     { id: P.CONNECT_VNC, scopes: BOTH, category: "connections", default: true, label: "Connect via VNC", description: "Open VNC sessions to servers." },
+    { id: P.CONNECT_WEB, scopes: BOTH, category: "connections", default: true, label: "Open Browser", description: "Open an isolated browser that reaches the web through a server." },
     { id: P.CONNECT_PROXMOX, scopes: BOTH, category: "connections", default: true, label: "Connect to Proxmox", description: "Open Proxmox VM, container and shell sessions." },
     { id: P.CONNECT_TUNNEL, scopes: BOTH, category: "connections", default: true, label: "Port Forwarding", description: "Create SSH tunnels and port forwards to servers." },
 
@@ -99,6 +102,7 @@ const PERMISSIONS = [
     { id: P.ORG_MANAGE, scopes: [ORGANIZATION], category: "general", label: "Manage Organization", description: "Edit the organization name, description and settings." },
     { id: P.ORG_DELETE, scopes: [ORGANIZATION], category: "general", label: "Delete Organization", description: "Permanently delete this organization.", dangerous: true },
     { id: P.ORG_MEMBERS_MANAGE, scopes: [ORGANIZATION], category: "members", label: "Manage Members", description: "Invite, remove and assign permissions to members." },
+    { id: P.ORG_CERTIFICATES_MANAGE, scopes: [ORGANIZATION], category: "general", label: "Manage Trusted Certificates", description: "Accept changed server certificates and host keys, and remove trusted ones.", dangerous: true },
 
     { id: P.ORG_AUDIT_VIEW, scopes: [ORGANIZATION], category: "audit", label: "View Audit Logs", description: "View audit logs and configure auditing for this organization." },
     { id: P.ORG_AUDIT_RECORDINGS, scopes: [ORGANIZATION], category: "audit", label: "Play Session Recordings", description: "Download and play back recorded sessions.", dangerous: true },
