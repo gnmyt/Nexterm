@@ -225,7 +225,7 @@
         "rdpSessionTimeout": "Die RDP Sitzung wurde getrennt, da das Zeitlimit der Session erreicht wurde.",
         "rdpSessionClosed": "Die RDP Sitzung wurde durch den verbundenen Server oder einen Administrator beendet."
       },
-      "accountLinkRequired": "An account with this username already exists. Ask an administrator to allow linking it to your sign-in."
+      "accountLinkRequired": "Ein Konto mit diesem Benutzernamen existiert bereits. Bitte einen Administrator, die Verknüpfung mit deinem Konto zuzulassen."
     },
     "messages": {
       "invitationAccepted": "Einladung angenommen",
@@ -592,7 +592,7 @@
           "denied": "SMART benötigt Root-Rechte",
           "temperature": "Temperatur",
           "powerOn": "Einschaltzeit",
-          "wear": "Wear",
+          "wear": "Abnutzung",
           "reallocated": "Neu zugewiesene Sektoren",
           "pending": "Ausstehende Sektoren",
           "mediaErrors": "Medienfehler",
@@ -674,7 +674,7 @@
       "backup": "Speicher",
       "engines": "Engines",
       "permissions": "Benutzergruppen & Berechtigungen",
-      "trustedCertificates": "Trusted Certificates"
+      "trustedCertificates": "Vertrauenswürdige Zertifikate"
     },
     "account": {
       "title": "Account",
@@ -832,11 +832,11 @@
       "newPassword": "Neues Passwort",
       "confirmPassword": "Bestätige das neue Passwort",
       "changePasswordButton": "Passwort ändern",
-      "currentPassword": "Current password",
-      "descriptionOwn": "Enter your current password and choose a new one. You will be signed out on all other devices.",
-      "descriptionOther": "Choose a new password for this user. They will be signed out on all devices.",
-      "successOwn": "Your password was changed. Other devices were signed out.",
-      "successOther": "The password was changed and the user was signed out everywhere."
+      "currentPassword": "Aktuelles Passwort",
+      "descriptionOwn": "Gib dein aktuelles Passwort ein und wähle ein neues aus. Du wirst auf allen anderen Geräten abgemeldet.",
+      "descriptionOther": "Wähle ein neues Passwort für diesen Nutzer aus. Er wird auf allen Geräten abgemeldet.",
+      "successOwn": "Dein Passwort wurde geändert. Andere Geräte wurden abgemeldet.",
+      "successOther": "Das Passwort wurde geändert und der Benutzer wurde überall abgemeldet."
     },
     "organizations": {
       "title": "Deine Organisationen",
@@ -943,9 +943,9 @@
         "loginAsUser": "Anmeldung als Benutzer",
         "deleteConfirm": "Dadurch wird der Benutzer und alle zugehörigen Daten endgültig gelöscht.",
         "managePermissions": "Berechtigungen verwalten",
-        "allowExternalLink": "Allow SSO/LDAP linking",
-        "cancelExternalLink": "Cancel SSO/LDAP linking",
-        "unlinkExternal": "Unlink SSO/LDAP sign-in"
+        "allowExternalLink": "SSO/LDAP-Verbindung zulassen",
+        "cancelExternalLink": "SSO-/LDAP-Verknüpfung aufheben",
+        "unlinkExternal": "SSO-/LDAP-Anmeldung trennen"
       }
     },
     "userDialog": {
@@ -1098,12 +1098,12 @@
       "syncEnabled": "Die Einstellungen des Dateimanagers werden jetzt mit deinem Konto synchronisiert",
       "syncDisabled": "Die Einstellungen des Dateimanagers werden nicht mehr synchronisiert",
       "view": {
-        "title": "View",
-        "description": "How files and folders are shown when you open the file manager."
+        "title": "Anzeigen",
+        "description": "Wie Dateien und Ordner angezeigt werden, wenn du den Dateimanager öffnest."
       },
       "behavior": {
-        "title": "Behavior",
-        "description": "What happens when you open, delete and move files."
+        "title": "Verhalten",
+        "description": "Was passiert, wenn du Dateien öffnest, löschst und verschiebst?"
       },
       "defaultView": {
         "title": "Standard-Ansichtsmodus",
@@ -1113,8 +1113,8 @@
         "grid": "Rasteransicht",
         "gridDescription": "Dateien als Icons in einem Rasterlayout mit Miniaturansichten anzeigen",
         "compact": "Kompaktansicht",
-        "compactDescription": "Show only names in dense columns to fit many files on screen",
-        "label": "Default view"
+        "compactDescription": "Zeige nur Namen in dichten Spalten an, damit viele Dateien auf den Bildschirm passen",
+        "label": "Standardansicht"
       },
       "thumbnails": {
         "title": "Bild-Miniaturansichten",
@@ -1123,9 +1123,9 @@
         "enabledDescription": "Anzeige von Bildvorschauen in der Rasteransicht zur schnellen visuellen Identifizierung",
         "disabled": "Vorschaubilder ausblenden",
         "disabledDescription": "Nur Dateisymbole anzeigen, um Bandbreite zu sparen und die Leistung zu verbessern",
-        "label": "Image thumbnails",
-        "show": "Show",
-        "hide": "Hide"
+        "label": "Bildminiaturen",
+        "show": "Anzeigen",
+        "hide": "Ausblenden"
       },
       "hiddenFiles": {
         "title": "Versteckte Dateien",
@@ -1134,9 +1134,9 @@
         "showDescription": "Alle Dateien einschließlich .dotfiles und Systemverzeichnisse anzeigen",
         "hide": "Versteckte Dateien ausblenden",
         "hideDescription": "Nur reguläre Dateien und Ordner anzeigen",
-        "label": "Hidden files",
-        "showShort": "Show",
-        "hideShort": "Hide"
+        "label": "Versteckte Dateien",
+        "showShort": "Anzeigen",
+        "hideShort": "Ausblenden"
       },
       "deleteConfirmation": {
         "title": "Bestätigung löschen",
@@ -1145,9 +1145,9 @@
         "enabledDescription": "Einen Bestätigungsdialog vor dem Löschen von Elementen anzeigen",
         "disabled": "Sofort löschen",
         "disabledDescription": "Dateien löschen, ohne nach einer Bestätigung zu fragen",
-        "label": "Before deleting",
-        "ask": "Ask for confirmation",
-        "immediately": "Delete immediately"
+        "label": "Bevor du etwas löschst",
+        "ask": "Bitte um Bestätigung",
+        "immediately": "Sofort löschen"
       },
       "dragDropAction": {
         "title": "Drag & Drop Aktion",
@@ -1155,32 +1155,32 @@
         "move": "Verschiebe",
         "copy": "Kopiere",
         "ask": "Fragen",
-        "label": "When dropping files"
+        "label": "Beim Ablegen von Dateien"
       },
       "singleClickOpen": {
         "title": "Mit einem Klick öffnen",
         "description": "Öffne Dateien und Ordner mit einem einzigen Klick, anstatt sie auszuwählen. Wenn diese Option deaktiviert ist, werden sie per Doppelklick geöffnet.",
-        "single": "Single click",
-        "double": "Double click",
-        "label": "Open items with"
+        "single": "Ein Klick",
+        "double": "Doppelklick",
+        "label": "Offene Posten mit"
       },
       "sharedDrive": {
-        "title": "Shared Drive",
-        "description": "What remote desktops can see of this computer through their shared drive. Changes apply to new connections.",
+        "title": "Gemeinsames Laufwerk",
+        "description": "Was Remote-Desktops über das freigegebene Laufwerk auf diesem Computer sehen können. Die Änderungen gelten für neue Verbindungen.",
         "mode": {
-          "title": "Share",
-          "folder": "One folder",
-          "disk": "Entire disk",
-          "off": "Nothing",
-          "diskWarning": "Remote desktops can read, change and delete every file on this computer."
+          "title": "Teilen",
+          "folder": "Ein Ordner",
+          "disk": "Gesamte Festplatte",
+          "off": "Nichts",
+          "diskWarning": "Remote-Desktops können jede Datei auf diesem Computer lesen, ändern und löschen."
         },
         "folder": {
-          "title": "Shared folder",
-          "default": "Nexterm Shared in your home folder",
-          "choose": "Choose folder",
-          "reset": "Use default"
+          "title": "Freigegebener Ordner",
+          "default": "Nexterm wurde in deinem Home-Ordner freigegeben",
+          "choose": "Ordner auswählen",
+          "reset": "Standard verwenden"
         },
-        "folderError": "The shared folder could not be prepared"
+        "folderError": "Der freigegebene Ordner konnte nicht vorbereitet werden"
       }
     },
     "authentication": {
@@ -1214,7 +1214,7 @@
           "clientSecretPlaceholderEdit": "Leer lassen, um das Vorhandene zu behalten",
           "redirectUri": "URI weiterleiten",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
-          "endSessionEndpoint": "End Session Endpoint (Optional)",
+          "endSessionEndpoint": "Endpunkt zum Beenden der Sitzung (optional)",
           "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
           "scope": "Zugriffsart",
           "scopePlaceholder": "openid profile",
@@ -1243,13 +1243,13 @@
           "groupsAttributePlaceholder": "Gruppen",
           "requiredGroup": "Erforderliche Gruppe",
           "requiredGroupPlaceholder": "Nexterm-Benutzer",
-          "requiredGroupHint": "If set, only users whose groups claim contains this value are allowed to log in.",
-          "mappings": "Organization Mappings",
-          "mappingsHint": "Map a group claim value to an organization. Membership is kept in sync on every login.",
-          "mappingValuePlaceholder": "Group value",
-          "roleMember": "Member",
-          "roleOwner": "Owner",
-          "addMapping": "Add Mapping"
+          "requiredGroupHint": "Wenn diese Option aktiviert ist, dürfen sich nur Benutzer anmelden, deren Gruppenangabe diesen Wert enthält.",
+          "mappings": "Organisationszuordnungen",
+          "mappingsHint": "Ordne den Wert einer Gruppenansprache einer Organisation zu. Die Mitgliedschaft wird bei jeder Anmeldung synchronisiert.",
+          "mappingValuePlaceholder": "Gruppenwert",
+          "roleMember": "Mitglied",
+          "roleOwner": "Eigentümer",
+          "addMapping": "Zuordnung hinzufügen"
         }
       },
       "ldapDialog": {
@@ -1298,20 +1298,20 @@
         }
       },
       "sessions": {
-        "title": "Sessions",
-        "description": "When signed-in devices, including the mobile and desktop apps, have to sign in again.",
-        "idle": "Sign out after inactivity",
-        "lifetime": "Maximum session length",
-        "days_one": "{{count}} day",
-        "days_other": "{{count}} days",
-        "never": "Never",
-        "loadError": "Failed to load the session settings",
-        "saveError": "Failed to save the session settings"
+        "title": "Sitzungen",
+        "description": "Wenn bereits angemeldete Geräte, einschließlich der Mobil- und Desktop-Apps, sich erneut anmelden müssen.",
+        "idle": "Nach Inaktivität abmelden",
+        "lifetime": "Maximale Sitzungsdauer",
+        "days_one": "{{count}} Tag",
+        "days_other": "{{count}} Tage",
+        "never": "Niemals",
+        "loadError": "Die Sitzungseinstellungen konnten nicht geladen werden",
+        "saveError": "Die Speicherung der Sitzungseinstellungen ist fehlgeschlagen"
       }
     },
     "ai": {
       "title": "KI-Assistent Konfiguration",
-      "description": "Configure the AI provider used by the assistant, which can operate your servers through its own sessions.",
+      "description": "Konfiguriere den vom Assistenten verwendeten KI-Anbieter, der deine Server über eigene Sitzungen steuern kann.",
       "loading": "AI-Einstellungen laden...",
       "enable": {
         "title": "KI-Assistent aktivieren",
@@ -1426,12 +1426,12 @@
     },
     "identities": {
       "title": "SSH-Schlüssel und Anmeldeinformationen",
-      "description": "Identities you can link to any server. Server-specific ones live in that server's settings.",
+      "description": "Identitäten, die du mit jedem beliebigen Server verknüpfen kannst. Serverspezifische Identitäten findest du in den Einstellungen des jeweiligen Servers.",
       "createIdentity": "Identität erstellen",
       "personal": "Persönlich",
       "noUsername": "Kein Nutzername",
-      "notInUse": "Not in use",
-      "notInUseHint": "Not linked to any server or folder",
+      "notInUse": "Wird nicht verwendet",
+      "notInUseHint": "Ist mit keinem Server und keinem Ordner verknüpft",
       "sshKey": "SSH-Schlüssel",
       "password": "Passwort",
       "editIdentity": "Identität bearbeiten",
@@ -1690,24 +1690,24 @@
     },
     "search": "Durchsuche Einstellungen",
     "trustedCertificates": {
-      "title": "Trusted Certificates",
-      "description": "Certificates and host keys you accepted when connecting. Remove one to be asked again the next time.",
-      "personal": "Personal",
+      "title": "Vertrauenswürdige Zertifikate",
+      "description": "Zertifikate und Hostschlüssel, die du beim Herstellen der Verbindung akzeptiert hast. Entferne einen davon, damit du beim nächsten Mal erneut gefragt wirst.",
+      "personal": "Persönliches",
       "system": "System",
       "kinds": {
-        "ssh": "SSH host key",
-        "tls": "TLS certificate"
+        "ssh": "SSH-Hostschlüssel",
+        "tls": "TLS-Zertifikat"
       },
-      "empty": "Nothing trusted yet",
-      "emptyDescription": "Certificates and host keys appear here once you accept them for a connection.",
-      "remove": "Remove",
-      "removeConfirm": "Stop trusting {{endpoint}}? The next connection asks again.",
-      "removeSuccess": "Trusted certificate removed",
-      "removeError": "Failed to remove the trusted certificate",
+      "empty": "Noch nichts als vertrauenswürdig eingestuft",
+      "emptyDescription": "Zertifikate und Hostschlüssel werden hier angezeigt, sobald du sie für eine Verbindung akzeptiert hast.",
+      "remove": "Entfernen",
+      "removeConfirm": "Sollst du {{endpoint}}nicht mehr vertrauen? Bei der nächsten Verbindung wirst du erneut gefragt.",
+      "removeSuccess": "Vertrauenswürdiges Zertifikat entfernt",
+      "removeError": "Das vertrauenswürdige Zertifikat konnte nicht entfernt werden",
       "ignore": {
-        "title": "Ignore certificate warnings",
-        "description": "Connect to your personal servers without checking their certificate or host key. Connections can then be intercepted without you noticing. Organization servers are always checked.",
-        "error": "Failed to save the setting"
+        "title": "Zertifikatswarnungen ignorieren",
+        "description": "Stelle eine Verbindung zu deinen persönlichen Servern her, ohne deren Zertifikat oder Host-Schlüssel zu überprüfen. Verbindungen können dann abgefangen werden, ohne dass du es merkst. Server von Organisationen werden immer überprüft.",
+        "error": "Die Einstellung konnte nicht gespeichert werden"
       }
     }
   },
@@ -1911,12 +1911,12 @@
         },
         "display": {
           "title": "Einstellungen anzeigen",
-          "description": "Configure color depth, resize behavior and scaling for the remote display",
+          "description": "Konfiguriere die Farbtiefe, das Verhalten bei Größenänderungen und die Skalierung für die Remote-Anzeige",
           "colorDepth": "Farbtiefe",
           "resizeMethod": "Methode zur Größenänderung",
           "displayScale": "Anzeigeskalierung",
           "displayScaleAuto": "Automatisch (an das Gerät anpassen)",
-          "displayScaleAccount": "Account default"
+          "displayScaleAccount": "Kontoausfall"
         },
         "performance": {
           "title": "Leistungseinstellungen",
@@ -2197,7 +2197,7 @@
         "title": "Transfers",
         "activeCount": "{{count}} aktiv",
         "allDone": "Alles erledigt",
-        "clearFinished": "Clear finished",
+        "clearFinished": "Fertig, alles klar",
         "queued": "In Warteschlange",
         "cancelling": "Abbrechen...",
         "completed": "Abgeschlossen",
@@ -2414,26 +2414,26 @@
       "unset": "Aus Ordner entfernen"
     },
     "trust": {
-      "certificate": "certificate",
-      "hostKey": "host key",
-      "newTitle": "Trust this {{subject}}?",
-      "newMessage": "This is the first connection to {{endpoint}}. Check the fingerprint before you continue.",
-      "changedTitle": "The {{subject}} has changed",
-      "changedMessage": "{{endpoint}} presents a different {{subject}} than before. Only continue if you expect this.",
-      "fingerprint": "Fingerprint",
-      "previous": "Trusted until now",
-      "presented": "Presented now",
-      "subject": "Issued to",
-      "issuer": "Issued by",
-      "selfSigned": "Self-signed",
-      "validUntil": "Valid until",
-      "blocked": "Only certificate managers of {{organization}} can accept this change.",
-      "accept": "Trust and connect",
-      "cancel": "Cancel",
-      "acceptChanged": "Trust the new one",
-      "disconnect": "Disconnect",
-      "failed": "Your decision could not be saved",
-      "acceptOnly": "Trust certificate"
+      "certificate": "Zertifikat",
+      "hostKey": "Host-Schlüssel",
+      "newTitle": "Ist diese Seite vertrauenswürdig? {{subject}}?",
+      "newMessage": "Dies ist die erste Verbindung zu {{endpoint}}. Überprüfe den Fingerabdruck, bevor du fortfährst.",
+      "changedTitle": "Die {{subject}} hat sich geändert",
+      "changedMessage": "{{endpoint}} zeigt ein anderes „ {{subject}} “ als zuvor an. Mach nur weiter, wenn du damit rechnest.",
+      "fingerprint": "Fingerabdruck",
+      "previous": "Bisher vertrauenswürdig",
+      "presented": "Jetzt zu sehen",
+      "subject": "Ausgestellt an",
+      "issuer": "Herausgegeben von",
+      "selfSigned": "Selbstsigniert",
+      "validUntil": "Gültig bis",
+      "blocked": "Nur Zertifikatsverwalter von {{organization}} können diese Änderung akzeptieren.",
+      "accept": "Vertrauen und Verbundenheit",
+      "cancel": "Abbrechen",
+      "acceptChanged": "Vertraue dem Neuen",
+      "disconnect": "Trennen",
+      "failed": "Deine Entscheidung konnte nicht gespeichert werden",
+      "acceptOnly": "Vertrauenszertifikat"
     }
   },
   "support": {
@@ -2468,7 +2468,7 @@
     "getStartedHint": "Füge einen Server in der Seitenleiste hinzu, um mit der Verwaltung deiner Infrastruktur zu beginnen.",
     "hibernated": "Im Ruhezustand",
     "demo": {
-      "explore": "Start exploring"
+      "explore": "Entdecke die Welt"
     }
   },
   "downloadApps": {
