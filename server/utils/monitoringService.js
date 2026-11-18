@@ -98,7 +98,7 @@ const SMART_CMD = "PATH=\"$PATH:/usr/sbin:/sbin\"; if command -v smartctl >/dev/
 
 const COMMANDS = {
     cpu: "grep 'cpu ' /proc/stat; sleep 1; grep 'cpu ' /proc/stat",
-    memory: "free -b",
+    memory: "cat /proc/meminfo",
     uptime: "cat /proc/uptime",
     loadAverage: "cat /proc/loadavg",
     processCount: "ps -e --no-headers | wc -l",
@@ -161,6 +161,7 @@ const collectServerData = async (entry, identity, credentials) => {
             cpuUsage: parseCPUUsage(out.cpu),
             memoryUsage: memory.usage,
             memoryTotal: memory.total,
+            memory: memory.breakdown,
             disk: parseDiskUsage(out.lsblk, out.df, out.dfInodes, out.smart),
             uptime: parseUptime(out.uptime),
             loadAverage: parseLoadAverage(out.loadAverage),
@@ -175,12 +176,28 @@ const collectServerData = async (entry, identity, credentials) => {
     }
 };
 
+const EMPTY_MEMORY = { usage: null, total: null, breakdown: null };
+
 const parseMemoryUsage = (output) => {
-    try {
-        const parts = output.split("\n")[1].split(/\s+/);
-        const total = Number.parseInt(parts[1]), available = Number.parseInt(parts[6] || parts[3]);
-        return { usage: Math.round(((total - available) / total) * 100), total };
-    } catch { return { usage: null, total: null }; }
+    const kb = {};
+    for (const line of (output || "").split("\n")) {
+        const match = /^(\w+):\s+(\d+)/.exec(line);
+        if (match) kb[match[1]] = Number.parseInt(match[2], 10);
+    }
+
+    const total = kb.MemTotal * 1024;
+    if (!total) return EMPTY_MEMORY;
+
+    const free = (kb.MemFree || 0) * 1024;
+    const reclaimable = ((kb.Buffers || 0) + (kb.Cached || 0) + (kb.SReclaimable || 0)) * 1024;
+    const available = Math.min(total, kb.MemAvailable == null ? free + reclaimable : kb.MemAvailable * 1024);
+    const used = total - available;
+
+    return {
+        usage: Math.round((used / total) * 100),
+        total,
+        breakdown: { total, used, cache: Math.max(0, available - free), free: Math.min(free, available) },
+    };
 };
 
 const isRealMount = (mountPoint) => !!mountPoint && mountPoint.startsWith("/");
@@ -455,6 +472,7 @@ const saveMonitoringData = async (entryId, data) => {
             updatedAt: new Date(),
             status: data.status,
             memoryTotal: data.memoryTotal,
+            memory: data.memory,
             disk: data.disk,
             network: data.network,
             processList: data.processList,

@@ -29,6 +29,22 @@ data class DiskRow(
     val facts: List<InfoRow>,
 )
 
+data class MemorySegment(val label: String, val sizeText: String, val weight: Double, val shade: Int)
+
+class MemoryOverview private constructor(val percent: Double, val usedText: String, val segments: List<MemorySegment>) {
+    internal companion object {
+        fun from(memory: Memory?): MemoryOverview? {
+            if (memory == null || memory.total <= 0) return null
+            fun segment(label: String, value: Double, shade: Int) = MemorySegment(label, Formatters.bytes(value.toLong()), value / memory.total, shade)
+            return MemoryOverview(
+                percent = memory.used / memory.total * 100,
+                usedText = "${Formatters.bytes(memory.used.toLong())} of ${Formatters.bytes(memory.total.toLong())}",
+                segments = listOf(segment("Used", memory.used, 0), segment("Cache", memory.cache, 1), segment("Free", memory.free, -1)),
+            )
+        }
+    }
+}
+
 class StorageOverview private constructor(
     val percent: Double?,
     val usedText: String,

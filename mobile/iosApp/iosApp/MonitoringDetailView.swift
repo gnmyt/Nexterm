@@ -139,6 +139,7 @@ private struct OverviewTab: View {
 
     var body: some View {
         Section { FactGrid(facts: server.isPve ? latest.clusterFacts : latest.overviewFacts, large: true) }
+        if let memory = latest.memoryOverview { Section { MemoryItem(memory: memory) } }
         Section {
             ForEach(details.charts(isPve: server.isPve), id: \.title) { MetricChart(series: $0) }
         } header: {
@@ -156,6 +157,51 @@ private struct OverviewTab: View {
         Section(server.isPve ? "Cluster Information" : "System Information") {
             ForEach(server.isPve ? latest.clusterInfo : latest.systemInfo, id: \.label) { LabeledContent($0.label, value: $0.value) }
         }
+    }
+}
+
+private struct MemoryItem: View {
+    let memory: MemoryOverview
+
+    private func color(_ shade: Int32) -> Color {
+        switch shade {
+        case 0: usageColor(memory.percent)
+        case 1: usageColor(memory.percent).opacity(0.36)
+        default: Color(.systemFill)
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 6) {
+                Text("Memory").font(.subheadline.weight(.semibold))
+                Text(memory.usedText).font(.footnote).foregroundStyle(.secondary).lineLimit(1)
+                Spacer(minLength: 0)
+                Text(wholePercent(memory.percent)).font(.subheadline.weight(.semibold)).monospacedDigit()
+            }
+            GeometryReader { geo in
+                HStack(spacing: 0) {
+                    ForEach(memory.segments, id: \.label) { segment in
+                        Rectangle().fill(color(segment.shade)).frame(width: geo.size.width * segment.weight)
+                    }
+                }
+            }
+            .frame(height: 8)
+            .clipShape(Capsule())
+            .accessibilityHidden(true)
+            HStack(spacing: 14) {
+                ForEach(memory.segments, id: \.label) { segment in
+                    HStack(spacing: 5) {
+                        RoundedRectangle(cornerRadius: 3, style: .continuous).fill(color(segment.shade)).frame(width: 10, height: 10)
+                        Text(segment.label).font(.caption).foregroundStyle(.secondary)
+                        Text(segment.sizeText).font(.caption).monospacedDigit()
+                    }
+                    .lineLimit(1)
+                }
+            }
+            .minimumScaleFactor(0.8)
+        }
+        .padding(.vertical, 4)
     }
 }
 

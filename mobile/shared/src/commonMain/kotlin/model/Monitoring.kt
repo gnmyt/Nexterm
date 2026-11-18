@@ -139,10 +139,12 @@ data class MonitoringSnapshot(
     val processes: Double? = null,
     val loadAverage: List<Double> = emptyList(),
     val osInfo: OsInfo? = null,
+    private val memory: Memory? = null,
     private val disk: List<Disk> = emptyList(),
     private val network: List<NetworkInterface> = emptyList(),
     private val processList: List<ProcessEntry> = emptyList(),
 ) {
+    val memoryOverview: MemoryOverview? by lazy { MemoryOverview.from(memory) }
     val storage: StorageOverview? by lazy { StorageOverview.from(disk) }
     val networking: NetworkOverview? by lazy { NetworkOverview.from(network) }
     val hasProcesses: Boolean get() = processList.isNotEmpty()
@@ -250,6 +252,9 @@ data class PveNode(
     val info: List<InfoRow>
         get() = listOf(InfoRow("Cores", cpu?.let { "${it.toLong()}" } ?: Formatters.EMPTY), InfoRow("Uptime", Formatters.uptimeLong(uptime?.toLong())))
 }
+
+@Serializable
+class Memory(val total: Double = 0.0, val used: Double = 0.0, val cache: Double = 0.0, val free: Double = 0.0)
 
 data class UsageRow(val label: String, val percent: Double, val detail: String?)
 
