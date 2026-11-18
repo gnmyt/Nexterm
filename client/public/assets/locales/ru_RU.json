@@ -549,6 +549,13 @@
           "unknown": "Неизвестно",
           "noData": "Нет данных о системе"
         },
+        "memory": {
+          "title": "Memory",
+          "summary": "{{used}} of {{total}} ({{percent}}%)",
+          "used": "Used",
+          "cache": "Buffers / Cache",
+          "free": "Free"
+        },
         "performance": {
           "title": "Метрики производительности",
           "loadAverage": "Средняя нагрузка",
