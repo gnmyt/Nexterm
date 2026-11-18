@@ -279,8 +279,8 @@ app.delete("/providers/admin/ldap/:id", authenticate, requirePermission(Permissi
  */
 app.post("/providers/admin/ldap/:id/test", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
     try {
-        const result = await ldap.testConnection(req.params.id);
-        if (result.code) return res.status(result.code).json({ message: result.message });
+        const result = await ldap.testConnection(req.params.id, req.user.id, req.body?.acceptFingerprint || null);
+        if (result.code) return res.status(result.code).json({ message: result.message, untrustedPeer: result.untrustedPeer });
         res.json(result);
     } catch (error) {
         res.status(500).json({ message: "Internal server error" });

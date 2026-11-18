@@ -2,6 +2,7 @@ const SessionManager = require("../lib/SessionManager");
 const GuacdClient = require("../lib/GuacdClient");
 const controlPlane = require("../lib/controlPlane/ControlPlaneServer");
 const logger = require("../utils/logger");
+const { TRUST_CLOSE_CODE, TRUST_CLOSE_REASON } = require("../utils/hostTrust");
 const { buildParticipant, createWriteGuard } = require("../utils/sessionParticipant");
 
 const SIZED_MONITOR = /\.size,\d+\.-?\d+,\d+\.-?\d+,\d+\.(-?\d+)/;
@@ -82,7 +83,9 @@ const handleGuacJoin = async (ws, sessionId, ctx, pinnedMonitor = null) => {
         },
         onClose: (reason) => {
             try {
-                if (ws.readyState <= 1) ws.close(4014, reason);
+                if (ws.readyState > 1) return;
+                if (SessionManager.isTrustPending(sessionId)) ws.close(TRUST_CLOSE_CODE, TRUST_CLOSE_REASON);
+                else ws.close(4014, reason);
             } catch {
             }
         },

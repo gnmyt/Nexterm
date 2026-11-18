@@ -7,7 +7,8 @@ const { Op } = require("sequelize");
 const { getIdentityCredentials } = require("../controllers/identity");
 const { getMonitoringSettingsInternal } = require("../controllers/monitoring");
 const controlPlane = require("../lib/controlPlane/ControlPlaneServer");
-const { buildSSHParams, resolveJumpHosts } = require("../lib/ConnectionService");
+const { buildSSHParams, resolveJumpHosts, resolveTrust } = require("../lib/ConnectionService");
+const hostTrust = require("./hostTrust");
 const { getEffectiveEntryConfig, getEntryIdentityIds } = require("./folderInheritance");
 const { parseCPUUsage } = require("./cpuUsage");
 
@@ -135,7 +136,15 @@ const collectServerData = async (entry, identity, credentials) => {
 
     try {
         const commands = Object.entries(COMMANDS).map(([id, command]) => ({ id, command }));
-        const batch = await controlPlane.execCommandBatch(host, port, params, commands, jumpHosts);
+        const trust = await resolveTrust(entry, hostTrust.KIND.SSH, host, port, jumpHosts);
+        const batch = await controlPlane.execCommandBatch(host, port, { ...params, ...trust.params }, commands, jumpHosts);
+        if (batch.untrustedPeer) {
+            return {
+                status: "error",
+                timestamp: new Date(),
+                errorMessage: hostTrust.unattendedMessage(batch.untrustedPeer),
+            };
+        }
         if (!batch.success) {
             throw new Error(batch.errorMessage || "Failed to connect to SSH host");
         }

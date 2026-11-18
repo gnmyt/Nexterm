@@ -28,6 +28,18 @@ const { findByToken, updateLastConnected } = require("../../controllers/engine")
 const { sendFrame, createFrameParser } = require("./frameProtocol");
 const { RECORDINGS_DIR, ensureRecordingsDir, compressRecording, getRecordingPath } = require("../../utils/recordingService");
 const AuditLog = require("../../models/AuditLog");
+const { UntrustedHostError } = require("../../utils/hostTrust");
+
+const readPeer = (peer) => peer ? {
+    kind: peer.kind(),
+    host: peer.host(),
+    port: peer.port(),
+    algorithm: peer.algorithm(),
+    fingerprint: peer.fingerprint(),
+    raw: peer.raw(),
+    subject: peer.subject(),
+    issuer: peer.issuer(),
+} : null;
 
 const SESSION_TIMEOUT = 30000;
 const PORT_CHECK_RESPONSE_MARGIN = 15000;
@@ -47,6 +59,7 @@ class ControlPlaneServer extends EventEmitter {
         this._pingInterval = null;
         this._tlsContext = null;
         this._recordingMeta = new Map();
+        this._trustFailures = new Map();
     }
 
     setTlsContext(tlsOptions) {
@@ -186,14 +199,25 @@ class ControlPlaneServer extends EventEmitter {
         }, null, engine.engineId, timeoutMs + PORT_CHECK_RESPONSE_MARGIN);
     }
 
-    httpFetch(method, url, headers = {}, body = null, timeoutMs = 30000, insecure = false, engineId = null) {
+    httpFetch(method, url, headers = {}, body = null, timeoutMs = 30000, trust = null, engineId = null) {
         const engine = this._resolveEngine(engineId);
         if (!engine) return Promise.reject(new Error("No engine connected"));
 
         const requestId = `fetch-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
         return this._createPendingRequest(requestId, null, () => {
-            this._sendFrame(engine.socket, buildHttpFetch(requestId, method, url, headers, body, timeoutMs, insecure));
+            this._sendFrame(engine.socket, buildHttpFetch(requestId, method, url, headers, body, timeoutMs, trust));
         }, null, engine.engineId);
+    }
+
+    _markTrustFailure(sessionId) {
+        clearTimeout(this._trustFailures.get(sessionId));
+        const timeout = setTimeout(() => this._trustFailures.delete(sessionId), 10000);
+        timeout.unref?.();
+        this._trustFailures.set(sessionId, timeout);
+    }
+
+    isTrustFailure(sessionId) {
+        return this._trustFailures.has(sessionId);
     }
 
     hasEngine() {
@@ -605,7 +629,11 @@ class ControlPlaneServer extends EventEmitter {
                 if (payload.success) {
                     this._resolvePending(sessionId, payload, respondingEngineId);
                 } else {
-                    this._rejectPending(sessionId, new Error(payload.errorMessage || "Session open failed"), respondingEngineId);
+                    const peer = readPeer(result.peer());
+                    if (peer) this._markTrustFailure(sessionId);
+                    this._rejectPending(sessionId, peer
+                        ? new UntrustedHostError(peer)
+                        : new Error(payload.errorMessage || "Session open failed"), respondingEngineId);
                 }
 
                 this.emit("sessionOpenResult", payload);
@@ -632,6 +660,7 @@ class ControlPlaneServer extends EventEmitter {
                     stderr: result.stderrData() || "",
                     exitCode: result.exitCode(),
                     errorMessage: result.errorMessage(),
+                    untrustedPeer: readPeer(result.peer()),
                 }, respondingEngineId);
                 break;
             }
@@ -658,6 +687,7 @@ class ControlPlaneServer extends EventEmitter {
                     success: result.success(),
                     errorMessage: result.errorMessage(),
                     results,
+                    untrustedPeer: readPeer(result.peer()),
                 }, respondingEngineId);
                 break;
             }
@@ -702,8 +732,23 @@ class ControlPlaneServer extends EventEmitter {
                 if (payload.success) {
                     this._resolvePending(requestId, payload, respondingEngineId);
                 } else {
-                    this._rejectPending(requestId, Object.assign(new Error(payload.errorMessage || "HTTP fetch failed"), payload), respondingEngineId);
+                    const peer = readPeer(result.peer());
+                    this._rejectPending(requestId, peer
+                        ? new UntrustedHostError(peer)
+                        : Object.assign(new Error(payload.errorMessage || "HTTP fetch failed"), payload), respondingEngineId);
                 }
+                break;
+            }
+
+            case MessageType.ConnectionError: {
+                const error = envelope.connectionError();
+                if (!error) break;
+                if (error.peer()) this._markTrustFailure(error.sessionId());
+                this.emit("connectionError", {
+                    sessionId: error.sessionId(),
+                    errorMessage: error.errorMessage(),
+                    untrustedPeer: readPeer(error.peer()),
+                });
                 break;
             }
 

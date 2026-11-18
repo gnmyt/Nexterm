@@ -17,6 +17,8 @@ const EngineSftpClient = require("./EngineSftpClient");
 const { buildPveQemuParams, buildRdpParams, buildVncParams, buildWebParams, buildDemoParams } = require("./guacParamBuilders");
 const { applyEffectiveEntryConfig } = require("../utils/folderInheritance");
 const { canAccessEntry, getEntryScope, isSameSecurityScope } = require("../utils/resourceValidation");
+const hostTrust = require("../utils/hostTrust");
+const { raiseChallenge, scopeForSessionEntry } = require("./SessionTrust");
 
 const GUAC_PROTOCOLS = {
     rdp: { sessionType: SessionType.RDP, defaultPort: 3389 },
@@ -103,6 +105,26 @@ const resolveJumpHosts = async (entry, accountId = null, options = {}) => {
     return jumpHosts;
 };
 
+const toPem = (base64) =>
+    `-----BEGIN CERTIFICATE-----\n${base64.match(/.{1,64}/g).join("\n")}\n-----END CERTIFICATE-----\n`;
+
+const FILE_TRANSFER_TRUST_KIND = { sftp: hostTrust.KIND.SSH, ssh: hostTrust.KIND.SSH, ftps: hostTrust.KIND.TLS };
+
+const resolveTrust = async (entry, kind, host, port, jumpHosts = []) => {
+    const scope = await scopeForSessionEntry(entry);
+    const endpoints = jumpHosts.map((jumpHost) => ({ kind: hostTrust.KIND.SSH, host: jumpHost.host, port: jumpHost.port || 22 }));
+    if (kind) endpoints.push({ kind, host, port });
+    const { params, acceptAny, records } = await hostTrust.loadTrust(scope, endpoints, { allowCa: kind === hostTrust.KIND.TLS });
+    const targetHost = hostTrust.normalizeHost(host);
+    const pinned = records.filter((record) => record.kind === kind && record.host === targetHost && record.port === Number(port));
+    return {
+        params,
+        acceptAny,
+        fingerprints: pinned.map((record) => record.fingerprint),
+        certificates: pinned.filter((record) => record.raw).map((record) => toPem(record.raw)),
+    };
+};
+
 const openEngineSessionWithResult = async (sessionId, sessionType, host, port, params, jumpHosts = [], engineId) => {
     const dataSocketPromise = controlPlane.waitForDataConnection(sessionId);
     dataSocketPromise.catch(() => {});
@@ -113,7 +135,19 @@ const openEngineSessionWithResult = async (sessionId, sessionType, host, port, p
 
 const openEngineSession = async (...args) => (await openEngineSessionWithResult(...args)).dataSocket;
 
-const createConnectionForSession = async (sessionId, accountId) => {
+const challengeOnUntrusted = async (sessionId, connect) => {
+    try {
+        return await connect();
+    } catch (error) {
+        await raiseChallenge(sessionId, error);
+        throw error;
+    }
+};
+
+const createConnectionForSession = (sessionId, accountId) =>
+    challengeOnUntrusted(sessionId, () => connectSession(sessionId, accountId));
+
+const connectSession = async (sessionId, accountId) => {
     const session = requireSession(sessionId);
 
     const entry = await Entry.findByPk(session.entryId);
@@ -135,6 +169,11 @@ const createConnectionForSession = async (sessionId, accountId) => {
         if (!script) throw new Error("Script not found");
     }
 
+    return hostTrust.withScope(await scopeForSessionEntry(entry),
+        () => dispatchConnection({ sessionId, entry, identity, organizationId, accountId, script, type, protocol }));
+};
+
+const dispatchConnection = ({ sessionId, entry, identity, organizationId, accountId, script, type, protocol }) => {
     if (type === "web") return prepareWebSession(sessionId, entry, identity, organizationId, accountId);
 
     switch (protocol) {
@@ -175,10 +214,11 @@ const createSFTPConnectionForSession = async (sessionId, entry, accountId) => {
         const { identityId, directIdentity } = session.configuration;
         const { host, port, params } = await resolveFileTransferContext(entry, identityId, directIdentity, accountId);
         const jumpHosts = await resolveJumpHosts(entry, accountId);
+        const trust = await resolveTrust(entry, FILE_TRANSFER_TRUST_KIND[params.protocol], host, port, jumpHosts);
 
-        const dataSocket = await openEngineSession(
-            sessionId, SessionType.SFTP, host, port, params, jumpHosts, entry.config?.engineId
-        );
+        const dataSocket = await challengeOnUntrusted(sessionId, () => openEngineSession(
+            sessionId, SessionType.SFTP, host, port, { ...params, ...trust.params }, jumpHosts, entry.config?.engineId
+        ));
 
         const sftpClient = new EngineSftpClient(dataSocket);
         await sftpClient.waitForReady();
@@ -226,8 +266,9 @@ const getAuxiliarySFTPClient = async (sessionId, entry, accountId, opts) => {
         if (!conn.auxSessionIds) conn.auxSessionIds = new Set();
         conn.auxSessionIds.add(engineSessionId);
 
+        const trust = await resolveTrust(entry, FILE_TRANSFER_TRUST_KIND[params.protocol], host, port, jumpHosts);
         const dataSocket = await openEngineSession(
-            engineSessionId, SessionType.SFTP, host, port, params, jumpHosts, entry.config?.engineId
+            engineSessionId, SessionType.SFTP, host, port, { ...params, ...trust.params }, jumpHosts, entry.config?.engineId
         );
 
         const client = new EngineSftpClient(dataSocket);
@@ -275,8 +316,9 @@ const createSSHConnectionForSession = async (sessionId, entry, identity, organiz
         requireEngine();
         const credentials = await resolveCredentials(identity);
         const { host, port } = getHostPort(entry);
-        const params = buildSSHParams(identity, credentials);
         const jumpHosts = await resolveJumpHosts(entry, accountId);
+        const trust = await resolveTrust(entry, hostTrust.KIND.SSH, host, port, jumpHosts);
+        const params = { ...buildSSHParams(identity, credentials), ...trust.params };
 
         const dataSocket = await openEngineSession(
             sessionId, SessionType.SSH, host, port, params, jumpHosts, entry.config?.engineId
@@ -384,10 +426,11 @@ const createPveLxcConnectionForSession = async (sessionId, entry, organizationId
     const containerPart = vmid === 0 || vmid === "0" ? "" : `lxc/${vmid}`;
     const wsUrl = `wss://${server.ip}:${server.port}/api2/json/nodes/${node}/${containerPart}/vncwebsocket?port=${vncTicket.port}&vncticket=${encodeURIComponent(vncTicket.ticket)}`;
 
+    const trust = await resolveTrust(entry, hostTrust.KIND.TLS, server.ip, Number(server.port) || 8006);
     const params = {
         ws_url: wsUrl,
-        ws_insecure: "true",
         ws_header_Cookie: `PVEAuthCookie=${ticket.ticket}`,
+        ...trust.params,
     };
 
     const dataSocket = await openEngineSession(
@@ -439,8 +482,9 @@ const prepareWebSession = async (sessionId, entry, identity, organizationId, acc
 
     const credentials = await resolveCredentials(identity);
     const { host, port } = getHostPort(entry);
-    const params = buildSSHParams(identity, credentials);
     const jumpHosts = await resolveJumpHosts(entry, accountId);
+    const trust = await resolveTrust(entry, hostTrust.KIND.SSH, host, port, jumpHosts);
+    const params = { ...buildSSHParams(identity, credentials), ...trust.params };
 
     const { dataSocket, result } = await openEngineSessionWithResult(
         sessionId, SessionType.Web, host, port, params, jumpHosts, entry.config?.engineId
@@ -494,6 +538,11 @@ const prepareWebSession = async (sessionId, entry, identity, organizationId, acc
     return { success: true };
 }
 
+const integrationPort = async (entry) => {
+    const integration = entry.integrationId ? await Integration.findByPk(entry.integrationId) : null;
+    return Number(integration?.config?.port) || 8006;
+};
+
 const prepareGuacamoleSession = async (sessionId, entry, identity, organizationId, accountId) => {
     const session = requireSession(sessionId);
     requireEngine();
@@ -519,8 +568,21 @@ const prepareGuacamoleSession = async (sessionId, entry, identity, organizationI
     const port = Number.parseInt(params.port || cfg.port || defaultPort, 10);
     const jumpHosts = await resolveJumpHosts(entry, accountId);
 
+    let trust = null;
+    session.trustPortAlias = null;
+    if (protocol === "rdp" || protocol === "vnc" || entry.type === "pve-qemu") {
+        const trustPort = entry.type === "pve-qemu" ? await integrationPort(entry) : port;
+        if (trustPort !== port) session.trustPortAlias = { from: port, to: trustPort };
+
+        trust = await resolveTrust(entry, hostTrust.KIND.TLS, host, trustPort, jumpHosts);
+        if (trust.acceptAny) params["ignore-cert"] = "true";
+        else if (protocol === "rdp") {
+            if (trust.fingerprints.length) params["cert-fingerprints"] = trust.fingerprints.map((fingerprint) => `sha256:${fingerprint}`).join(",");
+        } else if (trust.certificates.length) params["trusted-certs"] = trust.certificates.join("");
+    }
+
     const dataSocket = await openEngineSession(
-        sessionId, sessionType, host, port, params, jumpHosts, entry.config?.engineId
+        sessionId, sessionType, host, port, { ...params, ...trust?.params }, jumpHosts, entry.config?.engineId
     );
 
     const recordingEnabled = await isRecordingEnabled(organizationId);
@@ -563,7 +625,25 @@ const prepareGuacamoleSession = async (sessionId, entry, identity, organizationI
     return { success: true };
 }
 
+const handleUntrustedPeer = async (sessionId, peer) => {
+    const session = SessionManager.get(sessionId);
+    if (!session) return;
+
+    const alias = session.trustPortAlias;
+    if (alias && Number(peer.port) === alias.from) peer = { ...peer, port: alias.to };
+
+    const error = new hostTrust.UntrustedHostError(peer);
+    await SessionManager.detachConnection(sessionId);
+    await raiseChallenge(sessionId, error);
+
+    if (!SessionManager.get(sessionId)?.trustChallenge) {
+        SessionManager.markFailed(sessionId, error.message);
+        SessionManager.remove(sessionId, { code: 4017, reason: error.message });
+    }
+};
+
 module.exports = {
+    handleUntrustedPeer,
     createConnectionForSession,
     createSFTPConnectionForSession,
     getSFTPTransferClient,
@@ -573,4 +653,5 @@ module.exports = {
     getSessionPassword,
     buildSSHParams,
     resolveJumpHosts,
+    resolveTrust,
 };

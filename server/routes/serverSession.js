@@ -1,7 +1,7 @@
 const { Router } = require("express");
-const { createSession, reconnectSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword } = require("../controllers/serverSession");
+const { createSession, answerTrustChallenge, reconnectSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword } = require("../controllers/serverSession");
 const { execCommand } = require("../controllers/execCommand");
-const { createSessionValidation, reconnectSessionValidation, sessionIdValidation, resumeSessionValidation, duplicateSessionValidation } = require("../validations/serverSession");
+const { createSessionValidation, reconnectSessionValidation, sessionIdValidation, resumeSessionValidation, duplicateSessionValidation, trustDecisionValidation } = require("../validations/serverSession");
 const { validateSchema } = require("../utils/schema");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const SessionManager = require("../lib/SessionManager");
@@ -24,7 +24,7 @@ const blockWritableGuestShares = (req, res, next) => {
 const sendError = (res, result) =>
     res.status(result.code).json({ error: result.message, ...(result.errorCode && { code: result.errorCode }) });
 const getSessionOptions = (req) => {
-    const { entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, displayDpi, displayWidth, displayHeight, scriptId, startPath, connectionGeneration } = req.body;
+    const { entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, displayDpi, displayWidth, displayHeight, scriptId, startPath, trustPrompt, connectionGeneration } = req.body;
     return {
         accountId: req.user.id,
         entryId,
@@ -39,6 +39,7 @@ const getSessionOptions = (req) => {
         displayHeight,
         scriptId,
         startPath,
+        trustPrompt: trustPrompt === true,
         connectionGeneration,
         ipAddress: req.ip || req.socket?.remoteAddress || 'unknown',
         userAgent: req.headers['user-agent'] || 'unknown',
@@ -122,6 +123,31 @@ app.get("/:id", async (req, res) => {
     if (result?.code) {
         return res.status(result.code).json({ error: result.message });
     }
+    res.json(result);
+});
+
+/**
+ * POST /connections/{id}/trust
+ * @summary Answer Certificate Question
+ * @description Accepts or rejects the certificate or host key a connection is waiting on. Accepting stores it as trusted and connects again.
+ * @tags Connection
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} id.path.required - The unique identifier of the connection
+ * @param {object} request.body.required - The fingerprint that was shown and the decision
+ * @return {object} 200 - Decision applied
+ * @return {object} 403 - Missing permission to accept a changed certificate
+ * @return {object} 409 - The connection is not waiting for a decision
+ */
+app.post("/:id/trust", async (req, res) => {
+    if (validateSchema(res, sessionIdValidation, req.params)) return;
+    if (validateSchema(res, trustDecisionValidation, req.body)) return;
+
+    const result = await answerTrustChallenge(req.user.id, req.params.id, req.body, {
+        ipAddress: req.ip,
+        userAgent: req.headers?.["user-agent"],
+    });
+    if (result?.code) return res.status(result.code).json({ error: result.message });
     res.json(result);
 });
 

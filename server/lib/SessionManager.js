@@ -4,6 +4,7 @@ const logger = require("../utils/logger");
 const AuditLog = require("../models/AuditLog");
 const { isRecordingEnabled, getRecordingPath, compressRecording } = require("../utils/recordingService");
 const stateBroadcaster = require("./StateBroadcaster");
+const { TRUST_CLOSE_CODE, TRUST_CLOSE_REASON } = require("../utils/hostTrust");
 
 const MAX_LOG_BUFFER_SIZE = 200 * 1024;
 const sessions = new Map();
@@ -140,8 +141,47 @@ module.exports.waitForGuacReady = (sessionId, timeoutMs = 30000) => {
     return new Promise((resolve, reject) => {
         const timeout = setTimeout(() => reject(new Error("Guac ready timeout")), timeoutMs);
         if (!session._guacReadyWaiters) session._guacReadyWaiters = [];
-        session._guacReadyWaiters.push(() => { clearTimeout(timeout); resolve(); });
+        session._guacReadyWaiters.push((error) => {
+            clearTimeout(timeout);
+            if (error) reject(error);
+            else resolve();
+        });
     });
+};
+
+const TRUST_CHALLENGE_TTL_MS = 10 * 60 * 1000;
+
+module.exports.setTrustChallenge = (sessionId, challenge) => {
+    const session = module.exports.get(sessionId);
+    if (!session) return false;
+    session.trustChallenge = challenge;
+    session.guacReady = false;
+    stateBroadcaster.broadcast("CONNECTIONS", { accountId: session.accountId });
+    return true;
+};
+
+module.exports.isTrustPending = (sessionId) => {
+    const session = module.exports.get(sessionId);
+    if (!session) return false;
+    return !!session.trustChallenge || require("./controlPlane/ControlPlaneServer").isTrustFailure(sessionId);
+};
+
+module.exports.detachConnection = async (sessionId) => {
+    const session = module.exports.get(sessionId);
+    if (!session) return;
+    session.guacReady = false;
+    closeAllWebSockets(sessionId, TRUST_CLOSE_CODE, TRUST_CLOSE_REASON);
+    const connection = session.masterConnection;
+    session.masterConnection = null;
+    if (connection) await cleanupConnection(connection, sessionId);
+};
+
+module.exports.clearTrustChallenge = (sessionId) => {
+    const session = module.exports.get(sessionId);
+    if (!session?.trustChallenge) return null;
+    const challenge = session.trustChallenge;
+    session.trustChallenge = null;
+    return challenge;
 };
 
 module.exports.getConnection = (sessionId) => module.exports.get(sessionId)?.masterConnection || null;
@@ -162,6 +202,7 @@ module.exports.updateConnectionId = (sessionId, connectionId) => {
 module.exports.onMasterConnectionClosed = (sessionId, reason = "closed") => {
     const session = module.exports.get(sessionId);
     if (!session) return;
+    if (module.exports.isTrustPending(sessionId)) return;
     logger.info(`Master connection ${reason}, terminating session`, { sessionId });
     if (reason.startsWith("error:")) {
         module.exports.markFailed(sessionId, reason);
@@ -620,9 +661,10 @@ const cleanupIdleSessions = () => {
     let removed = 0;
     for (const [sessionId, session] of sessions) {
         const lastActivity = new Date(session.lastActivity).getTime();
-        const expired = session.automated
+        const unanswered = session.trustChallenge && session.trustChallenge.createdAt < now - TRUST_CHALLENGE_TTL_MS;
+        const expired = unanswered || (session.automated
             ? lastActivity < automatedCutoff
-            : !session.isHibernated && lastActivity < sixHoursAgo;
+            : !session.isHibernated && lastActivity < sixHoursAgo);
         if (!expired) continue;
         logger.info(session.automated ? "Removing idle automated session" : "Removing old session", { sessionId });
         module.exports.remove(sessionId);
@@ -631,4 +673,4 @@ const cleanupIdleSessions = () => {
     if (removed > 0) logger.info(`Cleaned up ${removed} old sessions`);
 };
 
-setInterval(cleanupIdleSessions, 5 * 60 * 1000).unref?.();
+setInterval(cleanupIdleSessions, 60 * 1000).unref?.();

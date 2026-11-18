@@ -24,6 +24,7 @@ const { startSourceSyncService, stopSourceSyncService } = require("./utils/sourc
 const backupService = require("./utils/backupService");
 const controlPlane = require("./lib/controlPlane/ControlPlaneServer");
 const SessionManager = require("./lib/SessionManager");
+const { handleUntrustedPeer } = require("./lib/ConnectionService");
 const { ensureLocalEngine } = require("./controllers/engine");
 const { ensureCPCerts } = require("./utils/controlPlaneCerts");
 const { isDemoMode } = require("./utils/demoMode");
@@ -92,6 +93,7 @@ app.use("/api/monitoring", authenticate, require("./routes/monitoring"));
 app.use("/api/integrations", authenticate, require("./routes/integration"));
 app.use("/api/audit", authenticate, require("./routes/audit"));
 app.use("/api/identities", authenticate, require("./routes/identity"));
+app.use("/api/trusted-hosts", authenticate, require("./routes/trustedHost"));
 app.use("/api/snippets", authenticate, require("./routes/snippet"));
 app.use("/api/organizations", authenticate, require("./routes/organization"));
 app.use("/api/tags", authenticate, require("./routes/tag"));
@@ -169,11 +171,18 @@ db.authenticate()
 
         controlPlane.on("sessionClosed", ({ sessionId, reason }) => {
             logger.info(`Engine session closed: ${sessionId} (reason: ${reason})`);
+            if (controlPlane.isTrustFailure(sessionId)) return;
             if (reason === "connection lost") {
                 SessionManager.remove(sessionId, { code: 4017, reason: "Connection lost" });
             } else {
                 SessionManager.remove(sessionId);
             }
+        });
+
+        controlPlane.on("connectionError", ({ sessionId, untrustedPeer }) => {
+            if (!untrustedPeer) return;
+            handleUntrustedPeer(sessionId, untrustedPeer)
+                .catch((error) => logger.error("Failed to handle untrusted peer", { sessionId, error: error.message }));
         });
 
         controlPlane.on("engineDisconnected", ({ engineId, sessionIds }) => {

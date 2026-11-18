@@ -15,7 +15,6 @@ const pveRequest = async (server, method, path, ticket = null, body = null) => {
         headers,
         body: body ? JSON.stringify(body) : null,
         timeout: 10000,
-        insecure: true,
     });
 
     if (!resp.ok) {
