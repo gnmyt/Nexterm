@@ -549,6 +549,13 @@
           "unknown": "不明",
           "noData": "システム情報は利用できない"
         },
+        "memory": {
+          "title": "Memory",
+          "summary": "{{used}} of {{total}} ({{percent}}%)",
+          "used": "Used",
+          "cache": "Buffers / Cache",
+          "free": "Free"
+        },
         "performance": {
           "title": "パフォーマンス指標",
           "loadAverage": "負荷平均",
