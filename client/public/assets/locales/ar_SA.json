@@ -62,29 +62,29 @@
       "authenticating": "توثيق...",
       "noAccount": "ليس لديك حساب؟",
       "haveAccount": "هل لديك حساب بالفعل؟",
-      "welcome": "Welcome back",
-      "subtitle": "Sign in to continue to Nexterm.",
-      "registrationSubtitle": "Create your account to get started.",
-      "firstTimeSubtitle": "Create the first administrator account for this instance.",
-      "twoFactorTitle": "Two-factor authentication",
-      "twoFactorDescription": "Enter the code from your authenticator app.",
-      "qrTitle": "Sign in with the app",
+      "welcome": "مرحبًا بعودتك",
+      "subtitle": "سجّل الدخول لمتابعة استخدام Nexterm.",
+      "registrationSubtitle": "أنشئ حسابك لتبدأ.",
+      "firstTimeSubtitle": "قم بإنشاء حساب المسؤول الأول لهذه الحالة.",
+      "twoFactorTitle": "المصادقة الثنائية",
+      "twoFactorDescription": "أدخل الرمز الموجود في تطبيق المصادقة الخاص بك.",
+      "qrTitle": "تسجيل الدخول عبر التطبيق",
       "demo": {
-        "title": "Try Nexterm",
-        "subtitle": "Explore a live instance with simulated servers, no account needed.",
-        "start": "Start the demo",
-        "orSignIn": "or sign in to your account",
-        "failed": "Could not start a demo session"
+        "title": "جرب Nexterm",
+        "subtitle": "استكشف نسخة تجريبية مباشرة مع خوادم محاكاة، دون الحاجة إلى إنشاء حساب.",
+        "start": "ابدأ العرض التوضيحي",
+        "orSignIn": "أو قم بتسجيل الدخول إلى حسابك",
+        "failed": "تعذر بدء جلسة تجريبية"
       }
     },
     "demo": {
-      "timeLeft": "Demo · {{time}} left",
-      "end": "End demo",
-      "endConfirmText": "End your demo session? Everything you created will be removed.",
-      "minutes_one": "{{count}} min",
-      "minutes_other": "{{count}} min",
-      "hours_one": "{{count}} hour",
-      "hours_other": "{{count}} hours",
+      "timeLeft": "نسخة تجريبية · {{time}} إلى اليسار",
+      "end": "إنهاء العرض التوضيحي",
+      "endConfirmText": "هل تريد إنهاء جلسة العرض التجريبي؟ سيتم حذف كل ما قمت بإنشائه.",
+      "minutes_one": "{{count}} دقيقة",
+      "minutes_other": "{{count}} دقيقة",
+      "hours_one": "{{count}} ساعة",
+      "hours_other": "{{count}} ساعات",
       "hoursMinutes": "{{hours}}h {{minutes}}m"
     },
     "deviceLink": {
@@ -206,11 +206,11 @@
       "connection": {
         "title": "فشل الاتصال",
         "close": "علامة تبويب الإغلاق",
-        "reconnect": "Reconnect",
-        "reconnectNow": "Reconnect",
-        "reconnecting": "Reconnecting…",
-        "reconnectingIn": "Reconnecting in {{seconds}}s",
-        "reconnectAttempt": "attempt {{count}} of {{max}}",
+        "reconnect": "إعادة الاتصال",
+        "reconnectNow": "إعادة الاتصال",
+        "reconnecting": "إعادة توصيل…",
+        "reconnectingIn": "إعادة الاتصال في {{seconds}}ثانية",
+        "reconnectAttempt": "محاولة {{count}} من {{max}}",
         "hostUnreachable": "يتعذر الوصول إلى المضيف البعيد",
         "refused": "تم رفض الاتصال من قبل المضيف البعيد",
         "timeout": "انتهت مهلة الاتصال",
@@ -221,11 +221,11 @@
         "error": "حدث خطأ في الاتصال",
         "scriptClosedUnexpectedly": "تم إغلاق اتصال البرنامج النصي بشكل غير متوقع",
         "scriptError": "حدث خطأ في اتصال البرنامج النصي",
-        "rdpSessionConflict": "The session was disconnected by the server because another connection was opened.",
-        "rdpSessionTimeout": "The RDP session was disconnected because its session time limit was reached.",
-        "rdpSessionClosed": "The RDP session was ended by the remote server or an administrator."
+        "rdpSessionConflict": "تم قطع اتصال الجلسة من قِبل الخادم بسبب فتح اتصال آخر.",
+        "rdpSessionTimeout": "تم قطع اتصال جلسة RDP بسبب انتهاء المهلة المحددة لها.",
+        "rdpSessionClosed": "تم إنهاء جلسة RDP من قِبل الخادم البعيد أو أحد المسؤولين."
       },
-      "accountLinkRequired": "An account with this username already exists. Ask an administrator to allow linking it to your sign-in."
+      "accountLinkRequired": "يوجد حساب بهذا الاسم المستخدم بالفعل. اطلب من أحد المسؤولين السماح بربطه بحسابك."
     },
     "messages": {
       "invitationAccepted": "تم قبول الدعوة",
@@ -237,9 +237,9 @@
       "leaveOrganizationError": "فشل في مغادرة المؤسسة"
     },
     "unsavedChanges": {
-      "title": "Unsaved changes",
-      "text": "Discard them, or keep editing and save when you're done.",
-      "keepEditing": "Keep editing"
+      "title": "التغييرات غير المحفوظة",
+      "text": "قم بحذفها، أو استمر في التعديل واحفظها عند الانتهاء.",
+      "keepEditing": "استمر في التحرير"
     }
   },
   "audit": {
@@ -468,15 +468,15 @@
       "subtitle": "إحصاءات الخادم في الوقت الفعلي ومراقبة الصحة",
       "searchPlaceholder": " البحث عن الخوادم...",
       "filters": {
-        "all": "All ({{count}})",
-        "online": "Online ({{count}})",
-        "issues": "Issues ({{count}})"
+        "all": "الكل ({{count}})",
+        "online": "عبر الإنترنت ({{count}})",
+        "issues": "القضايا ({{count}})"
       }
     },
     "errors": {
       "loadFailed": "فشل في تحميل بيانات المراقبة",
-      "loadFailedDescription": "The monitoring data could not be retrieved. Check your connection and try again.",
-      "retry": "Retry"
+      "loadFailedDescription": "تعذر استرداد بيانات المراقبة. يرجى التحقق من اتصالك ومحاولة إعادة المحاولة.",
+      "retry": "إعادة المحاولة"
     },
     "grid": {
       "noServers": {
@@ -484,8 +484,8 @@
         "subtitle": "لا توجد خوادم SSH متاحة للمراقبة.\nأضف بعض الخوادم لبدء مراقبتها."
       },
       "noResults": {
-        "title": "No matching servers",
-        "subtitle": "No monitored server matches your search."
+        "title": "لا توجد خوادم مطابقة",
+        "subtitle": "لا توجد خوادم خاضعة للمراقبة تطابق بحثك."
       },
       "metrics": {
         "loadAverage": "متوسط الحمل",
@@ -493,8 +493,8 @@
         "uptime": "وقت التشغيل",
         "nodes": "العُقد",
         "vms": "الأجهزة الافتراضية/الحاويات",
-        "cpu": "CPU",
-        "memory": "Memory"
+        "cpu": "وحدة المعالجة المركزية",
+        "memory": "الذاكرة"
       },
       "status": {
         "serverOffline": "الخادم غير متصل",
@@ -505,14 +505,14 @@
         "unknownMessage": "لا يمكن تحديد حالة الخادم.",
         "lastSeen": "آخر ظهور: {{time}}",
         "noRecentActivity": "لا توجد نشاط حديث",
-        "waitingForData": "Waiting for data",
-        "pendingMessage": "Monitoring data will appear after the next monitoring cycle.",
+        "waitingForData": "في انتظار البيانات",
+        "pendingMessage": "ستظهر بيانات الرصد بعد دورة الرصد التالية.",
         "labels": {
-          "online": "Online",
-          "offline": "Offline",
-          "error": "Error",
-          "pending": "Pending",
-          "unknown": "Unknown"
+          "online": "عبر الإنترنت",
+          "offline": "غير متصل بالإنترنت",
+          "error": "خطأ",
+          "pending": "قيد الانتظار",
+          "unknown": "مجهول"
         }
       },
       "uptime": {
@@ -555,7 +555,7 @@
           "processes": "العمليات النشطة",
           "total": "الإجمالي: {{value}}",
           "loadDetail": "5د: {{fiveMin}}، 15د: {{fifteenMin}}",
-          "memory": "Memory"
+          "memory": "الذاكرة"
         },
         "uptime": {
           "format": {
@@ -575,51 +575,51 @@
         "title": "استخدام القرص",
         "noData": "لا توجد بيانات استخدام قرص متاحة",
         "noPartitions": "لا توجد أقسام مثبتة",
-        "usedOf": "{{used}} of {{total}} used",
-        "free": "{{value}} free",
-        "filesystems": "Filesystems",
-        "disks": "Disks",
-        "on": "{{volume}} on {{partition}}",
-        "swap": "Swap",
-        "unmounted": "Not mounted",
-        "unallocated": "Unallocated",
-        "inodes": "Inodes",
-        "inodesDetail": "{{used}} of {{total}}",
+        "usedOf": "{{used}} من موقع {{total}} المستخدم",
+        "free": "{{value}} مجاني",
+        "filesystems": "أنظمة الملفات",
+        "disks": "الأقراص",
+        "on": "{{volume}} في {{partition}}",
+        "swap": "المبادلة",
+        "unmounted": "غير مُركَّب",
+        "unallocated": "غير مخصص",
+        "inodes": "الآينودات",
+        "inodesDetail": "{{used}} من {{total}}",
         "health": {
-          "passed": "Healthy",
-          "warning": "Warning",
-          "failed": "Failing",
-          "denied": "SMART needs root",
-          "temperature": "Temperature",
-          "powerOn": "Power-on time",
-          "wear": "Wear",
-          "reallocated": "Reallocated sectors",
-          "pending": "Pending sectors",
-          "mediaErrors": "Media errors",
-          "years": "{{value}} years",
-          "days": "{{value}} days",
-          "hours": "{{value}} hours",
-          "failedTitle": "Disk failure predicted",
-          "failedMessage": "{{disks}} failed its SMART self-assessment. Back up the data and replace the disk."
+          "passed": "صحي",
+          "warning": "تحذير",
+          "failed": "الفشل",
+          "denied": "تتطلب SMART صلاحيات الجذر",
+          "temperature": "درجة الحرارة",
+          "powerOn": "مدة التشغيل",
+          "wear": "الارتداء",
+          "reallocated": "القطاعات التي أعيد تخصيصها",
+          "pending": "القطاعات المعلقة",
+          "mediaErrors": "أخطاء في الوسائط",
+          "years": "{{value}} سنوات",
+          "days": "{{value}} أيام",
+          "hours": "{{value}} ساعات",
+          "failedTitle": "توقع حدوث عطل في القرص",
+          "failedMessage": "{{disks}} فشل في اجتياز التقييم الذاتي لنظام SMART. قم بعمل نسخة احتياطية من البيانات واستبدل القرص."
         }
       },
       "network": {
         "speed": "السرعة",
         "noData": "لا توجد بيانات واجهة شبكة متاحة",
-        "download": "Download",
-        "upload": "Upload",
-        "interface": "Interface",
-        "address": "Address",
-        "gateway": "Gateway",
-        "interfaces": "Interfaces",
-        "virtual": "Virtual interfaces",
-        "defaultRoute": "Default route",
-        "up": "Up",
-        "down": "Down",
-        "errors": "{{count}} errors",
-        "dropped": "{{count}} dropped",
-        "copy": "Copy {{address}}",
-        "total": "{{value}} total"
+        "download": "تنزيل",
+        "upload": "تحميل",
+        "interface": "الواجهة",
+        "address": "العنوان",
+        "gateway": "البوابة",
+        "interfaces": "الواجهات",
+        "virtual": "الواجهات الافتراضية",
+        "defaultRoute": "المسار الافتراضي",
+        "up": "أعلى",
+        "down": "لأسفل",
+        "errors": "{{count}} الأخطاء",
+        "dropped": "{{count}} سقط",
+        "copy": "نسخ {{address}}",
+        "total": "{{value}} الإجمالي"
       },
       "processes": {
         "searchPlaceholder": "عمليات البحث...",
@@ -627,9 +627,9 @@
         "noData": "لا توجد بيانات عملية متاحة. ستظهر بيانات المعالجة بعد دورة المراقبة التالية.",
         "noResults": "لا توجد عمليات تطابق معايير البحث الخاصة بك.",
         "columns": {
-          "command": "Command",
-          "cpu": "CPU",
-          "mem": "Memory"
+          "command": "الأمر",
+          "cpu": "وحدة المعالجة المركزية",
+          "mem": "الذاكرة"
         }
       },
       "pve": {
@@ -674,13 +674,13 @@
       "backup": "التخزين",
       "engines": "المحركات",
       "permissions": "الأدوار والأذونات",
-      "trustedCertificates": "Trusted Certificates"
+      "trustedCertificates": "شهادات موثوقة"
     },
     "account": {
       "title": "الحساب",
       "demo": {
-        "title": "Security",
-        "description": "Password, two-factor authentication, passkeys, API keys and profile pictures can't be changed while you're exploring as a guest."
+        "title": "الأمن",
+        "description": "لا يمكن تغيير كلمة المرور، أو المصادقة الثنائية، أو مفاتيح المرور، أو مفاتيح واجهة برمجة التطبيقات (API)، أو صور الملف الشخصي أثناء تصفحك للموقع كضيف."
       },
       "avatar": {
         "label": "صورة",
@@ -765,7 +765,7 @@
       "sessionSyncAcrossDevicesDesc": "ستكون الجلسات متاحة عبر الأجهزة ومزامنتها",
       "sessionSyncSameBrowserDesc": "ستتم مزامنة الجلسات لجلسة المستخدم الحالية",
       "sessionSyncSameTabDesc": "ستتم مزامنة الجلسات داخل علامة تبويب المتصفح الخاص بك",
-      "showAgentSessionsDesc": "Show sessions opened by the AI assistant or MCP agents as view-only tabs",
+      "showAgentSessionsDesc": "عرض الجلسات التي فتحها المساعد الذكي أو وكلاء MCP كعلامات تبويب للقراءة فقط",
       "twoFactorDialog": {
         "title": "تمكين 2FA",
         "description": "امسح الرمز ... <span class=\"totp-code\">{{secret}}</span> ...",
@@ -819,12 +819,12 @@
         "expires": "تاريخ انتهاء الصلاحية {{date}}",
         "delete": "حذف"
       },
-      "remoteDesktop": "Remote Desktop",
-      "remoteDesktopDescription": "Default display scale for remote desktop sessions. Connections can override it, and a scale picked during a session is remembered on that device.",
-      "remoteDesktopScale": "Display Scale",
-      "remoteDesktopScaleAuto": "Automatic (match device)",
-      "remoteDesktopSyncEnabled": "Remote desktop settings will now sync across devices",
-      "remoteDesktopSyncDisabled": "Remote desktop settings are now saved on this device only"
+      "remoteDesktop": "سطح المكتب البعيد",
+      "remoteDesktopDescription": "مقياس العرض الافتراضي لجلسات سطح المكتب البعيد. يمكن للاتصالات تجاوز هذا الإعداد، ويتم حفظ المقياس الذي يتم اختياره أثناء الجلسة على ذلك الجهاز.",
+      "remoteDesktopScale": "مقياس العرض",
+      "remoteDesktopScaleAuto": "تلقائي (مطابقة الجهاز)",
+      "remoteDesktopSyncEnabled": "ستتم الآن مزامنة إعدادات سطح المكتب البعيد عبر الأجهزة المختلفة",
+      "remoteDesktopSyncDisabled": "يتم الآن حفظ إعدادات سطح المكتب البعيد على هذا الجهاز فقط"
     },
     "passwordChange": {
       "title": "تغيير كلمة المرور",
@@ -832,11 +832,11 @@
       "newPassword": "كلمة المرور الجديدة",
       "confirmPassword": "تأكيد كلمة المرور الجديدة",
       "changePasswordButton": "تغيير كلمة المرور",
-      "currentPassword": "Current password",
-      "descriptionOwn": "Enter your current password and choose a new one. You will be signed out on all other devices.",
-      "descriptionOther": "Choose a new password for this user. They will be signed out on all devices.",
-      "successOwn": "Your password was changed. Other devices were signed out.",
-      "successOther": "The password was changed and the user was signed out everywhere."
+      "currentPassword": "كلمة المرور الحالية",
+      "descriptionOwn": "أدخل كلمة مرورك الحالية واختر كلمة مرور جديدة. سيتم تسجيل خروجك من جميع الأجهزة الأخرى.",
+      "descriptionOther": "اختر كلمة مرور جديدة لهذا المستخدم. سيتم تسجيل خروجه من جميع الأجهزة.",
+      "successOwn": "تم تغيير كلمة مرورك. وتم تسجيل الخروج من الأجهزة الأخرى.",
+      "successOther": "تم تغيير كلمة المرور، وتم تسجيل خروج المستخدم من جميع الأجهزة."
     },
     "organizations": {
       "title": "مؤسساتك",
@@ -875,8 +875,8 @@
         "folderManagementDescription": "إنشاء سجلات إنشاء المجلدات وتعديلها وحذفها",
         "scriptExecutionLabel": "تنفيذ البرنامج النصي",
         "scriptExecutionDescription": "تسجيل تنفيذ البرامج النصية ومهام الأتمتة",
-        "agentOperationsLabel": "AI Agent Operations",
-        "agentOperationsDescription": "Log commands, input, screenshots and file changes performed by the AI assistant and by agents connected through the MCP server",
+        "agentOperationsLabel": "عمليات الوكلاء المعتمدين على الذكاء الاصطناعي",
+        "agentOperationsDescription": "تسجيل الأوامر، والمدخلات، ولقطات الشاشة، والتغييرات التي تطرأ على الملفات، والتي يقوم بها المساعد الذكي والموظفون المتصلون عبر خادم MCP",
         "actions": {
           "save": "حفظ الإعدادات"
         },
@@ -943,9 +943,9 @@
         "loginAsUser": "تسجيل الدخول كمستخدم",
         "deleteConfirm": "سيؤدي هذا إلى حذف المستخدم وبياناته المرتبطة نهائيًا.",
         "managePermissions": "إدارة الأذونات",
-        "allowExternalLink": "Allow SSO/LDAP linking",
-        "cancelExternalLink": "Cancel SSO/LDAP linking",
-        "unlinkExternal": "Unlink SSO/LDAP sign-in"
+        "allowExternalLink": "السماح بالربط عبر SSO/LDAP",
+        "cancelExternalLink": "إلغاء ربط SSO/LDAP",
+        "unlinkExternal": "إلغاء ربط تسجيل الدخول عبر SSO/LDAP"
       }
     },
     "userDialog": {
@@ -1008,11 +1008,11 @@
         },
         "copy": {
           "title": "نسخ",
-          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+          "description": "نسخ النص المحدد في «المحطة الطرفية» إلى لوحة المفاتيح. يتطلب تشغيل وضع «الماوس» أو «لوحة المفاتيح» في إعدادات «المحطة الطرفية»."
         },
         "paste": {
-          "title": "Paste",
-          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
+          "title": "لصق",
+          "description": "لصق نص الحافظة في «تيرمينال». يتطلب تشغيل وضع «Smart Ctrl+C» أو «الماوس» أو «لوحة المفاتيح» في إعدادات «تيرمينال»."
         },
         "fullscreen": {
           "title": "ملء الشاشة الكاملة",
@@ -1027,7 +1027,7 @@
         "pressKeys": "اضغط على المفاتيح...",
         "save": "الحفظ",
         "cancel": "إلغاء",
-        "disabled": "Disabled",
+        "disabled": "ذوو الإعاقة",
         "reset": "إعادة تعيين"
       },
       "messages": {
@@ -1063,19 +1063,19 @@
       "input": {
         "title": "الإدخال",
         "description": "تحكم في طريقة عمل اختصارات لوحة المفاتيح داخل المحطة الطرفية.",
-        "copyPasteBehavior": "Copy/Paste Behavior",
-        "copyPasteBehaviorNone": "None",
-        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
-        "copyPasteBehaviorSmart": "Smart Ctrl+C",
-        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
-        "copyPasteBehaviorKeyboard": "Keyboard",
-        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
-        "copyPasteBehaviorMouse": "Mouse",
-        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
-        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
-        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
+        "copyPasteBehavior": "سلوك النسخ/اللصق",
+        "copyPasteBehaviorNone": "لا شيء",
+        "copyPasteBehaviorNoneHint": "النسخ واللصق من قائمة السياق فقط.",
+        "copyPasteBehaviorSmart": "Ctrl+C الذكي",
+        "copyPasteBehaviorSmartHint": "النسخ الذكي عند تمييز النص، وإلا يتم إرسال الأمر «Ctrl+C» كما هو إلى المحطة الطرفية.",
+        "copyPasteBehaviorKeyboard": "لوحة المفاتيح",
+        "copyPasteBehaviorKeyboardHint": "يستخدم خرائط المفاتيح التي حددتها لتنفيذ عمليات النسخ واللصق",
+        "copyPasteBehaviorMouse": "الماوس",
+        "copyPasteBehaviorMouseHint": "قم بتمييز النص للنسخ، وانقر بزر الماوس الأيمن للصق. استخدم Ctrl + النقر بزر الماوس الأيمن للوصول إلى قائمة السياق.",
+        "copyPasteBehaviorMouseKeyboard": "الماوس/لوحة المفاتيح",
+        "copyPasteBehaviorMouseKeyboardHint": "يتيح استخدام كل من وضع الماوس ووضع لوحة المفاتيح.",
         "passwordPromptDetection": "الكشف عن إدخال كلمة المرور",
-        "autoReconnect": "Auto-reconnect",
+        "autoReconnect": "إعادة الاتصال التلقائي",
         "enabled": "ممكّن",
         "disabled": "ذوو الإعاقة",
         "syncEnabled": "ستتم الآن مزامنة إعدادات الإدخال مع حسابك",
@@ -1098,12 +1098,12 @@
       "syncEnabled": "ستتم مزامنة إعدادات مدير الملفات الآن مع حسابك",
       "syncDisabled": "لن تتم مزامنة إعدادات مدير الملفات بعد الآن",
       "view": {
-        "title": "View",
-        "description": "How files and folders are shown when you open the file manager."
+        "title": "عرض",
+        "description": "كيف تظهر الملفات والمجلدات عند فتح مدير الملفات."
       },
       "behavior": {
-        "title": "Behavior",
-        "description": "What happens when you open, delete and move files."
+        "title": "السلوك",
+        "description": "ماذا يحدث عند فتح الملفات أو حذفها أو نقلها؟"
       },
       "defaultView": {
         "title": "وضع العرض الافتراضي",
@@ -1112,9 +1112,9 @@
         "listDescription": "عرض الملفات في قائمة مفصلة مع أعمدة الحجم والتاريخ",
         "grid": "عرض الشبكة",
         "gridDescription": "إظهار الملفات كرموز في تخطيط شبكي مع صور مصغرة",
-        "compact": "Compact View",
-        "compactDescription": "Show only names in dense columns to fit many files on screen",
-        "label": "Default view"
+        "compact": "العرض المضغوط",
+        "compactDescription": "عرض الأسماء فقط في أعمدة مكتظة لتناسب عرض العديد من الملفات على الشاشة",
+        "label": "العرض الافتراضي"
       },
       "thumbnails": {
         "title": "صور مصغرة للصور",
@@ -1123,9 +1123,9 @@
         "enabledDescription": "عرض معاينات الصور في طريقة عرض الشبكة للتعرف البصري السريع",
         "disabled": "إخفاء الصور المصغرة",
         "disabledDescription": "إظهار أيقونات الملفات فقط لحفظ النطاق الترددي وتحسين الأداء",
-        "label": "Image thumbnails",
-        "show": "Show",
-        "hide": "Hide"
+        "label": "الصور المصغرة",
+        "show": "عرض",
+        "hide": "إخفاء"
       },
       "hiddenFiles": {
         "title": "الملفات المخفية",
@@ -1134,9 +1134,9 @@
         "showDescription": "عرض جميع الملفات بما في ذلك ملفات .dotfiles ودلائل النظام",
         "hide": "إخفاء الملفات المخفية",
         "hideDescription": "إظهار الملفات والمجلدات العادية فقط",
-        "label": "Hidden files",
-        "showShort": "Show",
-        "hideShort": "Hide"
+        "label": "الملفات المخفية",
+        "showShort": "عرض",
+        "hideShort": "إخفاء"
       },
       "deleteConfirmation": {
         "title": "حذف تأكيد الحذف",
@@ -1145,9 +1145,9 @@
         "enabledDescription": "إظهار مربع حوار تأكيد قبل حذف العناصر",
         "disabled": "الحذف فوراً",
         "disabledDescription": "حذف الملفات دون طلب التأكيد",
-        "label": "Before deleting",
-        "ask": "Ask for confirmation",
-        "immediately": "Delete immediately"
+        "label": "قبل الحذف",
+        "ask": "اطلب التأكيد",
+        "immediately": "احذف على الفور"
       },
       "dragDropAction": {
         "title": "إجراء السحب والإفلات",
@@ -1155,32 +1155,32 @@
         "move": "الانتقال",
         "copy": "نسخ",
         "ask": "اسأل",
-        "label": "When dropping files"
+        "label": "عند إسقاط الملفات"
       },
       "singleClickOpen": {
-        "title": "Open with single click",
-        "description": "Open files and folders with a single click instead of selecting them. Double-click opens when this is off.",
-        "single": "Single click",
-        "double": "Double click",
-        "label": "Open items with"
+        "title": "افتح بنقرة واحدة",
+        "description": "افتح الملفات والمجلدات بنقرة واحدة بدلاً من تحديدها. وعندما تكون هذه الميزة معطلة، يُفتح الملف أو المجلد بالنقر المزدوج.",
+        "single": "نقرة واحدة",
+        "double": "انقر نقرًا مزدوجًا",
+        "label": "البنود المفتوحة مع"
       },
       "sharedDrive": {
-        "title": "Shared Drive",
-        "description": "What remote desktops can see of this computer through their shared drive. Changes apply to new connections.",
+        "title": "محرك الأقراص المشترك",
+        "description": "ما يمكن لأجهزة الكمبيوتر المكتبية البعيدة رؤيته من هذا الكمبيوتر عبر محرك الأقراص المشترك. تُطبق التغييرات على الاتصالات الجديدة.",
         "mode": {
-          "title": "Share",
-          "folder": "One folder",
-          "disk": "Entire disk",
-          "off": "Nothing",
-          "diskWarning": "Remote desktops can read, change and delete every file on this computer."
+          "title": "مشاركة",
+          "folder": "مجلد واحد",
+          "disk": "القرص بأكمله",
+          "off": "لا شيء",
+          "diskWarning": "يمكن لأجهزة الكمبيوتر المكتبية البعيدة قراءة كل ملف موجود على هذا الكمبيوتر وتعديله وحذفه."
         },
         "folder": {
-          "title": "Shared folder",
-          "default": "Nexterm Shared in your home folder",
-          "choose": "Choose folder",
-          "reset": "Use default"
+          "title": "مجلد مشترك",
+          "default": "Nexterm تمت مشاركتها في مجلدك الرئيسي",
+          "choose": "اختر مجلدًا",
+          "reset": "استخدام الإعدادات الافتراضية"
         },
-        "folderError": "The shared folder could not be prepared"
+        "folderError": "تعذر تجهيز المجلد المشترك"
       }
     },
     "authentication": {
@@ -1214,7 +1214,7 @@
           "clientSecretPlaceholderEdit": "اتركه فارغًا للحفاظ على الحالي",
           "redirectUri": "رابط إعادة التوجيه",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
-          "endSessionEndpoint": "End Session Endpoint (Optional)",
+          "endSessionEndpoint": "نقطة نهاية الجلسة (اختياري)",
           "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
           "scope": "النطاق",
           "scopePlaceholder": "ملف تعريف OpenID",
@@ -1237,19 +1237,19 @@
           "saveFailed": "فشل في حفظ الموفر"
         },
         "groupSync": {
-          "title": "Group Sync",
-          "hint": "Automatically add users to organizations and control access based on group claims from your identity provider.",
-          "groupsAttribute": "Groups Claim",
-          "groupsAttributePlaceholder": "groups",
-          "requiredGroup": "Required Group",
-          "requiredGroupPlaceholder": "nexterm-users",
-          "requiredGroupHint": "If set, only users whose groups claim contains this value are allowed to log in.",
-          "mappings": "Organization Mappings",
-          "mappingsHint": "Map a group claim value to an organization. Membership is kept in sync on every login.",
-          "mappingValuePlaceholder": "Group value",
-          "roleMember": "Member",
-          "roleOwner": "Owner",
-          "addMapping": "Add Mapping"
+          "title": "المزامنة الجماعية",
+          "hint": "أضف المستخدمين تلقائيًا إلى المؤسسات وتحكم في الوصول بناءً على مطالبات المجموعات الواردة من مزود الهوية الخاص بك.",
+          "groupsAttribute": "ادعاءات الجماعات",
+          "groupsAttributePlaceholder": "المجموعات",
+          "requiredGroup": "المجموعة المطلوبة",
+          "requiredGroupPlaceholder": "مستخدمو nexterm",
+          "requiredGroupHint": "في حالة تعيين هذه القيمة، يُسمح فقط للمستخدمين الذين تحتوي مطالبة مجموعاتهم على هذه القيمة بتسجيل الدخول.",
+          "mappings": "تعيينات المنظمات",
+          "mappingsHint": "قم بربط قيمة المطالبة الجماعية بإحدى المؤسسات. ويتم الحفاظ على تزامن العضوية عند كل عملية تسجيل دخول.",
+          "mappingValuePlaceholder": "القيمة الجماعية",
+          "roleMember": "عضو",
+          "roleOwner": "المالك",
+          "addMapping": "إضافة خريطة"
         }
       },
       "ldapDialog": {
@@ -1298,20 +1298,20 @@
         }
       },
       "sessions": {
-        "title": "Sessions",
-        "description": "When signed-in devices, including the mobile and desktop apps, have to sign in again.",
-        "idle": "Sign out after inactivity",
-        "lifetime": "Maximum session length",
-        "days_one": "{{count}} day",
-        "days_other": "{{count}} days",
-        "never": "Never",
-        "loadError": "Failed to load the session settings",
-        "saveError": "Failed to save the session settings"
+        "title": "الجلسات",
+        "description": "عندما يتعين على الأجهزة التي تم تسجيل الدخول إليها، بما في ذلك تطبيقات الهاتف المحمول والكمبيوتر المكتبي، تسجيل الدخول مرة أخرى.",
+        "idle": "تسجيل الخروج بعد فترة من عدم النشاط",
+        "lifetime": "الحد الأقصى لمدة الجلسة",
+        "days_one": "{{count}} يوم",
+        "days_other": "{{count}} أيام",
+        "never": "أبدًا",
+        "loadError": "فشل تحميل إعدادات الجلسة",
+        "saveError": "فشل حفظ إعدادات الجلسة"
       }
     },
     "ai": {
       "title": "إعداد مساعد الذكاء الاصطناعي",
-      "description": "Configure the AI provider used by the assistant, which can operate your servers through its own sessions.",
+      "description": "قم بتكوين مزود الذكاء الاصطناعي الذي يستخدمه المساعد، والذي يمكنه تشغيل خوادمك من خلال جلسات خاصة به.",
       "loading": "جارٍ تحميل إعدادات الذكاء الاصطناعي...",
       "enable": {
         "title": "تمكين مساعد الذكاء الاصطناعي",
@@ -1426,12 +1426,12 @@
     },
     "identities": {
       "title": "مفاتيح SSH والبيانات الاعتمادية",
-      "description": "Identities you can link to any server. Server-specific ones live in that server's settings.",
+      "description": "الهويات التي يمكنك ربطها بأي خادم. أما الهويات الخاصة بخادم معين فتوجد في إعدادات ذلك الخادم.",
       "createIdentity": "إنشاء هوية",
       "personal": "شخصي",
       "noUsername": "لا يوجد اسم مستخدم",
-      "notInUse": "Not in use",
-      "notInUseHint": "Not linked to any server or folder",
+      "notInUse": "غير مستخدم",
+      "notInUseHint": "غير مرتبط بأي خادم أو مجلد",
       "sshKey": "مفتاح SSH",
       "password": "كلمة المرور",
       "editIdentity": "تحرير الهوية",
@@ -1499,7 +1499,7 @@
         "success": "مزامنة",
         "error": "خطأ",
         "pending": "قيد الانتظار",
-        "syncing": "Syncing",
+        "syncing": "المزامنة",
         "disabled": "معاق"
       },
       "dialog": {
@@ -1688,26 +1688,26 @@
       "inheritsAllow": "الميراث: مسموح به",
       "inheritsDeny": "يرث: مرفوض"
     },
-    "search": "Search settings",
+    "search": "إعدادات البحث",
     "trustedCertificates": {
-      "title": "Trusted Certificates",
-      "description": "Certificates and host keys you accepted when connecting. Remove one to be asked again the next time.",
-      "personal": "Personal",
-      "system": "System",
+      "title": "الشهادات الموثوقة",
+      "description": "الشهادات ومفاتيح المضيف التي وافقت عليها عند الاتصال. قم بإزالة إحداها ليُطلب منك الموافقة عليها مرة أخرى في المرة القادمة.",
+      "personal": "شخصي",
+      "system": "النظام",
       "kinds": {
-        "ssh": "SSH host key",
-        "tls": "TLS certificate"
+        "ssh": "مفتاح مضيف SSH",
+        "tls": "شهادة TLS"
       },
-      "empty": "Nothing trusted yet",
-      "emptyDescription": "Certificates and host keys appear here once you accept them for a connection.",
-      "remove": "Remove",
-      "removeConfirm": "Stop trusting {{endpoint}}? The next connection asks again.",
-      "removeSuccess": "Trusted certificate removed",
-      "removeError": "Failed to remove the trusted certificate",
+      "empty": "لم يتم الوثوق بأي شيء حتى الآن",
+      "emptyDescription": "تظهر الشهادات ومفاتيح المضيف هنا بمجرد قبولها لإجراء اتصال.",
+      "remove": "إزالة",
+      "removeConfirm": "هل تريد التوقف عن الوثوق بموقع {{endpoint}}؟ سيُطرح هذا السؤال مرة أخرى عند الاتصال التالي.",
+      "removeSuccess": "تمت إزالة الشهادة الموثوقة",
+      "removeError": "فشل إزالة الشهادة الموثوقة",
       "ignore": {
-        "title": "Ignore certificate warnings",
-        "description": "Connect to your personal servers without checking their certificate or host key. Connections can then be intercepted without you noticing. Organization servers are always checked.",
-        "error": "Failed to save the setting"
+        "title": "تجاهل تحذيرات الشهادات",
+        "description": "اتصل بخوادمك الشخصية دون التحقق من شهادتها أو مفتاح المضيف الخاص بها. وقد يتم عندئذ اعتراض الاتصالات دون أن تلاحظ ذلك. أما خوادم المؤسسات، فيتم التحقق منها دائمًا.",
+        "error": "فشل حفظ الإعداد"
       }
     }
   },
@@ -1767,7 +1767,7 @@
       "createFolder": "إنشاء مجلد",
       "deleteFolder": "حذف المجلد",
       "renameFolder": "إعادة تسمية المجلد",
-      "folderSettings": "Folder Settings",
+      "folderSettings": "إعدادات المجلد",
       "new": "جديد",
       "sshServer": "خادم SSH",
       "telnetServer": "خادم Telnet",
@@ -1788,7 +1788,7 @@
       "connect": "الاتصال",
       "quickConnect": "التوصيل السريع",
       "openSFTP": "فتح SFTP",
-      "openBrowser": "Open Browser",
+      "openBrowser": "فتح المتصفح",
       "forwardPort": "المنفذ الأمامي",
       "runScript": "تشغيل البرنامج النصي",
       "openNotes": "فتح الملاحظات",
@@ -1825,20 +1825,20 @@
         "duplicate": "مكررة",
         "openNotes": "فتح الملاحظات",
         "hibernateSession": "السبات",
-        "reconnect": "Reconnect",
+        "reconnect": "إعادة الاتصال",
         "closeSession": "قطع الاتصال",
-        "splitRight": "Split Right",
-        "splitDown": "Split Down",
-        "sendShortcut": "Send Shortcut…",
-        "zoom": "Zoom ({{zoom}}%)",
-        "zoomReset": "Reset Zoom",
-        "displayScale": "Display Scale ({{scale}}%)",
-        "displayScaleAuto": "Automatic ({{scale}}%)",
-        "displayScaleReset": "Use Default"
+        "splitRight": "انقسام إلى اليمين",
+        "splitDown": "التقسيم إلى أسفل",
+        "sendShortcut": "إرسال الرابط المختصر…",
+        "zoom": "تكبير ({{zoom}}%)",
+        "zoomReset": "إعادة ضبط مستوى التكبير/التصغير",
+        "displayScale": "مقياس العرض ({{scale}}%)",
+        "displayScaleAuto": "تلقائي ({{scale}}٪)",
+        "displayScaleReset": "استخدام الإعداد الافتراضي"
       },
-      "enableSplitView": "Enable Split View",
-      "disableSplitView": "Disable Split View",
-      "sessionMenu": "Session Menu"
+      "enableSplitView": "تمكين وضع العرض المقسم",
+      "disableSplitView": "تعطيل وضع العرض المقسم",
+      "sessionMenu": "قائمة الجلسة"
     },
     "wol": {
       "successDescription": "الحزمة السحرية المرسلة إلى {{name}}",
@@ -1848,10 +1848,10 @@
       "fillRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
       "serverCreated": "تم إنشاء الخادم بنجاح",
       "serverUpdated": "تم تحديث الخادم بنجاح",
-      "folderUpdated": "Folder updated successfully",
+      "folderUpdated": "تم تحديث المجلد بنجاح",
       "createFailed": "فشل في إنشاء الخادم",
       "updateFailed": "فشل في تحديث الخادم",
-      "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination."
+      "identitiesRemovedOnMove": "تمت إزالة بعض الهويات لأنها غير متوفرة في الوجهة."
     },
     "dialog": {
       "addServer": "إضافة خادم",
@@ -1911,12 +1911,12 @@
         },
         "display": {
           "title": "إعدادات العرض",
-          "description": "Configure color depth, resize behavior and scaling for the remote display",
+          "description": "ضبط عمق الألوان، وسلوك تغيير الحجم، وتغيير النسب للشاشة البعيدة",
           "colorDepth": "عمق اللون",
           "resizeMethod": "طريقة تغيير الحجم",
-          "displayScale": "Display Scale",
-          "displayScaleAuto": "Automatic (match this device)",
-          "displayScaleAccount": "Account default"
+          "displayScale": "مقياس العرض",
+          "displayScaleAuto": "تلقائي (مطابقة هذا الجهاز)",
+          "displayScaleAccount": "التخلف عن سداد الحساب"
         },
         "performance": {
           "title": "إعدادات الأداء",
@@ -1957,29 +1957,29 @@
         "both": "مفتاح + تمرير",
         "sshPrivateKey": "مفتاح SSH الخاص",
         "passphrase": "عبارة المرور (اختياري)",
-        "add": "Add identity",
-        "linkGlobal": "Link global identity · {{count}}",
-        "empty": "No identities yet.",
+        "add": "إضافة هوية",
+        "linkGlobal": "الهوية العالمية لـ Link · {{count}}",
+        "empty": "لم يتم تحديد الهويات بعد.",
         "removeIdentity": "إزالة الهوية",
         "unlinkIdentity": "إلغاء ربط الهوية",
         "moveToOrg": "الانتقال إلى المنظمة",
         "noUsername": "لا يوجد اسم مستخدم",
-        "globalToggle": "Use on other servers",
-        "globalInUse": "This identity is used by {{count}} servers. Unlink it from the others first.",
-        "shareToggle": "Share with organization",
-        "inheritedHint": "Inherited from the folder settings.",
-        "onlyMe": "Only me",
-        "onlyMeHint": "Only you can see and use this identity."
+        "globalToggle": "الاستخدام على خوادم أخرى",
+        "globalInUse": "يتم استخدام هذه الهوية من قِبل خوادم {{count}} . قم أولاً بفصلها عن الهويات الأخرى.",
+        "shareToggle": "مشاركة مع المؤسسة",
+        "inheritedHint": "يتم توريثها من إعدادات المجلد.",
+        "onlyMe": "أنا فقط",
+        "onlyMeHint": "أنت وحدك من يمكنه رؤية هذه الهوية واستخدامها."
       },
       "sections": {
-        "general": "General",
-        "connection": "Connection",
-        "identities": "Identities",
-        "options": "Options",
-        "credentials": "Credentials"
+        "general": "عام",
+        "connection": "الاتصال",
+        "identities": "الهويات",
+        "options": "خيارات",
+        "credentials": "الوثائق المثبتة"
       },
-      "useInherited": "Use inherited value",
-      "reset": "Reset"
+      "useInherited": "استخدام القيمة الموروثة",
+      "reset": "إعادة الضبط"
     },
     "proxmoxDialog": {
       "title": {
@@ -2009,7 +2009,7 @@
         "createFailed": "فشل في إنشاء تكامل Proxmox",
         "updateFailed": "فشل تحديث تكامل Proxmox"
       },
-      "credentialsDescription": "Proxmox user with API access, e.g. root@pam or a dedicated API user."
+      "credentialsDescription": "مستخدم Proxmox يتمتع بحق الوصول إلى واجهة برمجة التطبيقات (API)، مثل root@pam أو مستخدم مخصص لواجهة برمجة التطبيقات."
     },
     "connectionReasonDialog": {
       "title": "سبب الاتصال مطلوب",
@@ -2164,16 +2164,16 @@
         "search": "البحث في الملفات",
         "closeSearch": "إغلاق البحث",
         "refresh": "تحديث",
-        "back": "Back",
-        "forward": "Forward",
-        "up": "Parent directory",
-        "home": "Home directory",
-        "switchToCompact": "Switch to compact view"
+        "back": "العودة",
+        "forward": "إلى الأمام",
+        "up": "الدليل الأصلي",
+        "home": "الدليل الرئيسي",
+        "switchToCompact": "التبديل إلى العرض المضغوط"
       },
       "item": {
         "link": "الرابط",
-        "expand": "Expand folder",
-        "collapse": "Collapse folder"
+        "expand": "توسيع المجلد",
+        "collapse": "طي المجلد"
       },
       "search": {
         "placeholder": "تصفية الملفات الموجودة في هذا المجلد...",
@@ -2194,51 +2194,51 @@
         "error": "حدث خطأ"
       },
       "transfers": {
-        "title": "Transfers",
-        "activeCount": "{{count}} active",
-        "allDone": "All done",
-        "clearFinished": "Clear finished",
-        "queued": "Queued",
-        "cancelling": "Cancelling...",
-        "completed": "Completed",
-        "savedTo": "Saved to {{path}}",
-        "cancelled": "Cancelled",
-        "failed": "Failed: {{message}}",
-        "dismiss": "Dismiss"
+        "title": "التحويلات",
+        "activeCount": "{{count}} نشط",
+        "allDone": "انتهى الأمر",
+        "clearFinished": "تم الانتهاء منه بشكل واضح",
+        "queued": "في قائمة الانتظار",
+        "cancelling": "جاري الإلغاء...",
+        "completed": "تم الانتهاء منه",
+        "savedTo": "تم الحفظ في {{path}}",
+        "cancelled": "تم إلغاؤه",
+        "failed": "فشل: {{message}}",
+        "dismiss": "إغلاق"
       },
       "status": {
-        "folders_one": "{{count}} folder",
-        "folders_other": "{{count}} folders",
-        "files_one": "{{count}} file",
-        "files_other": "{{count}} files",
-        "hidden_one": "{{count}} hidden",
-        "hidden_other": "{{count}} hidden",
-        "selected": "{{count}} selected",
-        "showHidden": "Show hidden files",
-        "hideHidden": "Hide hidden files"
+        "folders_one": "{{count}} مجلد",
+        "folders_other": "{{count}} المجلدات",
+        "files_one": "{{count}} ملف",
+        "files_other": "{{count}} الملفات",
+        "hidden_one": "{{count}} مخفي",
+        "hidden_other": "{{count}} مخفي",
+        "selected": "{{count}} مُختار",
+        "showHidden": "إظهار الملفات المخفية",
+        "hideHidden": "إخفاء الملفات المخفية"
       },
       "conflict": {
-        "title_one": "Item already exists",
-        "title_other": "{{count}} items already exist",
-        "upload_one": "A file with this name already exists in the destination. What would you like to do?",
-        "upload_other": "These files already exist in the destination. What would you like to do with them?",
-        "move_one": "An item with this name already exists in the destination. Moving will replace it.",
-        "move_other": "These items already exist in the destination. Moving will replace them.",
-        "copy_one": "An item with this name already exists in the destination. Copying will replace it.",
-        "copy_other": "These items already exist in the destination. Copying will replace them.",
-        "more": "+ {{count}} more",
-        "skip": "Skip",
-        "rename": "Keep both",
-        "overwrite": "Overwrite"
+        "title_one": "هذا العنصر موجود بالفعل",
+        "title_other": "{{count}} هذه العناصر موجودة بالفعل",
+        "upload_one": "يوجد ملف بهذا الاسم بالفعل في الموقع المقصود. ماذا تريد أن تفعل؟",
+        "upload_other": "هذه الملفات موجودة بالفعل في الموقع المقصود. ماذا تريد أن تفعل بها؟",
+        "move_one": "يوجد عنصر بهذا الاسم بالفعل في الوجهة. سيؤدي النقل إلى استبداله.",
+        "move_other": "هذه العناصر موجودة بالفعل في الوجهة. سيؤدي نقلها إلى استبدالها.",
+        "copy_one": "يوجد عنصر بهذا الاسم بالفعل في الوجهة. سيؤدي النسخ إلى استبداله.",
+        "copy_other": "هذه العناصر موجودة بالفعل في الوجهة. سيؤدي النسخ إلى استبدالها.",
+        "more": "+ {{count}} المزيد",
+        "skip": "تخطي",
+        "rename": "احتفظ بكليهما",
+        "overwrite": "الكتابة فوق"
       }
     },
     "browser": {
-      "back": "Back",
-      "forward": "Forward",
-      "reload": "Reload",
-      "stop": "Stop",
-      "address": "Address",
-      "addressPlaceholder": "Enter an address"
+      "back": "العودة",
+      "forward": "إلى الأمام",
+      "reload": "إعادة التحميل",
+      "stop": "توقف",
+      "address": "العنوان",
+      "addressPlaceholder": "أدخل عنوانًا"
     },
     "remoteDesktop": {
       "dropOverlay": "اسحب الملفات لتحميلها إلى الخادم البعيد",
@@ -2251,33 +2251,33 @@
       }
     },
     "automatedSession": {
-      "viewOnlyAi": "The AI assistant is working in this session. You can watch, but not type.",
-      "viewOnlyMcp": "An external agent (MCP) is working in this session. You can watch, but not type."
+      "viewOnlyAi": "المساعد الذكي يعمل في هذه الجلسة. يمكنك المشاهدة، لكن لا يمكنك الكتابة.",
+      "viewOnlyMcp": "هناك وكيل خارجي (MCP) يعمل في هذه الجلسة. يمكنك المشاهدة، لكن لا يمكنك الكتابة."
     },
     "aiAssistant": {
       "title": "مساعد الذكاء الاصطناعي",
       "open": "المساعد الذكي",
-      "empty": "Ask the assistant to inspect or change your servers. It opens its own sessions to the servers you add below, runs commands, edits files and can even operate remote desktops.",
-      "addServer": "Add server",
-      "removeServer": "Remove server",
-      "searchServers": "Search servers...",
-      "noMatches": "No matching servers",
-      "current": "current",
-      "openSessions": "{{count}} open session(s)",
+      "empty": "اطلب من المساعد فحص خوادمك أو تغييرها. فهو يفتح جلسات عمل خاصة به على الخوادم التي تضيفها أدناه، ويُنفِّذ الأوامر، ويُعدِّل الملفات، بل ويمكنه حتى تشغيل أسطح المكتب عن بُعد.",
+      "addServer": "إضافة خادم",
+      "removeServer": "إزالة الخادم",
+      "searchServers": "البحث في الخوادم...",
+      "noMatches": "لا توجد خوادم مطابقة",
+      "current": "الحالي",
+      "openSessions": "{{count}} جلسة (جلسات) مفتوحة",
       "approval": {
-        "ask": "Ask before actions",
-        "askDescription": "Commands, input and file changes wait for your approval",
-        "allow": "Allow all",
-        "allowDescription": "Runs tool calls without asking",
-        "readonly": "Read-only",
-        "readonlyDescription": "Only inspects servers; anything that changes them is denied"
+        "ask": "اسأل قبل اتخاذ أي إجراء",
+        "askDescription": "الأوامر وعمليات الإدخال وتغييرات الملفات في انتظار موافقتك",
+        "allow": "السماح للجميع",
+        "allowDescription": "تقوم بتنفيذ أوامر الأداة دون طلب الإذن",
+        "readonly": "للقراءة فقط",
+        "readonlyDescription": "يقتصر الفحص على الخوادم فقط؛ ويتم رفض أي عملية تُحدث تغييرات عليها"
       },
       "placeholder": "أرسل رسالة إلى المساعد...",
       "connecting": "جاري الاتصال...",
       "send": "إرسال",
-      "copyMessage": "Copy message",
-      "copied": "Copied",
-      "editMessage": "Edit message",
+      "copyMessage": "نسخ الرسالة",
+      "copied": "تم النسخ",
+      "editMessage": "تعديل الرسالة",
       "stop": "توقف",
       "connectionError": "انقطع الاتصال بالمساعد.",
       "reconnecting": "انقطع الاتصال. يجري إعادة الاتصال...",
@@ -2290,65 +2290,65 @@
       "continuePrompt": "توقف المساعد بعد سلسلة طويلة من الخطوات. هل نواصل؟",
       "continue": "تابع",
       "compacted": "تم تلخيص الرسائل السابقة لتوضيح السياق.",
-      "retryPrompt": "The last step failed. Retry from where it stopped?",
-      "retry": "Retry",
-      "questionOther": "Or type another answer...",
-      "questionAnswer": "Type your answer...",
-      "questionSend": "Answer",
-      "questionPickOne": "Pick one or type an answer",
-      "questionPickMany": "Pick any that apply",
-      "exitCode": "exit {{code}}",
-      "truncated": "[truncated]",
+      "retryPrompt": "فشلت الخطوة الأخيرة. هل تريد إعادة المحاولة من حيث توقفت؟",
+      "retry": "إعادة المحاولة",
+      "questionOther": "أو اكتب إجابة أخرى...",
+      "questionAnswer": "اكتب إجابتك...",
+      "questionSend": "الإجابة",
+      "questionPickOne": "اختر إجابة واحدة أو اكتب إجابة",
+      "questionPickMany": "اختر ما ينطبق من بين الخيارات التالية",
+      "exitCode": "خروج {{code}}",
+      "truncated": "[مقتطع]",
       "toolSummary": {
-        "recursive": "{{path}} (recursive)",
+        "recursive": "{{path}} (تعاودي)",
         "doubleClick": "{{target}} ×2"
       },
       "tools": {
-        "list_entries": "List servers",
-        "get_entry": "Inspect server",
-        "list_folders": "List folders",
-        "list_organizations": "List organizations",
-        "list_identities": "List identities",
-        "list_snippets": "List snippets",
-        "list_scripts": "List scripts",
-        "list_tags": "List tags",
-        "list_users": "List users",
-        "get_permissions": "Check permissions",
-        "get_monitoring": "Read monitoring",
-        "list_sessions": "List sessions",
-        "open_session": "Open session",
-        "get_session": "Inspect session",
-        "close_session": "Close session",
-        "close_all_sessions": "Close all sessions",
-        "terminal_run": "Run command",
-        "terminal_send": "Send input",
-        "terminal_read": "Read terminal",
-        "terminal_resize": "Resize terminal",
-        "run_command": "Run command",
-        "exec_command": "Run command",
-        "file_list": "List directory",
-        "file_stat": "Inspect path",
-        "file_read": "Read file",
-        "file_write": "Write file",
-        "file_edit": "Edit file",
-        "file_mkdir": "Create directory",
-        "file_delete": "Delete",
-        "file_move": "Move",
-        "file_chmod": "Change permissions",
-        "file_search_dirs": "Find directories",
-        "desktop_screenshot": "Screenshot",
-        "desktop_info": "Inspect desktop",
-        "desktop_click": "Click",
-        "desktop_mouse_move": "Move mouse",
-        "desktop_drag": "Drag",
-        "desktop_scroll": "Scroll",
-        "desktop_type": "Type text",
-        "desktop_key": "Press keys",
-        "desktop_resize": "Resize desktop",
-        "desktop_clipboard_set": "Set clipboard",
-        "desktop_clipboard_get": "Read clipboard",
-        "batch": "Run several actions",
-        "ask_user": "Question"
+        "list_entries": "خوادم القوائم",
+        "get_entry": "فحص الخادم",
+        "list_folders": "سرد المجلدات",
+        "list_organizations": "قائمة المنظمات",
+        "list_identities": "قائمة الهويات",
+        "list_snippets": "مقتطفات من القائمة",
+        "list_scripts": "قائمة البرامج النصية",
+        "list_tags": "قائمة العلامات",
+        "list_users": "عرض قائمة المستخدمين",
+        "get_permissions": "التحقق من الأذونات",
+        "get_monitoring": "قراءة المراقبة",
+        "list_sessions": "قائمة الجلسات",
+        "open_session": "جلسة مفتوحة",
+        "get_session": "فحص الجلسة",
+        "close_session": "إنهاء الجلسة",
+        "close_all_sessions": "إغلاق جميع الجلسات",
+        "terminal_run": "تشغيل الأمر",
+        "terminal_send": "إرسال المدخلات",
+        "terminal_read": "قراءة المحطة الطرفية",
+        "terminal_resize": "تغيير حجم نافذة المحطة الطرفية",
+        "run_command": "تشغيل الأمر",
+        "exec_command": "تشغيل الأمر",
+        "file_list": "قائمة الدليل",
+        "file_stat": "فحص المسار",
+        "file_read": "قراءة الملف",
+        "file_write": "كتابة ملف",
+        "file_edit": "تحرير الملف",
+        "file_mkdir": "إنشاء مجلد",
+        "file_delete": "حذف",
+        "file_move": "تحريك",
+        "file_chmod": "تغيير الأذونات",
+        "file_search_dirs": "البحث عن الدلائل",
+        "desktop_screenshot": "لقطة شاشة",
+        "desktop_info": "فحص سطح المكتب",
+        "desktop_click": "انقر",
+        "desktop_mouse_move": "حرك الماوس",
+        "desktop_drag": "السحب",
+        "desktop_scroll": "التمرير",
+        "desktop_type": "اكتب النص",
+        "desktop_key": "اضغط على المفاتيح",
+        "desktop_resize": "تغيير حجم سطح المكتب",
+        "desktop_clipboard_set": "تعيين الحافظة",
+        "desktop_clipboard_get": "قراءة محتويات الحافظة",
+        "batch": "تنفيذ عدة إجراءات",
+        "ask_user": "سؤال"
       }
     },
     "commandSuggestion": {
@@ -2371,7 +2371,7 @@
       "holdModifier": "انتظر {{key}}",
       "zoomIn": "تكبير الصورة",
       "zoomOut": "تصغير العرض",
-      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
+      "zoomReset": "إعادة ضبط التكبير/التصغير (اسحب باستخدام زر الفأرة الأوسط للتحريك)"
     },
     "monitors": {
       "title": "شاشة {{number}}",
@@ -2406,34 +2406,34 @@
       "unknownUser": "مستخدم مجهول"
     },
     "folderSettings": {
-      "name": "Folder name",
-      "nameRequired": "Folder name is required",
-      "loadFailed": "Unable to load folder settings",
-      "protocol": "Defaults for",
-      "protocolHint": "Servers in this folder use what you set below unless they set their own value. Each protocol has its own defaults.",
-      "unset": "Remove from folder"
+      "name": "اسم المجلد",
+      "nameRequired": "اسم المجلد مطلوب",
+      "loadFailed": "تعذر تحميل إعدادات المجلد",
+      "protocol": "القيم الافتراضية لـ",
+      "protocolHint": "تستخدم الخوادم الموجودة في هذا المجلد الإعدادات التي تحددها أدناه، ما لم تقم بتعيين قيمها الخاصة. ولكل بروتوكول إعداداته الافتراضية الخاصة به.",
+      "unset": "إزالة من المجلد"
     },
     "trust": {
-      "certificate": "certificate",
-      "hostKey": "host key",
-      "newTitle": "Trust this {{subject}}?",
-      "newMessage": "This is the first connection to {{endpoint}}. Check the fingerprint before you continue.",
-      "changedTitle": "The {{subject}} has changed",
-      "changedMessage": "{{endpoint}} presents a different {{subject}} than before. Only continue if you expect this.",
-      "fingerprint": "Fingerprint",
-      "previous": "Trusted until now",
-      "presented": "Presented now",
-      "subject": "Issued to",
-      "issuer": "Issued by",
-      "selfSigned": "Self-signed",
-      "validUntil": "Valid until",
-      "blocked": "Only certificate managers of {{organization}} can accept this change.",
-      "accept": "Trust and connect",
-      "cancel": "Cancel",
-      "acceptChanged": "Trust the new one",
-      "disconnect": "Disconnect",
-      "failed": "Your decision could not be saved",
-      "acceptOnly": "Trust certificate"
+      "certificate": "شهادة",
+      "hostKey": "مفتاح المضيف",
+      "newTitle": "هل يمكن الوثوق بهذا الرابط {{subject}}؟",
+      "newMessage": "هذه هي المرة الأولى التي يتم فيها الاتصال بموقع {{endpoint}}. يرجى التحقق من البصمة قبل المتابعة.",
+      "changedTitle": "لقد تغير موقع {{subject}}",
+      "changedMessage": "{{endpoint}} يُظهر موقع {{subject}} بشكل مختلف عما كان عليه من قبل. لا تواصل إلا إذا كنت تتوقع ذلك.",
+      "fingerprint": "بصمة الإصبع",
+      "previous": "موثوق به حتى الآن",
+      "presented": "يُعرض الآن",
+      "subject": "صادر إلى",
+      "issuer": "صدر عن",
+      "selfSigned": "موقّع ذاتيًا",
+      "validUntil": "صالح حتى",
+      "blocked": "لا يمكن قبول هذا التغيير إلا من قِبل مسؤولي الشهادات في موقع {{organization}}.",
+      "accept": "الثقة والتواصل",
+      "cancel": "إلغاء",
+      "acceptChanged": "ثق في النسخة الجديدة",
+      "disconnect": "قطع الاتصال",
+      "failed": "لم يتم حفظ قرارك",
+      "acceptOnly": "شهادة الثقة"
     }
   },
   "support": {
@@ -2449,8 +2449,8 @@
       "description": "تحدث مع المجتمع واحصل على المساعدة."
     },
     "docs": {
-      "title": "View Documentation",
-      "description": "Read the documentation and learn how to use Nexterm."
+      "title": "عرض الوثائق",
+      "description": "اقرأ الوثائق وتعرف على كيفية استخدام Nexterm."
     },
     "github": {
       "title": "عرض على GitHub",
@@ -2466,9 +2466,9 @@
     "recentConnections": "الاتصالات الحديثة",
     "getStarted": "ابدأ الآن",
     "getStartedHint": "أضف خادمًا من الشريط الجانبي لبدء إدارة بنيتك الأساسية.",
-    "hibernated": "Hibernated",
+    "hibernated": "في حالة السبات",
     "demo": {
-      "explore": "Start exploring"
+      "explore": "ابدأ الاستكشاف"
     }
   },
   "downloadApps": {
@@ -2481,9 +2481,9 @@
       "android": "أندرويد",
       "ios": "iOS"
     },
-    "recommended": "Recommended",
-    "versionUnavailable": "The server version could not be determined, so direct downloads are unavailable. You can still browse the releases on GitHub.",
-    "sourceHint": "Downloads are served from the GitHub releases.",
-    "allReleases": "All releases"
+    "recommended": "موصى به",
+    "versionUnavailable": "تعذر تحديد إصدار الخادم، لذا فإن التنزيلات المباشرة غير متاحة. لا يزال بإمكانك تصفح الإصدارات على GitHub.",
+    "sourceHint": "يتم توفير الملفات للتنزيل من إصدارات GitHub.",
+    "allReleases": "جميع الإصدارات"
   }
 }
