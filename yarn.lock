@@ -4981,10 +4981,10 @@ vite@^5.4.14:
   optionalDependencies:
     fsevents "~2.3.3"
 
-vitepress-openapi@^0.2.13:
-  version "0.2.13"
-  resolved "https://registry.yarnpkg.com/vitepress-openapi/-/vitepress-openapi-0.2.13.tgz#1d7de3f8a395264a7d1f78d654d0822cfca79092"
-  integrity sha512-5AU+2LNW37DTfszlLODpdb4BTuGchL7ItT5Ac7RFjpm/oKYB4Su6We2QQP79IsX0mla/M1UbSmBQN95FxpM0Ug==
+vitepress-openapi@^0.2.14:
+  version "0.2.14"
+  resolved "https://registry.yarnpkg.com/vitepress-openapi/-/vitepress-openapi-0.2.14.tgz#9cbb61cf068f6424f9e43f1424296f9791f2adc1"
+  integrity sha512-B4PNWBi3+i21mM8nAu5JpIddbyWmMdssjnrQ0FKrQqt+UlLeGpQ7+nf0nWV0xfgK4JXnfATiGFvYNTyp8iZhWg==
   dependencies:
     "@lucide/vue" "^1.39.0"
     "@vueuse/core" "^14.4.0"
