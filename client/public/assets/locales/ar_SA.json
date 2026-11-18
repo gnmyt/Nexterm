@@ -2447,9 +2447,13 @@
     "title": "احصل على الدعم",
     "subtitle": "هل تحتاج إلى مساعدة أو ترغب في المساهمة؟",
     "footer": "شكراً لاستخدامك \"نيكستيرم\"!",
+    "bug": {
+      "title": "Report a Bug",
+      "description": "Opens a bug report with your version filled in."
+    },
     "issues": {
-      "title": "الإبلاغ عن مشكلة",
-      "description": "هل عثرت على خطأ أو لديك طلب ميزة؟"
+      "title": "Browse Issues",
+      "description": "Search existing reports or request a feature."
     },
     "discord": {
       "title": "انضم إلى ديسكورد",
