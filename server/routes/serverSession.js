@@ -4,8 +4,22 @@ const { execCommand } = require("../controllers/execCommand");
 const { createSessionValidation, reconnectSessionValidation, sessionIdValidation, resumeSessionValidation, duplicateSessionValidation } = require("../validations/serverSession");
 const { validateSchema } = require("../utils/schema");
 const stateBroadcaster = require("../lib/StateBroadcaster");
+const SessionManager = require("../lib/SessionManager");
+const { isDemoGuest, DEMO_SETTINGS } = require("../utils/demoMode");
 
 const app = Router();
+
+const limitGuestSessions = (req, res, next) => {
+    if (isDemoGuest(req.user) && SessionManager.getAll(req.user.id).length >= DEMO_SETTINGS.maxSessionsPerGuest)
+        return res.status(429).json({ error: "You reached the session limit of the demo. Close a session to open a new one." });
+    next();
+};
+
+const blockWritableGuestShares = (req, res, next) => {
+    if (isDemoGuest(req.user) && req.body?.writable === true)
+        return res.status(403).json({ error: "Writable share links are not available in the demo" });
+    next();
+};
 
 const sendError = (res, result) =>
     res.status(result.code).json({ error: result.message, ...(result.errorCode && { code: result.errorCode }) });
@@ -42,7 +56,7 @@ const getSessionOptions = (req) => {
  * @param {object} request.body.required - Session creation details
  * @return {object} 201 - Session created
  */
-app.post("/", async (req, res) => {
+app.post("/", limitGuestSessions, async (req, res) => {
     if (validateSchema(res, createSessionValidation, req.body)) return;
     
     try {
@@ -187,7 +201,7 @@ app.delete("/:id", async (req, res) => {
  * @param {string} id.path.required - Session ID
  * @return {object} 200 - Share details
  */
-app.post("/:id/share", (req, res) => {
+app.post("/:id/share", blockWritableGuestShares, (req, res) => {
     if (validateSchema(res, sessionIdValidation, req.params)) return;
     const result = startSharing(req.user.id, req.params.id, req.body?.writable === true);
     if (result?.code) return res.status(result.code).json({ error: result.message });
@@ -223,7 +237,7 @@ app.delete("/:id/share", (req, res) => {
  * @param {string} id.path.required - Session ID
  * @return {object} 200 - Updated permissions
  */
-app.patch("/:id/share", (req, res) => {
+app.patch("/:id/share", blockWritableGuestShares, (req, res) => {
     if (validateSchema(res, sessionIdValidation, req.params)) return;
     const result = updateSharePermissions(req.user.id, req.params.id, req.body?.writable === true);
     if (result?.code) return res.status(result.code).json({ error: result.message });
@@ -241,7 +255,7 @@ app.patch("/:id/share", (req, res) => {
  * @param {string} id.path.required - Session ID
  * @return {object} 201 - New session created
  */
-app.post("/:id/duplicate", async (req, res) => {
+app.post("/:id/duplicate", limitGuestSessions, async (req, res) => {
     if (validateSchema(res, sessionIdValidation, req.params)) return;
     if (validateSchema(res, duplicateSessionValidation, req.body)) return;
     

@@ -123,6 +123,8 @@ export const ServerList = ({
     const { identities } = useContext(IdentityContext);
     const { hasPermission } = useContext(UserContext);
     const canManageResources = hasPermission(Permission.RESOURCES_MANAGE);
+    const canOpenBrowser = hasPermission(Permission.CONNECT_WEB);
+    const canForwardPorts = hasPermission(Permission.CONNECT_TUNNEL);
     const { sendToast } = useToast();
     const demoEnabled = useDevFeature("demo", import.meta.env.DEV);
 
@@ -890,7 +892,7 @@ export const ServerList = ({
                                     </>
                                 )}
 
-                                {server?.identities?.length > 0 && server?.protocol === "ssh" && (
+                                {server?.identities?.length > 0 && server?.protocol === "ssh" && canOpenBrowser && (
                                     <>
                                         {server.identities.length === 1 ? (
                                             <ContextMenuItem
@@ -916,7 +918,7 @@ export const ServerList = ({
                                     </>
                                 )}
 
-                                {server?.identities?.length > 0 && server?.protocol === "ssh" && openPortForward && (
+                                {server?.identities?.length > 0 && server?.protocol === "ssh" && openPortForward && canForwardPorts && (
                                     <ContextMenuItem
                                         icon={mdiTunnel}
                                         label={t("servers.contextMenu.forwardPort")}
@@ -948,50 +950,58 @@ export const ServerList = ({
                                     />
                                 )}
 
-                                <ContextMenuSeparator />
+                                {(canManageResources || server?.notes) && (
+                                    <>
+                                        <ContextMenuSeparator />
 
-                                <ContextMenuItem
-                                    icon={mdiNoteEditOutline}
-                                    label={server?.notes
-                                        ? t("servers.contextMenu.openNotes")
-                                        : t("servers.contextMenu.addNotes")}
-                                    onClick={() => openNotes?.(server.id)}
-                                />
+                                        <ContextMenuItem
+                                            icon={mdiNoteEditOutline}
+                                            label={server?.notes
+                                                ? t("servers.contextMenu.openNotes")
+                                                : t("servers.contextMenu.addNotes")}
+                                            onClick={() => openNotes?.(server.id)}
+                                        />
+                                    </>
+                                )}
 
-                                <ContextMenuItem
-                                    icon={mdiPencil}
-                                    label={t("servers.contextMenu.editServer")}
-                                    onClick={editServer}
-                                />
+                                {canManageResources && (
+                                    <>
+                                        <ContextMenuItem
+                                            icon={mdiPencil}
+                                            label={t("servers.contextMenu.editServer")}
+                                            onClick={editServer}
+                                        />
 
-                                <ContextMenuItem
-                                    icon={mdiContentCopy}
-                                    label={t("servers.contextMenu.duplicateServer")}
-                                    onClick={duplicateServer}
-                                />
+                                        <ContextMenuItem
+                                            icon={mdiContentCopy}
+                                            label={t("servers.contextMenu.duplicateServer")}
+                                            onClick={duplicateServer}
+                                        />
 
-                                <ContextMenuItem
-                                    icon={server?.disabled ? mdiPlay : mdiPause}
-                                    label={t(server?.disabled
-                                        ? "servers.contextMenu.enableServer"
-                                        : "servers.contextMenu.disableServer")}
-                                    onClick={toggleServerDisabled}
-                                />
+                                        <ContextMenuItem
+                                            icon={server?.disabled ? mdiPlay : mdiPause}
+                                            label={t(server?.disabled
+                                                ? "servers.contextMenu.enableServer"
+                                                : "servers.contextMenu.disableServer")}
+                                            onClick={toggleServerDisabled}
+                                        />
 
-                                <ContextMenuItem
-                                    icon={mdiTag}
-                                    label={t("servers.tags.title")}
-                                >
-                                    <TagsSubmenu entryId={contextClickedId} entryTags={server?.tags || []} />
-                                </ContextMenuItem>
+                                        <ContextMenuItem
+                                            icon={mdiTag}
+                                            label={t("servers.tags.title")}
+                                        >
+                                            <TagsSubmenu entryId={contextClickedId} entryTags={server?.tags || []} />
+                                        </ContextMenuItem>
 
-                                <ContextMenuSeparator />
-                                <ContextMenuItem
-                                    icon={mdiServerMinus}
-                                    label={t("servers.contextMenu.deleteServer")}
-                                    onClick={openDeleteConfirm}
-                                    danger
-                                />
+                                        <ContextMenuSeparator />
+                                        <ContextMenuItem
+                                            icon={mdiServerMinus}
+                                            label={t("servers.contextMenu.deleteServer")}
+                                            onClick={openDeleteConfirm}
+                                            danger
+                                        />
+                                    </>
+                                )}
                             </>
                         )}
 

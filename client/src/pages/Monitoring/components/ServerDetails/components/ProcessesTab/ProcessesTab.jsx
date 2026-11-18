@@ -1,11 +1,18 @@
 import { useState, useMemo } from "react";
 import Icon from "@mdi/react";
-import { mdiMagnify, mdiConsole, mdiSortAscending, mdiSortDescending } from "@mdi/js";
+import { mdiMagnify, mdiConsole, mdiArrowDown, mdiArrowUp } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import Tooltip from "@/common/components/Tooltip";
+import IconInput from "@/common/components/IconInput";
+import EmptyState from "@/common/components/EmptyState";
+import { Meter } from "../../../shared";
 import "./styles.sass";
 
-const SORT_FIELDS = ["cpu", "mem", "pid"];
+const COLUMNS = [
+    { key: "command" },
+    { key: "cpu", sortable: true },
+    { key: "mem", sortable: true },
+];
 
 export const ProcessesTab = ({ processList = [] }) => {
     const { t } = useTranslation();
@@ -13,10 +20,12 @@ export const ProcessesTab = ({ processList = [] }) => {
     const [sortBy, setSortBy] = useState("cpu");
     const [sortOrder, setSortOrder] = useState("desc");
 
+    const total = Array.isArray(processList) ? processList.length : 0;
+
     const processes = useMemo(() => {
         const list = Array.isArray(processList) ? processList : [];
-        const query = search.toLowerCase();
-        const filtered = query 
+        const query = search.trim().toLowerCase();
+        const filtered = query
             ? list.filter(p => p.command?.toLowerCase().includes(query) || p.user?.toLowerCase().includes(query) || String(p.pid).includes(query))
             : list;
         return [...filtered].sort((a, b) => {
@@ -26,51 +35,60 @@ export const ProcessesTab = ({ processList = [] }) => {
     }, [processList, search, sortBy, sortOrder]);
 
     const handleSort = (field) => {
-        if (sortBy === field) setSortOrder(o => o === "desc" ? "asc" : "desc");
+        if (sortBy === field) setSortOrder(order => order === "desc" ? "asc" : "desc");
         else { setSortBy(field); setSortOrder("desc"); }
     };
 
-    if (!processList?.length) {
-        return <div className="processes-tab"><div className="processes-empty"><Icon path={mdiConsole} /><p>{t("monitoring.details.processes.noData")}</p></div></div>;
+    if (!total) {
+        return <EmptyState className="details-empty" icon={mdiConsole} description={t("monitoring.details.processes.noData")} />;
     }
 
     return (
-        <div className="processes-tab">
+        <>
             <div className="processes-controls">
                 <div className="processes-search">
-                    <Icon path={mdiMagnify} />
-                    <input type="text" placeholder={t("monitoring.details.processes.searchPlaceholder")} value={search} onChange={e => setSearch(e.target.value)} />
+                    <IconInput type="text" icon={mdiMagnify} placeholder={t("monitoring.details.processes.searchPlaceholder")}
+                               value={search} setValue={setSearch} />
                 </div>
-                <div className="processes-sort">
-                    {SORT_FIELDS.map(f => (
-                        <button key={f} className={`sort-btn ${sortBy === f ? "active" : ""}`} onClick={() => handleSort(f)}>
-                            {f.toUpperCase()}
-                            {sortBy === f && <Icon path={sortOrder === "desc" ? mdiSortDescending : mdiSortAscending} />}
-                        </button>
-                    ))}
-                </div>
+                <span className="processes-count">{t("monitoring.details.processes.showing", { count: processes.length, total })}</span>
             </div>
-            <div className="processes-list">
-                {processes.map((p, i) => (
-                    <div key={`${p.pid}-${i}`} className="process-item">
-                        <Tooltip text={p.command} delay={500} asChild>
-                            <div className="process-command">{p.command?.length > 50 ? p.command.slice(0, 50) + "…" : p.command}</div>
-                        </Tooltip>
-                        <div className="process-info"><span className="process-user">{p.user}</span><span className="process-pid">{p.pid}</span></div>
-                        <div className="process-stats">
-                            {["cpu", "mem"].map(stat => (
-                                <div key={stat} className={`stat ${stat}`}>
-                                    <div className="stat-bar">
-                                        <div className="stat-fill" style={{ width: `${Math.min(p[stat] || 0, 100)}%` }} />
-                                        <span>{p[stat]?.toFixed(1)}%</span>
-                                    </div>
+            <div className="processes-table">
+                <div className="processes-row processes-head">
+                    {COLUMNS.map(column => {
+                        const label = t(`monitoring.details.processes.columns.${column.key}`);
+                        if (!column.sortable) return <span key={column.key} className={`cell cell-${column.key}`}>{label}</span>;
+                        const active = sortBy === column.key;
+                        return (
+                            <button key={column.key} type="button" className={`cell cell-${column.key} sort-btn${active ? " active" : ""}`}
+                                    onClick={() => handleSort(column.key)}
+                                    aria-sort={active ? (sortOrder === "desc" ? "descending" : "ascending") : undefined}>
+                                {label}
+                                {active && <Icon path={sortOrder === "desc" ? mdiArrowDown : mdiArrowUp} />}
+                            </button>
+                        );
+                    })}
+                </div>
+                {processes.length > 0 ? (
+                    <div className="processes-body">
+                        {processes.map((p, i) => (
+                            <div key={`${p.pid}-${i}`} className="processes-row">
+                                <div className="cell cell-process">
+                                    <Tooltip text={p.command} delay={500} asChild multiline>
+                                        <span className="cell-command">{p.command}</span>
+                                    </Tooltip>
+                                    <span className="cell-meta">{p.user} · PID {p.pid}</span>
                                 </div>
-                            ))}
-                        </div>
+                                {["cpu", "mem"].map(stat => (
+                                    <span key={stat} className={`cell cell-${stat}`}>
+                                        <span className="cell-percent">{(p[stat] ?? 0).toFixed(1)}%</span>
+                                        <Meter value={p[stat]} thresholds={false} label={t(`monitoring.details.processes.columns.${stat}`)} />
+                                    </span>
+                                ))}
+                            </div>
+                        ))}
                     </div>
-                ))}
+                ) : <EmptyState compact icon={mdiMagnify} description={t("monitoring.details.processes.noResults")} />}
             </div>
-            {!processes.length && search && <div className="processes-empty"><p>{t("monitoring.details.processes.noResults")}</p></div>}
-        </div>
+        </>
     );
 };

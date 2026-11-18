@@ -135,22 +135,33 @@ const parseWindowsMonitoringOutput = (output) => {
         throw new Error("Invalid Windows monitoring payload");
     }
 
-    const disk = Array.isArray(parsed.disk) ? parsed.disk.map(item => ({
-        name: String(item.name || ""),
-        size: asNumberOrNull(item.size) || 0,
-        model: item.model || null,
-        serial: item.serial || null,
-        rotational: typeof item.rotational === "boolean" ? item.rotational : null,
-        partitions: Array.isArray(item.partitions) ? item.partitions.map(partition => ({
-            name: String(partition.name || ""),
-            size: asNumberOrNull(partition.size) || 0,
-            mountPoint: partition.mountPoint || null,
-            type: partition.type || null,
-            used: asNumberOrNull(partition.used) || 0,
-            available: asNumberOrNull(partition.available) || 0,
-            usagePercent: asNumberOrNull(partition.usagePercent) || 0,
-        })) : [],
-    })) : [];
+    const disk = Array.isArray(parsed.disk) ? parsed.disk.map(item => {
+        const name = String(item.name || "");
+        const size = asNumberOrNull(item.size) || 0;
+        return {
+            name,
+            size,
+            model: item.model || null,
+            serial: item.serial || null,
+            rotational: typeof item.rotational === "boolean" ? item.rotational : null,
+            health: null,
+            partitions: Array.isArray(item.partitions) ? item.partitions.map(partition => ({
+                name: String(partition.name || ""),
+                size: asNumberOrNull(partition.size) || 0,
+                mountPoint: partition.mountPoint || null,
+                type: partition.type || null,
+                used: asNumberOrNull(partition.used) || 0,
+                available: asNumberOrNull(partition.available) || 0,
+                usagePercent: asNumberOrNull(partition.usagePercent) || 0,
+                mounted: !!partition.mountPoint,
+                inodesTotal: null,
+                inodesUsed: null,
+                inodesPercent: null,
+                partition: name,
+                partitionSize: size,
+            })) : [],
+        };
+    }) : [];
 
     return {
         status: "online",
@@ -186,12 +197,19 @@ const parseWindowsMonitoringOutput = (output) => {
             name: String(adapter.name || ""),
             ipv4: Array.isArray(adapter.ipv4) ? adapter.ipv4.map(String) : [],
             ipv6: Array.isArray(adapter.ipv6) ? adapter.ipv6.map(String) : [],
-            rxBytes: asNumberOrNull(adapter.rxBytes),
-            txBytes: asNumberOrNull(adapter.txBytes),
+            rxBytes: asNumberOrNull(adapter.rxBytes) ?? 0,
+            txBytes: asNumberOrNull(adapter.txBytes) ?? 0,
+            rxRate: null,
+            txRate: null,
+            errors: 0,
+            dropped: 0,
             mac: adapter.mac || null,
             state: adapter.state || null,
             mtu: asNumberOrNull(adapter.mtu),
             speed: asNumberOrNull(adapter.speed),
+            kind: "physical",
+            default: false,
+            gateway: null,
         })) : [],
     };
 };

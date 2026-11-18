@@ -17,6 +17,7 @@ import { openExternalUrl } from "@/common/utils/TauriUtil.js";
 import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { getServers, getActiveServerId, getServerDisplayName, switchServer, removeServer } from "@/common/utils/ConnectorServers.js";
 import { getAvatarLabel } from "@/common/utils/avatar.js";
+import { formatDemoTime, isDemoGuest, useDemoCountdown } from "@/common/utils/demo.js";
 
 export const Sidebar = ({ onToggleCollapse }) => {
     const { t } = useTranslation();
@@ -46,11 +47,15 @@ export const Sidebar = ({ onToggleCollapse }) => {
         return () => window.removeEventListener("openSettings", handleOpenSettings);
     }, []);
 
+    const demoGuest = isDemoGuest(user);
+    const demoMinutes = useDemoCountdown(user?.demoExpiresAt);
+
     const navigation = getSidebarNavigation(t).filter(item => !item.permission || hasPermission(item.permission));
 
     return (<>
         <div className="sidebar">
-            <ActionConfirmDialog open={logoutDialogOpen} setOpen={setLogoutDialogOpen} text={t('common.sidebar.logoutConfirmText', { username: user?.username })} onConfirm={logout} />
+            <ActionConfirmDialog open={logoutDialogOpen} setOpen={setLogoutDialogOpen} onConfirm={logout}
+                                 text={demoGuest ? t('common.demo.endConfirmText') : t('common.sidebar.logoutConfirmText', { username: user?.username })} />
             {isConnectorMode && <ActionConfirmDialog open={removeServerDialogOpen} setOpen={setRemoveServerDialogOpen}
                 text={t('common.serverSwitcher.removeConfirmText', { server: serverToRemove ? getServerDisplayName(serverToRemove) : '' })}
                 onConfirm={() => {
@@ -92,7 +97,9 @@ export const Sidebar = ({ onToggleCollapse }) => {
                             <LetterAvatar user={user} size="md" showTooltip={false} />
                             <div className="user-info">
                                 <span className="user-name">{getAvatarLabel(user, t('common.sidebar.account'))}</span>
-                                <span className="user-username">@{user?.username}</span>
+                                <span className="user-username">
+                                    {demoGuest ? t('common.demo.timeLeft', { time: formatDemoTime(demoMinutes, t) }) : `@${user?.username}`}
+                                </span>
                             </div>
                         </div>
                         {isConnectorMode && servers.length > 0 && (<>
@@ -126,7 +133,7 @@ export const Sidebar = ({ onToggleCollapse }) => {
                         </div>
                         <div className="user-menu-separator" />
                         <div className="user-menu-item danger" onClick={() => { setLogoutDialogOpen(true); setUserMenuOpen(false); }}>
-                            <Icon path={mdiLogout} className="menu-icon" /><span className="menu-label">{t('common.sidebar.logout')}</span>
+                            <Icon path={mdiLogout} className="menu-icon" /><span className="menu-label">{demoGuest ? t('common.demo.end') : t('common.sidebar.logout')}</span>
                         </div>
                     </div>
                 </div>
