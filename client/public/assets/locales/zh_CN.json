@@ -2447,9 +2447,13 @@
     "title": "获取支持",
     "subtitle": "需要帮助或想作出贡献？",
     "footer": "感谢您使用 Nexterm！",
+    "bug": {
+      "title": "Report a Bug",
+      "description": "Opens a bug report with your version filled in."
+    },
     "issues": {
-      "title": "报告问题",
-      "description": "发现错误或有功能请求？"
+      "title": "Browse Issues",
+      "description": "Search existing reports or request a feature."
     },
     "discord": {
       "title": "加入讨论区",
