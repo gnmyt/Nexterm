@@ -44,3 +44,21 @@ module.exports.trustDecisionValidation = Joi.object({
     fingerprint: Joi.string().max(200).required(),
     accept: Joi.boolean().required(),
 });
+
+module.exports.shareValidation = Joi.object({
+    writable: Joi.boolean().strict().description("Whether people with the link can also type (default: false)"),
+});
+
+module.exports.pastePasswordValidation = Joi.object({
+    identityId: Joi.number().integer().allow(null).description("Identity to take the password from (default: the identity of the session)"),
+    submit: Joi.boolean().strict().description("Press enter after the password"),
+});
+
+module.exports.execCommandQuery = Joi.object({
+    identityId: Joi.number().integer().description("Identity to connect with (default: the first identity of the entry)"),
+});
+
+module.exports.execCommandValidation = Joi.object({
+    command: Joi.string().required(),
+    connectionReason: Joi.string().allow(null, ""),
+});

@@ -51,3 +51,15 @@ module.exports.repositionServerValidation = Joi.object({
 });
 
 module.exports.configValidation = configValidation;
+
+module.exports.importSSHConfigValidation = Joi.object({
+    servers: Joi.array().items(Joi.object({
+        name: Joi.string().required(),
+        ip: Joi.string().allow("", null),
+        port: Joi.number().allow(null),
+        config: Joi.object().unknown(true).allow(null),
+        identities: Joi.array().items(Joi.number().integer()).allow(null).description("Ids of existing identities"),
+    }).unknown(true)).required(),
+    folderId: Joi.number().integer().allow(null),
+    organizationId: Joi.number().integer().allow(null),
+});

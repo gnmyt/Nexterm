@@ -1,4 +1,6 @@
 const { Router } = require("express");
+const { route } = require("../utils/route");
+const { uploadQuery, downloadQuery, multiDownloadQuery, multiDownloadBody, transferQuery, transferBody } = require("../validations/sftp");
 const express = require("express");
 const { Transform } = require("node:stream");
 const { pipeline } = require("node:stream/promises");
@@ -256,24 +258,13 @@ const streamArchive = async (ctx, req, res, sftpClient, transferId, name, popula
     }
 };
 
-/**
- * POST /sftp/upload
- * @summary Upload File via SFTP
- * @description Uploads a file to a remote server via SFTP. The file content should be sent as the raw request body. Missing parent directories are created when the user is allowed to modify files. Progress is pushed to the session's SFTP websockets when a transferId is given. Requires an active session with SFTP capabilities.
- * @tags SFTP
- * @produces application/json
- * @param {string} sessionToken.query.required - Session authentication token
- * @param {string} sessionId.query.required - Active server session ID
- * @param {string} path.query.required - Remote destination path for the uploaded file
- * @param {string} transferId.query - Client-chosen identifier used for progress reporting and cancellation
- * @return {object} 200 - Upload successful with file path and size
- * @return {object} 400 - Missing parameters or invalid path
- * @return {object} 401 - Invalid session token
- * @return {object} 403 - Permission denied
- * @return {object} 404 - Session or entry not found
- * @return {object} 500 - Upload error
- */
-app.post("/upload", async (req, res) => {
+app.post("/upload", route({
+    summary: "Upload file via SFTP",
+    description: "Uploads a file to a remote server via SFTP. The file content should be sent as the raw request body. Missing parent directories are created when the user is allowed to modify files. Progress is pushed to the session's SFTP websockets when a transferId is given. Requires an active session with SFTP capabilities.",
+    tag: "SFTP",
+    query: uploadQuery,
+    consumes: "application/octet-stream",
+}), async (req, res) => {
     const error = validateRequest(req.query);
     if (error) return res.status(400).json({ error });
 
@@ -321,29 +312,13 @@ app.post("/upload", async (req, res) => {
     }
 });
 
-/**
- * GET /sftp
- * @summary Download or Preview File via SFTP
- * @description Downloads a file or folder from a remote server via SFTP. Supports file preview, thumbnail generation for images, and folder download as ZIP archive. Progress is pushed to the session's SFTP websockets when a transferId is given.
- * @tags SFTP
- * @produces application/octet-stream
- * @produces application/zip
- * @produces image/jpeg
- * @param {string} sessionToken.query.required - Session authentication token
- * @param {string} sessionId.query.required - Active server session ID
- * @param {string} path.query.required - Remote file or folder path to download
- * @param {string} preview.query - Set to "true" to display file inline instead of downloading
- * @param {string} thumbnail.query - Set to "true" to generate a thumbnail (images only, max 10MB)
- * @param {number} size.query - Thumbnail size in pixels (50-300, default: 100)
- * @param {string} transferId.query - Client-chosen identifier used for progress reporting and cancellation
- * @return {file} 200 - File content, ZIP archive, or thumbnail image
- * @return {object} 400 - Missing parameters or invalid path
- * @return {object} 401 - Invalid session token
- * @return {object} 403 - Permission denied
- * @return {object} 404 - File, session, or entry not found
- * @return {object} 500 - Download error
- */
-app.get("/", async (req, res) => {
+app.get("/", route({
+    summary: "Download or preview file via SFTP",
+    description: "Downloads a file or folder from a remote server via SFTP. Supports file preview, thumbnail generation for images, and folder download as ZIP archive. Progress is pushed to the session's SFTP websockets when a transferId is given.",
+    tag: "SFTP",
+    query: downloadQuery,
+    produces: "application/octet-stream",
+}), async (req, res) => {
     const error = validateRequest(req.query);
     if (error) return res.status(400).json({ error });
 
@@ -387,25 +362,15 @@ app.get("/", async (req, res) => {
     }
 });
 
-/**
- * POST /sftp/multi
- * @summary Download Multiple Files via SFTP
- * @description Downloads multiple files and/or folders as a single ZIP archive. Supports mixed selection of files and folders. Failed items are skipped and logged. Progress is pushed to the session's SFTP websockets when a transferId is given.
- * @tags SFTP
- * @consumes application/x-www-form-urlencoded
- * @produces application/zip
- * @param {string} sessionToken.query.required - Session authentication token
- * @param {string} sessionId.query.required - Active server session ID
- * @param {string} transferId.query - Client-chosen identifier used for progress reporting and cancellation
- * @param {object} request.body.required - Request body containing paths array
- * @return {file} 200 - ZIP archive containing all requested files and folders
- * @return {object} 400 - Missing parameters, invalid paths format, or no paths provided
- * @return {object} 401 - Invalid session token
- * @return {object} 403 - Permission denied
- * @return {object} 404 - Session or entry not found
- * @return {object} 500 - Download error
- */
-app.post("/multi", express.urlencoded({ extended: true }), async (req, res) => {
+app.post("/multi", express.urlencoded({ extended: true }), route({
+    summary: "Download multiple files via SFTP",
+    description: "Downloads multiple files and/or folders as a single ZIP archive. Supports mixed selection of files and folders. Failed items are skipped and logged. Progress is pushed to the session's SFTP websockets when a transferId is given.",
+    tag: "SFTP",
+    query: multiDownloadQuery,
+    consumes: "application/x-www-form-urlencoded",
+    body: multiDownloadBody,
+    produces: "application/zip",
+}), async (req, res) => {
     const { sessionToken, sessionId } = req.query;
     let { paths } = req.body;
 
@@ -449,25 +414,16 @@ app.post("/multi", express.urlencoded({ extended: true }), async (req, res) => {
 
 const TRANSFER_ACTIONS = new Set(["copy", "move"]);
 
-/**
- * POST /sftp/transfer
- * @summary Copy or Move Files Between Two Sessions
- * @description Streams files or folders from one active file session to another through the server, regardless of the protocols or jump hosts involved. Runs in the background; progress and completion are pushed to both sessions' SFTP websockets under the given transferId.
- * @tags SFTP
- * @consumes application/json
- * @produces application/json
- * @param {string} sessionToken.query.required - Session authentication token
- * @param {string} transferId.query.required - Client-chosen identifier used for progress reporting and cancellation
- * @param {object} request.body.required - { sourceSessionId, targetSessionId, sources: string[], destination, action: "copy" | "move" }
- * @return {object} 202 - Transfer started
- * @return {object} 400 - Invalid parameters
- * @return {object} 401 - Invalid session token
- * @return {object} 403 - Permission denied
- * @return {object} 404 - Session or entry not found
- */
-app.post("/transfer", async (req, res) => {
+app.post("/transfer", route({
+    summary: "Copy or move files between two sessions",
+    description: "Streams files or folders from one active file session to another through the server, regardless of the protocols or jump hosts involved. Runs in the background; progress and completion are pushed to both sessions' SFTP websockets under the given transferId.",
+    tag: "SFTP",
+    status: 202,
+    query: transferQuery,
+    body: transferBody,
+}), async (req, res) => {
     const { sessionToken, transferId } = req.query;
-    const { sourceSessionId, targetSessionId, sources, destination, action } = req.body ?? {};
+    const { sourceSessionId, targetSessionId, sources, destination, action } = req.body;
 
     if (!sessionToken || !sourceSessionId || !targetSessionId) return res.status(400).json({ error: "Missing session parameters" });
     if (!TransferRegistry.isValidTransferId(transferId)) return res.status(400).json({ error: "Invalid transfer id" });
