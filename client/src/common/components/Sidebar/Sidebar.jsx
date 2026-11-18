@@ -1,6 +1,6 @@
 import "./styles.sass";
 import NextermLogo from "@/common/components/NextermLogo";
-import { mdiCog, mdiLogout, mdiAccountCogOutline, mdiStarOutline, mdiLifebuoy, mdiServerNetwork, mdiPlus, mdiClose } from "@mdi/js";
+import { mdiCog, mdiLogout, mdiStarOutline, mdiLifebuoy, mdiServerNetwork, mdiPlus, mdiClose } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useContext, useState, useRef, useEffect } from "react";
@@ -17,6 +17,7 @@ import { openExternalUrl } from "@/common/utils/TauriUtil.js";
 import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { getServers, getActiveServerId, getServerDisplayName, switchServer, removeServer } from "@/common/utils/ConnectorServers.js";
 import { getAvatarLabel } from "@/common/utils/avatar.js";
+import { formatDemoTime, isDemoGuest, useDemoCountdown } from "@/common/utils/demo.js";
 
 export const Sidebar = ({ onToggleCollapse }) => {
     const { t } = useTranslation();
@@ -46,11 +47,15 @@ export const Sidebar = ({ onToggleCollapse }) => {
         return () => window.removeEventListener("openSettings", handleOpenSettings);
     }, []);
 
+    const demoGuest = isDemoGuest(user);
+    const demoMinutes = useDemoCountdown(user?.demoExpiresAt);
+
     const navigation = getSidebarNavigation(t).filter(item => !item.permission || hasPermission(item.permission));
 
     return (<>
         <div className="sidebar">
-            <ActionConfirmDialog open={logoutDialogOpen} setOpen={setLogoutDialogOpen} text={t('common.sidebar.logoutConfirmText', { username: user?.username })} onConfirm={logout} />
+            <ActionConfirmDialog open={logoutDialogOpen} setOpen={setLogoutDialogOpen} onConfirm={logout}
+                                 text={demoGuest ? t('common.demo.endConfirmText') : t('common.sidebar.logoutConfirmText', { username: user?.username })} />
             {isConnectorMode && <ActionConfirmDialog open={removeServerDialogOpen} setOpen={setRemoveServerDialogOpen}
                 text={t('common.serverSwitcher.removeConfirmText', { server: serverToRemove ? getServerDisplayName(serverToRemove) : '' })}
                 onConfirm={() => {
@@ -60,27 +65,41 @@ export const Sidebar = ({ onToggleCollapse }) => {
                 }} />}
             <div className="sidebar-top">
                 <Tooltip text={t('common.sidebar.collapseTitle')}>
-                    <div className="sidebar-logo nexterm-logo" onClick={onToggleCollapse}><NextermLogo size={48 * uiScale} /></div>
+                    <div className="sidebar-logo nexterm-logo" onClick={onToggleCollapse}><NextermLogo size={40 * uiScale} /></div>
                 </Tooltip>
+                <div className="sidebar-divider" />
                 <nav>
-                    {navigation.map((item, i) => (
-                        <Tooltip key={i} text={item.title}>
-                            <div onClick={() => navigate(item.path)} className={`nav-item${location.pathname.startsWith(item.path) ? " nav-item-active" : ""}`}><Icon path={item.icon} /></div>
-                        </Tooltip>
-                    ))}
+                    {navigation.map((item, i) => {
+                        const active = location.pathname.startsWith(item.path);
+                        return (
+                            <Tooltip key={i} text={item.title}>
+                                <div role="link" tabIndex={0} aria-current={active ? "page" : undefined}
+                                     onClick={() => navigate(item.path)}
+                                     onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate(item.path); } }}
+                                     className={`nav-item${active ? " nav-item-active" : ""}`}>
+                                    <Icon path={item.icon} />
+                                </div>
+                            </Tooltip>
+                        );
+                    })}
                 </nav>
             </div>
             <div className="sidebar-bottom">
                 <div className="user-account-area" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
                     <Tooltip text={user?.username || t('common.sidebar.account')} disabled={userMenuOpen}>
-                        <div className={`user-btn ${userMenuOpen ? 'active' : ''}`}><Icon path={mdiAccountCogOutline} /></div>
+                        <div className={`user-btn ${userMenuOpen ? 'active' : ''}`} tabIndex={0} role="button" aria-haspopup="menu" aria-expanded={userMenuOpen}
+                             onFocus={handleMouseEnter} onClick={() => setUserMenuOpen(open => !open)}>
+                            <LetterAvatar user={user} size="md" showTooltip={false} />
+                        </div>
                     </Tooltip>
                     <div className={`user-menu ${userMenuOpen ? 'open' : ''}`}>
                         <div className="user-menu-header">
                             <LetterAvatar user={user} size="md" showTooltip={false} />
                             <div className="user-info">
                                 <span className="user-name">{getAvatarLabel(user, t('common.sidebar.account'))}</span>
-                                <span className="user-username">@{user?.username}</span>
+                                <span className="user-username">
+                                    {demoGuest ? t('common.demo.timeLeft', { time: formatDemoTime(demoMinutes, t) }) : `@${user?.username}`}
+                                </span>
                             </div>
                         </div>
                         {isConnectorMode && servers.length > 0 && (<>
@@ -114,7 +133,7 @@ export const Sidebar = ({ onToggleCollapse }) => {
                         </div>
                         <div className="user-menu-separator" />
                         <div className="user-menu-item danger" onClick={() => { setLogoutDialogOpen(true); setUserMenuOpen(false); }}>
-                            <Icon path={mdiLogout} className="menu-icon" /><span className="menu-label">{t('common.sidebar.logout')}</span>
+                            <Icon path={mdiLogout} className="menu-icon" /><span className="menu-label">{demoGuest ? t('common.demo.end') : t('common.sidebar.logout')}</span>
                         </div>
                     </div>
                 </div>

@@ -1,614 +1,201 @@
 @use "@/common/styles/colors"
 
-.server-dialog
+.server-chain
+  list-style: none
+  margin: 0
+  padding: 0
   display: flex
   flex-direction: column
-  gap: 1rem
-  user-select: none
-  width: min(85vw, 28rem)
-  max-height: 85vh
+  gap: 0.5rem
 
-  .server-dialog-header
+  &__item
     display: flex
     align-items: center
-    gap: 0.75rem
-    padding-bottom: 0.75rem
-    border-bottom: 1px solid colors.$gray
-
-    .dialog-icon
-      display: flex
-      align-items: center
-      justify-content: center
-      width: 2.5rem
-      height: 2.5rem
-      background: linear-gradient(135deg, colors.$primary 0%, rgba(colors.$primary, 0.7) 100%)
-      border-radius: 0.625rem
-      color: colors.$white
-      flex-shrink: 0
-      box-shadow: 0 2px 8px rgba(colors.$primary, 0.25)
-
-  .server-dialog-title
-    flex: 1
-    display: flex
-    flex-direction: column
-    gap: 0.25rem
-
-    h2
-      font-size: 1.125rem
-      margin: 0
-      font-weight: 700
-      color: colors.$white
-      letter-spacing: -0.01em
-      line-height: 1.2
-
-    .protocol-badge
-      display: inline-flex
-      align-items: center
-      background-color: colors.$gray
-      color: colors.$subtext
-      font-size: 0.7rem
-      font-weight: 700
-      padding: 0.25rem 0.5rem
-      border-radius: 0.375rem
-      letter-spacing: 0.05em
-      width: fit-content
-
-  .text-center
-    text-align: center
-
-  .server-dialog-content
-    display: flex
-    flex-direction: column
-    gap: 1rem
-    overflow-y: auto
-    flex: 1
-    min-height: 0
-    padding-right: 0.25rem
-    margin-right: -0.25rem
-    scrollbar-width: thin
-    scrollbar-color: colors.$gray transparent
-
-    &::-webkit-scrollbar
-      width: 4px
-
-    &::-webkit-scrollbar-track
-      background: transparent
-
-    &::-webkit-scrollbar-thumb
-      background-color: colors.$gray
-      border-radius: 10px
-
-  .name-row
-    display: grid
-    grid-template-columns: 4fr 1fr
-    gap: 1rem
-
-  .address-row
-    display: grid
-    grid-template-columns: 1fr auto
-    gap: 1rem
-
-  .pve-config-row
-    display: grid
-    grid-template-columns: 1fr auto
-    gap: 1rem
-
-  .password-row
-    width: 100%
-
-  .keyfile-row
-    display: flex
-    gap: 1rem
-
-    input[type="file"]
-      cursor: pointer
-
-    input[type="file"]::-webkit-file-upload-button
-      display: none
-
-
-  .form-group
-    display: flex
-    flex-direction: column
     gap: 0.625rem
 
-    label
-      color: colors.$subtext
-      font-weight: 600
-      font-size: 0.875rem
-      letter-spacing: 0.01em
+  &__index
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 1.75rem
+    height: 1.75rem
+    border-radius: 0.5rem
+    background-color: colors.$gray
+    color: colors.$white
+    font-size: 0.75rem
+    font-weight: 600
+    flex-shrink: 0
 
-    .small-input
-      padding: 0.8rem
-      width: 4rem
-      border: 1px solid colors.$gray
+  &__select
+    flex: 1
+    min-width: 0
+
+.server-identity-list
+  display: flex
+  flex-direction: column
+  gap: 0.625rem
+
+.server-identity
+  display: flex
+  flex-direction: column
+  gap: 0.75rem
+  padding: 0.75rem
+  border: 1px solid colors.$border
+  border-radius: 0.75rem
+  background-color: colors.$dark-gray
+
+  &__header
+    display: flex
+    align-items: center
+    gap: 0.5rem
+
+  &__icon
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 2rem
+    height: 2rem
+    border-radius: 0.5rem
+    background-color: colors.$gray
+    color: colors.$subtext
+    flex-shrink: 0
+
+    svg
+      width: 1rem
+      height: 1rem
+
+  &__title
+    flex: 1
+    min-width: 0
+    padding: 0.375rem 0.5rem
+    border: 1px solid transparent
+    border-radius: 0.5rem
+    background: transparent
+    color: colors.$white
+    font-family: inherit
+    font-size: 0.9rem
+    font-weight: 600
+    outline: none
+    text-overflow: ellipsis
+    transition: border-color 0.1s ease, background-color 0.1s ease
+
+    &::placeholder
+      color: colors.$subtext
+      font-weight: 500
+
+    &:hover
+      border-color: colors.$border
+
+    &:focus
+      border-color: colors.$primary
       background-color: colors.$lighter-background
-      color: colors.$white
-      border-radius: 0.5rem
-      font-size: 14pt
-      outline: none
-      transition: border-color 0.1s ease, background-color 0.1s ease
 
-      &:focus
-        border: 1px solid colors.$primary
-        background-color: colors.$dark-gray
-
-  .server-dialog-tabs
-    display: flex
-    
-    &:empty
-      display: none
-
-  .identities
+  &__fields
     display: flex
     flex-direction: column
-    gap: 1rem
+    gap: 0.75rem
 
-    .identities-section
-      display: flex
-      flex-direction: column
-      gap: 0.75rem
-      padding: 0.75rem
-      border-radius: 0.75rem
-      border: 1px solid colors.$gray
+  &__options
+    flex-direction: row
+    margin: 0 -0.75rem -0.75rem
+    border: none
+    border-top: 1px solid colors.$border
+    border-radius: 0 0 0.75rem 0.75rem
 
-      .section-title
-        display: flex
-        align-items: center
-        gap: 0.5rem
-
-        svg
-          color: colors.$primary
-
-      .section-description
-        font-size: 0.8rem
-        color: colors.$subtext
-        margin: 0
-        padding-bottom: 0.5rem
-        border-bottom: 1px solid colors.$gray
-
-    .identities-header
-      display: flex
-      justify-content: space-between
-      align-items: center
-      gap: 0.75rem
-
-      h3
-        margin: 0
-        color: colors.$white
-        font-size: 1.05rem
-        font-weight: 700
-
-      .identity-actions
-        display: flex
-        gap: 0.5rem
-
-        button
-          padding: 0.5rem 0.875rem
-          font-size: 0.875rem
-          white-space: nowrap
-
-    .identities-list
-      display: flex
-      flex-direction: column
+    .sd-setting
+      flex: 1
+      min-width: 0
       gap: 0.5rem
+      padding: 0.375rem 0.75rem
 
-      .available-identities-section
-        margin-top: 0.5rem
-        padding-top: 0.75rem
-        border-top: 1px solid colors.$gray
+      & + .sd-setting
+        border-top: none
+        border-left: 1px solid colors.$border
 
-        &.no-border
-          margin-top: 0
-          padding-top: 0
-          border-top: none
+    .sd-setting__icon
+      width: 1rem
+      height: 1rem
 
-        .available-identities-header
-          display: flex
-          align-items: center
-          justify-content: space-between
-          margin-bottom: 0.5rem
-
-          h4
-            margin: 0
-            font-size: 0.85rem
-            font-weight: 600
-            color: colors.$subtext
-            text-transform: uppercase
-            letter-spacing: 0.05em
-
-          .available-count
-            display: flex
-            align-items: center
-            justify-content: center
-            min-width: 1.5rem
-            height: 1.5rem
-            background-color: colors.$gray
-            color: colors.$white
-            border-radius: 0.5rem
-            font-weight: 600
-            font-size: 0.75rem
-            padding: 0 0.375rem
-
-        .available-identities-list
-          display: flex
-          flex-direction: column
-          gap: 0.375rem
-
-          .available-identity
-            display: flex
-            align-items: center
-            justify-content: space-between
-            padding: 0.625rem 0.75rem
-            background-color: transparent
-            border: 1px solid colors.$gray
-            border-radius: 0.5rem
-            cursor: pointer
-            transition: background-color 0.1s ease, border-color 0.1s ease, transform 0.1s ease
-
-            &:hover
-              background-color: colors.$dark-gray
-              border-color: rgba(255, 255, 255, 0.1)
-              transform: translateX(2px)
-
-            .available-identity-info
-              display: flex
-              flex-direction: column
-              gap: 0.25rem
-              flex: 1
-
-              .available-identity-name
-                display: flex
-                align-items: center
-                gap: 0.5rem
-                font-weight: 600
-                font-size: 0.875rem
-                color: colors.$white
-
-                svg
-                  color: colors.$primary
-
-              .available-identity-username
-                font-size: 0.75rem
-                color: colors.$subtext
-                padding-left: 1.2rem
-
-            .available-identity-type
-              font-size: 0.75rem
-              color: colors.$subtext
-              padding: 0.25rem 0.5rem
-              background-color: colors.$gray
-              border-radius: 0.375rem
-              font-weight: 500
-
-    .no-identities
-      text-align: center
-      padding: 2.5rem 1.5rem
+    .sd-setting__label
+      font-size: 0.8rem
+      font-weight: 500
       color: colors.$subtext
-      border: 2px dashed colors.$gray
-      border-radius: 0.75rem
-      font-size: 0.9rem
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
 
-      p
-        margin: 0
+.server-badge
+  display: inline-flex
+  align-items: center
+  padding: 0.2rem 0.5rem
+  border-radius: 0.375rem
+  background-color: colors.$primary-opacity
+  color: colors.$white
+  font-size: 0.66rem
+  font-weight: 700
+  letter-spacing: 0.05em
+  text-transform: uppercase
+  flex-shrink: 0
 
-    .no-identities
-      background-color: rgba(0, 0, 0, 0.15)
+  &--muted
+    background-color: colors.$gray
+    color: colors.$subtext
+    text-transform: none
+    letter-spacing: 0
+    font-size: 0.72rem
+    font-weight: 600
 
-    .no-identities-inline
-      text-align: center
-      padding: 1rem
-      color: colors.$subtext
-      font-size: 0.85rem
-      background-color: rgba(0, 0, 0, 0.1)
-      border-radius: 0.5rem
+.server-identity-actions
+  display: flex
+  flex-wrap: wrap
+  gap: 0.5rem
 
-      p
-        margin: 0
+.server-linkable
+  display: flex
+  flex-direction: column
+  gap: 0.375rem
 
-  .identity
-    background-color: transparent
-    border: 1px solid colors.$gray
-    padding: 0.75rem
-    border-radius: 0.75rem
+  &__item
     display: flex
-    flex-direction: column
+    align-items: center
     gap: 0.625rem
+    width: 100%
+    padding: 0.625rem 0.75rem
+    border: 1px solid colors.$border
+    border-radius: 0.625rem
+    background: transparent
+    color: colors.$white
+    font-family: inherit
+    text-align: left
+    cursor: pointer
     transition: background-color 0.1s ease, border-color 0.1s ease
 
-    &:hover
-      background-color: colors.$dark-gray
-      border-color: rgba(255, 255, 255, 0.1)
-
-    &.identity-organization
-      border-left: 3px solid colors.$primary
-
-    &.identity-personal
-      border-left: 3px solid colors.$subtext
-
-    .identity-header
-      display: flex
-      align-items: center
-      gap: 0.625rem
-
-      .identity-scope-icon
-        display: flex
-        align-items: center
-        justify-content: center
-        width: 1.75rem
-        height: 1.75rem
-        background-color: colors.$gray
-        border-radius: 0.375rem
-        flex-shrink: 0
-
-        svg
-          color: colors.$subtext
-
-      .identity-name-input
-        flex: 1
-
-      .new-badge
-        background-color: colors.$primary
-        color: colors.$white
-        font-size: 0.65rem
-        font-weight: 700
-        padding: 0.25rem 0.5rem
-        border-radius: 0.375rem
-        letter-spacing: 0.05em
-        flex-shrink: 0
-
-      .move-to-org-btn
-        display: flex
-        align-items: center
-        gap: 0.125rem
-        background: transparent
-        border: 1px solid colors.$gray
-        border-radius: 0.5rem
-        padding: 0.375rem 0.5rem
-        cursor: pointer
-        color: colors.$subtext
-        transition: background-color 0.1s ease, color 0.1s ease, border-color 0.1s ease
-
-        &:hover
-          background-color: rgba(colors.$primary, 0.1)
-          border-color: colors.$primary
-          color: colors.$primary
-
-      .unlink-identity-btn
-        background: transparent
-        border: none
-        border-radius: 0.5rem
-        padding: 0.375rem
-        cursor: pointer
-        color: colors.$subtext
-        transition: background-color 0.1s ease, color 0.1s ease
-        display: flex
-        align-items: center
-        justify-content: center
-        min-width: 1.75rem
-        height: 1.75rem
-        flex-shrink: 0
-
-        &:hover
-          background-color: colors.$error-opacity
-          color: colors.$error
-
-        svg
-          width: 1rem
-          height: 1rem
-
-    .identity-fields
-      display: flex
-      flex-direction: column
-      gap: 0.625rem
-
-      .identity-row
-        display: grid
-        grid-template-columns: 1fr 1fr
-        gap: 0.625rem
-
-        &.single-column
-          grid-template-columns: 1fr
-
-      .form-group
-        display: flex
-        flex-direction: column
-        gap: 0.5rem
-
-        label
-          font-size: 0.8rem
-          color: colors.$subtext
-          font-weight: 600
-
-  .settings-toggle
-    display: flex
-    justify-content: flex-start
-    align-items: center
-    gap: 1rem
-    padding: 0.75rem
-    background-color: transparent
-    border: 1px solid colors.$gray
-    border-radius: 0.75rem
-    transition: background-color 0.1s ease
-
-    &:hover
-      background-color: colors.$dark-gray
-
-    .settings-toggle-info
-      display: flex
-      flex-direction: column
-      gap: 0.25rem
-      flex: 1
-
-      .settings-toggle-label
-        font-weight: 700
-        font-size: 0.95rem
-        color: colors.$white
-
-      .settings-toggle-description
-        font-size: 0.8rem
-        color: colors.$subtext
-
-  .keyboard-layout-card
-    background-color: transparent
-    border: 1px solid colors.$gray
-    padding: 0.75rem
-    border-radius: 0.75rem
-    transition: background-color 0.1s ease
-
-    &:hover
-      background-color: colors.$dark-gray
-
-    .form-group
-      gap: 0.625rem
-
-      label
-        font-weight: 700
-        font-size: 0.95rem
-        color: colors.$white
-
-    .keyboard-layout-description
-      font-size: 0.8rem
+    svg
+      width: 1rem
+      height: 1rem
       color: colors.$subtext
-      margin-top: 0.5rem
-      margin-bottom: 0
-
-  .jump-hosts-section
-    background-color: transparent
-    border: 1px solid colors.$gray
-    padding: 0.75rem
-    border-radius: 0.75rem
-    margin-bottom: 0.5rem
-    transition: background-color 0.1s ease
+      flex-shrink: 0
 
     &:hover
       background-color: colors.$dark-gray
-
-    .terminal-settings-grid
-      display: grid
-      grid-template-columns: repeat(3, 1fr)
-      gap: 0.5rem
-
-      .form-group
-        display: flex
-        flex-direction: column
-        gap: 0.375rem
-
-        label
-          font-size: 0.75rem
-          color: colors.$subtext
-          font-weight: 600
-
-    .settings-toggle
-      border: none
-      padding: 0.5rem 0
-
-      &:hover
-        background-color: transparent
-
-      .settings-toggle-label
-        font-size: 0.875rem
-
-    .jump-hosts-header
-      margin-bottom: 0.625rem
-
-      .jump-hosts-info
-        display: flex
-        flex-direction: column
-        gap: 0.25rem
-
-        .jump-hosts-label
-          font-weight: 700
-          font-size: 0.95rem
-          color: colors.$white
-          display: flex
-          align-items: center
-
-        .jump-hosts-description
-          font-size: 0.8rem
-          color: colors.$subtext
-
-    .jump-hosts-list
-      display: flex
-      flex-direction: column
-      gap: 0.375rem
-      margin-bottom: 0.625rem
-
-    .jump-host-item
-      display: flex
-      align-items: center
-      gap: 0.625rem
-      padding: 0.625rem 0.75rem
-      background-color: transparent
-      border: 1px solid colors.$gray
-      border-radius: 0.5rem
-      transition: background-color 0.1s ease
-
-      &:hover
-        background-color: colors.$dark-gray
-
-      .jump-host-number
-        display: flex
-        align-items: center
-        justify-content: center
-        min-width: 1.5rem
-        height: 1.5rem
-        background-color: colors.$gray
-        color: colors.$white
-        border-radius: 0.5rem
-        font-weight: 600
-        font-size: 0.8rem
-        flex-shrink: 0
-
-      .jump-host-select
-        flex: 1
-
-      .jump-host-remove
-        background: transparent
-        border: none
-        border-radius: 0.5rem
-        padding: 0.375rem
-        cursor: pointer
-        color: colors.$subtext
-        transition: background-color 0.1s ease, color 0.1s ease
-        display: flex
-        align-items: center
-        justify-content: center
-        min-width: 1.75rem
-        height: 1.75rem
-        flex-shrink: 0
-
-        &:hover
-          background-color: colors.$error-opacity
-          color: colors.$error
-
-    .add-jump-host-btn
-      width: 100%
-      padding: 0.625rem 0.75rem
-      background-color: transparent
-      border: none
-      color: colors.$subtext
-      border-radius: 0.5rem
-      cursor: pointer
-      transition: background-color 0.1s ease, color 0.1s ease
-      display: flex
-      align-items: center
-      justify-content: center
-      gap: 0.5rem
-      font-weight: 500
-      font-size: 0.875rem
+      border-color: colors.$gray
 
       svg
-        width: 1rem
-        height: 1rem
+        color: colors.$primary
 
-      &:hover
-        background-color: colors.$dark-gray
-        color: colors.$white
+  &__name
+    font-size: 0.85rem
+    font-weight: 600
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
 
-    .no-jump-hosts-message
-      text-align: center
-      padding: 1rem
-      color: colors.$subtext
-      font-size: 0.875rem
-      margin: 0
+  &__user
+    flex: 1
+    min-width: 0
+    font-size: 0.78rem
+    font-weight: 500
+    color: colors.$subtext
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis

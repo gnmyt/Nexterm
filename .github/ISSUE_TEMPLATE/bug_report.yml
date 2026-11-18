@@ -19,6 +19,19 @@ body:
       placeholder: An error occurs when ...
     validations:
       required: true
+  - type: input
+    id: version
+    attributes:
+      label: Nexterm version
+      description: You can find the version at the bottom of the settings sidebar.
+      placeholder: v1.2.0
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and operating system
+      placeholder: Chrome 124 on Windows
   - type: dropdown
     id: browsers
     attributes:

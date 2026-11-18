@@ -5,9 +5,9 @@
   align-items: center
   gap: 0.25rem
   padding: 0.25rem
-  background-color: colors.$lighter-background
-  border: 1px solid colors.$dark-gray
-  border-radius: 0.75rem
+  background-color: colors.$dark-gray
+  border: 1px solid colors.$border
+  border-radius: 0.625rem
   flex-shrink: 0
   box-sizing: border-box
   user-select: none
@@ -36,8 +36,7 @@
       background-color: colors.$dark-gray
 
     &:focus-visible
-      outline: 2px solid colors.$primary
-      outline-offset: 2px
+      box-shadow: colors.$focus-ring
 
     &:active
       transform: scale(0.94)

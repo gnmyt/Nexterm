@@ -1,4 +1,5 @@
 @use "@/common/styles/colors"
+@use "@/common/components/SettingsDialog/page" as settings-page
 @use "@/common/styles/breakpoints"
 
 .users-page
@@ -194,3 +195,10 @@
     &:hover
       background-color: colors.$gray
       color: colors.$white
+
++settings-page.scope
+  .group-badge
+    background: colors.$gray
+    color: colors.$subtext
+    border: none
+    font-weight: 600

@@ -51,6 +51,10 @@
  */
 void guac_vnc_client_log_info(const char* format, ...);
 
+#define GUAC_VNC_UNTRUSTED_CERT_MARKER "untrusted-certificate\t"
+
+void guac_vnc_client_log_set_client(guac_client* client);
+
 /**
  * Callback invoked by libVNCServer when an error message needs to be logged.
  *

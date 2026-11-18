@@ -1,0 +1,169 @@
+@use "@/common/styles/colors"
+
+.transfer-panel
+  position: absolute
+  right: 1rem
+  bottom: calc(1.875rem + 0.75rem)
+  width: min(24rem, calc(100% - 2rem))
+  display: flex
+  flex-direction: column
+  background-color: colors.$lighter-background
+  border: 1px solid colors.$gray
+  border-radius: 0.75rem
+  box-shadow: colors.$shadow-lg
+  z-index: 99
+  overflow: hidden
+  user-select: none
+  animation: transferSlideUp 0.2s ease
+
+  @keyframes transferSlideUp
+    from
+      opacity: 0
+      transform: translateY(0.75rem)
+    to
+      opacity: 1
+      transform: translateY(0)
+
+  .transfer-header
+    display: flex
+    align-items: center
+    gap: 0.5rem
+    padding: 0.6rem 0.75rem
+    cursor: pointer
+    border-bottom: 1px solid colors.$gray
+
+    > svg
+      width: 1.1rem
+      height: 1.1rem
+      color: colors.$primary
+      flex-shrink: 0
+
+    .transfer-title
+      font-size: 0.875rem
+      font-weight: 600
+      color: colors.$white
+
+    .transfer-summary
+      flex: 1
+      font-size: 0.75rem
+      color: colors.$subtext
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
+
+    .transfer-chevron
+      color: colors.$subtext
+
+  &.collapsed .transfer-header
+    border-bottom: none
+
+  .transfer-list
+    display: flex
+    flex-direction: column
+    max-height: 18rem
+    overflow-y: auto
+
+  .transfer-row
+    display: flex
+    align-items: center
+    gap: 0.6rem
+    padding: 0.5rem 0.75rem
+    border-bottom: 1px solid colors.$dark-gray
+
+    &:last-child
+      border-bottom: none
+
+    .transfer-icon
+      width: 1.25rem
+      height: 1.25rem
+      flex-shrink: 0
+      color: colors.$subtext
+
+    &.done .transfer-icon
+      color: colors.$success
+
+    &.error .transfer-icon, &.cancelled .transfer-icon
+      color: colors.$error
+
+    .transfer-body
+      flex: 1
+      min-width: 0
+      display: flex
+      flex-direction: column
+      gap: 0.2rem
+
+    .transfer-name
+      font-size: 0.8125rem
+      font-weight: 500
+      color: colors.$white
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
+
+    .transfer-status
+      font-size: 0.7rem
+      color: colors.$subtext
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
+
+    &.error .transfer-status
+      color: colors.$error
+
+    .transfer-bar
+      position: relative
+      height: 0.25rem
+      border-radius: 0.125rem
+      background-color: colors.$gray
+      overflow: hidden
+
+      .transfer-bar-fill
+        height: 100%
+        border-radius: 0.125rem
+        background-color: colors.$primary
+        transition: width 0.25s ease
+
+      &.indeterminate .transfer-bar-fill
+        width: 35% !important
+        animation: transferIndeterminate 1.2s ease-in-out infinite
+
+    &.done .transfer-bar-fill
+      background-color: colors.$success
+
+    &.error .transfer-bar-fill, &.cancelled .transfer-bar-fill
+      background-color: colors.$error
+
+    &.queued .transfer-bar-fill
+      opacity: 0.35
+
+  @keyframes transferIndeterminate
+    from
+      transform: translateX(-100%)
+    to
+      transform: translateX(300%)
+
+  .transfer-action
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 1.75rem
+    height: 1.75rem
+    flex-shrink: 0
+    border: none
+    border-radius: 0.4rem
+    background: transparent
+    color: colors.$subtext
+    cursor: pointer
+    transition: background-color 0.2s, color 0.2s
+
+    svg
+      width: 1rem
+      height: 1rem
+
+    &:hover:not(:disabled)
+      background-color: colors.$gray
+      color: colors.$white
+
+    &:disabled
+      opacity: 0.4
+      cursor: default

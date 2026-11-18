@@ -107,7 +107,7 @@ static void guac_rdp_disp_channel_connected(rdpContext* context,
     /* Init module with current display size */
     guac_rdp_disp_set_size(guac_disp, rdp_client->settings,
             context->instance, guac_rdp_get_width(context->instance),
-            guac_rdp_get_height(context->instance), 0, 0);
+            guac_rdp_get_height(context->instance), 0, 0, 0);
 
     /* Store reference to the display update plugin once it's connected */
     DispClientContext* disp = (DispClientContext*) args->pInterface;
@@ -305,7 +305,7 @@ static bool guac_rdp_disp_close_monitor(guac_rdp_disp* disp, int x_position) {
 
 void guac_rdp_disp_set_size(guac_rdp_disp* disp, guac_rdp_settings* settings,
         freerdp* rdp_inst, int width, int height, int x_position,
-        int top_offset) {
+        int top_offset, int scale) {
 
     int min_monitors_requested = x_position + 1;
 
@@ -320,6 +320,12 @@ void guac_rdp_disp_set_size(guac_rdp_disp* disp, guac_rdp_settings* settings,
     if (x_position < 0 || max_monitors < min_monitors_requested
             || disp->monitors_count + 1 < min_monitors_requested)
         return;
+
+    if (scale >= GUAC_RDP_DISP_MIN_SCALE && scale <= GUAC_RDP_DISP_MAX_SCALE
+            && scale != guac_rdp_settings_desktop_scale(settings)) {
+        settings->desktop_scale = scale;
+        disp->resize_needed = true;
+    }
 
     guac_rect resize = {
         .left = 0,
@@ -356,7 +362,8 @@ void guac_rdp_disp_set_size(guac_rdp_disp* disp, guac_rdp_settings* settings,
         int left_offset = guac_rdp_disp_get_left_offset(disp, x_position);
 
         /* Store deferred size if changed */
-        if (monitor->requested_width == width
+        if (!disp->resize_needed
+                && monitor->requested_width == width
                 && monitor->requested_height == height
                 && monitor->x_position == x_position
                 && monitor->top_offset == top_offset
@@ -441,7 +448,7 @@ void guac_rdp_disp_update_size(guac_rdp_disp* disp,
             monitors[i].Orientation = 0;
             monitors[i].PhysicalWidth = 0;
             monitors[i].PhysicalHeight = 0;
-            monitors[i].DesktopScaleFactor = settings->resolution * 100 / GUAC_RDP_NATIVE_RESOLUTION;
+            monitors[i].DesktopScaleFactor = guac_rdp_settings_desktop_scale(settings);
             monitors[i].DeviceScaleFactor = 100;
 
         }

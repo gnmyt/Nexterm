@@ -11,10 +11,25 @@ const { sendFrame, createFrameParser } = require("./controlPlane/frameProtocol")
 const logger = require("../utils/logger");
 
 const WRITE_CHUNK_SIZE = 262144;
+const SOCKET_HIGH_WATER = WRITE_CHUNK_SIZE * 4;
+const READ_STREAM_HIGH_WATER = 4 * 1024 * 1024;
 const REQUEST_TIMEOUT = 30000;
 const WRITE_END_TIMEOUT = 120000;
+const TRANSFER_STALL_TIMEOUT = 120000;
 const EXEC_TIMEOUT = 300000;
 const SEARCH_TIMEOUT_MARGIN = 35000;
+
+const CANCELLED_MESSAGE = "Transfer cancelled";
+
+class TransferCancelledError extends Error {
+    constructor() {
+        super(CANCELLED_MESSAGE);
+        this.name = "TransferCancelledError";
+        this.cancelled = true;
+    }
+}
+
+const isCancelled = (error) => error?.cancelled === true || error?.message === CANCELLED_MESSAGE;
 
 const MESSAGE_HANDLERS = {
     [SftpMsgType.Ok]: (_msg, rid, pending, self) => {
@@ -107,6 +122,8 @@ class EngineSftpClient extends EventEmitter {
         this._socket = socket;
         this._requestId = 0;
         this._pending = new Map();
+        this._queue = [];
+        this._busy = false;
         this._closed = false;
 
         this._readyPromise = new Promise((resolve, reject) => {
@@ -128,6 +145,10 @@ class EngineSftpClient extends EventEmitter {
 
     waitForReady() {
         return this._readyPromise;
+    }
+
+    get queueLength() {
+        return this._queue.length + (this._busy ? 1 : 0);
     }
 
     close() {
@@ -210,82 +231,168 @@ class EngineSftpClient extends EventEmitter {
     }
 
     readFile(path) {
-        const rid = this._nextId();
-        const stream = new PassThrough();
+        const stream = new PassThrough({ highWaterMark: READ_STREAM_HIGH_WATER });
         stream.on("error", () => {});
 
-        let sizeResolved = false;
         let resolveTotalSize;
-        const totalSizePromise = new Promise((r) => { resolveTotalSize = r; });
-
+        const totalSizePromise = new Promise((resolve) => { resolveTotalSize = resolve; });
         let resolveDone, rejectDone;
         const done = new Promise((resolve, reject) => { resolveDone = resolve; rejectDone = reject; });
+        done.catch(() => {});
+
+        const state = {
+            rid: null, finished: false, ended: false, queued: true, stallTimer: null,
+            sizeKnown: false, total: 0, received: 0,
+        };
+        const fullyDelivered = () => state.sizeKnown && state.received >= state.total;
 
         const emitSize = (size) => {
-            if (sizeResolved) return;
-            sizeResolved = true;
+            if (state.sizeKnown) return;
+            state.sizeKnown = true;
             resolveTotalSize(size);
         };
 
-        this._pending.set(rid, {
-            onFileData: (data, total) => {
-                emitSize(Number(total));
-                stream.write(Buffer.from(data.buffer, data.byteOffset, data.byteLength));
-            },
-            onFileEnd: () => {
-                emitSize(0);
-                stream.end();
-                this._pending.delete(rid);
+        const resumeSocket = () => {
+            if (this._socket.isPaused()) this._socket.resume();
+        };
+
+        const clearStall = () => {
+            clearTimeout(state.stallTimer);
+            state.stallTimer = null;
+        };
+
+        let finishRead;
+
+        const armStall = () => {
+            clearStall();
+            state.stallTimer = setTimeout(() => {
+                if (state.finished) return;
+                logger.warn("EngineSftpClient: file read stalled, cancelling", { path });
+                this._sendCancelRead(state.rid);
+                finishRead(new Error("Transfer stalled"));
+            }, TRANSFER_STALL_TIMEOUT);
+        };
+
+        finishRead = (error) => {
+            if (state.finished) return;
+            state.finished = true;
+            clearStall();
+            if (state.rid !== null) this._pending.delete(state.rid);
+            resumeSocket();
+            emitSize(0);
+            if (error) {
+                if (!stream.destroyed) stream.destroy(error);
+                rejectDone(error);
+            } else {
+                state.ended = true;
+                if (!stream.destroyed) stream.end();
                 resolveDone();
-            },
-            onError: (msg) => {
-                emitSize(0);
-                if (!stream.destroyed) {
-                    stream.destroy(new Error(msg));
-                }
-                this._pending.delete(rid);
-                rejectDone(new Error(msg));
-            },
+            }
+            state.release?.();
+        };
+
+        const cancel = () => {
+            if (state.finished) return;
+            if (state.queued) {
+                this._removeQueued(state.task);
+                finishRead(new TransferCancelledError());
+                return;
+            }
+            this._sendCancelRead(state.rid);
+            finishRead(new TransferCancelledError());
+        };
+
+        stream.on("close", () => {
+            if (state.ended || state.finished) return;
+            if (fullyDelivered()) {
+                resumeSocket();
+                return;
+            }
+            cancel();
         });
 
-        this._sendPathReq(rid, SftpMsgType.ReadFile, path);
-        done.catch(() => {});
-        return { stream, totalSizePromise, done };
+        state.task = () => new Promise((release) => {
+            state.release = release;
+            state.queued = false;
+            if (this._closed) {
+                finishRead(new Error("Connection closed"));
+                return;
+            }
+
+            const rid = this._nextId();
+            state.rid = rid;
+
+            this._pending.set(rid, {
+                onFileData: (data, total) => {
+                    if (state.finished) return;
+                    state.total = Number(total);
+                    emitSize(state.total);
+                    state.received += data.byteLength;
+                    if (stream.destroyed) return;
+                    const chunk = Buffer.from(data.buffer, data.byteOffset, data.byteLength);
+                    if (stream.write(chunk)) {
+                        armStall();
+                        return;
+                    }
+                    clearStall();
+                    this._socket.pause();
+                    stream.once("drain", () => {
+                        if (state.finished) return;
+                        resumeSocket();
+                        armStall();
+                    });
+                },
+                onFileEnd: () => finishRead(null),
+                onError: (message) => finishRead(isCancelled({ message }) ? new TransferCancelledError() : new Error(message)),
+            });
+
+            armStall();
+            this._sendPathReq(rid, SftpMsgType.ReadFile, path);
+        });
+
+        this._enqueue(state.task).catch((err) => finishRead(err));
+
+        return { stream, totalSizePromise, done, cancel };
     }
 
-    async writeFile(path, source) {
-        const rid = this._nextId();
+    writeFile(path, source, options = {}) {
+        return this._enqueue(async () => {
+            const rid = this._nextId();
 
-        this._buildAndSend(rid, SftpMsgType.WriteBegin, (b) => {
-            const pathOff = b.createString(path);
-            WriteBeginReq.startWriteBeginReq(b);
-            WriteBeginReq.addPath(b, pathOff);
-            return { writeBeginReq: WriteBeginReq.endWriteBeginReq(b) };
-        });
-
-        await this._waitResponse(rid);
-
-        if (Buffer.isBuffer(source)) {
-            for (let off = 0; off < source.length; off += WRITE_CHUNK_SIZE) {
-                this._sendWriteData(rid, source.subarray(off, Math.min(off + WRITE_CHUNK_SIZE, source.length)));
-            }
-        } else {
-            await new Promise((resolve, reject) => {
-                source.on("data", (chunk) => {
-                    const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
-                    this._sendWriteData(rid, buf);
-                    if (this._socket.writableLength > WRITE_CHUNK_SIZE * 4) {
-                        source.pause();
-                        this._socket.once("drain", () => source.resume());
-                    }
-                });
-                source.on("end", resolve);
-                source.on("error", reject);
+            this._buildAndSend(rid, SftpMsgType.WriteBegin, (b) => {
+                const pathOff = b.createString(path);
+                WriteBeginReq.startWriteBeginReq(b);
+                WriteBeginReq.addPath(b, pathOff);
+                return { writeBeginReq: WriteBeginReq.endWriteBeginReq(b) };
             });
-        }
+            await this._waitResponse(rid);
 
-        this._buildAndSend(rid, SftpMsgType.WriteEnd, () => ({}));
-        return this._waitResponse(rid, WRITE_END_TIMEOUT);
+            let failEarly;
+            const engineFailure = new Promise((_, reject) => { failEarly = reject; });
+            engineFailure.catch(() => {});
+            this._pending.set(rid, { onError: (message) => failEarly(new Error(message)) });
+
+            const abortState = { stopped: false };
+            const onAbort = () => failEarly(new TransferCancelledError());
+            options.signal?.addEventListener("abort", onAbort, { once: true });
+
+            try {
+                if (options.signal?.aborted) throw new TransferCancelledError();
+                await Promise.race([this._pumpWriteData(rid, source, abortState, options.onProgress), engineFailure]);
+            } catch (err) {
+                abortState.stopped = true;
+                this._pending.delete(rid);
+                if (!Buffer.isBuffer(source) && !source.destroyed) source.destroy();
+                await this._abortWrite();
+                throw err;
+            } finally {
+                options.signal?.removeEventListener("abort", onAbort);
+            }
+
+            this._pending.delete(rid);
+            this._buildAndSend(rid, SftpMsgType.WriteEnd, () => ({}));
+            return this._waitResponse(rid, WRITE_END_TIMEOUT);
+        });
     }
 
     exec(command, timeoutMs = EXEC_TIMEOUT, stdinData = null) {
@@ -321,20 +428,113 @@ class EngineSftpClient extends EventEmitter {
         }, timeoutMs + SEARCH_TIMEOUT_MARGIN);
     }
 
+    _enqueue(task) {
+        return new Promise((resolve, reject) => {
+            if (this._closed) {
+                reject(new Error("Connection closed"));
+                return;
+            }
+            this._queue.push({ task, resolve, reject });
+            this._drainQueue();
+        });
+    }
+
+    _removeQueued(task) {
+        const index = this._queue.findIndex((entry) => entry.task === task);
+        if (index === -1) return;
+        const [entry] = this._queue.splice(index, 1);
+        entry.reject(new TransferCancelledError());
+    }
+
+    _drainQueue() {
+        if (this._busy || this._queue.length === 0) return;
+        const { task, resolve, reject } = this._queue.shift();
+        this._busy = true;
+        Promise.resolve()
+            .then(task)
+            .then(resolve, reject)
+            .finally(() => {
+                this._busy = false;
+                this._drainQueue();
+            });
+    }
+
+    async _pumpWriteData(rid, source, abortState, onProgress) {
+        let sent = 0;
+        const sendChunk = async (buf) => {
+            for (let off = 0; off < buf.length; off += WRITE_CHUNK_SIZE) {
+                if (abortState.stopped) return;
+                this._sendWriteData(rid, buf.subarray(off, Math.min(off + WRITE_CHUNK_SIZE, buf.length)));
+                if (this._socket.writableLength > SOCKET_HIGH_WATER) await this._waitForDrain();
+            }
+            sent += buf.length;
+            onProgress?.(sent);
+        };
+
+        if (Buffer.isBuffer(source)) {
+            await sendChunk(source);
+            return;
+        }
+
+        for await (const chunk of source) {
+            if (abortState.stopped) return;
+            await sendChunk(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+        }
+    }
+
+    _waitForDrain() {
+        return new Promise((resolve, reject) => {
+            if (this._closed) {
+                reject(new Error("Connection closed"));
+                return;
+            }
+            const onDrain = () => { cleanup(); resolve(); };
+            const onClose = () => { cleanup(); reject(new Error("Connection closed")); };
+            const cleanup = () => {
+                this._socket.removeListener("drain", onDrain);
+                this._socket.removeListener("close", onClose);
+                this._socket.removeListener("error", onClose);
+            };
+            this._socket.once("drain", onDrain);
+            this._socket.once("close", onClose);
+            this._socket.once("error", onClose);
+        });
+    }
+
+    async _abortWrite() {
+        if (this._closed) return;
+        const rid = this._nextId();
+        this._buildAndSend(rid, SftpMsgType.WriteAbort, () => ({}));
+        try {
+            await this._waitResponse(rid);
+        } catch (err) {
+            logger.warn("EngineSftpClient: write abort was not acknowledged", { error: err.message });
+        }
+    }
+
+    _sendCancelRead(rid) {
+        if (rid === null || this._closed) return;
+        this._buildAndSend(rid, SftpMsgType.CancelRead, () => ({}));
+    }
+
     _nextId() {
         return ++this._requestId;
     }
 
     _pathRequest(msgType, path) {
-        const rid = this._nextId();
-        this._sendPathReq(rid, msgType, path);
-        return this._waitResponse(rid);
+        return this._enqueue(() => {
+            const rid = this._nextId();
+            this._sendPathReq(rid, msgType, path);
+            return this._waitResponse(rid);
+        });
     }
 
     _requestWithPayload(msgType, buildPayload, timeoutMs) {
-        const rid = this._nextId();
-        this._buildAndSend(rid, msgType, buildPayload);
-        return this._waitResponse(rid, timeoutMs);
+        return this._enqueue(() => {
+            const rid = this._nextId();
+            this._buildAndSend(rid, msgType, buildPayload);
+            return this._waitResponse(rid, timeoutMs);
+        });
     }
 
     _buildAndSend(rid, msgType, buildPayload) {
@@ -387,13 +587,17 @@ class EngineSftpClient extends EventEmitter {
 
     _waitResponse(rid, timeoutMs = REQUEST_TIMEOUT) {
         return new Promise((resolve, reject) => {
+            if (this._closed) {
+                reject(new Error("Connection closed"));
+                return;
+            }
             const timeout = timeoutMs > 0 ? setTimeout(() => {
                 this._pending.delete(rid);
                 reject(new Error("Request timeout"));
             }, timeoutMs) : null;
             this._pending.set(rid, {
-                resolve: (v) => { if (timeout) { clearTimeout(timeout); } resolve(v); },
-                reject: (e) => { if (timeout) { clearTimeout(timeout); } reject(e); },
+                resolve: (v) => { if (timeout) clearTimeout(timeout); resolve(v); },
+                reject: (e) => { if (timeout) clearTimeout(timeout); reject(e); },
             });
         });
     }
@@ -404,11 +608,14 @@ class EngineSftpClient extends EventEmitter {
     }
 
     _rejectAllPending(error) {
-        for (const [, p] of this._pending) {
+        const pending = [...this._pending.values()];
+        this._pending.clear();
+        for (const p of pending) {
             p.reject?.(error);
             p.onError?.(error.message);
         }
-        this._pending.clear();
+        const queued = this._queue.splice(0);
+        for (const entry of queued) entry.reject(error);
     }
 
     _abort(error, emitClose = false) {
@@ -444,3 +651,5 @@ class EngineSftpClient extends EventEmitter {
 }
 
 module.exports = EngineSftpClient;
+module.exports.TransferCancelledError = TransferCancelledError;
+module.exports.isCancelled = isCancelled;

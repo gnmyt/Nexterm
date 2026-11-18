@@ -8,13 +8,15 @@ use tunnel::{TunnelConfig, TunnelManager, TunnelStatus};
 mod host_fs;
 use host_fs::HostFsState;
 
+mod transfer;
+use transfer::TransferState;
+
 const APP_VERSION: &str = env!("CARGO_PKG_VERSION");
 
-#[tauri::command]
-fn get_user_agent() -> String {
+pub fn user_agent_string() -> String {
     let arch = std::env::consts::ARCH;
     let os_version = os_info::get();
-    
+
     format!(
         "NextermConnector/{} ({} {}; {})",
         APP_VERSION,
@@ -22,6 +24,11 @@ fn get_user_agent() -> String {
         os_version.version(),
         arch
     )
+}
+
+#[tauri::command]
+fn get_user_agent() -> String {
+    user_agent_string()
 }
 
 #[tauri::command]
@@ -131,6 +138,7 @@ pub mod urlencoding {
 pub fn run() {
     let tunnel_manager = Arc::new(TunnelManager::new());
     let host_fs = HostFsState::default();
+    let transfer_state = TransferState::default();
 
     tauri::Builder::default()
         .plugin(tauri_plugin_http::init())
@@ -140,6 +148,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .manage(tunnel_manager)
         .manage(host_fs)
+        .manage(transfer_state)
         .invoke_handler(tauri::generate_handler![
             open_popout,
             open_tunnel_window,
@@ -149,6 +158,8 @@ pub fn run() {
             list_tunnels,
             get_tunnel_status,
             get_user_agent,
+            host_fs::host_fs_configure,
+            host_fs::host_fs_release,
             host_fs::host_fs_open,
             host_fs::host_fs_read,
             host_fs::host_fs_write,
@@ -157,7 +168,12 @@ pub fn run() {
             host_fs::host_fs_stat,
             host_fs::host_fs_unlink,
             host_fs::host_fs_rename,
-            host_fs::host_fs_truncate
+            host_fs::host_fs_truncate,
+            transfer::transfer_download,
+            transfer::transfer_upload_begin,
+            transfer::transfer_upload_chunk,
+            transfer::transfer_upload_finish,
+            transfer::transfer_cancel
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

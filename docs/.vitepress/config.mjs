@@ -1,11 +1,7 @@
 import { defineConfig } from "vitepress";
 
 import { useSidebar } from "vitepress-openapi";
-import { exec } from "child_process";
-import { promisify } from "util";
 import spec from "../public/openapi.json";
-
-const execAsync = promisify(exec);
 
 const sidebar = useSidebar({ spec, linkPrefix: "/operations/" });
 
@@ -15,16 +11,7 @@ export default defineConfig({
     lastUpdated: true,
     cleanUrls: true,
     metaChunk: true,
-
-    buildEnd: async () => {
-        try {
-            console.log("Regenerating OpenAPI specification...");
-            await execAsync("node scripts/generate-openapi.js", { cwd: "./" });
-            console.log("OpenAPI specification updated successfully!");
-        } catch (error) {
-            console.warn("Warning: Could not regenerate OpenAPI spec:", error.message);
-        }
-    },
+    vite: { ssr: { noExternal: ["vitepress-openapi"] } },
 
     head: [
         ["link", { rel: "icon", type: "image/png", href: "/logo.png" }],
@@ -69,6 +56,7 @@ export default defineConfig({
                     { text: "SSL/HTTPS", link: "/ssl" },
                     { text: "Reverse Proxy", link: "/reverse-proxy" },
                     { text: "Remote Browser", link: "/remote-browser" },
+                    { text: "MCP Server", link: "/mcp" },
                     {
                         text: "Authentication",
                         collapsed: true,

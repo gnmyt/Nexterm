@@ -110,7 +110,7 @@ export const PropertiesDialog = ({ open, onClose, item, path, sendOperation, OPE
     return (
         <DialogProvider open={open} onClose={onClose}>
             <div className="properties-dialog">
-                <div className="dialog-header">
+                <div className="dialog-header dialog-heading">
                     <div className="file-icon">
                         <Icon path={isFolder ? mdiFolder : mdiFile} />
                     </div>

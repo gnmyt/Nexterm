@@ -1,17 +1,17 @@
 import "./styles.sass";
-import { mdiAccountCogOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { getSidebarNavigation } from "@/common/utils/navigationConfig.jsx";
+import LetterAvatar from "@/common/components/LetterAvatar";
 
 export const MobileNav = () => {
     const { t } = useTranslation();
     const { pathname } = useLocation();
     const navigate = useNavigate();
-    const { hasPermission } = useContext(UserContext);
+    const { hasPermission, user } = useContext(UserContext);
     const navigation = getSidebarNavigation(t).filter(item => !item.permission || hasPermission(item.permission));
 
     const handleClick = (item) => {
@@ -30,7 +30,7 @@ export const MobileNav = () => {
             </div>
             <div className="mobile-nav-fixed">
                 <div className="mobile-nav-item" onClick={() => window.dispatchEvent(new CustomEvent("openSettings", { detail: { tab: "account" } }))}>
-                    <Icon path={mdiAccountCogOutline} /><span>{t('common.sidebar.account')}</span>
+                    <LetterAvatar user={user} size="sm" showTooltip={false} /><span>{t('common.sidebar.account')}</span>
                 </div>
             </div>
         </nav>

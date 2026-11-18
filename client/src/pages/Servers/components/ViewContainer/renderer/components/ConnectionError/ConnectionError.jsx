@@ -3,6 +3,7 @@ import Icon from "@mdi/react";
 import { mdiLaptop, mdiServer, mdiClose, mdiAlertCircle, mdiRefresh } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import "./styles.sass";
+import Button from "@/common/components/Button";
 
 const secondsUntil = (timestamp) => (timestamp ? Math.max(0, Math.ceil((timestamp - Date.now()) / 1000)) : 0);
 
@@ -60,18 +61,10 @@ export const ConnectionError = memo(({ message, onClose, onReconnect, reconnectI
             )}
             {(onClose || onReconnect) && (
                 <div className="connection-error__actions">
-                    {onClose && (
-                        <button type="button" className="connection-error__action" onClick={onClose}>
-                            <Icon path={mdiClose} />
-                            <span>{t("common.errors.connection.close")}</span>
-                        </button>
-                    )}
+                    {onClose && <Button type="secondary" icon={mdiClose} text={t("common.errors.connection.close")} onClick={onClose} />}
                     {onReconnect && (
-                        <button type="button" className="connection-error__action connection-error__action--primary"
-                                onClick={onReconnect}>
-                            <Icon path={mdiRefresh} />
-                            <span>{reconnecting ? t("common.errors.connection.reconnectNow") : t("common.errors.connection.reconnect")}</span>
-                        </button>
+                        <Button icon={mdiRefresh} onClick={onReconnect}
+                                text={reconnecting ? t("common.errors.connection.reconnectNow") : t("common.errors.connection.reconnect")} />
                     )}
                 </div>
             )}

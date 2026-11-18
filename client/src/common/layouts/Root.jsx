@@ -4,6 +4,7 @@ import { StateStreamProvider } from "@/common/contexts/StateStreamContext.jsx";
 import { LiveSessionProvider } from "@/common/contexts/LiveSessionContext.jsx";
 import { ServerProvider } from "@/common/contexts/ServerContext.jsx";
 import { IdentityProvider } from "@/common/contexts/IdentityContext.jsx";
+import { TransferProvider } from "@/common/contexts/TransferContext.jsx";
 import { ToastProvider } from "@/common/contexts/ToastContext.jsx";
 import { PreferencesProvider } from "@/common/contexts/PreferencesContext.jsx";
 import { AIProvider } from "@/common/contexts/AIContext.jsx";
@@ -24,6 +25,7 @@ import ConnectionErrorBanner from "@/common/components/ConnectionErrorBanner";
 import { waitForTauri } from "@/common/utils/TauriUtil.js";
 import MobileNav from "@/common/components/MobileNav";
 import ThemeLoader from "@/common/components/ThemeLoader";
+import AIAssistant from "@/common/components/AIAssistant";
 import { patchRequest } from "@/common/utils/RequestUtil.js";
 
 const Sidebar = lazy(() => import("@/common/components/Sidebar"));
@@ -72,8 +74,12 @@ const AppContent = () => {
             setIsLeftPaneHovering(current => current === hovering ? current : hovering);
         };
 
-        document.addEventListener("mousemove", handleMouseMove);
-        return () => document.removeEventListener("mousemove", handleMouseMove);
+        document.addEventListener("mousemove", handleMouseMove, true);
+        document.addEventListener("mousedown", handleMouseMove, true);
+        return () => {
+            document.removeEventListener("mousemove", handleMouseMove, true);
+            document.removeEventListener("mousedown", handleMouseMove, true);
+        };
     }, [isLeftPaneCollapsed, isLeftPaneHovering]);
     if (!tauriReady) {
         return (
@@ -123,6 +129,7 @@ const AppContent = () => {
                                                             </div>
                                                         </div>
                                                         <MobileNav />
+                                                        <AIAssistant />
                                                     </div>
                                                 </QuickActionProvider>
                                             </SessionProvider>
@@ -145,7 +152,9 @@ export default () => {
             <DndProvider backend={HTML5Backend}>
                 <ToastProvider>
                     <UserProvider>
-                        <AppContent />
+                        <TransferProvider>
+                            <AppContent />
+                        </TransferProvider>
                     </UserProvider>
                 </ToastProvider>
             </DndProvider>

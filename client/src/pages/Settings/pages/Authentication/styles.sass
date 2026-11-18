@@ -1,4 +1,5 @@
 @use "@/common/styles/colors"
+@use "@/common/components/SettingsDialog/page" as settings-page
 @use "@/common/styles/breakpoints"
 
 .authentication-page
@@ -160,3 +161,17 @@
 
         &.danger:hover
           color: colors.$error
+
++settings-page.scope
+  .system-badge
+    background: colors.$gray
+    color: colors.$subtext
+    border: none
+    font-weight: 600
+
+
+  .sub-label
+    font-size: 0.8rem
+    font-weight: 500
+    line-height: 1.45
+    color: colors.$subtext

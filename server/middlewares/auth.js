@@ -1,6 +1,20 @@
 const Account = require("../models/Account");
 const Session = require("../models/Session");
+const { findActiveSession } = require("../utils/loginSession");
 const { isApiKeyToken, validateApiKey } = require("../controllers/apiKey");
+const { isGuestExpired, isDemoGuest, isBlockedForGuest } = require("../utils/demoMode");
+
+const rejectDemoGuest = (req, res, user) => {
+    if (isGuestExpired(user)) {
+        res.status(401).json({ message: "Your demo session has expired" });
+        return true;
+    }
+    if (isDemoGuest(user) && isBlockedForGuest(req.method, req.originalUrl)) {
+        res.status(403).json({ code: 403, message: "This action is not available in the demo" });
+        return true;
+    }
+    return false;
+};
 
 module.exports.authenticate = async (req, res, next) => {
     const authHeader = req.header("authorization");
@@ -23,7 +37,7 @@ module.exports.authenticate = async (req, res, next) => {
         return next();
     }
 
-    req.session = await Session.findOne({ where: { token } });
+    req.session = await findActiveSession(token);
 
     if (req.session === null)
         return res.status(401).json({ message: "The provided token is not valid" });
@@ -34,6 +48,8 @@ module.exports.authenticate = async (req, res, next) => {
     if (req.user === null)
         return res.status(401).json({ message: "The account associated to the token is not registered" });
 
+    if (rejectDemoGuest(req, res, req.user)) return;
+
     next();
 };
 
@@ -41,11 +57,12 @@ module.exports.authenticateQuery = async (req, res, next) => {
     const token = req.query.token;
     if (!token) return res.status(401).json({ message: "Token required" });
 
-    const session = await Session.findOne({ where: { token } });
+    const session = await findActiveSession(token);
     if (!session) return res.status(401).json({ message: "Invalid token" });
 
     const user = await Account.findByPk(session.accountId);
     if (!user) return res.status(401).json({ message: "Invalid token" });
+    if (rejectDemoGuest(req, res, user)) return;
 
     req.user = user;
     req.session = session;
@@ -56,7 +73,7 @@ module.exports.authenticateDownload = async (req, res, next) => {
     const token = req.query.token;
     if (!token) return res.status(401).json({ message: "Token required" });
     
-    const session = await Session.findOne({ where: { token } });
+    const session = await findActiveSession(token);
     if (!session) return res.status(401).json({ message: "Invalid token" });
     
     const user = await Account.findByPk(session.accountId);

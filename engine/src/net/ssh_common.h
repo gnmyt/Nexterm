@@ -5,6 +5,8 @@
 #include <pthread.h>
 #include <stdint.h>
 
+#include "trust.h"
+
 #define MAX_JUMP_HOSTS 8
 
 typedef struct {
@@ -26,11 +28,12 @@ typedef struct {
     int count;
 } jump_chain_t;
 
-int nexterm_ssh_setup(const char* host, uint16_t port,
+int nexterm_ssh_setup(const char* host, uint16_t port, const nexterm_trust_t* trust,
                       int* out_sock, LIBSSH2_SESSION** out_session);
 
 int nexterm_ssh_setup_with_jumphosts(const char* target_host, uint16_t target_port,
                                      const jump_host_t* jump_hosts, int jump_count,
+                                     const nexterm_trust_t* trust,
                                      int* out_sock, LIBSSH2_SESSION** out_session,
                                      jump_chain_t* chain);
 

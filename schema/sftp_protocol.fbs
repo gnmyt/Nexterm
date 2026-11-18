@@ -18,6 +18,8 @@ enum SftpMsgType : ubyte {
     Exec = 13,
     SearchDirs = 14,
     Thumbnail = 15,
+    CancelRead = 16,
+    WriteAbort = 17,
 
     DirList = 50,
     StatResult = 51,

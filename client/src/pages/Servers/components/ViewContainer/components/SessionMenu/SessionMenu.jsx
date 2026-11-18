@@ -13,10 +13,12 @@ import {
     mdiMagnifyMinusOutline,
     mdiMagnifyPlusOutline,
     mdiMagnifyScan,
+    mdiMonitor,
     mdiNoteEditOutline,
     mdiOpenInNew,
     mdiPencil,
     mdiRefresh,
+    mdiRestore,
     mdiShareVariant,
     mdiSleep,
     mdiViewSplitHorizontal,
@@ -25,13 +27,16 @@ import {
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator } from "@/common/components/ContextMenu";
 import { postRequest, deleteRequest, patchRequest } from "@/common/utils/RequestUtil";
 import { getBaseUrl } from "@/common/utils/ConnectionUtil.js";
+import { AUTO_SCALE, SCALE_STEPS } from "@/common/utils/displayScale.js";
 
-export const RemoteDesktopMenuItems = ({ controls, onOpenShortcuts }) => {
+export const RemoteDesktopMenuItems = ({ controls, onOpenShortcuts, viewOnly = false }) => {
     const { t } = useTranslation();
 
     return (
         <>
-            <ContextMenuItem icon={mdiKeyboard} label={t("servers.tabs.contextMenu.sendShortcut")} onClick={onOpenShortcuts} />
+            {!viewOnly && (
+                <ContextMenuItem icon={mdiKeyboard} label={t("servers.tabs.contextMenu.sendShortcut")} onClick={onOpenShortcuts} />
+            )}
             <ContextMenuItem icon={mdiMagnifyScan} label={t("servers.tabs.contextMenu.zoom", { zoom: Math.round(controls.zoom * 100) })}>
                 <ContextMenuItem icon={mdiMagnifyPlusOutline} label={t("servers.toolbar.zoomIn")}
                                  disabled={controls.zoom >= controls.maxZoom} onClick={controls.zoomIn} />
@@ -40,6 +45,20 @@ export const RemoteDesktopMenuItems = ({ controls, onOpenShortcuts }) => {
                 <ContextMenuItem icon={mdiMagnifyScan} label={t("servers.tabs.contextMenu.zoomReset")}
                                  disabled={controls.zoom <= controls.minZoom} onClick={controls.resetZoom} />
             </ContextMenuItem>
+            {!viewOnly && controls.displayScale && (
+                <ContextMenuItem icon={mdiMonitor} label={t("servers.tabs.contextMenu.displayScale", { scale: controls.displayScale.effective })}>
+                    <ContextMenuItem label={t("servers.tabs.contextMenu.displayScaleAuto", { scale: controls.displayScale.deviceScale })}
+                                     checked={controls.displayScale.setting === AUTO_SCALE}
+                                     onClick={() => controls.displayScale.set(AUTO_SCALE)} />
+                    {SCALE_STEPS.map(step => (
+                        <ContextMenuItem key={step} label={`${step}%`} checked={controls.displayScale.setting === step}
+                                         onClick={() => controls.displayScale.set(step)} />
+                    ))}
+                    <ContextMenuSeparator />
+                    <ContextMenuItem icon={mdiRestore} label={t("servers.tabs.contextMenu.displayScaleReset")}
+                                     disabled={!controls.displayScale.overridden} onClick={() => controls.displayScale.set(null)} />
+                </ContextMenuItem>
+            )}
         </>
     );
 };
@@ -70,12 +89,13 @@ export const SessionMenu = ({
     const server = session?.server;
     const isNotes = session?.type === "notes";
     const isJoined = !!session?.isJoined;
+    const isAutomated = session?.automated;
     const isTerminal = !isNotes && !session?.scriptId && (session?.type || server?.renderer) === "terminal";
     const canPopOut = !!session && !session.scriptId && session.type !== "sftp" && !isNotes && !isJoined;
     const canShare = canPopOut;
-    const canHibernate = !isNotes && !isJoined;
-    const canDuplicate = !isNotes && !isJoined;
-    const canReconnect = !!session && !isNotes && !isJoined;
+    const canHibernate = !isNotes && !isJoined && !isAutomated;
+    const canDuplicate = !isNotes && !isJoined && !isAutomated;
+    const canReconnect = !!session && !isNotes && !isJoined && !isAutomated;
     const canOpenNotes = !isNotes && !isJoined && !!server?.id && !session?.scriptId;
     const isSharing = !!session?.shareId;
     const showBroadcast = isTerminal && isActive && layoutMode !== "single";
@@ -97,11 +117,11 @@ export const SessionMenu = ({
                 <>
                     {controls && isActive && (
                         <>
-                            <RemoteDesktopMenuItems controls={controls} onOpenShortcuts={onOpenShortcuts} />
+                            <RemoteDesktopMenuItems controls={controls} onOpenShortcuts={onOpenShortcuts} viewOnly={isAutomated} />
                             <ContextMenuSeparator />
                         </>
                     )}
-                    {isTerminal && isActive && (
+                    {isTerminal && isActive && !isAutomated && (
                         <>
                             <ContextMenuItem icon={mdiCodeBraces} label={t("servers.terminalActions.snippets")} onClick={onOpenSnippets} />
                             {showBroadcast && (
@@ -129,7 +149,11 @@ export const SessionMenu = ({
                                          onClick={() => onPopOut(session.id)} />
                     )}
                     <ContextMenuSeparator />
-                    {canShare && !isSharing && (
+                    {canShare && !isSharing && isAutomated && (
+                        <ContextMenuItem icon={mdiShareVariant} label={t("servers.tabs.contextMenu.startSharing")}
+                                         onClick={() => handleShare(false)} />
+                    )}
+                    {canShare && !isSharing && !isAutomated && (
                         <ContextMenuItem icon={mdiShareVariant} label={t("servers.tabs.contextMenu.startSharing")}>
                             <ContextMenuItem icon={mdiEye} label={t("servers.tabs.contextMenu.readOnly")} onClick={() => handleShare(false)} />
                             <ContextMenuItem icon={mdiPencil} label={t("servers.tabs.contextMenu.readWrite")} onClick={() => handleShare(true)} />
@@ -138,12 +162,12 @@ export const SessionMenu = ({
                     {canShare && isSharing && (
                         <>
                             <ContextMenuItem icon={mdiLinkVariant} label={t("servers.tabs.contextMenu.copyShareLink")} onClick={handleCopyLink} />
-                            <ContextMenuItem icon={mdiShareVariant} label={t("servers.tabs.contextMenu.changePermissions")}>
+                            {!isAutomated && <ContextMenuItem icon={mdiShareVariant} label={t("servers.tabs.contextMenu.changePermissions")}>
                                 <ContextMenuItem icon={mdiEye} label={t("servers.tabs.contextMenu.readOnly")}
                                                  checked={!session.shareWritable} onClick={() => handlePermissionChange(false)} />
                                 <ContextMenuItem icon={mdiPencil} label={t("servers.tabs.contextMenu.readWrite")}
                                                  checked={session.shareWritable} onClick={() => handlePermissionChange(true)} />
-                            </ContextMenuItem>
+                            </ContextMenuItem>}
                             <ContextMenuItem icon={mdiCloseCircle} label={t("servers.tabs.contextMenu.stopSharing")} onClick={handleStopSharing} danger />
                         </>
                     )}

@@ -1,0 +1,43 @@
+name: Upload Release Asset
+description: Uploads a single file to an existing GitHub release
+
+inputs:
+  upload_url:
+    description: Upload URL of the release
+    required: true
+  asset_path:
+    description: Path of the file to upload
+    required: true
+  asset_name:
+    description: Name of the asset on the release
+    required: true
+  asset_content_type:
+    description: Content type of the asset
+    required: false
+    default: application/octet-stream
+  token:
+    description: Token used for the upload
+    required: false
+    default: ${{ github.token }}
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        UPLOAD_URL: ${{ inputs.upload_url }}
+        ASSET_PATH: ${{ inputs.asset_path }}
+        ASSET_NAME: ${{ inputs.asset_name }}
+        ASSET_CONTENT_TYPE: ${{ inputs.asset_content_type }}
+      run: |
+        if [ ! -f "$ASSET_PATH" ]; then
+          echo "::error::Asset not found: $ASSET_PATH"
+          exit 1
+        fi
+        curl --fail-with-body -sS -X POST \
+          -H "Authorization: Bearer $GH_TOKEN" \
+          -H "Accept: application/vnd.github+json" \
+          -H "Content-Type: $ASSET_CONTENT_TYPE" \
+          -T "$ASSET_PATH" \
+          "${UPLOAD_URL%\{*}?name=${ASSET_NAME}"

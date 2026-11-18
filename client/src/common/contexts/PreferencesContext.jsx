@@ -6,7 +6,7 @@ const PreferencesContext = createContext({});
 export const usePreferences = () => useContext(PreferencesContext);
 
 const OVERRIDE_KEY_PREFIX = "pref-override-";
-const GROUPS = ["terminal.font", "terminal.cursor", "terminal.input", "terminal.theme", "appearance", "files", "general"];
+const GROUPS = ["terminal.font", "terminal.cursor", "terminal.input", "terminal.theme", "appearance", "files", "remoteDesktop", "general"];
 
 const PATH_TO_GROUP = {
     "terminal.fontFamily": "terminal.font", "terminal.fontSize": "terminal.font",
@@ -17,7 +17,8 @@ const PATH_TO_GROUP = {
     "terminal.theme": "terminal.theme",
     "theme.mode": "appearance", "theme.accentColor": "appearance", "theme.uiScale": "appearance",
     "files.showThumbnails": "files", "files.defaultViewMode": "files", "files.showHiddenFiles": "files",
-    "files.confirmBeforeDelete": "files", "files.dragDropAction": "files",
+    "files.confirmBeforeDelete": "files", "files.dragDropAction": "files", "files.openOnSingleClick": "files",
+    "remoteDesktop.displayScale": "remoteDesktop",
     "general.language": "general",
 };
 
@@ -511,15 +512,20 @@ export const PreferencesProvider = ({ children, user, refreshUser }) => {
     const showHiddenFiles = get("files.showHiddenFiles", false);
     const confirmBeforeDelete = get("files.confirmBeforeDelete", true);
     const dragDropAction = get("files.dragDropAction", "ask");
+    const openOnSingleClick = get("files.openOnSingleClick", false);
 
     const setShowThumbnails = useCallback((v) => set("files.showThumbnails", v), [set]);
     const setDefaultViewMode = useCallback((v) => set("files.defaultViewMode", v), [set]);
     const setShowHiddenFiles = useCallback((v) => set("files.showHiddenFiles", v), [set]);
     const setConfirmBeforeDelete = useCallback((v) => set("files.confirmBeforeDelete", v), [set]);
     const setDragDropAction = useCallback((v) => set("files.dragDropAction", v), [set]);
+    const setOpenOnSingleClick = useCallback((v) => set("files.openOnSingleClick", v), [set]);
     const toggleThumbnails = useCallback(() => setShowThumbnails(!showThumbnails), [setShowThumbnails, showThumbnails]);
     const toggleHiddenFiles = useCallback(() => setShowHiddenFiles(!showHiddenFiles), [setShowHiddenFiles, showHiddenFiles]);
     const toggleConfirmBeforeDelete = useCallback(() => setConfirmBeforeDelete(!confirmBeforeDelete), [setConfirmBeforeDelete, confirmBeforeDelete]);
+
+    const defaultDisplayScale = get("remoteDesktop.displayScale", "auto");
+    const setDefaultDisplayScale = useCallback((v) => set("remoteDesktop.displayScale", v), [set]);
 
     const language = get("general.language", null);
     const setLanguage = useCallback((lang) => set("general.language", lang), [set]);
@@ -548,6 +554,8 @@ export const PreferencesProvider = ({ children, user, refreshUser }) => {
             showHiddenFiles, setShowHiddenFiles, toggleHiddenFiles,
             confirmBeforeDelete, setConfirmBeforeDelete, toggleConfirmBeforeDelete,
             dragDropAction, setDragDropAction,
+            defaultDisplayScale, setDefaultDisplayScale,
+            openOnSingleClick, setOpenOnSingleClick,
             language, setLanguage,
         }}>
             {children}

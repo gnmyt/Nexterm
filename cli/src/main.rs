@@ -30,11 +30,15 @@ enum Commands {
     /// Connect to a server
     Connect {
         target: String,
+        #[arg(short, long)]
+        reason: Option<String>,
         #[arg(last = true)] command: Vec<String>,
     },
     /// Fuzzy search servers and connect
     Search {
         query: String,
+        #[arg(short, long)]
+        reason: Option<String>,
         #[arg(last = true)] command: Vec<String>,
     },
     /// Show servers and select one to connect
@@ -74,13 +78,13 @@ async fn main() -> anyhow::Result<()> {
         Commands::Login => auth::login().await,
         Commands::Logout => auth::logout(),
         Commands::Ls { folder, tag, json } => entries::list(folder, tag, json).await,
-        Commands::Connect { target, command } => {
-            if command.is_empty() { connect::interactive(&target).await }
-            else { connect::exec(&target, &command.join(" ")).await }
+        Commands::Connect { target, reason, command } => {
+            if command.is_empty() { connect::interactive(&target, reason).await }
+            else { connect::exec(&target, &command.join(" "), reason).await }
         }
-        Commands::Search { query, command } => {
+        Commands::Search { query, reason, command } => {
             let cmd = if command.is_empty() { None } else { Some(command.join(" ")) };
-            entries::search(&query, cmd.as_deref()).await
+            entries::search(&query, cmd.as_deref(), reason).await
         }
         Commands::Recent => entries::recent().await,
         Commands::Forward { target, local, remote, port } => {

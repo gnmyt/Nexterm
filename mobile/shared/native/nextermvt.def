@@ -1,0 +1,9 @@
+package = dev.gnm.nexterm.terminal.cinterop
+headers = nexterm_vt.h
+headerFilter = nexterm_vt.h
+staticLibraries = libghostty-vt-fat.a
+compilerOpts = -std=c11
+
+---
+
+#include "nexterm_vt.c"

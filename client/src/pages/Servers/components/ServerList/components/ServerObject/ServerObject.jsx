@@ -10,14 +10,15 @@ import { getSessionOwnerLabel } from "@/common/utils/avatar.js";
 import { useTranslation } from "react-i18next";
 import { useContext, useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { patchRequest } from "@/common/utils/RequestUtil.js";
 import { DropIndicator } from "../DropIndicator";
+import { useMove } from "../../useMove.js";
 
 export const ServerObject = ({ id, name, position, folderId, organizationId, nestedLevel, icon, type, connectToServer, status, tags = [], hibernatedSessionCount = 0 }) => {
-    const { loadServers, getServerById } = useContext(ServerContext);
+    const { getServerById } = useContext(ServerContext);
     const { getLiveSessionsForEntry } = useLiveSessions();
     const { t } = useTranslation();
     const [dropPlacement, setDropPlacement] = useState(null);
+    const move = useMove();
     const elementRef = useRef(null);
 
     const isIntegrationEntry = Boolean(type?.startsWith("pve-"));
@@ -48,14 +49,12 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
             if (item.id === id) return;
             
             try {
-                await patchRequest(`entries/${item.id}/reposition`, {
+                await move(`entries/${item.id}/reposition`, {
                     targetId: id,
                     placement: dropPlacement || 'after',
                     folderId: folderId,
                     organizationId: organizationId,
                 });
-                
-                loadServers();
             } catch (error) {
                 console.error("Failed to reposition entry", error);
             }
@@ -89,7 +88,7 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
         ? (server?.notes || "").split(/\r?\n/)[0].trim()
         : "";
 
-    return (
+    return <>
         <div 
             className={"server-object"}
             style={{ paddingLeft: `${15 + (nestedLevel * 15)}px`, opacity, position: 'relative' }} 
@@ -133,5 +132,5 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
             )}
             <DropIndicator show={isOver && dropPlacement === 'after'} placement="after" />
         </div>
-    );
+    </>;
 };

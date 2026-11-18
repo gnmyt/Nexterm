@@ -58,39 +58,6 @@
       @media (max-width: breakpoints.$mobile)
         font-size: 0.8rem
 
-  .textarea-container
-    position: relative
-    width: 100%
-
-    .custom-textarea
-      width: 100%
-      padding: 0.8rem
-      border-radius: 0.7rem
-      border: 1px solid colors.$gray
-      background-color: colors.$lighter-background
-      color: colors.$white
-      font-family: 'Consolas', 'Monaco', 'Courier New', monospace
-      font-size: 0.9rem
-      resize: vertical
-      box-sizing: border-box
-      min-height: 150px
-      transition: border-color 0.1s ease, background-color 0.1s ease
-      line-height: 1.5
-
-      @media (max-width: breakpoints.$mobile)
-        min-height: 120px
-        padding: 0.625rem
-        font-size: 0.85rem
-
-      &:focus
-        border-color: colors.$primary
-        background-color: colors.$dark-gray
-        outline: none
-
-      &::placeholder
-        color: colors.$subtext
-        opacity: 0.7
-
   .dialog-actions
     display: flex
     justify-content: flex-end

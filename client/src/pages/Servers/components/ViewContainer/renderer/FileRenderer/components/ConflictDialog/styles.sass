@@ -1,0 +1,64 @@
+@use "@/common/styles/colors"
+
+.conflict-dialog
+  display: flex
+  flex-direction: column
+  gap: 1rem
+  width: 26rem
+  max-width: 100%
+
+  .conflict-header
+    display: flex
+    align-items: center
+    gap: 0.75rem
+
+    svg
+      width: 1.5rem
+      height: 1.5rem
+      color: colors.$warning
+      flex-shrink: 0
+
+    h2
+      margin: 0
+      font-size: 1.1rem
+
+  p
+    margin: 0
+    font-size: 0.9rem
+    font-weight: 500
+    color: colors.$subtext
+
+  .conflict-list
+    margin: 0
+    padding: 0.5rem 0.75rem
+    list-style: none
+    display: flex
+    flex-direction: column
+    gap: 0.25rem
+    max-height: 10rem
+    overflow-y: auto
+    background-color: colors.$dark-gray
+    border: 1px solid colors.$gray
+    border-radius: 0.5rem
+    font-size: 0.8125rem
+    font-weight: 500
+
+    li
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
+
+    .conflict-more
+      color: colors.$subtext
+
+  .btn-area
+    display: flex
+    flex-wrap: wrap
+    gap: 0.5rem
+    justify-content: flex-end
+
+    .btn
+      padding: 0.6rem 0.9rem
+
+      h3
+        font-size: 0.9rem

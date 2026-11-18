@@ -2,6 +2,7 @@
 #include "control_plane.h"
 #include "io.h"
 #include "log.h"
+#include "trust.h"
 #include "session.h"
 
 extern nexterm_session_manager_t g_session_manager;
@@ -311,8 +312,8 @@ static void* websocket_session_thread(void* arg) {
         return NULL;
     }
 
-    const char* insecure_str = nexterm_session_get_param(session, "ws_insecure");
-    bool insecure = insecure_str && strcmp(insecure_str, "true") == 0;
+    nexterm_trust_t trust;
+    nexterm_trust_from_session(session, &trust);
 
     char host[256], port_str[8], path[2048];
     bool use_tls;
@@ -352,8 +353,10 @@ static void* websocket_session_thread(void* arg) {
             return NULL;
         }
 
-        if (insecure)
-            SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_NONE, NULL);
+        nexterm_tls_trust_t tls_trust = {
+            .trust = &trust, .host = host, .port = (uint16_t)atoi(port_str),
+        };
+        nexterm_trust_install_tls(ssl_ctx, &tls_trust);
 
         conn.ssl = SSL_new(ssl_ctx);
         SSL_set_fd(conn.ssl, sock);

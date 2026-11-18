@@ -1,40 +1,29 @@
 const { Router } = require("express");
+const Joi = require("joi");
+const { route } = require("../utils/route");
+const { objectList } = require("../validations/common");
 const { getServerMonitoring, getAllServersMonitoring, getIntegrationMonitoring, getMonitoringSettings, updateMonitoringSettings } = require("../controllers/monitoring");
 const { requirePermission } = require("../middlewares/permission");
 const { Permission } = require("../permissions/registry");
-const { validateSchema } = require("../utils/schema");
 const { updateMonitoringSettingsValidation } = require("../validations/monitoring");
 
 const app = Router();
 
-/**
- * GET /monitoring
- * @summary Get All Servers Monitoring
- * @description Retrieves monitoring data for all servers accessible by the authenticated user, including uptime status and performance metrics.
- * @tags Monitoring
- * @produces application/json
- * @security BearerAuth
- * @return {array} 200 - Monitoring data for all user servers
- * @return {object} 403 - Access denied
- */
-app.get("/", async (req, res) => {
-    const result = await getAllServersMonitoring(req.user.id);
+app.get("/", route({
+    summary: "Get all servers monitoring",
+    description: "Retrieves monitoring data for all servers accessible by the authenticated user, including uptime status and performance metrics.",
+    returns: objectList,
+}), async (req, res) => {
+    const result = await getAllServersMonitoring(req.user.id, { includeHistory: true });
     if (result?.code) return res.status(result.code).json(result);
 
     res.json(result);
 });
 
-/**
- * GET /monitoring/settings/global
- * @summary Get Monitoring Settings
- * @description Retrieves the global monitoring configuration settings. Admin access required.
- * @tags Monitoring
- * @produces application/json
- * @security BearerAuth
- * @return {object} 200 - Monitoring settings configuration
- * @return {object} 403 - Admin access required
- */
-app.get("/settings/global", requirePermission(Permission.SETTINGS_MONITORING), async (req, res) => {
+app.get("/settings/global", requirePermission(Permission.SETTINGS_MONITORING), route({
+    summary: "Get monitoring settings",
+    description: "Retrieves the global monitoring configuration settings.",
+}), async (req, res) => {
     try {
         const settings = await getMonitoringSettings();
         if (settings?.code) return res.status(settings.code).json(settings);
@@ -44,20 +33,12 @@ app.get("/settings/global", requirePermission(Permission.SETTINGS_MONITORING), a
     }
 });
 
-/**
- * PATCH /monitoring/settings/global
- * @summary Update Monitoring Settings
- * @description Updates global monitoring configuration settings. Admin access required.
- * @tags Monitoring
- * @produces application/json
- * @security BearerAuth
- * @param {UpdateMonitoringSettings} request.body.required - Updated monitoring settings
- * @return {object} 200 - Updated monitoring settings
- * @return {object} 403 - Admin access required
- */
-app.patch("/settings/global", requirePermission(Permission.SETTINGS_MONITORING), async (req, res) => {
+app.patch("/settings/global", requirePermission(Permission.SETTINGS_MONITORING), route({
+    summary: "Update monitoring settings",
+    description: "Updates global monitoring configuration settings.",
+    body: updateMonitoringSettingsValidation,
+}), async (req, res) => {
     try {
-        if (validateSchema(res, updateMonitoringSettingsValidation, req.body)) return;
         
         const updatedSettings = await updateMonitoringSettings(req.body);
         if (updatedSettings?.code) return res.status(updatedSettings.code).json(updatedSettings);
@@ -67,19 +48,13 @@ app.patch("/settings/global", requirePermission(Permission.SETTINGS_MONITORING),
     }
 });
 
-/**
- * GET /monitoring/integration/{integrationId}
- * @summary Get Integration Monitoring
- * @description Retrieves monitoring data for a Proxmox integration.
- * @tags Monitoring
- * @produces application/json
- * @security BearerAuth
- * @param {string} integrationId.path.required - The unique identifier of the integration
- * @param {string} timeRange.query - Time range for monitoring data (1h, 6h, 24h) - defaults to 1h
- * @return {object} 200 - Integration monitoring data
- * @return {object} 404 - Integration not found
- */
-app.get("/integration/:integrationId", async (req, res) => {
+app.get("/integration/:integrationId", route({
+    summary: "Get integration monitoring",
+    description: "Retrieves monitoring data for a Proxmox integration.",
+    query: Joi.object({
+        timeRange: Joi.string().allow("").description("Time range for monitoring data (1h, 6h, 24h) - defaults to 1h"),
+    }),
+}), async (req, res) => {
     const timeRange = req.query.timeRange || "1h";
     const result = await getIntegrationMonitoring(req.user.id, req.params.integrationId, timeRange);
     if (result?.code) return res.status(result.code).json(result);
@@ -87,19 +62,13 @@ app.get("/integration/:integrationId", async (req, res) => {
     res.json(result);
 });
 
-/**
- * GET /monitoring/{serverId}
- * @summary Get Server Monitoring
- * @description Retrieves detailed monitoring data for a specific server including historical performance metrics, uptime statistics, and health status over a specified time range.
- * @tags Monitoring
- * @produces application/json
- * @security BearerAuth
- * @param {string} serverId.path.required - The unique identifier of the server
- * @param {string} timeRange.query - Time range for monitoring data (e.g., 1h, 24h, 7d) - defaults to 1h
- * @return {object} 200 - Server monitoring data
- * @return {object} 404 - Server not found
- */
-app.get("/:serverId", async (req, res) => {
+app.get("/:serverId", route({
+    summary: "Get server monitoring",
+    description: "Retrieves detailed monitoring data for a specific server including historical performance metrics, uptime statistics, and health status over a specified time range.",
+    query: Joi.object({
+        timeRange: Joi.string().allow("").description("Time range for monitoring data (e.g., 1h, 24h, 7d) - defaults to 1h"),
+    }),
+}), async (req, res) => {
     const timeRange = req.query.timeRange || "1h";
     const result = await getServerMonitoring(req.user.id, req.params.serverId, timeRange);
     if (result?.code) return res.status(result.code).json(result);

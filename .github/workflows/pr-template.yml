@@ -23,7 +23,15 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
         run: |
+          if [ "$HEAD_REPO" = "$REPO" ] && [[ "$HEAD_REF" == l10n_* ]]; then
+            echo "Crowdin sync pull request, skipping the template check."
+            echo "problems=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
           strip() { tr -d '\r' | sed -e 's/<!--.*-->//g' -e '/<!--/,/-->/d'; }
 
           printf '%s' "$BODY" | strip > body.md

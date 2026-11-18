@@ -26,14 +26,32 @@ const filesSchema = Joi.object({
     dragDropAction: Joi.string().valid('ask', 'copy', 'move'),
 }).unknown(false);
 
+const remoteDesktopSchema = Joi.object({
+    displayScale: Joi.alternatives().try(
+        Joi.string().valid('auto'),
+        Joi.number().valid(100, 125, 150, 175, 200, 225, 250, 300),
+    ),
+}).unknown(false);
+
 const generalSchema = Joi.object({
     language: Joi.string().max(10),
     sidebarCollapsed: Joi.boolean(),
+}).unknown(false);
+
+const sessionsSchema = Joi.object({
+    showAgentSessions: Joi.boolean(),
+}).unknown(false);
+
+const securitySchema = Joi.object({
+    ignoreCertificateWarnings: Joi.boolean(),
 }).unknown(false);
 
 module.exports.preferencesValidation = Joi.object({
     terminal: terminalSchema,
     theme: themeSchema,
     files: filesSchema,
+    remoteDesktop: remoteDesktopSchema,
     general: generalSchema,
+    sessions: sessionsSchema,
+    security: securitySchema,
 }).unknown(false);

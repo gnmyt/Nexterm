@@ -1076,8 +1076,11 @@ int nexterm_web_prepare(nexterm_session_t* session,
     jump_host_t jump_hosts[MAX_JUMP_HOSTS];
     int jump_count = nexterm_extract_jump_hosts(session, jump_hosts, MAX_JUMP_HOSTS);
 
+    nexterm_trust_t trust;
+    nexterm_trust_from_session(session, &trust);
+
     if (nexterm_ssh_setup_with_jumphosts(session->host, session->port,
-                                         jump_hosts, jump_count,
+                                         jump_hosts, jump_count, &trust,
                                          &ctx->ssh_sock, &ctx->ssh,
                                          &ctx->jump_chain) != 0) {
         nexterm_cp_send_session_result(cp, session->session_id, false,

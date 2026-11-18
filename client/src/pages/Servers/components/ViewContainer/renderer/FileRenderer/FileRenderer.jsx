@@ -6,25 +6,35 @@ import { useToast } from "@/common/contexts/ToastContext.jsx";
 import useWebSocket from "react-use-websocket";
 import ActionBar from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/ActionBar";
 import FileList from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/FileList";
+import TransferPanel from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/TransferPanel";
+import StatusBar from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/StatusBar";
+import ConflictDialog from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer/components/ConflictDialog";
 import "./styles.sass";
 import Icon from "@mdi/react";
 import { mdiCloudUpload } from "@mdi/js";
 import { getWebSocketUrl, getBaseUrl } from "@/common/utils/ConnectionUtil.js";
-import { uploadFile as uploadFileRequest, tauriDownload } from "@/common/utils/RequestUtil.js";
-import { isTauri } from "@/common/utils/TauriUtil.js";
+import { useTransfers, TRANSFER_OPERATIONS } from "@/common/contexts/TransferContext.jsx";
 
 const OPERATIONS = {
     READY: 0x0, LIST_FILES: 0x1, CREATE_FILE: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6,
     DELETE_FOLDER: 0x7, RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA,
     RESOLVE_SYMLINK: 0xB, MOVE_FILES: 0xC, COPY_FILES: 0xD, CHMOD: 0xE,
-    STAT: 0xF, CHECKSUM: 0x10, FOLDER_SIZE: 0x11, PATH_SYNC: 0x12,
+    STAT: 0xF, CHECKSUM: 0x10, FOLDER_SIZE: 0x11, PATH_SYNC: 0x12, CHECK_EXISTS: 0x15,
+    ...TRANSFER_OPERATIONS,
 };
 
 const REFRESH_DEBOUNCE = 150;
 
 const joinPath = (...parts) => parts.join("/").replace(/\/+/g, "/");
 
-const createUploadStats = () => ({ uploaded: 0, failed: 0, sentBytes: 0, totalBytes: 0, firstError: null, lastName: "" });
+const baseName = (path) => path.split("/").filter(Boolean).pop() ?? "";
+
+const withoutSelfTargets = (sources, destination) => sources.filter(source => joinPath(destination, baseName(source)) !== joinPath(source));
+
+const renameCandidate = (name, attempt) => {
+    const [, stem = name, extension = ""] = name.match(/^(.+?)((?:\.tar)?\.[^.]*)$/) ?? [];
+    return `${stem} (${attempt})${extension}`;
+};
 
 const readAllEntries = (reader) => new Promise((resolve, reject) => {
     const all = [];
@@ -72,12 +82,11 @@ const collectDroppedEntries = async (entries, targetDir) => {
 export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors, isActive, onOpenTerminal }) => {
     const { t } = useTranslation();
     const { sessionToken } = useContext(UserContext);
-    const { defaultViewMode } = usePreferences();
+    const { defaultViewMode, showHiddenFiles, toggleHiddenFiles } = usePreferences();
     const { sendToast } = useToast();
+    const { startDownload, startMultiDownload, queueUploads, startCrossSessionTransfer, applyServerProgress, registerSession } = useTransfers();
 
     const [dragging, setDragging] = useState(false);
-    const [uploadProgress, setUploadProgress] = useState(0);
-    const [isUploading, setIsUploading] = useState(false);
     const [directory, setDirectory] = useState("/");
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -92,132 +101,124 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchResultCount, setSearchResultCount] = useState(0);
     const [capabilities, setCapabilities] = useState({ shell: true, terminal: true });
+    const [selectedCount, setSelectedCount] = useState(0);
+    const [homePath, setHomePath] = useState(null);
+    const [conflict, setConflict] = useState(null);
+
+    const handleSelectionChange = useCallback((selectedItems) => setSelectedCount(selectedItems.length), []);
+
+    const visibleItems = showHiddenFiles ? items : items.filter(item => !item.name.startsWith("."));
+    const folderCount = visibleItems.filter(item => item.type === "folder").length;
+    const fileCount = visibleItems.length - folderCount;
+    const hiddenCount = items.length - visibleItems.length;
 
     const directoryRef = useRef(directory);
     const skipNextPathSync = useRef(false);
     const symlinkCallbacks = useRef([]);
+    const existsCallbacks = useRef(new Map());
+    const existsRequestId = useRef(0);
+    const conflictQueue = useRef(Promise.resolve());
     const dropZoneRef = useRef(null);
-    const uploadQueueRef = useRef([]);
     const reconnectAttemptsRef = useRef(0);
     const fileListRef = useRef(null);
     const propertiesHandlerRef = useRef(null);
-    const uploadStatsRef = useRef(createUploadStats());
+    const treeHandlerRef = useRef(null);
     const refreshTimerRef = useRef(null);
+    const sessionHandlersRef = useRef({ send: () => false, refresh: () => {} });
 
     const wsUrl = getWebSocketUrl("/api/ws/sftp", { sessionToken, sessionId: session.id });
+    const transferTarget = () => ({ sessionId: session.id, sessionToken, baseUrl: getBaseUrl() });
 
-    const downloadFile = async (path) => {
-        const baseUrl = getBaseUrl();
-        const fileName = path.split("/").pop();
-        const url = `${baseUrl}/api/entries/sftp?sessionId=${session.id}&path=${path}&sessionToken=${sessionToken}`;
-        
-        if (isTauri()) {
-            try {
-                await tauriDownload(url, fileName);
-                sendToast(t("common.success"), t("servers.fileManager.toast.downloaded", { name: fileName }));
-            } catch (e) {
-                if (e) sendToast(t("common.error"), e.message);
-            }
-            return;
-        }
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    const downloadFile = (path) => startDownload({ ...transferTarget(), path });
+
+    const downloadMultipleFiles = (paths) => startMultiDownload({ ...transferTarget(), paths });
+
+    const askConflict = (kind, names) => {
+        const answer = conflictQueue.current.then(() => new Promise(resolve => setConflict({ kind, names, resolve })));
+        conflictQueue.current = answer;
+        return answer;
     };
 
-    const downloadMultipleFiles = async (paths) => {
-        if (!paths?.length) return;
-        const baseUrl = getBaseUrl();
-        const url = `${baseUrl}/api/entries/sftp/multi?sessionId=${session.id}&sessionToken=${sessionToken}`;
-        const defaultFileName = paths.length === 1 ? `${paths[0].split("/").pop()}.zip` : "files.zip";
-        
-        if (isTauri()) {
-            try {
-                await tauriDownload(url, defaultFileName, {
-                    filters: [{ name: "ZIP Archive", extensions: ["zip"] }],
-                    fetchOptions: { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ paths }) }
-                });
-                sendToast(t("common.success"), t("servers.fileManager.toast.downloadingItems", { count: paths.length }));
-            } catch (e) {
-                if (e) sendToast(t("common.error"), e.message);
-            }
-            return;
-        }
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action = url;
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = "paths";
-        input.value = JSON.stringify(paths);
-        form.appendChild(input);
-        document.body.appendChild(form);
-        form.submit();
-        document.body.removeChild(form);
-        sendToast(t("common.success"), t("servers.fileManager.toast.downloadingItems", { count: paths.length }));
+    const settleConflict = (choice) => {
+        if (!conflict || conflict.settled) return;
+        conflict.resolve(choice);
+        setConflict({ ...conflict, settled: true });
     };
 
-    const uploadFileHttp = async (file, targetDir) => {
-        const filePath = joinPath(targetDir, file.name);
-        const stats = uploadStatsRef.current;
-
-        try {
-            const url = `/api/entries/sftp/upload?sessionId=${session.id}&path=${encodeURIComponent(filePath)}&sessionToken=${sessionToken}`;
-            await uploadFileRequest(url, file, {
-                onProgress: (progress) => setUploadProgress(stats.totalBytes
-                    ? Math.round(((stats.sentBytes + (progress / 100) * file.size) / stats.totalBytes) * 100)
-                    : progress),
-                timeout: 5 * 60 * 1000,
-            });
-            stats.uploaded++;
-            stats.lastName = file.name;
-        } catch (err) {
-            console.error("Upload error:", err);
-            stats.failed++;
-            stats.firstError ??= err.message;
-        } finally {
-            stats.sentBytes += file.size;
-        }
+    const dismissConflict = () => {
+        if (conflict && !conflict.settled) conflict.resolve("cancel");
+        setConflict(null);
     };
 
-    const reportUploadResult = ({ uploaded, failed, firstError, lastName }) => {
-        if (uploaded) {
-            sendToast(t("common.success"), uploaded === 1
-                ? t("servers.fileManager.toast.uploaded", { name: lastName })
-                : t("servers.fileManager.toast.uploadedItems", { count: uploaded }));
-        }
-        if (failed) {
-            sendToast(t("common.error"), failed === 1
-                ? t("servers.fileManager.toast.uploadFailed", { message: firstError })
-                : t("servers.fileManager.toast.uploadFailedItems", { count: failed, message: firstError }));
-        }
-    };
-
-    const processUploadQueue = async () => {
-        setIsUploading(true);
-        while (uploadQueueRef.current.length > 0) {
-            const { file, targetDir } = uploadQueueRef.current[0];
-            await uploadFileHttp(file, targetDir);
-            uploadQueueRef.current.shift();
-        }
-        setIsUploading(false);
-        setUploadProgress(0);
-        listFiles(true);
-
-        const stats = uploadStatsRef.current;
-        uploadStatsRef.current = createUploadStats();
-        reportUploadResult(stats);
-    };
-
-    const queueUploads = (uploads) => {
+    const queueSessionUploads = async (uploads) => {
         if (!uploads.length) return;
-        const idle = uploadQueueRef.current.length === 0;
-        for (const upload of uploads) uploadStatsRef.current.totalBytes += upload.file.size;
-        uploadQueueRef.current.push(...uploads);
-        if (idle) processUploadQueue();
+        const remotePath = (upload) => joinPath(upload.targetDir, upload.file.name);
+        const found = await checkExisting(uploads.map(remotePath));
+        if (!found) return;
+        const existing = new Set(found);
+        if (existing.size === 0) {
+            queueUploads({ ...transferTarget(), uploads });
+            return;
+        }
+
+        const conflicting = uploads.filter(upload => existing.has(remotePath(upload)));
+        const choice = await askConflict("upload", conflicting.map(upload => upload.file.name));
+        if (choice === "cancel") return;
+        if (choice === "overwrite") {
+            queueUploads({ ...transferTarget(), uploads });
+            return;
+        }
+        const untouched = uploads.filter(upload => !existing.has(remotePath(upload)));
+        if (choice === "skip") {
+            if (untouched.length) queueUploads({ ...transferTarget(), uploads: untouched });
+            return;
+        }
+
+        const taken = new Set([...existing, ...uploads.map(remotePath)]);
+        const nextFreePath = (upload) => {
+            let attempt = 1;
+            let candidate = joinPath(upload.targetDir, renameCandidate(upload.file.name, attempt));
+            while (taken.has(candidate)) candidate = joinPath(upload.targetDir, renameCandidate(upload.file.name, ++attempt));
+            taken.add(candidate);
+            return candidate;
+        };
+        const renamed = [];
+        let pending = conflicting;
+        while (pending.length) {
+            const candidates = pending.map(upload => ({ upload, path: nextFreePath(upload) }));
+            const found = await checkExisting(candidates.map(candidate => candidate.path));
+            if (!found) return;
+            const stillExisting = new Set(found);
+            pending = [];
+            for (const { upload, path } of candidates) {
+                if (stillExisting.has(path)) pending.push(upload);
+                else renamed.push({ ...upload, file: new File([upload.file], baseName(path), { type: upload.file.type, lastModified: upload.file.lastModified }) });
+            }
+        }
+        queueUploads({ ...transferTarget(), uploads: [...untouched, ...renamed] });
+    };
+
+    const resolveDestinationConflicts = async (kind, sources, destination) => {
+        const destinationOf = (source) => joinPath(destination, baseName(source));
+        if (!sources.length) return null;
+        const found = await checkExisting(sources.map(destinationOf));
+        if (!found) return null;
+        const existing = new Set(found);
+        if (existing.size === 0) return { sources, overwrite: false };
+        const choice = await askConflict(kind, [...existing].map(baseName));
+        if (choice === "cancel") return null;
+        if (choice === "overwrite") return { sources, overwrite: true };
+        const remaining = sources.filter(source => !existing.has(destinationOf(source)));
+        return remaining.length ? { sources: remaining, overwrite: false } : null;
+    };
+
+    const transferFromSession = async (paths, sourceSessionId, destination, action) => {
+        const resolved = await resolveDestinationConflicts(action, paths, destination);
+        if (!resolved) return;
+        startCrossSessionTransfer({
+            sourceSessionId, targetSessionId: session.id, sessionToken, baseUrl: getBaseUrl(),
+            paths: resolved.sources, destination, action,
+        });
     };
 
     const uploadFile = async () => {
@@ -225,7 +226,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         fileInput.type = "file";
         fileInput.multiple = true;
         fileInput.onchange = () => {
-            queueUploads([...fileInput.files].map(file => ({ file, targetDir: directory })));
+            queueSessionUploads([...fileInput.files].map(file => ({ file, targetDir: directory })));
         };
         fileInput.click();
     };
@@ -235,7 +236,7 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         input.type = "file";
         input.webkitdirectory = true;
         input.onchange = () => {
-            queueUploads([...input.files].map(file => ({
+            queueSessionUploads([...input.files].map(file => ({
                 file,
                 targetDir: joinPath(directory, file.webkitRelativePath.split("/").slice(0, -1).join("/")),
             })));
@@ -255,7 +256,9 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                     setIsReady(true);
                     setConnectionError(null);
                     setCapabilities(payload?.capabilities ?? { shell: true, terminal: true });
+                    setHomePath(payload?.home ?? null);
                     reconnectAttemptsRef.current = 0;
+                    for (const transfer of payload?.transfers ?? []) applyServerProgress(session.id, transfer);
                     if (payload?.path && payload.path !== directoryRef.current) {
                         skipNextPathSync.current = true;
                         setDirectory(payload.path);
@@ -266,6 +269,10 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                     }
                     break;
                 case OPERATIONS.LIST_FILES:
+                    if (payload?.path && payload.path !== directoryRef.current) {
+                        treeHandlerRef.current?.(payload);
+                        break;
+                    }
                     if (payload?.files) { setItems(payload.files); setError(null); } 
                     else { setError("Failed to load directory contents"); setItems([]); }
                     setLoading(false);
@@ -290,6 +297,10 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 case OPERATIONS.RESOLVE_SYMLINK:
                     if (payload) { const cb = symlinkCallbacks.current.shift(); if (cb) cb(payload); }
                     break;
+                case OPERATIONS.CHECK_EXISTS:
+                    existsCallbacks.current.get(payload?.id)?.(payload?.existing ?? []);
+                    existsCallbacks.current.delete(payload?.id);
+                    break;
                 case OPERATIONS.PATH_SYNC:
                     if (payload?.path && payload.path !== directoryRef.current) {
                         skipNextPathSync.current = true;
@@ -303,6 +314,9 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 case OPERATIONS.FOLDER_SIZE:
                     propertiesHandlerRef.current?.({ operation, payload });
                     break;
+                case OPERATIONS.TRANSFER_PROGRESS:
+                    applyServerProgress(session.id, payload);
+                    break;
             }
         } catch (err) { console.error("Error processing SFTP message:", err); }
     };
@@ -315,6 +329,8 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
 
     const handleWsClose = useCallback((event) => {
         setIsReady(false);
+        for (const resolve of existsCallbacks.current.values()) resolve(null);
+        existsCallbacks.current.clear();
         if (event.code === 4001 || event.code === 4002) {
             sendToast(t("common.error"), t("servers.fileManager.toast.connectionLost"));
             disconnectFromServer(session.id);
@@ -352,8 +368,28 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         clearTimeout(refreshTimerRef.current);
         refreshTimerRef.current = setTimeout(() => listFiles(true), REFRESH_DEBOUNCE);
     };
-    const moveFiles = useCallback((sources, destination) => sendOperation(OPERATIONS.MOVE_FILES, { sources, destination }), [sendOperation]);
-    const copyFiles = useCallback((sources, destination) => sendOperation(OPERATIONS.COPY_FILES, { sources, destination }), [sendOperation]);
+    const checkExisting = useCallback(async (paths) => {
+        if (!paths.length) return [];
+        const existing = await new Promise(resolve => {
+            const id = ++existsRequestId.current;
+            existsCallbacks.current.set(id, resolve);
+            if (!sendOperation(OPERATIONS.CHECK_EXISTS, { id, paths })) {
+                existsCallbacks.current.delete(id);
+                resolve(null);
+            }
+        });
+        if (!existing) sendToast(t("common.error"), t("servers.fileManager.toast.connectionLost"));
+        return existing;
+    }, [sendOperation]);
+
+    const moveFiles = useCallback(async (sources, destination) => {
+        const resolved = await resolveDestinationConflicts("move", withoutSelfTargets(sources, destination), destination);
+        if (resolved) sendOperation(OPERATIONS.MOVE_FILES, { sources: resolved.sources, destination, overwrite: resolved.overwrite });
+    }, [sendOperation, checkExisting]);
+    const copyFiles = useCallback(async (sources, destination) => {
+        const resolved = await resolveDestinationConflicts("copy", withoutSelfTargets(sources, destination), destination);
+        if (resolved) sendOperation(OPERATIONS.COPY_FILES, { sources: resolved.sources, destination, overwrite: resolved.overwrite });
+    }, [sendOperation, checkExisting]);
 
     const changeDirectory = (newDirectory) => {
         if (newDirectory === directory) return;
@@ -368,13 +404,13 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
 
     const handleFileDrop = async (entries, files, targetDir) => {
         if (!entries.length) {
-            queueUploads(files.map(file => ({ file, targetDir })));
+            queueSessionUploads(files.map(file => ({ file, targetDir })));
             return;
         }
 
         const { files: collected, emptyDirs } = await collectDroppedEntries(entries, targetDir);
         for (const path of emptyDirs) sendOperation(OPERATIONS.CREATE_FOLDER, { path, recursive: true });
-        queueUploads(collected);
+        queueSessionUploads(collected);
     };
 
     const handleDrag = (e) => {
@@ -398,6 +434,16 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const handleOpenPreview = (filePath) => setOpenFileEditors(prev => [...prev, { id: `${session.id}-${filePath}-${Date.now()}`, file: filePath, session, type: 'preview' }]);
 
     useEffect(() => { directoryRef.current = directory; }, [directory]);
+
+    useEffect(() => {
+        sessionHandlersRef.current.send = sendOperation;
+        sessionHandlersRef.current.refresh = () => listFiles(true);
+    }, [sendOperation, listFiles]);
+
+    useEffect(() => registerSession(session.id, {
+        send: (operation, payload) => sessionHandlersRef.current.send(operation, payload),
+        refresh: () => sessionHandlersRef.current.refresh(),
+    }), [registerSession, session.id]);
 
     useEffect(() => () => clearTimeout(refreshTimerRef.current), []);
 
@@ -438,8 +484,9 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 <ActionBar path={directory} updatePath={changeDirectory} createFile={() => fileListRef.current?.startCreateFile()}
                     createFolder={() => fileListRef.current?.startCreateFolder()} uploadFile={uploadFile} uploadFolder={uploadFolder}
                     refreshFiles={() => listFiles(true)} goBack={goBack} goForward={goForward} historyIndex={historyIndex}
-                    historyLength={history.length} viewMode={viewMode} setViewMode={setViewMode} 
-                    searchDirectories={searchDirectories} directorySuggestions={directorySuggestions} 
+                    homePath={homePath}
+                    historyLength={history.length}
+                    searchDirectories={searchDirectories} directorySuggestions={directorySuggestions}
                     setDirectorySuggestions={setDirectorySuggestions} moveFiles={moveFiles} copyFiles={copyFiles}
                     capabilities={capabilities}
                     sessionId={session.id} searchQuery={searchQuery} setSearchQuery={setSearchQuery} searchOpen={searchOpen}
@@ -447,12 +494,18 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                 <FileList ref={fileListRef} items={items} path={directory} updatePath={changeDirectory} sendOperation={sendOperation}
                     downloadFile={downloadFile} downloadMultipleFiles={downloadMultipleFiles} setCurrentFile={handleOpenFile} setPreviewFile={handleOpenPreview}
                     loading={loading} viewMode={viewMode} error={error || connectionError} resolveSymlink={resolveSymlink} session={session}
-                    createFile={createFile} createFolder={createFolder} moveFiles={moveFiles} copyFiles={copyFiles} isActive={isActive}
+                    createFile={createFile} createFolder={createFolder} moveFiles={moveFiles} copyFiles={copyFiles}
+                    transferFromSession={transferFromSession} isActive={isActive}
                     capabilities={capabilities}
-                    searchQuery={searchQuery} onSearchResults={setSearchResultCount}
-                    onOpenTerminal={onOpenTerminal} onPropertiesMessage={(handler) => { propertiesHandlerRef.current = handler; }} />
+                    searchQuery={searchQuery} onSearchResults={setSearchResultCount} onSelectionChange={handleSelectionChange}
+                    onOpenTerminal={onOpenTerminal} onPropertiesMessage={(handler) => { propertiesHandlerRef.current = handler; }}
+                    onTreeListing={(handler) => { treeHandlerRef.current = handler; }} />
+                <TransferPanel sessionId={session.id} />
+                <ConflictDialog conflict={conflict} onChoice={settleConflict} onClose={dismissConflict} />
+                <StatusBar folderCount={folderCount} fileCount={fileCount} hiddenCount={hiddenCount} selectedCount={selectedCount}
+                    showHiddenFiles={showHiddenFiles} onToggleHiddenFiles={toggleHiddenFiles}
+                    viewMode={viewMode} setViewMode={setViewMode} />
             </div>
-            {isUploading && <div className="upload-progress" style={{ width: `${uploadProgress}%` }} />}
         </div>
     );
 };

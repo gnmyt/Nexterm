@@ -1,13 +1,31 @@
 const { Router } = require("express");
-const { createSession, reconnectSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword } = require("../controllers/serverSession");
+const { route } = require("../utils/route");
+const { objectList } = require("../validations/common");
+const { createSession, answerTrustChallenge, reconnectSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword } = require("../controllers/serverSession");
 const { execCommand } = require("../controllers/execCommand");
-const { createSessionValidation, reconnectSessionValidation, sessionIdValidation, resumeSessionValidation, duplicateSessionValidation } = require("../validations/serverSession");
-const { validateSchema } = require("../utils/schema");
+const { createSessionValidation, reconnectSessionValidation, sessionIdValidation, resumeSessionValidation, duplicateSessionValidation, trustDecisionValidation, shareValidation, pastePasswordValidation, execCommandValidation, execCommandQuery } = require("../validations/serverSession");
 const stateBroadcaster = require("../lib/StateBroadcaster");
+const SessionManager = require("../lib/SessionManager");
+const { isDemoGuest, DEMO_SETTINGS } = require("../utils/demoMode");
 
 const app = Router();
+
+const limitGuestSessions = (req, res, next) => {
+    if (isDemoGuest(req.user) && SessionManager.getAll(req.user.id).length >= DEMO_SETTINGS.maxSessionsPerGuest)
+        return res.status(429).json({ error: "You reached the session limit of the demo. Close a session to open a new one." });
+    next();
+};
+
+const blockWritableGuestShares = (req, res, next) => {
+    if (isDemoGuest(req.user) && req.body?.writable === true)
+        return res.status(403).json({ error: "Writable share links are not available in the demo" });
+    next();
+};
+
+const sendError = (res, result) =>
+    res.status(result.code).json({ error: result.message, ...(result.errorCode && { code: result.errorCode }) });
 const getSessionOptions = (req) => {
-    const { entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, displayDpi, scriptId, startPath, connectionGeneration } = req.body;
+    const { entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, displayDpi, displayWidth, displayHeight, scriptId, startPath, trustPrompt, connectionGeneration } = req.body;
     return {
         accountId: req.user.id,
         entryId,
@@ -18,32 +36,28 @@ const getSessionOptions = (req) => {
         tabId,
         browserId,
         displayDpi,
+        displayWidth,
+        displayHeight,
         scriptId,
         startPath,
+        trustPrompt: trustPrompt === true,
         connectionGeneration,
         ipAddress: req.ip || req.socket?.remoteAddress || 'unknown',
         userAgent: req.headers['user-agent'] || 'unknown',
     };
 };
 
-/**
- * POST /connections
- * @summary Create Connection
- * @description Creates a new server connection.
- * @tags Connection
- * @produces application/json
- * @security BearerAuth
- * @param {object} request.body.required - Session creation details
- * @return {object} 201 - Session created
- */
-app.post("/", async (req, res) => {
-    if (validateSchema(res, createSessionValidation, req.body)) return;
-    
+app.post("/", limitGuestSessions, route({
+    summary: "Create connection",
+    status: 201,
+    description: "Creates a new server connection.",
+    body: createSessionValidation,
+}), async (req, res) => {
     try {
         const result = await createSession(getSessionOptions(req));
         
         if (result?.code) {
-            return res.status(result.code).json({ error: result.message });
+            return sendError(res, result);
         }
 
         res.status(201).json(result);
@@ -53,17 +67,19 @@ app.post("/", async (req, res) => {
     }
 });
 
-app.post("/:id/reconnect", async (req, res) => {
-    if (validateSchema(res, sessionIdValidation, req.params)) return;
-    if (validateSchema(res, reconnectSessionValidation, req.body)) return;
-
+app.post("/:id/reconnect", route({
+    summary: "Reconnect connection",
+    description: "Re-establishes a connection whose link to the server was lost, keeping its id.",
+    params: sessionIdValidation,
+    body: reconnectSessionValidation,
+}), async (req, res) => {
     try {
         const result = await reconnectSession({
             ...getSessionOptions(req),
             sessionId: req.params.id,
         });
         if (result?.code) {
-            return res.status(result.code).json({ error: result.message });
+            return sendError(res, result);
         }
         res.json(result);
     } catch (error) {
@@ -72,33 +88,20 @@ app.post("/:id/reconnect", async (req, res) => {
     }
 });
 
-/**
- * GET /connections
- * @summary Get Connections
- * @description Retrieves all active server connections for the user.
- * @tags Connection
- * @produces application/json
- * @security BearerAuth
- * @return {array} 200 - List of sessions
- */
-app.get("/", async (req, res) => {
+app.get("/", route({
+    summary: "Get connections",
+    description: "Retrieves all active server connections for the user.",
+    returns: objectList,
+}), async (req, res) => {
     const { tabId, browserId } = req.query;
     res.json(await getSessions(req.user.id, tabId, browserId));
 });
 
-/**
- * GET /connections/{id}
- * @summary Get Connection
- * @description Retrieves a specific server connection.
- * @tags Connection
- * @produces application/json
- * @security BearerAuth
- * @param {string} id.path.required - Session ID
- * @return {object} 200 - Session details
- */
-app.get("/:id", async (req, res) => {
-    if (validateSchema(res, sessionIdValidation, req.params)) return;
-    
+app.get("/:id", route({
+    summary: "Get connection",
+    description: "Retrieves a specific server connection.",
+    params: sessionIdValidation,
+}), async (req, res) => {
     const result = await getSession(req.user.id, req.params.id);
     if (result?.code) {
         return res.status(result.code).json({ error: result.message });
@@ -106,20 +109,26 @@ app.get("/:id", async (req, res) => {
     res.json(result);
 });
 
-/**
- * POST /connections/{id}/hibernate
- * @summary Hibernate Connection
- * @description Hibernates a server connection.
- * @tags Connection
- * @produces application/json
- * @security BearerAuth
- * @param {string} id.path.required - Session ID
- * @return {object} 200 - Success message
- */
-app.post("/:id/hibernate", async (req, res) => {
-    if (validateSchema(res, sessionIdValidation, req.params)) return;
-    
-    const result = await hibernateSession(req.params.id);
+app.post("/:id/trust", route({
+    summary: "Answer certificate question",
+    description: "Accepts or rejects the certificate or host key a connection is waiting on. Accepting stores it as trusted and connects again.",
+    params: sessionIdValidation,
+    body: trustDecisionValidation,
+}), async (req, res) => {
+    const result = await answerTrustChallenge(req.user.id, req.params.id, req.body, {
+        ipAddress: req.ip,
+        userAgent: req.headers?.["user-agent"],
+    });
+    if (result?.code) return res.status(result.code).json({ error: result.message });
+    res.json(result);
+});
+
+app.post("/:id/hibernate", route({
+    summary: "Hibernate connection",
+    description: "Hibernates a server connection.",
+    params: sessionIdValidation,
+}), async (req, res) => {
+    const result = await hibernateSession(req.user.id, req.params.id);
     if (result?.code) {
         return res.status(result.code).json({ error: result.message });
     }
@@ -127,22 +136,14 @@ app.post("/:id/hibernate", async (req, res) => {
     res.json(result);
 });
 
-/**
- * POST /connections/{id}/resume
- * @summary Resume Connection
- * @description Resumes a hibernated server connection.
- * @tags Connection
- * @produces application/json
- * @security BearerAuth
- * @param {string} id.path.required - Session ID
- * @return {object} 200 - Success message
- */
-app.post("/:id/resume", async (req, res) => {
-    if (validateSchema(res, sessionIdValidation, req.params)) return;
-    if (validateSchema(res, resumeSessionValidation, req.body)) return;
-    
+app.post("/:id/resume", route({
+    summary: "Resume connection",
+    description: "Resumes a hibernated server connection.",
+    params: sessionIdValidation,
+    body: resumeSessionValidation,
+}), async (req, res) => {
     const { tabId, browserId } = req.body;
-    const result = await resumeSession(req.params.id, tabId, browserId);
+    const result = await resumeSession(req.user.id, req.params.id, tabId, browserId);
     if (result?.code) {
         return res.status(result.code).json({ error: result.message });
     }
@@ -150,20 +151,12 @@ app.post("/:id/resume", async (req, res) => {
     res.json(result);
 });
 
-/**
- * DELETE /connections/{id}
- * @summary Delete Connection
- * @description Deletes a server connection.
- * @tags Connection
- * @produces application/json
- * @security BearerAuth
- * @param {string} id.path.required - Session ID
- * @return {object} 200 - Success message
- */
-app.delete("/:id", async (req, res) => {
-    if (validateSchema(res, sessionIdValidation, req.params)) return;
-    
-    const result = await deleteSession(req.params.id);
+app.delete("/:id", route({
+    summary: "Delete connection",
+    description: "Deletes a server connection.",
+    params: sessionIdValidation,
+}), async (req, res) => {
+    const result = await deleteSession(req.user.id, req.params.id);
     if (result?.code) {
         return res.status(result.code).json({ error: result.message });
     }
@@ -171,74 +164,48 @@ app.delete("/:id", async (req, res) => {
     res.json(result);
 });
 
-/**
- * POST /connections/{id}/share
- * @summary Start Sharing
- * @description Starts sharing a session.
- * @tags Connection
- * @produces application/json
- * @security BearerAuth
- * @param {string} id.path.required - Session ID
- * @return {object} 200 - Share details
- */
-app.post("/:id/share", (req, res) => {
-    if (validateSchema(res, sessionIdValidation, req.params)) return;
-    const result = startSharing(req.user.id, req.params.id, req.body?.writable === true);
+app.post("/:id/share", blockWritableGuestShares, route({
+    summary: "Start sharing",
+    description: "Starts sharing a session.",
+    params: sessionIdValidation,
+    body: shareValidation,
+}), (req, res) => {
+    const result = startSharing(req.user.id, req.params.id, req.body.writable === true);
     if (result?.code) return res.status(result.code).json({ error: result.message });
     stateBroadcaster.broadcast("CONNECTIONS", { accountId: req.user.id });
     res.json(result);
 });
 
-/**
- * DELETE /connections/{id}/share
- * @summary Stop Sharing
- * @description Stops sharing a session.
- * @tags Connection
- * @produces application/json
- * @security BearerAuth
- * @param {string} id.path.required - Session ID
- * @return {object} 200 - Success message
- */
-app.delete("/:id/share", (req, res) => {
-    if (validateSchema(res, sessionIdValidation, req.params)) return;
+app.delete("/:id/share", route({
+    summary: "Stop sharing",
+    description: "Stops sharing a session.",
+    params: sessionIdValidation,
+}), (req, res) => {
     const result = stopSharing(req.user.id, req.params.id);
     if (result?.code) return res.status(result.code).json({ error: result.message });
     stateBroadcaster.broadcast("CONNECTIONS", { accountId: req.user.id });
     res.json(result);
 });
 
-/**
- * PATCH /connections/{id}/share
- * @summary Update Share Permissions
- * @description Updates share permissions for a session.
- * @tags Connection
- * @produces application/json
- * @security BearerAuth
- * @param {string} id.path.required - Session ID
- * @return {object} 200 - Updated permissions
- */
-app.patch("/:id/share", (req, res) => {
-    if (validateSchema(res, sessionIdValidation, req.params)) return;
-    const result = updateSharePermissions(req.user.id, req.params.id, req.body?.writable === true);
+app.patch("/:id/share", blockWritableGuestShares, route({
+    summary: "Update share permissions",
+    description: "Updates share permissions for a session.",
+    params: sessionIdValidation,
+    body: shareValidation,
+}), (req, res) => {
+    const result = updateSharePermissions(req.user.id, req.params.id, req.body.writable === true);
     if (result?.code) return res.status(result.code).json({ error: result.message });
     stateBroadcaster.broadcast("CONNECTIONS", { accountId: req.user.id });
     res.json(result);
 });
 
-/**
- * POST /connections/{id}/duplicate
- * @summary Duplicate Connection
- * @description Creates a new connection with the same configuration as an existing one.
- * @tags Connection
- * @produces application/json
- * @security BearerAuth
- * @param {string} id.path.required - Session ID
- * @return {object} 201 - New session created
- */
-app.post("/:id/duplicate", async (req, res) => {
-    if (validateSchema(res, sessionIdValidation, req.params)) return;
-    if (validateSchema(res, duplicateSessionValidation, req.body)) return;
-    
+app.post("/:id/duplicate", limitGuestSessions, route({
+    summary: "Duplicate connection",
+    status: 201,
+    description: "Creates a new connection with the same configuration as an existing one.",
+    params: sessionIdValidation,
+    body: duplicateSessionValidation,
+}), async (req, res) => {
     const { tabId, browserId } = req.body;
     const ipAddress = req.ip || req.socket?.remoteAddress || 'unknown';
     const userAgent = req.headers['user-agent'] || 'unknown';
@@ -251,24 +218,14 @@ app.post("/:id/duplicate", async (req, res) => {
     res.status(201).json(result);
 });
 
-/**
- * POST /connections/{id}/paste-password
- * @summary Paste identity password into session
- * @description Inserts the password of an identity attached to the session's server into the active session stream. Defaults to the session's identity; an optional identityId in the body selects another identity attached to the same server.
- * @tags Connection
- * @produces application/json
- * @security BearerAuth
- * @param {string} id.path.required - Session ID
- */
-app.post("/:id/paste-password", async (req, res) => {
-    if (validateSchema(res, sessionIdValidation, req.params)) return;
-
-    let identityId = null;
-    if (req.body?.identityId !== undefined && req.body?.identityId !== null) {
-        identityId = Number.parseInt(req.body.identityId, 10);
-        if (Number.isNaN(identityId)) return res.status(400).json({ error: "Invalid identity ID" });
-    }
-    const submit = req.body?.submit === true;
+app.post("/:id/paste-password", route({
+    summary: "Paste identity password into session",
+    description: "Inserts the password of an identity attached to the session's server into the active session stream. Defaults to the session's identity; an optional identityId in the body selects another identity attached to the same server.",
+    params: sessionIdValidation,
+    body: pastePasswordValidation,
+}), async (req, res) => {
+    const identityId = req.body.identityId ?? null;
+    const submit = req.body.submit === true;
 
     try {
         const result = await pasteIdentityPassword(req.user.id, req.params.id, req.ip, req.headers?.["user-agent"], identityId, submit);
@@ -280,32 +237,25 @@ app.post("/:id/paste-password", async (req, res) => {
     }
 });
 
-/**
- * POST /connections/{entryId}/exec
- * @summary Execute Command
- * @description Executes a single command on a server entry and returns the output.
- * @tags Connection
- * @produces application/json
- * @security BearerAuth
- * @param {number} entryId.path.required - Entry ID
- * @param {object} request.body.required - Command to execute
- * @return {object} 200 - Command result with stdout, stderr, exitCode
- */
-app.post("/:entryId/exec", async (req, res) => {
+app.post("/:entryId/exec", route({
+    summary: "Execute command",
+    description: "Executes a single command on a server entry and returns the output.",
+    query: execCommandQuery,
+    body: execCommandValidation,
+}), async (req, res) => {
     try {
         const entryId = parseInt(req.params.entryId, 10);
         if (isNaN(entryId)) return res.status(400).json({ error: "Invalid entry ID" });
 
-        const { command } = req.body;
-        if (!command || typeof command !== "string") {
-            return res.status(400).json({ error: "Command is required" });
-        }
-
-        const identityId = req.query.identityId ? parseInt(req.query.identityId, 10) : null;
-        const result = await execCommand(req.user.id, entryId, identityId, command);
+        const { command, connectionReason } = req.body;
+        const result = await execCommand(req.user.id, entryId, req.query.identityId ?? null, command, {
+            connectionReason: connectionReason?.trim() || null,
+            ipAddress: req.ip || req.socket?.remoteAddress || 'unknown',
+            userAgent: req.headers['user-agent'] || 'unknown',
+        });
 
         if (result?.code) {
-            return res.status(result.code).json({ error: result.message });
+            return sendError(res, result);
         }
 
         res.json(result);

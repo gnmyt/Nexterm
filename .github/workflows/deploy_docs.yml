@@ -3,7 +3,7 @@ name: Deploy VitePress site to Pages
 on:
   push:
     branches: [main]
-    paths: ['docs/**']
+    paths: ['docs/**', 'server/routes/**', 'server/validations/**', 'server/middlewares/permission.js', 'server/utils/route.js', 'server/openapi.js']
   workflow_dispatch:
 
 permissions:
@@ -20,23 +20,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 26
       - name: Install yarn
         run: npm install -g yarn
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v6
       - name: Install dependencies
         run: yarn install
+      - name: Install flatc
+        run: |
+          curl -sSL -o /tmp/flatc.zip https://github.com/google/flatbuffers/releases/download/v25.12.19/Linux.flatc.binary.g++-13.zip
+          sudo unzip -o /tmp/flatc.zip -d /usr/local/bin
+          sudo chmod +x /usr/local/bin/flatc
+      - name: Generate schema
+        run: yarn schema:generate
       - name: Build with VitePress
         run: yarn run docs:build
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: docs/.vitepress/dist
 
@@ -50,4 +57,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

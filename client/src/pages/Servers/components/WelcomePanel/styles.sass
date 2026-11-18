@@ -40,7 +40,7 @@
       margin: 0.7rem 0 1.5rem 0
       color: colors.$subtext
       font-size: 1rem
-      font-weight: 600
+      font-weight: 500
       line-height: 1.5
 
     .welcome-buttons
@@ -52,6 +52,108 @@
     width: 40%
     max-width: 480px
     min-width: 320px
+    display: flex
+    flex-direction: column
+    gap: 1.5rem
+    position: relative
+    isolation: isolate
+
+    &::before
+      content: ""
+      position: absolute
+      inset: -18% -14%
+      z-index: -1
+      pointer-events: none
+      background: radial-gradient(ellipse 55% 45% at 30% 25%, colors.$primary-opacity, transparent 70%), radial-gradient(ellipse 50% 50% at 75% 75%, colors.$primary-opacity, transparent 70%)
+      filter: blur(48px)
+      opacity: 0.9
+      animation: welcome-glow 14s ease-in-out infinite alternate
+
+  .welcome-search
+    display: flex
+    align-items: center
+    width: 100%
+    max-width: 480px
+    height: var(--search-control-size, 2.75rem)
+    box-sizing: border-box
+    border: 1px solid colors.$gray
+    border-radius: 0.7rem
+    background-color: color-mix(in srgb, var(--lighter-background) 70%, transparent)
+    backdrop-filter: blur(16px)
+    color: colors.$subtext
+    transition: border-color 0.2s ease
+
+    &:has(.welcome-search-trigger:hover), &:has(.welcome-search-trigger:focus-visible)
+      border-color: colors.$primary
+
+    button
+      border: none
+      background: none
+      font: inherit
+      color: inherit
+      cursor: pointer
+
+      &:focus-visible
+        outline: none
+        box-shadow: colors.$focus-ring
+
+    .welcome-search-trigger
+      flex: 1
+      min-width: 0
+      height: 100%
+      display: flex
+      align-items: center
+      gap: 0.75rem
+      padding: 0 0.65rem 0 0.75rem
+      border-radius: 0.7rem
+      text-align: left
+      cursor: text
+
+    .welcome-search-icon
+      width: 1.4rem
+      height: 1.4rem
+      flex-shrink: 0
+
+    .welcome-search-placeholder
+      flex: 1
+      min-width: 0
+      font-size: 0.95rem
+      font-weight: 500
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
+
+    kbd
+      flex-shrink: 0
+      padding: 0.175rem 0.425rem
+      border: 1px solid colors.$gray
+      border-radius: 0.5rem
+      font-family: inherit
+      font-size: 9pt
+      color: colors.$subtext
+
+    > div
+      display: flex
+      align-items: center
+      height: 100%
+      padding: 0 0.3rem 0 0.35rem
+      border-left: 1px solid colors.$gray
+
+    .welcome-search-ai
+      display: grid
+      place-items: center
+      width: 2.1rem
+      height: 2.1rem
+      border-radius: 0.5rem
+      transition: background-color 0.15s ease, color 0.15s ease
+
+      svg
+        width: 1.25rem
+        height: 1.25rem
+
+      &:hover, &:focus-visible
+        background-color: colors.$dark-gray
+        color: colors.$primary
 
   .loading-state
     display: flex
@@ -74,23 +176,29 @@
       display: flex
       align-items: center
       gap: 0.5rem
-      margin-bottom: 1rem
+      margin-bottom: 0.625rem
+      padding: 0 0.125rem
       color: colors.$subtext
 
       svg
-        width: 1.25rem
-        height: 1.25rem
+        width: 1rem
+        height: 1rem
 
       h3
         margin: 0
-        font-size: 0.9rem
+        font-size: 0.8rem
         font-weight: 600
-        color: colors.$white
+        color: colors.$subtext
+        letter-spacing: 0.01em
 
     .recent-list
       display: flex
       flex-direction: column
-      gap: 0.5rem
+      border: 1px solid colors.$border
+      border-radius: 0.75rem
+      background-color: color-mix(in srgb, var(--lighter-background) 70%, transparent)
+      backdrop-filter: blur(16px)
+      overflow: hidden
 
     .empty-hint
       color: colors.$subtext
@@ -102,121 +210,106 @@
     display: flex
     align-items: center
     gap: 0.75rem
-    padding: 0.75rem
-    background-color: colors.$dark-gray
-    border: 1px solid transparent
-    border-radius: 0.5rem
+    padding: 0.625rem 0.75rem
     cursor: pointer
-    transition: all 0.15s ease
+    transition: background-color 0.12s ease
+
+    & + .recent-item
+      border-top: 1px solid colors.$border
 
     &:hover
-      background-color: colors.$gray
-      border-color: colors.$gray
+      background-color: colors.$dark-gray
+
+      .item-icon
+        background-color: colors.$gray
 
       .play-icon
         opacity: 1
         transform: translateX(0)
 
-    &.hibernated
-      border-color: colors.$primary
-      background-color: colors.$primary-opacity
-
-      &:hover
-        background-color: color-mix(in srgb, colors.$primary 20%, transparent)
-
     .item-icon
-      width: 2rem
-      height: 2rem
+      width: 2.25rem
+      height: 2.25rem
       display: flex
       align-items: center
       justify-content: center
-      background-color: colors.$primary
-      border-radius: 0.3rem
+      background-color: colors.$dark-gray
+      border-radius: 0.625rem
       flex-shrink: 0
+      transition: background-color 0.12s ease
 
       svg
-        width: 1.1rem
-        height: 1.1rem
-        color: white
+        width: 1.2rem
+        height: 1.2rem
+        color: colors.$white
 
     .item-info
       flex: 1
       min-width: 0
       display: flex
       flex-direction: column
-      gap: 0.15rem
+      gap: 0.125rem
 
       .item-name
         font-weight: 600
-        font-size: 0.9rem
+        font-size: 0.875rem
         color: colors.$white
         white-space: nowrap
         overflow: hidden
         text-overflow: ellipsis
 
       .item-meta
+        display: flex
+        align-items: center
+        gap: 0.4rem
         font-size: 0.75rem
+        font-weight: 500
         color: colors.$subtext
+
+        .item-protocol
+          font-weight: 600
+          letter-spacing: 0.04em
+
+          &::after
+            content: "·"
+            margin-left: 0.4rem
+            font-weight: 400
+            opacity: 0.7
 
         .hibernated-badge
           display: inline-flex
           align-items: center
-          gap: 0.25rem
-          color: colors.$primary
-          font-weight: 600
+          gap: 0.3rem
+          color: colors.$white
+          font-weight: 500
 
           svg
-            width: 0.7rem
-            height: 0.7rem
+            width: 0.75rem
+            height: 0.75rem
+            color: colors.$primary
 
     .item-action
       display: flex
       align-items: center
-      gap: 0.5rem
-
-      .protocol-badge
-        font-size: 0.7rem
-        font-weight: 600
-        padding: 0.2rem 0.5rem
-        background-color: colors.$gray
-        border-radius: 0.25rem
-        color: colors.$subtext
+      gap: 0.625rem
 
       .play-icon
-        width: 1rem
-        height: 1rem
-        color: colors.$primary
+        width: 1.05rem
+        height: 1.05rem
+        color: colors.$white
         opacity: 0
         transform: translateX(-4px)
-        transition: all 0.15s ease
+        transition: opacity 0.12s ease, transform 0.12s ease, color 0.12s ease
 
-  .empty-state
-    display: flex
-    flex-direction: column
-    align-items: center
-    justify-content: center
-    text-align: center
-    padding: 3rem 2rem
-    background-color: colors.$lighter-background
-    border: 1px solid colors.$dark-gray
-    border-radius: 0.75rem
+@keyframes welcome-glow
+  from
+    transform: translate(-3%, -2%) scale(1)
+  to
+    transform: translate(3%, 2%) scale(1.06)
 
-    svg
-      width: 3rem
-      height: 3rem
-      color: colors.$subtext
-      margin-bottom: 1rem
-
-    h3
-      margin: 0 0 0.5rem 0
-      font-size: 1rem
-      color: colors.$white
-
-    p
-      margin: 0
-      font-size: 0.85rem
-      color: colors.$subtext
-      max-width: 280px
+@media (prefers-reduced-motion: reduce)
+  .welcome-panel .welcome-right::before
+    animation: none
 
 @keyframes spin
   to
@@ -249,8 +342,5 @@
       max-width: 100%
       min-width: 0
 
-    .recent-connections
+    .recent-connections, .welcome-search
       max-width: 100%
-
-    .empty-state
-      padding: 2rem 1rem

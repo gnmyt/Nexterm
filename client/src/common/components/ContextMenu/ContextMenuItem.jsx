@@ -12,6 +12,8 @@ export const ContextMenuItem = ({
     customContent = null,
     danger = false,
     checked = false,
+    description = null,
+    keepOpen = false,
 }) => {
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
     const itemRef = useRef(null);
@@ -82,7 +84,9 @@ export const ContextMenuItem = ({
     const handleClick = (e) => {
         e.stopPropagation();
         if (disabled) return;
-        hasSubmenu ? setIsSubmenuOpen(!isSubmenuOpen) : (onClick?.(e), onClose?.());
+        if (hasSubmenu) return setIsSubmenuOpen(!isSubmenuOpen);
+        onClick?.(e);
+        if (!keepOpen) onClose?.();
     };
 
     const handleKeyDown = (e) => {
@@ -137,7 +141,7 @@ export const ContextMenuItem = ({
     return (
         <div
             ref={itemRef}
-            className={`context-menu-item ${disabled ? "disabled" : ""} ${danger ? "danger" : ""} ${hasSubmenu ? "has-submenu" : ""} ${isSubmenuOpen && isMobile ? "submenu-open-mobile" : ""}`}
+            className={`context-menu-item ${description ? "has-description" : ""} ${checked ? "checked" : ""} ${disabled ? "disabled" : ""} ${danger ? "danger" : ""} ${hasSubmenu ? "has-submenu" : ""} ${isSubmenuOpen && isMobile ? "submenu-open-mobile" : ""}`}
             onClick={handleClick}
             onKeyDown={handleKeyDown}
             onMouseEnter={!isMobile ? handleMouseEnter : undefined}
@@ -149,7 +153,12 @@ export const ContextMenuItem = ({
             aria-expanded={hasSubmenu ? isSubmenuOpen : undefined}
         >
             {icon && (typeof icon === "string" ? <Icon path={icon} className="menu-icon" /> : <span className="menu-icon">{icon}</span>)}
-            <span className="menu-label">{label}</span>
+            {description ? (
+                <span className="menu-text">
+                    <span className="menu-label">{label}</span>
+                    <span className="menu-description">{description}</span>
+                </span>
+            ) : <span className="menu-label">{label}</span>}
             {checked && !hasSubmenu && <Icon path={mdiCheck} className="menu-check" />}
             {hasSubmenu && (
                 <>

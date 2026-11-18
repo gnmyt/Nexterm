@@ -1,42 +1,45 @@
 :root
   --accent-color: #314BD3
+  --focus-ring: 0 0 0 3px var(--primary-opacity)
 
 :root[data-theme="dark"]
-  --background: #000A12
-  --terminal: #13181C
-  --lighter-background: #0D161E
-  --dialog-background: rgba(0, 0, 0, 0.25)
-  --gray-full: #202429
-  --darker-gray: rgba(34, 36, 42, 0.6)
-  --dark-gray: rgba(255, 255, 255, 0.05)
-  --gray: rgba(255, 255, 255, 0.1)
-  --light-gray: #F6F6F6
+  --background: #0A0D12
+  --terminal: #0E1218
+  --lighter-background: #10151C
+  --dialog-background: rgba(5, 7, 10, 0.45)
+  --gray-full: #1B222C
+  --darker-gray: rgba(27, 34, 44, 0.6)
+  --dark-gray: rgba(255, 255, 255, 0.06)
+  --gray: rgba(255, 255, 255, 0.11)
+  --light-gray: #F2F4F8
   --primary: var(--accent-color)
   --primary-opacity: color-mix(in srgb, var(--accent-color) 25%, transparent)
-  --error: #a44747
-  --error-opacity: rgba(164, 71, 71, 0.25)
-  --success: #29C16A
-  --success-opacity: rgba(41, 193, 106, 0.25)
-  --warning: #DC5600
-  --warning-opacity: rgba(220, 86, 0, 0.25)
-  --white: #FFFFFF
-  --subtext: #B7B7B7
-  --text: #FFFFFF
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.15)
-  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15)
-  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.18)
-  --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.35), 0 16px 48px rgba(0, 0, 0, 0.22)
+  --error: #E5484D
+  --error-opacity: rgba(229, 72, 77, 0.18)
+  --success: #30C77A
+  --success-opacity: rgba(48, 199, 122, 0.18)
+  --warning: #F0962A
+  --warning-opacity: rgba(240, 150, 42, 0.18)
+  --automation: #A78BFA
+  --white: #F2F4F8
+  --subtext: #9AA4B5
+  --text: #F2F4F8
+  --border: rgba(255, 255, 255, 0.07)
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2)
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.22)
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.35), 0 10px 30px rgba(0, 0, 0, 0.3)
+  --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.4), 0 20px 56px rgba(0, 0, 0, 0.35)
 
 :root[data-theme="light"]
   --background: #FFFFFF
-  --terminal: #F5F5F5
-  --lighter-background: #F0F0F0
-  --dialog-background: rgba(245, 245, 245, 0.31)
-  --gray-full: #E5E5E5
-  --darker-gray: rgba(241, 239, 239, 0.92)
-  --dark-gray: rgba(0, 0, 0, 0.05)
-  --gray: rgba(0, 0, 0, 0.1)
-  --light-gray: #333333
+  --terminal: #F4F5F7
+  --lighter-background: #F6F7F9
+  --dialog-background: rgba(240, 242, 245, 0.45)
+  --gray-full: #E6E8EC
+  --darker-gray: rgba(240, 241, 244, 0.92)
+  --dark-gray: rgba(16, 22, 32, 0.05)
+  --gray: rgba(16, 22, 32, 0.1)
+  --light-gray: #2B3240
   --primary: var(--accent-color)
   --primary-opacity: color-mix(in srgb, var(--accent-color) 15%, transparent)
   --error: #d85959
@@ -45,6 +48,7 @@
   --success-opacity: rgba(41, 193, 106, 0.15)
   --warning: #DC5600
   --warning-opacity: rgba(220, 86, 0, 0.15)
+  --automation: #7C3AED
   --white: #000000
   --subtext: #666666
   --text: #000000
@@ -56,31 +60,34 @@
 :root[data-theme="oled"]
   --background: #000000
   --terminal: #000000
-  --lighter-background: #0a0a0a
-  --dialog-background: rgba(0, 0, 0, 0.5)
-  --gray-full: #1a1a1a
-  --darker-gray: rgba(20, 20, 20, 0.8)
-  --dark-gray: rgba(255, 255, 255, 0.05)
-  --gray: rgba(255, 255, 255, 0.1)
-  --light-gray: #F6F6F6
+  --lighter-background: #090909
+  --dialog-background: rgba(0, 0, 0, 0.55)
+  --gray-full: #171717
+  --darker-gray: rgba(18, 18, 18, 0.8)
+  --dark-gray: rgba(255, 255, 255, 0.06)
+  --gray: rgba(255, 255, 255, 0.11)
+  --light-gray: #F2F2F2
   --primary: var(--accent-color)
   --primary-opacity: color-mix(in srgb, var(--accent-color) 25%, transparent)
-  --error: #a44747
-  --error-opacity: rgba(164, 71, 71, 0.25)
-  --success: #29C16A
-  --success-opacity: rgba(41, 193, 106, 0.25)
-  --warning: #DC5600
-  --warning-opacity: rgba(220, 86, 0, 0.25)
-  --white: #FFFFFF
-  --subtext: #888888
-  --text: #FFFFFF
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.25)
-  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.25)
-  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.45), 0 8px 24px rgba(0, 0, 0, 0.3)
-  --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.5), 0 16px 48px rgba(0, 0, 0, 0.35)
+  --error: #E5484D
+  --error-opacity: rgba(229, 72, 77, 0.18)
+  --success: #30C77A
+  --success-opacity: rgba(48, 199, 122, 0.18)
+  --warning: #F0962A
+  --warning-opacity: rgba(240, 150, 42, 0.18)
+  --automation: #A78BFA
+  --white: #F2F2F2
+  --subtext: #8C8C8C
+  --text: #F2F2F2
+  --border: rgba(255, 255, 255, 0.08)
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.3)
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.5), 0 4px 14px rgba(0, 0, 0, 0.3)
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.55), 0 10px 30px rgba(0, 0, 0, 0.35)
+  --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.6), 0 20px 56px rgba(0, 0, 0, 0.4)
 
 $background: var(--background)
 $dialog-background: var(--dialog-background)
+$overlay-fallback: rgba(0, 0, 0, 0.7)
 $terminal: var(--terminal)
 $lighter-background: var(--lighter-background)
 $gray-full: var(--gray-full)
@@ -88,6 +95,7 @@ $darker-gray: var(--darker-gray)
 $dark-gray: var(--dark-gray)
 $gray: var(--gray)
 $light-gray: var(--light-gray)
+$border: var(--border, var(--dark-gray))
 $primary: var(--primary)
 $primary-opacity: var(--primary-opacity)
 $error: var(--error)
@@ -96,8 +104,11 @@ $success: var(--success)
 $success-opacity: var(--success-opacity)
 $warning: var(--warning)
 $warning-opacity: var(--warning-opacity)
+$proxmox: #DC5600
+$automation: var(--automation)
 $white: var(--white)
 $subtext: var(--subtext)
+$focus-ring: var(--focus-ring)
 $shadow-sm: var(--shadow-sm)
 $shadow-md: var(--shadow-md)
 $shadow-lg: var(--shadow-lg)

@@ -19,7 +19,6 @@ const sanitizeSettingsResponse = (settings) => ({
     model: settings.model,
     apiUrl: settings.apiUrl,
     authMethod: settings.authMethod,
-    requireConfirmation: Boolean(settings.requireConfirmation),
     isConfigured: isConfigured(settings),
     hasApiKey: Boolean(settings.apiKey),
     subscriptionConnected: isSubscriptionConnected(settings),
@@ -50,7 +49,7 @@ module.exports.getAISettings = async () => {
 };
 
 module.exports.updateAISettings = async (updateData) => {
-    const { enabled, provider, model, apiKey, apiUrl, authMethod, requireConfirmation } = updateData;
+    const { enabled, provider, model, apiKey, apiUrl, authMethod } = updateData;
     const settings = await AISettings.getOrCreate();
 
     const payload = {};
@@ -59,7 +58,6 @@ module.exports.updateAISettings = async (updateData) => {
     if (model !== undefined) payload.model = model;
     if (apiUrl !== undefined) payload.apiUrl = apiUrl;
     if (authMethod !== undefined) payload.authMethod = authMethod;
-    if (requireConfirmation !== undefined) payload.requireConfirmation = requireConfirmation;
     if (apiKey !== undefined) payload.apiKey = apiKey === "" ? null : apiKey;
 
     await AISettings.update(AISettings.encryptSecrets(payload), { where: { id: settings.id } });

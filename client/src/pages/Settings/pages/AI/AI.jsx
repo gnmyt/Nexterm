@@ -9,6 +9,7 @@ import SelectBox from "@/common/components/SelectBox";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useAI } from "@/common/contexts/AIContext.jsx";
 import { mdiRobot, mdiTestTube, mdiEye, mdiEyeOff } from "@mdi/js";
+import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
 
 export const AI = () => {
     const { t } = useTranslation();
@@ -22,7 +23,6 @@ export const AI = () => {
         authMethod: "api_key",
         subscriptionConnected: false,
         subscriptionProvider: null,
-        requireConfirmation: true,
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -125,7 +125,6 @@ export const AI = () => {
                 model: settings.model || null,
                 apiUrl: settings.apiUrl || null,
                 authMethod: settings.authMethod,
-                requireConfirmation: settings.requireConfirmation,
             };
 
             if (updateData.provider === "") updateData.provider = null;
@@ -263,8 +262,8 @@ export const AI = () => {
 
     return (
         <div className="ai-settings">
-            <div className="settings-section">
-                <h2>{t("settings.ai.title")}</h2>
+            <div className="settings-section settings-page-section">
+                <SettingsHeading>{t("settings.ai.title")}</SettingsHeading>
                 <p>{t("settings.ai.description")}</p>
 
                 <div className="setting-item">
@@ -368,15 +367,6 @@ export const AI = () => {
                                 )}
                             </>
                         )}
-
-                        <div className="setting-item">
-                            <div className="setting-label">
-                                <h4>{t("settings.ai.requireConfirmation.title")}</h4>
-                                <p>{t("settings.ai.requireConfirmation.description")}</p>
-                            </div>
-                            <ToggleSwitch onChange={(value) => handleInputChange("requireConfirmation", value)}
-                                          id="ai-require-confirmation" checked={settings.requireConfirmation} />
-                        </div>
                     </>
                 )}
             </div>

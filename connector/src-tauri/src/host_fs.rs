@@ -74,10 +74,83 @@ pub struct HostFsState {
     inner: Mutex<HostFsInner>,
 }
 
+#[derive(Clone)]
+enum ShareRoot {
+    Disk,
+    Folder(PathBuf),
+}
+
 #[derive(Default)]
 struct HostFsInner {
     handles: HashMap<u64, OpenEntry>,
     next_handle: u64,
+    shares: HashMap<u64, ShareRoot>,
+    next_share: u64,
+}
+
+#[derive(Serialize)]
+pub struct ShareInfo {
+    share: u64,
+    mode: String,
+    folder: Option<String>,
+}
+
+fn default_share_folder() -> Result<PathBuf, HostFsError> {
+    let home = std::env::var_os(if cfg!(windows) { "USERPROFILE" } else { "HOME" })
+        .map(PathBuf::from)
+        .ok_or_else(|| HostFsError::new(E_IO, "home folder not found"))?;
+    Ok(home.join("Nexterm Shared"))
+}
+
+#[tauri::command]
+pub fn host_fs_configure(
+    state: tauri::State<'_, HostFsState>,
+    mode: String,
+    folder: Option<String>,
+) -> FsResult<ShareInfo> {
+
+    let root = match mode.as_str() {
+        "disk" => ShareRoot::Disk,
+        "folder" => {
+            let path = match folder.filter(|f| !f.trim().is_empty()) {
+                Some(f) => PathBuf::from(f),
+                None => default_share_folder()?,
+            };
+            std::fs::create_dir_all(&path).map_err(HostFsError::from_io)?;
+            let canonical = path.canonicalize().map_err(HostFsError::from_io)?;
+            if !canonical.is_dir() {
+                return Err(HostFsError::new(E_NOTDIR, "shared folder is not a directory"));
+            }
+            ShareRoot::Folder(canonical)
+        }
+        _ => return Err(HostFsError::new(E_INVAL, format!("unknown share mode: {}", mode))),
+    };
+
+    let folder = match &root {
+        ShareRoot::Folder(path) => Some(path.to_string_lossy().into_owned()),
+        ShareRoot::Disk => None,
+    };
+
+    let mut g = state.inner.lock().expect("HostFsState mutex poisoned");
+    g.next_share += 1;
+    let share = g.next_share;
+    g.shares.insert(share, root);
+    Ok(ShareInfo { share, mode, folder })
+}
+
+#[tauri::command]
+pub fn host_fs_release(state: tauri::State<'_, HostFsState>, share: u64) {
+    let mut g = state.inner.lock().expect("HostFsState mutex poisoned");
+    g.shares.remove(&share);
+}
+
+fn current_root(state: &tauri::State<'_, HostFsState>, share: u64) -> Result<ShareRoot, HostFsError> {
+    let g = state.inner.lock().expect("HostFsState mutex poisoned");
+    g.shares.get(&share).cloned().ok_or_else(|| HostFsError::new(E_ACCES, "shared drive is not configured"))
+}
+
+fn is_share_root(root: &ShareRoot, path: &std::path::Path) -> bool {
+    matches!(root, ShareRoot::Folder(base) if path == base.as_path())
 }
 
 #[cfg(windows)]
@@ -93,7 +166,7 @@ fn list_drive_letters() -> Vec<char> {
     drives
 }
 
-fn resolve_path(virtual_path: &str) -> Result<Option<PathBuf>, HostFsError> {
+fn split_virtual_path(virtual_path: &str) -> Result<Vec<&str>, HostFsError> {
 
     let trimmed = virtual_path.trim_start_matches(|c| c == '/' || c == '\\');
     #[cfg(windows)]
@@ -111,6 +184,33 @@ fn resolve_path(virtual_path: &str) -> Result<Option<PathBuf>, HostFsError> {
             return Err(HostFsError::new(E_ACCES,
                     "parent directory traversal is not allowed"));
         }
+    }
+    Ok(parts)
+}
+
+fn confine_to_folder(base: &std::path::Path, path: PathBuf) -> Result<PathBuf, HostFsError> {
+    let mut existing = path.as_path();
+    while std::fs::symlink_metadata(existing).is_err() {
+        existing = existing.parent()
+            .ok_or_else(|| HostFsError::new(E_ACCES, "path is outside the shared folder"))?;
+    }
+    let canonical = existing.canonicalize().map_err(HostFsError::from_io)?;
+    if !canonical.starts_with(base) {
+        return Err(HostFsError::new(E_ACCES, "path is outside the shared folder"));
+    }
+    Ok(path)
+}
+
+fn resolve_path(root: &ShareRoot, virtual_path: &str) -> Result<Option<PathBuf>, HostFsError> {
+
+    let parts = split_virtual_path(virtual_path)?;
+
+    if let ShareRoot::Folder(base) = root {
+        let mut out = base.clone();
+        for raw in &parts {
+            out.push(raw);
+        }
+        return confine_to_folder(base, out).map(Some);
     }
 
     #[cfg(unix)] {
@@ -200,13 +300,15 @@ pub struct OpenResult {
 #[tauri::command]
 pub fn host_fs_open(
     state: tauri::State<'_, HostFsState>,
+    share: u64,
     path: String,
     flags: i32,
     disposition: String,
     is_directory: bool,
 ) -> FsResult<OpenResult> {
 
-    let resolved = resolve_path(&path)?;
+    let root = current_root(&state, share)?;
+    let resolved = resolve_path(&root, &path)?;
 
     let read  = (flags & 0x01) != 0;
     let write = (flags & 0x02) != 0;
@@ -429,6 +531,7 @@ pub fn host_fs_readdir(
 #[tauri::command]
 pub fn host_fs_unlink(
     state: tauri::State<'_, HostFsState>,
+    share: u64,
     handle: u64,
     is_directory: bool,
 ) -> FsResult<()> {
@@ -441,6 +544,10 @@ pub fn host_fs_unlink(
             .ok_or_else(|| HostFsError::new(E_ACCES, "cannot unlink synthetic"))?
             .to_path_buf()
     };
+
+    if is_share_root(&current_root(&state, share)?, &path) {
+        return Err(HostFsError::new(E_ACCES, "cannot remove the shared folder"));
+    }
 
     let result = if is_directory {
         std::fs::remove_dir(&path)
@@ -458,6 +565,7 @@ pub fn host_fs_unlink(
 #[tauri::command]
 pub fn host_fs_rename(
     state: tauri::State<'_, HostFsState>,
+    share: u64,
     handle: u64,
     new_path: String,
 ) -> FsResult<()> {
@@ -471,7 +579,12 @@ pub fn host_fs_rename(
             .to_path_buf()
     };
 
-    let resolved = resolve_path(&new_path)?;
+    let root = current_root(&state, share)?;
+    if is_share_root(&root, &old_path) {
+        return Err(HostFsError::new(E_ACCES, "cannot rename the shared folder"));
+    }
+
+    let resolved = resolve_path(&root, &new_path)?;
     let target = resolved.ok_or_else(|| HostFsError::new(
             E_ACCES, "cannot rename to synthetic root"))?;
 
@@ -507,9 +620,9 @@ pub fn host_fs_truncate(
 }
 
 #[tauri::command]
-pub fn host_fs_stat(path: String) -> FsResult<EntryMeta> {
+pub fn host_fs_stat(state: tauri::State<'_, HostFsState>, share: u64, path: String) -> FsResult<EntryMeta> {
 
-    let resolved = resolve_path(&path)?;
+    let resolved = resolve_path(&current_root(&state, share)?, &path)?;
     let real = match resolved {
         None => return Ok(synthetic_root_meta()),
         Some(p) => p,

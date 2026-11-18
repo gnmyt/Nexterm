@@ -1536,6 +1536,12 @@ int guac_rdp_get_depth(freerdp* rdp) {
 #endif
 }
 
+int guac_rdp_settings_desktop_scale(guac_rdp_settings* settings) {
+    if (settings->desktop_scale)
+        return settings->desktop_scale;
+    return settings->resolution * 100 / GUAC_RDP_NATIVE_RESOLUTION;
+}
+
 void guac_rdp_push_settings(guac_client* client,
         guac_rdp_settings* guac_settings, freerdp* rdp) {
 
@@ -1556,7 +1562,7 @@ void guac_rdp_push_settings(guac_client* client,
     freerdp_settings_set_uint32(rdp_settings, FreeRDP_DesktopWidth, guac_settings->width);
     freerdp_settings_set_uint32(rdp_settings, FreeRDP_DeviceScaleFactor, 100);
     freerdp_settings_set_uint32(rdp_settings, FreeRDP_DesktopHeight, guac_settings->height);
-    freerdp_settings_set_uint32(rdp_settings, FreeRDP_DesktopScaleFactor, guac_settings->resolution * 100 / GUAC_RDP_NATIVE_RESOLUTION);
+    freerdp_settings_set_uint32(rdp_settings, FreeRDP_DesktopScaleFactor, guac_rdp_settings_desktop_scale(guac_settings));
     freerdp_settings_set_uint32(rdp_settings, FreeRDP_ColorDepth, guac_settings->color_depth);
     freerdp_settings_set_string(rdp_settings, FreeRDP_AlternateShell, guac_strdup(guac_settings->initial_program));
     freerdp_settings_set_uint32(rdp_settings, FreeRDP_KeyboardLayout, guac_settings->server_layout->freerdp_keyboard_layout);
@@ -1794,6 +1800,8 @@ void guac_rdp_push_settings(guac_client* client,
     rdp_settings->ColorDepth = guac_settings->color_depth;
     rdp_settings->DesktopWidth = guac_settings->width;
     rdp_settings->DesktopHeight = guac_settings->height;
+    rdp_settings->DeviceScaleFactor = 100;
+    rdp_settings->DesktopScaleFactor = guac_rdp_settings_desktop_scale(guac_settings);
     rdp_settings->AlternateShell = guac_strdup(guac_settings->initial_program);
     rdp_settings->KeyboardLayout = guac_settings->server_layout->freerdp_keyboard_layout;
 

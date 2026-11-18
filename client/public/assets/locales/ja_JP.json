@@ -1,0 +1,2496 @@
+{
+  "common": {
+    "error": "エラー",
+    "success": "成功",
+    "loading": "読み込み中...",
+    "saving": "保存中...",
+    "close": "閉じる",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "download": "ダウンロード",
+    "maximize": "最大化",
+    "restore": "復元",
+    "resize": "サイズ変更",
+    "actions": {
+      "cancel": "キャンセル",
+      "confirm": "確認する",
+      "discard": "破棄する",
+      "login": "ログイン",
+      "register": "登録する",
+      "save": "保存",
+      "saving": "… の保存",
+      "download": "ダウンロード",
+      "close": "閉じる",
+      "maximize": "最大化",
+      "restore": "復元",
+      "back": "戻る"
+    },
+    "iconChooser": {
+      "searchIcons": "検索アイコン...",
+      "searchResults": "検索結果",
+      "popularIcons": "人気のアイコン",
+      "noResults": "アイコンが見つかりませんでした"
+    },
+    "labels": {
+      "username": "ユーザー名",
+      "password": "パスワード",
+      "firstName": "名",
+      "lastName": "姓",
+      "code": "コード",
+      "twoFACode": "2FAコード"
+    },
+    "placeholders": {
+      "username": "ユーザー名",
+      "password": "パスワード",
+      "firstName": "名",
+      "lastName": "姓",
+      "code": "コード"
+    },
+    "confirmDialog": {
+      "title": "本当にいいの？",
+      "defaultText": "この操作は元に戻せない。"
+    },
+    "loginDialog": {
+      "title": "Nexterm",
+      "registrationTitle": "登録",
+      "ssoOrContinueWith": "または、以下に進む",
+      "noAuthMethodsAvailable": "利用可能な認証方法がない。",
+      "signInWithPasskey": "パスキーでログインする",
+      "signInWithQrCode": "QRコードでログインする",
+      "qrScanDescription": "NextermモバイルアプリでこのQRコードをスキャンすると、すぐにログインできる。",
+      "backToLogin": "ログイン画面に戻る",
+      "authenticating": "認証中……",
+      "noAccount": "アカウントをお持ちでないか？",
+      "haveAccount": "すでにアカウントをお持ちですか？",
+      "welcome": "おかえり",
+      "subtitle": "Nexterm へ進むには、ログインしてください。",
+      "registrationSubtitle": "アカウントを作成して、始めよう。",
+      "firstTimeSubtitle": "このインスタンスの最初の管理者アカウントを作成する。",
+      "twoFactorTitle": "二要素認証",
+      "twoFactorDescription": "認証アプリに表示されたコードを入力してください。",
+      "qrTitle": "アプリでログインする",
+      "demo": {
+        "title": "Nextermを試してみよう",
+        "subtitle": "アカウント登録不要で、シミュレートされたサーバーを備えたライブインスタンスを体験できる。",
+        "start": "デモを開始する",
+        "orSignIn": "または、アカウントにログインする",
+        "failed": "デモセッションを開始できなかった"
+      }
+    },
+    "demo": {
+      "timeLeft": "デモ · {{time}} 残り",
+      "end": "デモ終了",
+      "endConfirmText": "デモセッションを終了するか？作成した内容はすべて削除される。",
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min",
+      "hours_one": "{{count}} 時間",
+      "hours_other": "{{count}} 時間",
+      "hoursMinutes": "{{hours}}h {{minutes}}m"
+    },
+    "deviceLink": {
+      "title": "デバイスのリンク",
+      "description": "端末に表示されているコードを入力し、その端末がアカウントにアクセスすることを許可する。",
+      "qrTab": "QRコード",
+      "codeTab": "コード",
+      "qrDescription": "NextermモバイルアプリでこのQRコードをスキャンして、デバイスを連携させよう。",
+      "codeLabel": "デバイスコード",
+      "continue": "続ける",
+      "verifying": "確認中……",
+      "confirmTitle": "デバイスの認証",
+      "confirmDescription": "ある端末から、あなたのアカウントへのアクセスをリクエストしている。以下の詳細を確認してほしい。",
+      "deviceInfo": "デバイス情報",
+      "type": "種類",
+      "ipAddress": "IPアドレス",
+      "userAgent": "デバイス",
+      "authorize": "デバイスの認証",
+      "authorizing": "認証中……",
+      "deny": "拒否する",
+      "invalidCode": "コードが無効か、有効期限が切れている",
+      "authorizationFailed": "認証に失敗した",
+      "deviceAuthorized": "デバイスの認証に成功した",
+      "successTitle": "デバイスが認証された",
+      "successMessage": "このタブを閉じて、アプリに戻ることができる。",
+      "clientTypes": {
+        "mobile": "モバイルアプリ",
+        "connector": "デスクトップコネクタ"
+      }
+    },
+    "connectorSetup": {
+      "title": "Nextermコネクタ",
+      "serverUrl": "サーバーのURL",
+      "serverUrlDescription": "接続するには、NextermサーバーのURLを入力する。",
+      "connect": "接続する",
+      "connecting": "接続中...",
+      "enterServerUrl": "サーバーのURLを入力してください",
+      "connectionFailed": "サーバーへの接続に失敗した。URLを確認してください。",
+      "deviceLinkingNotSupported": "このサーバーはデバイスのリンクに対応していない。Nextermサーバーを更新してください。",
+      "authMethodDescription": "サーバーへの認証方法を選択する。",
+      "showCode": "コードを表示",
+      "showCodeDesc": "Webインターフェースに、手動で入力するコードを表示する",
+      "openBrowser": "承認する",
+      "openBrowserDesc": "ブラウザを開いて、自動的に認証を行う",
+      "enterCodeDescription": "このデバイスを認証するには、NextermのWebインターフェースにこのコードを入力する。",
+      "copyCode": "コードをコピー",
+      "codeCopied": "コードがクリップボードにコピーされた",
+      "copyFailed": "コードのコピーに失敗した",
+      "waitingForAuth": "承認待ち中……",
+      "codeCreationFailed": "デバイスコードの作成に失敗した",
+      "authSuccess": "認証に成功した！"
+    },
+    "serverSwitcher": {
+      "title": "サーバー",
+      "addServer": "サーバーを追加する",
+      "removeServer": "サーバーを削除する",
+      "removeConfirmText": "これにより、 {{server}}への接続が解除される。本当にいいか？"
+    },
+    "selectBox": {
+      "defaultOption": "オプションを選択してください…",
+      "search": "検索...",
+      "noResults": "結果は見つかりませんでした"
+    },
+    "userSearch": {
+      "placeholder": "ユーザーを検索…"
+    },
+    "table": {
+      "noData": {
+        "title": "データが見つかりませんでした",
+        "subtitle": "表示する項目はありません。"
+      },
+      "pagination": {
+        "showing": "{{start}} を {{end}} に表示中 {{total}}",
+        "previous": "前へ",
+        "next": "次へ",
+        "pageInfo": "{{current}} ページ目 {{total}}"
+      }
+    },
+    "sidebar": {
+      "settings": "設定",
+      "servers": "サーバー",
+      "monitoring": "モニタリング",
+      "snippets": "スニペット",
+      "audit": "監査",
+      "account": "アカウント",
+      "logout": "ログアウト",
+      "collapseTitle": "サイドバーを折りたたむ",
+      "logoutConfirmText": "これにより、 {{username}} のアカウントからログアウトされる。本当にいいか？",
+      "starOnGitHub": "GitHubでスターをつける",
+      "support": "サポート"
+    },
+    "quickAction": {
+      "placeholder": "サーバーやスニペットを検索するか、移動する……",
+      "noResults": "結果は見つかりませんでした",
+      "navigate": "ナビゲート",
+      "select": "選択",
+      "close": "閉じる",
+      "types": {
+        "server": "サーバー",
+        "snippet": "スニペット",
+        "navigation": "[ここ](リンク)へ移動する",
+        "settings": "設定"
+      }
+    },
+    "errors": {
+      "loadingAuthProviders": "認証プロバイダの読み込み中にエラーが発生した： {{error}}",
+      "webSocketConnection": {
+        "title": "WebSocket接続に失敗した",
+        "message": "接続できない。これは、リバースプロキシでWebSocketが有効になっていないか、ネットワーク上の制限が原因である可能性がある。"
+      },
+      "generalError": "エラーが発生した",
+      "invalidCredentials": "ユーザー名またはパスワードが間違っている",
+      "invalidTwoFactor": "無効な二要素認証コード",
+      "internalAuthDisabled": "内部認証は無効になっている",
+      "ssoLoginFailed": "SSOログインの開始に失敗した",
+      "passkeyLoginFailed": "パスキー認証に失敗した",
+      "passkeyCancelled": "パスキー認証が解除された",
+      "qrCodeExpired": "QRコードの有効期限が切れた。もう一度試してほしい。",
+      "connection": {
+        "title": "接続に失敗した",
+        "close": "タブを閉じる",
+        "reconnect": "再接続",
+        "reconnectNow": "再接続",
+        "reconnecting": "… の再接続",
+        "reconnectingIn": "{{seconds}}秒後に再接続する",
+        "reconnectAttempt": "試み {{count}} の {{max}}",
+        "hostUnreachable": "リモートホストに接続できない",
+        "refused": "リモートホストによる接続拒否",
+        "timeout": "接続タイムアウト",
+        "authenticationFailed": "認証に失敗した",
+        "permissionDenied": "アクセスが拒否された",
+        "failed": "接続に失敗した",
+        "closedUnexpectedly": "接続が予期せず切断された",
+        "error": "接続エラーが発生した",
+        "scriptClosedUnexpectedly": "スクリプトの接続が予期せず閉じられた",
+        "scriptError": "スクリプトの接続エラーが発生した",
+        "rdpSessionConflict": "別の接続が開かれたため、サーバーによってセッションが切断された。",
+        "rdpSessionTimeout": "RDPセッションのセッション時間制限に達したため、接続が切断された。",
+        "rdpSessionClosed": "RDPセッションは、リモートサーバーまたは管理者によって終了された。"
+      },
+      "accountLinkRequired": "このユーザー名のアカウントはすでに存在する。管理者に依頼し、このアカウントを自分のログイン情報と紐づける許可を得てほしい。"
+    },
+    "messages": {
+      "invitationAccepted": "招待を受け入れた",
+      "invitationDeclined": "招待を辞退した",
+      "invitationError": "招待状の処理に失敗した",
+      "organizationDeleted": "組織の削除に成功した",
+      "organizationDeleteError": "組織の削除に失敗した",
+      "leftOrganization": "あなたは組織を離れた",
+      "leaveOrganizationError": "組織からの離脱に失敗した"
+    },
+    "unsavedChanges": {
+      "title": "保存されていない変更",
+      "text": "それらを破棄するか、編集を続けて、完了したら保存する。",
+      "keepEditing": "編集を続ける"
+    }
+  },
+  "audit": {
+    "page": {
+      "title": "監査ログ",
+      "subtitle": "インフラストラクチャ全体にわたるすべての活動を追跡・監視する"
+    },
+    "errors": {
+      "failedToLoadData": "監査データの読み込みに失敗した",
+      "failedToLoadLogs": "監査ログの読み込みに失敗した"
+    },
+    "filters": {
+      "title": "フィルター",
+      "activeCount": "{{count}} アクティブ",
+      "organization": "組織",
+      "action": "アクション",
+      "resource": "リソース",
+      "startDate": "開始日",
+      "endDate": "終了日",
+      "clearAll": "すべてクリア",
+      "options": {
+        "allActions": "すべてのアクション",
+        "allResources": "すべてのリソース",
+        "allOrganizations": "すべての組織（個人＋組織）",
+        "personalOnly": "個人利用のみ",
+        "categoryAll": "{{category}} (すべて)"
+      }
+    },
+    "table": {
+      "headers": {
+        "timestamp": "タイムスタンプ",
+        "action": "アクション",
+        "actor": "俳優",
+        "resource": "リソース",
+        "organization": "組織",
+        "details": "詳細"
+      },
+      "noLogs": {
+        "title": "監査ログは見つかりませんでした",
+        "subtitle": "フィルタの設定を変更してみるか、後で再度確認してみてほしい。"
+      },
+      "loading": "監査ログを読み込んでいる……",
+      "expandedDetails": {
+        "connectionReason": "接続理由",
+        "userAgent": "ユーザーエージェント",
+        "additionalDetails": "詳細情報"
+      },
+      "badges": {
+        "personal": "個人用",
+        "user": "ユーザー番号{{id}}",
+        "organization": "組織番号{{id}}"
+      },
+      "durationUnits": {
+        "seconds": "秒",
+        "minutes": "議事録",
+        "hours": "時間"
+      }
+    },
+    "pagination": {
+      "showing": "{{total}} のログのうち、 {{start}} から {{end}} までの部分を表示中",
+      "previous": "前へ",
+      "next": "次へ",
+      "pageInfo": "{{current}} ページ目 {{total}}"
+    }
+  },
+  "snippets": {
+    "page": {
+      "title": "スニペット",
+      "subtitle": "ターミナルで素早くアクセスできるよう、コマンドスニペットを管理する",
+      "addSnippet": "スニペットを追加する",
+      "personal": "個人用",
+      "selectOrganization": "組織を選択する",
+      "tabs": {
+        "snippets": "スニペット",
+        "scripts": "スクリプト"
+      }
+    },
+    "list": {
+      "empty": "まだスニペットはないようだ。最初のスニペットを作成しよう！",
+      "actions": {
+        "edit": "スニペットを編集する",
+        "delete": "スニペットを削除する"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "スニペットを作成する",
+        "edit": "スニペットを編集"
+      },
+      "fields": {
+        "name": "名前",
+        "description": "説明（任意）",
+        "command": "コマンド",
+        "osFilter": "対応OS"
+      },
+      "placeholders": {
+        "name": "スニペット名",
+        "description": "このコマンドは何をやるのか？",
+        "command": "コマンドを入力してください",
+        "osFilter": "すべてのオペレーティングシステム"
+      },
+      "actions": {
+        "cancel": "キャンセル",
+        "create": "作成する",
+        "save": "保存"
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "スニペットの作成に成功した",
+        "updated": "スニペットの更新に成功した",
+        "deleted": "スニペットが正常に削除された"
+      },
+      "errors": {
+        "required": "名前と命令は必須だ",
+        "loadFailed": "スニペットデータの読み込みに失敗した",
+        "saveFailed": "スニペットの保存に失敗した",
+        "deleteFailed": "スニペットの削除に失敗した",
+        "reorderFailed": "スニペットの並べ替えに失敗した"
+      }
+    }
+  },
+  "scripts": {
+    "page": {
+      "title": "スクリプト",
+      "subtitle": "サーバータスク用の自動化スクリプトを管理する",
+      "addScript": "スクリプトを追加する",
+      "personal": "個人用",
+      "selectOrganization": "組織を選択する",
+      "tabs": {
+        "snippets": "スニペット",
+        "scripts": "スクリプト"
+      }
+    },
+    "execution": {
+      "progressPanel": {
+        "title": "スクリプトの実行",
+        "noSteps": "まだ手順はない",
+        "noStepsDescription": "スクリプトの実行に伴い、ここに手順が表示される",
+        "steps": "手順"
+      },
+      "dialogs": {
+        "enterValue": "値を入力する",
+        "selectOption": "オプションを選択する",
+        "confirm": "確認する",
+        "submit": "送信",
+        "cancel": "キャンセル",
+        "ok": "OK",
+        "yes": "はい",
+        "no": "いいえ",
+        "copyCell": "セルのコピー",
+        "copyRow": "行をコピー",
+        "copyTable": "テーブルのコピー",
+        "close": "閉じる"
+      },
+      "status": {
+        "running": "ランニング",
+        "completed": "完了した",
+        "error": "エラー",
+        "pending": "保留中"
+      }
+    },
+    "list": {
+      "empty": "まだスクリプトは一つもない。最初のスクリプトを作成しよう！",
+      "actions": {
+        "edit": "スクリプトを編集する",
+        "delete": "スクリプトを削除する"
+      }
+    },
+    "dialog": {
+      "title": {
+        "create": "スクリプトを作成する",
+        "edit": "スクリプトを編集する"
+      },
+      "scriptDetails": "スクリプトの詳細",
+      "scriptContent": "スクリプトの内容",
+      "helpTip": "対話型機能には @NEXTERM: ディレクティブを使用する",
+      "fields": {
+        "name": "名前",
+        "description": "説明",
+        "osFilter": "対応OS"
+      },
+      "placeholders": {
+        "name": "スクリプト名",
+        "description": "このスクリプトは何をやるのか？",
+        "osFilter": "すべてのオペレーティングシステム"
+      },
+      "actions": {
+        "cancel": "キャンセル",
+        "create": "作成する",
+        "update": "更新",
+        "creating": "作成中...",
+        "updating": "更新中..."
+      },
+      "errors": {
+        "nameRequired": "スクリプト名を入力する必要がある",
+        "descriptionRequired": "スクリプトの説明が必要だ",
+        "contentRequired": "スクリプトの内容は必須だ",
+        "createFailed": "スクリプトの作成に失敗した",
+        "updateFailed": "スクリプトの更新に失敗した"
+      }
+    },
+    "messages": {
+      "success": {
+        "created": "スクリプトの作成に成功した",
+        "updated": "スクリプトの更新に成功した",
+        "deleted": "スクリプトは正常に削除された",
+        "reordered": "スクリプトの順序変更に成功した"
+      },
+      "errors": {
+        "loadFailed": "スクリプトデータの読み込みに失敗した",
+        "deleteFailed": "スクリプトの削除に失敗した",
+        "reorderFailed": "スクリプトの並べ替えに失敗した"
+      }
+    },
+    "menu": {
+      "searchPlaceholder": "スクリプトを検索…",
+      "noScripts": "利用可能なスクリプトはない。スクリプトセクションでいくつか作成してほしい。",
+      "noMatch": "検索条件に一致するスクリプトはない。",
+      "selectIdentity": "IDを選択する"
+    }
+  },
+  "monitoring": {
+    "page": {
+      "title": "サーバー監視",
+      "subtitle": "サーバーのリアルタイム統計情報と稼働状況の監視",
+      "searchPlaceholder": "サーバーを検索中……",
+      "filters": {
+        "all": "すべて ({{count}})",
+        "online": "オンライン（{{count}}）",
+        "issues": "問題点 ({{count}})"
+      }
+    },
+    "errors": {
+      "loadFailed": "監視データの読み込みに失敗した",
+      "loadFailedDescription": "監視データを取得できなかった。接続を確認して、もう一度試してみてください。",
+      "retry": "再試行"
+    },
+    "grid": {
+      "noServers": {
+        "title": "サーバーが見つかりませんでした",
+        "subtitle": "監視対象のSSHサーバーがない。\n監視を開始するには、サーバーを追加する必要がある。"
+      },
+      "noResults": {
+        "title": "一致するサーバーがない",
+        "subtitle": "検索条件に一致する監視対象サーバーはない。"
+      },
+      "metrics": {
+        "loadAverage": "負荷平均",
+        "processes": "プロセス",
+        "uptime": "稼働時間",
+        "nodes": "ノード",
+        "vms": "VM／コンテナ",
+        "cpu": "CPU",
+        "memory": "メモリ"
+      },
+      "status": {
+        "serverOffline": "サーバーがオフラインだ",
+        "connectionError": "接続エラー",
+        "statusUnknown": "状況不明",
+        "offlineMessage": "現在、サーバーは監視リクエストに応答していない。",
+        "errorMessage": "サーバーへの接続を確立できなかった。",
+        "unknownMessage": "サーバーの状態を確認できなかった。",
+        "lastSeen": "最終アクセス日時： {{time}}",
+        "noRecentActivity": "最近の活動はない",
+        "waitingForData": "データを待機中",
+        "pendingMessage": "モニタリングデータは、次回のモニタリングサイクル終了後に表示される。",
+        "labels": {
+          "online": "オンライン",
+          "offline": "オフライン",
+          "error": "エラー",
+          "pending": "保留中",
+          "unknown": "不明"
+        }
+      },
+      "uptime": {
+        "unknown": "不明",
+        "format": {
+          "days": "{{days}}d {{hours}}h {{minutes}}m",
+          "hours": "{{hours}}h {{minutes}}m",
+          "minutes": "{{minutes}}m"
+        }
+      }
+    },
+    "details": {
+      "timeRanges": {
+        "1h": "1時間",
+        "6h": "6時間",
+        "24h": "24時間"
+      },
+      "tabs": {
+        "overview": "概要",
+        "storage": "ストレージ",
+        "network": "ネットワーク",
+        "processes": "プロセス",
+        "nodes": "ノード"
+      },
+      "overview": {
+        "systemInfo": {
+          "title": "システム情報",
+          "hostname": "ホスト名",
+          "os": "OS",
+          "version": "バージョン",
+          "kernel": "カーネル",
+          "architecture": "建築",
+          "uptime": "稼働時間",
+          "unknown": "不明",
+          "noData": "システム情報は利用できない"
+        },
+        "memory": {
+          "title": "Memory",
+          "summary": "{{used}} of {{total}} ({{percent}}%)",
+          "used": "Used",
+          "cache": "Buffers / Cache",
+          "free": "Free"
+        },
+        "performance": {
+          "title": "パフォーマンス指標",
+          "loadAverage": "負荷平均",
+          "processes": "アクティブなプロセス",
+          "total": "合計： {{value}}",
+          "loadDetail": "5m： {{fiveMin}}、15m： {{fifteenMin}}",
+          "memory": "メモリ"
+        },
+        "uptime": {
+          "format": {
+            "full": "{{days}} 日、 {{hours}} 時間、 {{minutes}} 分",
+            "hoursMinutes": "{{hours}} 時間、 {{minutes}} 分",
+            "minutes": "{{minutes}} 議事録"
+          }
+        }
+      },
+      "charts": {
+        "cpuUsage": "CPU使用率",
+        "memoryUsage": "メモリ使用量",
+        "processes": "アクティブなプロセス",
+        "noData": "選択した期間のデータはありません"
+      },
+      "storage": {
+        "title": "ディスク使用量",
+        "noData": "ディスク使用量のデータは利用できない",
+        "noPartitions": "マウントされたパーティションがない",
+        "usedOf": "{{used}} {{total}} を使用",
+        "free": "{{value}} 無料",
+        "filesystems": "ファイルシステム",
+        "disks": "ディスク",
+        "on": "{{volume}} on {{partition}}",
+        "swap": "スワップ",
+        "unmounted": "マウントされていない",
+        "unallocated": "未割り当て",
+        "inodes": "iノード",
+        "inodesDetail": "{{used}} of {{total}}",
+        "health": {
+          "passed": "健康的",
+          "warning": "警告",
+          "failed": "失敗する",
+          "denied": "SMARTにはroot権限が必要だ",
+          "temperature": "温度",
+          "powerOn": "電源投入時間",
+          "wear": "着用",
+          "reallocated": "再割り当てされたセクタ",
+          "pending": "保留中のセクター",
+          "mediaErrors": "メディアエラー",
+          "years": "{{value}} 年",
+          "days": "{{value}} 日",
+          "hours": "{{value}} 時間",
+          "failedTitle": "ディスクの故障が予測された",
+          "failedMessage": "{{disks}} SMART自己診断に失敗した。データをバックアップし、ディスクを交換する。"
+        }
+      },
+      "network": {
+        "speed": "速度",
+        "noData": "利用可能なネットワークインターフェースのデータがない",
+        "download": "ダウンロード",
+        "upload": "アップロード",
+        "interface": "インターフェース",
+        "address": "住所",
+        "gateway": "ゲートウェイ",
+        "interfaces": "インターフェース",
+        "virtual": "仮想インターフェース",
+        "defaultRoute": "デフォルトルート",
+        "up": "上へ",
+        "down": "下へ",
+        "errors": "{{count}} エラー",
+        "dropped": "{{count}} 落とした",
+        "copy": "コピー {{address}}",
+        "total": "{{value}} 合計"
+      },
+      "processes": {
+        "searchPlaceholder": "検索中……",
+        "showing": "{{total}} プロセス中、 {{count}} を表示中",
+        "noData": "プロセスデータは利用できない。プロセスデータは、次の監視サイクル終了後に表示される。",
+        "noResults": "検索条件に一致するプロセスはありません。",
+        "columns": {
+          "command": "コマンド",
+          "cpu": "CPU",
+          "mem": "メモリ"
+        }
+      },
+      "pve": {
+        "clusterInfo": "クラスタ情報",
+        "onlineNodes": "オンラインノード",
+        "totalCPU": "CPU合計",
+        "totalMemory": "メモリ合計",
+        "totalStorage": "総ストレージ容量",
+        "storageUsage": "ストレージの使用状況",
+        "cores": "コア",
+        "uptime": "稼働時間",
+        "qemuVMs": "QEMU仮想マシン",
+        "lxcContainers": "LXCコンテナ",
+        "running": "{{count}} ランニング",
+        "vmContainerCount": "VM／コンテナ数",
+        "cpu": "CPU",
+        "memory": "メモリ",
+        "storage": "ストレージ",
+        "nodeOffline": "このノードは現在オフラインだ",
+        "noNodes": "利用可能なノードがない"
+      }
+    }
+  },
+  "settings": {
+    "title": "設定",
+    "userSettings": "ユーザー設定",
+    "adminSettings": "管理設定",
+    "pages": {
+      "account": "アカウント",
+      "appearance": "外観",
+      "terminal": "ターミナル",
+      "fileManager": "ファイルマネージャー",
+      "keymaps": "キーマップ",
+      "identities": "アイデンティティ",
+      "sessions": "セッション",
+      "organizations": "組織",
+      "users": "ユーザー",
+      "authentication": "認証",
+      "sources": "出典",
+      "ai": "AI",
+      "monitoring": "モニタリング",
+      "backup": "ストレージ",
+      "engines": "エンジン",
+      "permissions": "役割と権限",
+      "trustedCertificates": "信頼された証明書"
+    },
+    "account": {
+      "title": "アカウント",
+      "demo": {
+        "title": "セキュリティ",
+        "description": "ゲストとして閲覧している間は、パスワード、二要素認証、パスキー、APIキー、プロフィール画像を変更することはできない。"
+      },
+      "avatar": {
+        "label": "写真",
+        "upload": "プロフィール写真を変更する",
+        "remove": "削除",
+        "updated": "プロフィール写真が更新された",
+        "removed": "プロフィール写真が削除された",
+        "tooLarge": "選択した画像は10 MBを超えている",
+        "uploadFailed": "プロフィール写真をアップロードできなかった",
+        "removeFailed": "プロフィール写真を削除できなかった"
+      },
+      "accountDetails": "口座詳細",
+      "firstName": "名",
+      "lastName": "姓",
+      "appearance": "外観",
+      "appearanceDescription": "好みのテーマを選んでください。「自動」を選択すると、システム設定に従い、時間帯に応じてテーマが調整される。",
+      "themeAuto": "自動車",
+      "themeLight": "光",
+      "themeDark": "ダーク",
+      "themeDarkHint": "3回押すと、OLEDモードが有効になる。",
+      "themeOled": "OLED",
+      "oledEnabled": "OLEDモードが有効になっている",
+      "oledDisabled": "OLEDモードが無効になっている",
+      "themeLabel": "テーマ",
+      "accentColor": "アクセントカラー",
+      "sizeLabel": "サイズ",
+      "sizeXS": "XS",
+      "sizeS": "S",
+      "sizeM": "M",
+      "sizeL": "L",
+      "sizeXL": "XL",
+      "twoFactor": "二要素認証",
+      "twoFactorActive": "アクティブ",
+      "twoFactorInactive": "非アクティブ",
+      "twoFactorDescription": "二段階認証を有効にすることで、アカウントのセキュリティをさらに強化できる。",
+      "enable2FA": "2段階認証を有効にする",
+      "disable2FA": "2段階認証を無効にする",
+      "changePassword": "パスワードを変更する",
+      "changePasswordDescription": "ここで、アカウント用の新しい安全なパスワードを設定してください。",
+      "changePasswordButton": "パスワードを変更する",
+      "language": "言語",
+      "languageDescription": "インターフェースの言語を選択してください。",
+      "currentLanguage": "現在の言語",
+      "missingLanguage": "お探しの言語はありませんか？",
+      "helpTranslateLink": "Nextermの翻訳にご協力ください",
+      "syncLoginRequired": "設定を同期するには、ログインしてください",
+      "appearanceSyncEnabled": "外観の設定がアカウントに同期されるようになった",
+      "appearanceSyncDisabled": "外観の設定は今後同期されなくなる",
+      "generalSyncEnabled": "一般設定がアカウントに同期されるようになった",
+      "generalSyncDisabled": "一般設定は今後同期されなくなる",
+      "customThemes": {
+        "title": "カスタムテーマ",
+        "description": "カスタムCSSテーマを作成するか、同期されたソーステーマから選択して、インターフェースを自分好みにカスタマイズできる。",
+        "newTheme": "新しいテーマ",
+        "noThemesYet": "まだテーマはない",
+        "noThemesDescription": "カスタムテーマを作成するか、ソースを追加して始めよう。",
+        "editTheme": "テーマを編集する",
+        "createTheme": "テーマを作成する",
+        "name": "名前",
+        "themeName": "テーマ名",
+        "descriptionLabel": "説明",
+        "optionalDescription": "任意の説明",
+        "saveChanges": "変更を保存",
+        "fromSource": "出典より",
+        "edit": "編集",
+        "delete": "削除",
+        "deleteConfirm": "テーマ「{{name}} 」を削除してもよろしいか？",
+        "failedToLoadTheme": "テーマの読み込みに失敗した",
+        "nameAndCssRequired": "名前とCSSは必須だ",
+        "themeUpdated": "テーマが更新された",
+        "themeCreated": "テーマが作成された",
+        "failedToSaveTheme": "テーマの保存に失敗した",
+        "themeDeleted": "テーマが削除された",
+        "failedToDeleteTheme": "テーマの削除に失敗した",
+        "failedToActivateTheme": "テーマの有効化に失敗した"
+      },
+      "sessionSynchronization": "セッションの同期",
+      "sessionSyncDescription": "サーバーセッションの保存方法や、デバイス間およびブラウザのタブ間で同期される方法を制御する。",
+      "sessionSyncAcrossDevices": "あらゆるデバイスで",
+      "sessionSyncSameBrowser": "同じブラウザ",
+      "sessionSyncSameTab": "同じタブ",
+      "sessionSyncAcrossDevicesDesc": "セッションはあらゆるデバイスで利用可能で、同期される",
+      "sessionSyncSameBrowserDesc": "セッションは、現在のユーザーセッションに合わせて同期される",
+      "sessionSyncSameTabDesc": "セッションはブラウザのタブ内で同期される",
+      "showAgentSessionsDesc": "AIアシスタントまたはMCPエージェントによって開かれたセッションを、閲覧専用タブとして表示する",
+      "twoFactorDialog": {
+        "title": "2段階認証を有効にする",
+        "description": "認証アプリでコードをスキャンするか、 <span class=\"totp-code\">{{secret}}</span> 手動で入力する。",
+        "codePlaceholder": "2FAコードを入力する",
+        "enableButton": "有効にする",
+        "messages": {
+          "setupFailed": "2段階認証の設定に失敗した。もう一度試してほしい。"
+        }
+      },
+      "passkeys": {
+        "sectionTitle": "パスキー",
+        "sectionDescription": "パスキーを使えば、パスワードを使わずに、より迅速かつ安全にサインインできる。",
+        "addButton": "パスキーを追加する",
+        "addDialogTitle": "パスキーを追加する",
+        "addDialogDescription": "後で識別しやすいように、パスキーに名前を付けておこう。",
+        "namePlaceholder": "パスキー名",
+        "enterName": "このパスキーの名前を入力してください：",
+        "defaultName": "マイ・パスキー",
+        "confirmDelete": "このパスキーを削除してもよろしいか？",
+        "createdAt": "作成日 {{date}}",
+        "registerError": "パスキーの登録に失敗した。もう一度試してほしい。",
+        "noPasskeys": "まだパスキーは登録されていない",
+        "rename": "名前を変更する",
+        "delete": "削除"
+      },
+      "apiKeys": {
+        "sectionTitle": "APIキー",
+        "sectionDescription": "スクリプトや連携機能からNextermにプログラム経由でアクセスするためのAPIキーを作成する。",
+        "addButton": "APIキーを作成する",
+        "createTitle": "APIキーを作成する",
+        "createDescription": "キーに名前を付けよう。トークンは作成後に一度だけ表示される。",
+        "nameLabel": "名前",
+        "namePlaceholder": "例：デプロイスクリプト",
+        "nameRequired": "名前は必須だ",
+        "expiryLabel": "有効期限",
+        "expiryNever": "決して",
+        "expiry30": "30日間",
+        "expiry90": "90日",
+        "expiry365": "1年",
+        "createButton": "作成する",
+        "createdTitle": "APIキーが作成された",
+        "createdWarning": "今すぐこのトークンをコピーしてください。セキュリティ上の理由により、これ以降はこのトークンを確認することはできなくなる。",
+        "tokenLabel": "トークン",
+        "doneButton": "完了",
+        "createError": "APIキーの作成に失敗した。",
+        "copyError": "クリップボードへのコピーに失敗した。",
+        "confirmDelete": "このAPIキーを無効化してもよろしいか？このキーを使用しているシステムはすべてアクセスできなくなる。",
+        "noKeys": "まだAPIキーがない",
+        "lastUsed": "最終使用日 {{date}}",
+        "neverUsed": "一度も使ったことがない",
+        "expires": "有効期限 {{date}}",
+        "delete": "削除"
+      },
+      "remoteDesktop": "リモートデスクトップ",
+      "remoteDesktopDescription": "リモートデスクトップセッションのデフォルトの表示スケールだ。接続時にこれを上書きすることができ、セッション中に選択されたスケールはそのデバイスに記憶される。",
+      "remoteDesktopScale": "表示スケール",
+      "remoteDesktopScaleAuto": "自動（デバイスに合わせる）",
+      "remoteDesktopSyncEnabled": "リモートデスクトップの設定が、デバイス間で同期されるようになった",
+      "remoteDesktopSyncDisabled": "リモートデスクトップの設定は、現在このデバイスにのみ保存される"
+    },
+    "passwordChange": {
+      "title": "パスワードを変更する",
+      "description": "強力なパスワードには、特殊文字、数字、大文字と小文字のアルファベットが含まれている。",
+      "newPassword": "新しいパスワード",
+      "confirmPassword": "新しいパスワードの確認",
+      "changePasswordButton": "パスワードを変更する",
+      "currentPassword": "現在のパスワード",
+      "descriptionOwn": "現在のパスワードを入力し、新しいパスワードを設定する。他のすべてのデバイスからはログアウトされる。",
+      "descriptionOther": "このユーザーの新しいパスワードを設定する。すべてのデバイスからログアウトされる。",
+      "successOwn": "パスワードが変更された。他のデバイスからはログアウトされた。",
+      "successOther": "パスワードが変更され、そのユーザーはすべての場所でログアウトされた。"
+    },
+    "organizations": {
+      "title": "所属組織",
+      "createOrganization": "組織を作成する",
+      "noOrganizations": "まだ所属している団体はない。",
+      "noOrganizationsDescription": "チームとの共同作業を始めるには、1つ作成する。",
+      "invite": "招待する",
+      "delete": "削除",
+      "leave": "退室",
+      "members": "メンバー",
+      "auditSettings": {
+        "auditSettingsTab": "監査設定",
+        "sessionRecordingHeading": "セッションの録画",
+        "sessionRecordingDescription": "ターミナルおよびリモートデスクトップのセッションを録画し、再生する",
+        "enableSessionRecordingLabel": "セッションの録画を有効にする",
+        "enableSessionRecordingDescription": "SSH、Telnet、RDP、VNCのセッションを録画し、後で再生できるようにする",
+        "recordingRetentionLabel": "記録の保存期間（日）",
+        "recordingRetentionDescription": "セッションの録画データを自動削除されるまでどのくらいの期間保存するか（1～365日）",
+        "connectionRequirementsHeading": "接続要件",
+        "connectionRequirementsDescription": "接続の動作と要件を制御する",
+        "requireConnectionReasonLabel": "接続理由の入力が必要だ",
+        "requireConnectionReasonDescription": "サーバーに接続する際、ユーザーに理由の入力が必要となる",
+        "activityLoggingHeading": "アクティビティの記録",
+        "activityLoggingDescription": "記録するアクティビティの種類を選択する",
+        "fileOperationsLabel": "ファイル操作",
+        "fileOperationsDescription": "SFTP によるログファイルのアップロード、ダウンロード、削除、および名前変更",
+        "serverConnectionsLabel": "サーバーへの接続",
+        "serverConnectionsDescription": "SSH、SFTP、およびPVEの接続および切断を記録する",
+        "identityManagementLabel": "ID管理",
+        "identityManagementDescription": "SSH IDの作成、変更、削除",
+        "passwordPasteLabel": "パスワードの貼り付け",
+        "passwordPasteDescription": "「パスワード貼り付け」アクションの使用状況を記録する",
+        "serverManagementLabel": "サーバー管理",
+        "serverManagementDescription": "サーバー設定のログ作成、変更、および削除",
+        "folderManagementLabel": "フォルダ管理",
+        "folderManagementDescription": "フォルダの作成、変更、削除",
+        "scriptExecutionLabel": "スクリプトの実行",
+        "scriptExecutionDescription": "スクリプトおよび自動化タスクの実行をログに記録する",
+        "agentOperationsLabel": "AIエージェントの運用",
+        "agentOperationsDescription": "AIアシスタントおよびMCPサーバーを介して接続されたエージェントによって実行されたコマンド、入力、スクリーンショット、およびファイルの変更をログに記録する",
+        "actions": {
+          "save": "設定を保存する"
+        },
+        "messages": {
+          "updated": "監査設定の更新に成功した",
+          "updateFailed": "監査設定の更新に失敗した"
+        }
+      },
+      "pendingInvitations": "保留中の招待状",
+      "invitedBy": "招待者： {{name}}",
+      "deleteConfirmation": "これにより、組織が完全に削除され、すべてのメンバーが除外される。この操作は元に戻せない。",
+      "leaveConfirmation": "本当にこの組織を辞めたいのか？",
+      "dialog": {
+        "title": "組織を作成する",
+        "fields": {
+          "name": "名前",
+          "namePlaceholder": "組織名",
+          "description": "説明（任意）",
+          "descriptionPlaceholder": "貴団体の概要"
+        },
+        "actions": {
+          "cancel": "キャンセル",
+          "create": "作成する"
+        },
+        "messages": {
+          "nameRequired": "組織名の入力は必須だ",
+          "createSuccess": "組織の作成に成功した",
+          "createFailed": "組織の作成に失敗した"
+        }
+      },
+      "sessionSettings": {
+        "sessionSettingsTab": "ライブセッション",
+        "liveSharingHeading": "ライブセッションの共有",
+        "liveSharingDescription": "この組織内でのランニングセッションの共有方法を管理する。",
+        "enableLiveSessionSharingLabel": "ライブセッションの共有を有効にする",
+        "enableLiveSessionSharingDescription": "メンバーには、「ライブセッションの閲覧」または「ライブセッションの制御」の権限が必要だ。",
+        "actions": {
+          "save": "設定を保存する"
+        },
+        "messages": {
+          "updated": "ライブセッションの設定が正常に更新された",
+          "updateFailed": "ライブセッションの設定の更新に失敗した"
+        }
+      }
+    },
+    "users": {
+      "title": "{{count}} ユーザー",
+      "createNewUser": "新しいユーザーを作成する",
+      "searchPlaceholder": "ユーザーを検索…",
+      "twoFactorEnabled": "2段階認証が有効になっている",
+      "twoFactorDisabled": "2段階認証が無効になっている",
+      "noUsers": "ユーザーが見つかりませんでした",
+      "noUsersDescription": "まずは新しいユーザーを作成しよう。",
+      "noSearchResults": "ユーザーが見つかりませんでした",
+      "noSearchResultsDescription": "検索クエリを調整してみてほしい。",
+      "table": {
+        "user": "ユーザー",
+        "twoFactor": "2FA",
+        "roles": "役割"
+      },
+      "contextMenu": {
+        "changePassword": "パスワードを変更する",
+        "deleteUser": "ユーザーを削除する",
+        "loginAsUser": "ユーザーとしてログインする",
+        "deleteConfirm": "これにより、ユーザーおよび関連するすべてのデータが完全に削除される。",
+        "managePermissions": "権限の管理",
+        "allowExternalLink": "SSO/LDAPの連携を許可する",
+        "cancelExternalLink": "SSO/LDAPの連携を解除する",
+        "unlinkExternal": "SSO/LDAP ログインの紐付けを解除する"
+      }
+    },
+    "userDialog": {
+      "title": "新しいユーザーを作成する",
+      "firstName": "名",
+      "lastName": "姓",
+      "username": "ユーザー名",
+      "password": "パスワード",
+      "firstNamePlaceholder": "名",
+      "lastNamePlaceholder": "姓",
+      "usernamePlaceholder": "ユーザー名",
+      "passwordPlaceholder": "パスワード",
+      "create": "作成する",
+      "errorOccurred": "エラーが発生した"
+    },
+    "sessions": {
+      "title": "セッション",
+      "lastActivity": "最終アクセス： {{date}} から {{ip}}",
+      "currentSession": "現在のセッション",
+      "logout": "ログアウト",
+      "revoke": "取り消す",
+      "browserOn": "{{browser}} {{version}} on {{os}} {{osVersion}}"
+    },
+    "keymaps": {
+      "title": "キーマップ",
+      "description": "ワークフローに合わせてキーボードショートカットをカスタマイズする。",
+      "resetAll": "すべてリセット",
+      "actions": {
+        "search": {
+          "title": "検索",
+          "description": "検索入力欄を開く"
+        },
+        "quickaction": {
+          "title": "迅速な対応",
+          "description": "クイックアクションメニューを開く"
+        },
+        "aimenu": {
+          "title": "AIメニュー",
+          "description": "AIコマンドメニューを開く"
+        },
+        "aiaccepttool": {
+          "title": "AIによるアクションの承認",
+          "description": "アシスタントで保留中のAIツールのアクションを承認する"
+        },
+        "aicommand": {
+          "title": "コマンドを生成する",
+          "description": "ターミナル内でコマンドの提案を求める"
+        },
+        "snippets": {
+          "title": "スニペット",
+          "description": "スニペットダイアログを開く"
+        },
+        "keyboardshortcuts": {
+          "title": "キーボードショートカット",
+          "description": "キーボードショートカットメニューを開く"
+        },
+        "broadcast": {
+          "title": "ブロードキャストモード",
+          "description": "スプリットビュー使用時の放送モードを切り替える"
+        },
+        "copy": {
+          "title": "コピー",
+          "description": "ターミナルでハイライトされたテキストをクリップボードにコピーする。ターミナルの設定で「マウス」または「キーボード」モードが有効になっている必要がある。"
+        },
+        "paste": {
+          "title": "貼り付け",
+          "description": "クリップボードのテキストをターミナルに貼り付ける。ターミナルの設定で「Smart Ctrl+C」、「マウス」、または「キーボード」モードが有効になっている必要がある。"
+        },
+        "fullscreen": {
+          "title": "全画面表示",
+          "description": "全画面表示モードを切り替える"
+        },
+        "pasteidentitypassword": {
+          "title": "IDとパスワードを貼り付ける",
+          "description": "現在のSSH接続の認証情報のパスワードを貼り付ける"
+        }
+      },
+      "recorder": {
+        "pressKeys": "キーを押す…",
+        "save": "保存",
+        "cancel": "キャンセル",
+        "disabled": "無効",
+        "reset": "リセット"
+      },
+      "messages": {
+        "updateSuccess": "キーバインドの更新に成功した",
+        "updateFailed": "キーバインドの更新に失敗した",
+        "resetSuccess": "キーバインドをデフォルトにリセット",
+        "resetFailed": "キーバインドのリセットに失敗した",
+        "resetAllSuccess": "すべてのキー設定がデフォルトに戻った",
+        "resetAllFailed": "キーバインドのリセットに失敗した"
+      }
+    },
+    "terminal": {
+      "title": "ターミナル",
+      "syncLoginRequired": "ターミナルの設定を同期するには、ログインしてください",
+      "font": {
+        "title": "フォント",
+        "description": "ターミナルのフォントファミリーとサイズをカスタマイズする。",
+        "fontFamily": "フォントファミリー",
+        "fontSize": "文字サイズ",
+        "syncEnabled": "フォントの設定がアカウントに同期されるようになった",
+        "syncDisabled": "フォントの設定は今後同期されなくなる"
+      },
+      "cursor": {
+        "title": "カーソル",
+        "description": "ターミナルカーソルの外観や動作をカスタマイズする。",
+        "cursorStyle": "カーソルのスタイル",
+        "cursorBlinking": "カーソルの点滅",
+        "enabled": "有効",
+        "disabled": "無効",
+        "syncEnabled": "カーソルの設定がアカウントに同期されるようになった",
+        "syncDisabled": "カーソルの設定は今後同期されなくなる"
+      },
+      "input": {
+        "title": "入力",
+        "description": "ターミナル内でのキーボードショートカットの動作を制御する。",
+        "copyPasteBehavior": "コピー／ペーストの動作",
+        "copyPasteBehaviorNone": "なし",
+        "copyPasteBehaviorNoneHint": "コンテキストメニューからのコピーと貼り付けのみだ。",
+        "copyPasteBehaviorSmart": "スマートなCtrl+C",
+        "copyPasteBehaviorSmartHint": "テキストが選択されている場合はスマートにコピーし、そうでない場合はCtrl+Cをそのままターミナルに送信する。",
+        "copyPasteBehaviorKeyboard": "キーボード",
+        "copyPasteBehaviorKeyboardHint": "定義したキーマップを使用して、コピー／貼り付けを行う",
+        "copyPasteBehaviorMouse": "マウス",
+        "copyPasteBehaviorMouseHint": "ハイライトしてコピーし、右クリックして貼り付ける。Ctrlキーを押しながら右クリックすると、コンテキストメニューが表示される。",
+        "copyPasteBehaviorMouseKeyboard": "マウス／キーボード",
+        "copyPasteBehaviorMouseKeyboardHint": "マウスモードとキーボードモードの両方を有効にする。",
+        "passwordPromptDetection": "パスワード入力の検知",
+        "autoReconnect": "自動再接続",
+        "enabled": "有効",
+        "disabled": "無効",
+        "syncEnabled": "入力設定がアカウントに同期されるようになった",
+        "syncDisabled": "入力設定は今後同期されなくなる"
+      },
+      "theme": {
+        "title": "テーマ",
+        "description": "ターミナルのカラーテーマを選択する。",
+        "syncEnabled": "テーマの設定がアカウントに同期されるようになった",
+        "syncDisabled": "テーマの設定は今後同期されなくなる"
+      },
+      "preview": {
+        "text": "$ echo 'Hi, Nexterm!'\nHi, Nexterm!\n$ "
+      }
+    },
+    "fileManager": {
+      "title": "ファイルマネージャー",
+      "description": "ファイルやフォルダの表示および管理方法を設定する。",
+      "syncLoginRequired": "ファイルマネージャーの設定を同期するには、ログインしてください",
+      "syncEnabled": "ファイルマネージャーの設定が、アカウントに同期されるようになった",
+      "syncDisabled": "ファイルマネージャーの設定は今後同期されなくなる",
+      "view": {
+        "title": "表示",
+        "description": "ファイルマネージャーを開いたときに、ファイルやフォルダがどのように表示されるか。"
+      },
+      "behavior": {
+        "title": "行動",
+        "description": "ファイルを開いたり、削除したり、移動したりするとどうなるか。"
+      },
+      "defaultView": {
+        "title": "デフォルトの表示モード",
+        "description": "ファイルマネージャーを開く際は、デフォルトのレイアウトを選択する。",
+        "list": "リスト表示",
+        "listDescription": "サイズと日付の列を含む詳細リストでファイルを表示する",
+        "grid": "グリッド表示",
+        "gridDescription": "ファイルをサムネイル付きのグリッドレイアウトでアイコンとして表示する",
+        "compact": "コンパクト表示",
+        "compactDescription": "画面に多くのファイルを表示できるように、密度の高い列では名前のみを表示する",
+        "label": "デフォルトの表示"
+      },
+      "thumbnails": {
+        "title": "画像のサムネイル",
+        "description": "画像のサムネイルをグリッド表示する。プレビューを生成するために、追加の帯域幅が必要となる。",
+        "enabled": "サムネイルを表示する",
+        "enabledDescription": "画像のプレビューをグリッド表示で表示し、一目で識別できるようにする",
+        "disabled": "サムネイルを非表示にする",
+        "disabledDescription": "帯域幅を節約し、パフォーマンスを向上させるため、ファイルアイコンのみを表示する",
+        "label": "画像のサムネイル",
+        "show": "表示",
+        "hide": "非表示"
+      },
+      "hiddenFiles": {
+        "title": "隠しファイル",
+        "description": "隠しファイルや隠しフォルダ（名前がドットで始まるもの）の表示設定を制御する。",
+        "show": "隠しファイルを表示する",
+        "showDescription": ".dotfiles やシステムディレクトリを含むすべてのファイルを表示する",
+        "hide": "隠しファイルを非表示にする",
+        "hideDescription": "通常のファイルとフォルダのみを表示する",
+        "label": "隠しファイル",
+        "showShort": "表示",
+        "hideShort": "非表示"
+      },
+      "deleteConfirmation": {
+        "title": "削除の確認",
+        "description": "ファイルやフォルダを削除する前に確認を求める。",
+        "enabled": "削除の確認",
+        "enabledDescription": "項目を削除する前に確認ダイアログを表示する",
+        "disabled": "直ちに削除する",
+        "disabledDescription": "確認を求めずにファイルを削除する",
+        "label": "削除する前に",
+        "ask": "確認を求める",
+        "immediately": "直ちに削除する"
+      },
+      "dragDropAction": {
+        "title": "ドラッグ＆ドロップ操作",
+        "description": "ファイルを新しい場所にドラッグした際のデフォルトの動作。",
+        "move": "移動",
+        "copy": "コピー",
+        "ask": "質問する",
+        "label": "ファイルをドロップするとき"
+      },
+      "singleClickOpen": {
+        "title": "ワンクリックで開く",
+        "description": "ファイルやフォルダを選択せずに、ワンクリックで開くことができる。この設定がオフの場合、ダブルクリックで開く。",
+        "single": "ワンクリック",
+        "double": "ダブルクリック",
+        "label": "未処理の項目（以下を含む）"
+      },
+      "sharedDrive": {
+        "title": "共有ドライブ",
+        "description": "リモートデスクトップから、共有ドライブを通じてこのコンピュータのどの部分が見えるか。変更は新しい接続から適用される。",
+        "mode": {
+          "title": "シェア",
+          "folder": "1つのフォルダ",
+          "disk": "ディスク全体",
+          "off": "何もない",
+          "diskWarning": "リモートデスクトップからは、このコンピュータ上のすべてのファイルを読み取り、変更し、削除することができる。"
+        },
+        "folder": {
+          "title": "共有フォルダ",
+          "default": "Nexterm がホームフォルダに共有された",
+          "choose": "フォルダを選択する",
+          "reset": "デフォルトを使用する"
+        },
+        "folderError": "共有フォルダの準備ができなかった"
+      }
+    },
+    "authentication": {
+      "title": "{{count}} 認証プロバイダー",
+      "internalProviderName": "内部認証",
+      "addProvider": "プロバイダーを追加する",
+      "addLdapProvider": "LDAPを追加する",
+      "system": "システム",
+      "systemDescription": "ユーザー名とパスワードによる認証",
+      "registration": {
+        "title": "自己登録",
+        "description": "ログイン画面から、訪問者が独自のアカウントを作成できるようにする"
+      },
+      "deleteConfirm": "これにより、この認証プロバイダが完全に削除される。",
+      "errors": {
+        "deleteProvider": "プロバイダーの削除に失敗した",
+        "toggleProvider": "プロバイダーの切り替え中にエラーが発生した"
+      },
+      "providerDialog": {
+        "createTitle": "認証プロバイダーを追加する",
+        "editTitle": "認証プロバイダーの編集",
+        "fields": {
+          "displayName": "表示名",
+          "displayNamePlaceholder": "例：企業のSSO",
+          "issuerUrl": "発行元URL",
+          "issuerUrlPlaceholder": "https://auth.company.com",
+          "clientId": "クライアントID",
+          "clientIdPlaceholder": "クライアントID",
+          "clientSecret": "クライアントシークレット",
+          "clientSecretPlaceholder": "クライアントシークレット",
+          "clientSecretPlaceholderEdit": "既存のものを維持する場合は、空欄のままにしておく",
+          "redirectUri": "リダイレクトURI",
+          "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
+          "endSessionEndpoint": "セッション終了エンドポイント（任意）",
+          "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
+          "scope": "適用範囲",
+          "scopePlaceholder": "OpenIDプロファイル",
+          "usernameAttribute": "ユーザー名属性",
+          "usernameAttributePlaceholder": "希望のユーザー名",
+          "firstNameAttribute": "名属性",
+          "firstNameAttributePlaceholder": "given_name",
+          "lastNameAttribute": "姓の属性",
+          "lastNameAttributePlaceholder": "family_name"
+        },
+        "advanced": {
+          "show": "詳細設定を表示する",
+          "hide": "詳細設定を非表示にする"
+        },
+        "actions": {
+          "addProvider": "プロバイダーを追加する",
+          "saveChanges": "変更を保存"
+        },
+        "messages": {
+          "saveFailed": "プロバイダの保存に失敗した"
+        },
+        "groupSync": {
+          "title": "グループ同期",
+          "hint": "IDプロバイダーからのグループクレームに基づいて、ユーザーを組織に自動的に追加し、アクセス権を管理する。",
+          "groupsAttribute": "各団体の主張",
+          "groupsAttributePlaceholder": "グループ",
+          "requiredGroup": "必須グループ",
+          "requiredGroupPlaceholder": "nexterm-users",
+          "requiredGroupHint": "この設定が有効な場合、グループの「claim」にこの値が含まれているユーザーのみがログインできる。",
+          "mappings": "組織のマッピング",
+          "mappingsHint": "グループの請求額を組織に紐付ける。メンバーシップはログインのたびに同期される。",
+          "mappingValuePlaceholder": "グループの価値",
+          "roleMember": "メンバー",
+          "roleOwner": "所有者",
+          "addMapping": "マッピングを追加する"
+        }
+      },
+      "ldapDialog": {
+        "createTitle": "LDAPプロバイダを追加する",
+        "editTitle": "LDAPプロバイダの編集",
+        "fields": {
+          "displayName": "表示名",
+          "displayNamePlaceholder": "例：会社のLDAP",
+          "host": "ホスト",
+          "hostPlaceholder": "ldap.company.com",
+          "port": "ポート",
+          "bindDN": "DNをバインドする",
+          "bindDNPlaceholder": "cn=admin,dc=company,dc=com",
+          "bindPassword": "パスワードの登録",
+          "bindPasswordPlaceholder": "パスワードの登録",
+          "bindPasswordPlaceholderEdit": "既存のものを維持する場合は、空欄のままにしておく",
+          "baseDN": "ベースDN",
+          "baseDNPlaceholder": "dc=company,dc=com",
+          "userSearchFilter": "ユーザー検索フィルター",
+          "userSearchFilterPlaceholder": "(uid={{username}}) または (sAMAccountName={{username}})",
+          "useTLS": "TLS/SSL を使用する",
+          "usernameAttribute": "ユーザー名属性",
+          "usernameAttributePlaceholder": "uid",
+          "emailAttribute": "メール属性",
+          "emailAttributePlaceholder": "メール",
+          "firstNameAttribute": "名属性",
+          "firstNameAttributePlaceholder": "givenName",
+          "lastNameAttribute": "姓の属性",
+          "lastNameAttributePlaceholder": "sn"
+        },
+        "advanced": {
+          "show": "詳細設定を表示する",
+          "hide": "詳細設定を非表示にする"
+        },
+        "actions": {
+          "addProvider": "プロバイダーを追加する",
+          "saveChanges": "変更を保存",
+          "testConnection": "接続テスト",
+          "testing": "テスト中……"
+        },
+        "messages": {
+          "saveFailed": "プロバイダの保存に失敗した",
+          "saveFirst": "接続をテストするには、まずプロバイダを保存する",
+          "testSuccess": "接続テストに成功した",
+          "testFailed": "接続テストに失敗した"
+        }
+      },
+      "sessions": {
+        "title": "セッション",
+        "description": "モバイルアプリやデスクトップアプリなど、すでにサインイン済みのデバイスで、再度サインインが必要になる場合。",
+        "idle": "一定時間操作がない場合はログアウトする",
+        "lifetime": "セッションの最大時間",
+        "days_one": "{{count}} 日",
+        "days_other": "{{count}} 日",
+        "never": "決して",
+        "loadError": "セッション設定の読み込みに失敗した",
+        "saveError": "セッション設定の保存に失敗した"
+      }
+    },
+    "ai": {
+      "title": "AIアシスタントの設定",
+      "description": "アシスタントが使用するAIプロバイダーを設定する。このプロバイダーは、独自のセッションを通じてサーバーを操作できる。",
+      "loading": "AI設定を読み込み中...",
+      "enable": {
+        "title": "AIアシスタントを有効にする",
+        "description": "ユーザーがサーバーセッション内でAIアシスタントを開けるようにする"
+      },
+      "provider": {
+        "title": "AIプロバイダー",
+        "description": "AIサービスプロバイダーを選ぶ"
+      },
+      "model": {
+        "title": "モデル",
+        "description": "アシスタントが使用するAIモデルを選択する"
+      },
+      "apiKey": {
+        "title": "APIキー",
+        "setPlaceholder": "APIキーが設定されている（現在のものを維持する場合は空欄のままにする）",
+        "genericDescription": "選択したプロバイダーでの認証に使用されるAPIキー",
+        "genericPlaceholder": "{{provider}} のAPIキーを入力してください"
+      },
+      "authMethod": {
+        "title": "認証",
+        "description": "APIキーまたはプロバイダーのサブスクリプションで認証する",
+        "apiKey": "APIキー",
+        "subscription": "定期購読"
+      },
+      "subscription": {
+        "title": "{{provider}} 定期購読",
+        "description": "{{provider}} のサブスクリプションでサインインすれば、APIキーなしでそのモデルを利用できる",
+        "connectedDescription": "{{provider}} のサブスクリプションが連携されている",
+        "connect": "接続する",
+        "connecting": "接続中...",
+        "complete": "完了",
+        "disconnect": "切断",
+        "codePlaceholder": "ここに認証コードを貼り付けてください",
+        "codePlaceholderUrl": "ここにコールバックURL（またはコード）をすべて貼り付けてください",
+        "connectSuccess": "{{provider}} サブスクリプションが接続されている",
+        "startError": "認証の開始に失敗した",
+        "exchangeError": "サブスクリプションへの接続に失敗した",
+        "disconnectError": "サブスクリプションの解除に失敗した"
+      },
+      "baseUrl": {
+        "title": "API URL",
+        "description": "プロバイダーのOpenAI互換エンドポイントのベースURL",
+        "placeholder": "https://api.example.com/v1"
+      },
+      "selectProvider": "プロバイダーを選択してください…",
+      "selectModel": "モデルを選択してください…",
+      "loadingModels": "モデルを読み込み中……",
+      "noModels": "利用可能なモデルはない",
+      "saveSettings": "設定を保存する",
+      "testConnection": "接続テスト",
+      "testing": "テスト中……",
+      "saveSuccess": "AIの設定が正常に保存された",
+      "testSuccess": "AI接続テストに成功した",
+      "errors": {
+        "loadSettings": "AI設定の読み込みに失敗した",
+        "saveSettings": "AI設定の保存に失敗した",
+        "testConnection": "AI接続テストに失敗した"
+      }
+    },
+    "monitoring": {
+      "loading": "監視設定を読み込んでいる……",
+      "saveSettings": "設定を保存する",
+      "saveSuccess": "監視設定の保存に成功した",
+      "seconds": "秒",
+      "hours": "時間",
+      "servers": "サーバー",
+      "statusChecker": {
+        "title": "ステータスチェッカー",
+        "description": "Nextermがサーバーのオンライン／オフライン状態を確認する方法を設定する。",
+        "enable": {
+          "title": "ステータスチェッカーを有効にする",
+          "description": "サーバーがオンラインかオフラインかを自動的に確認する。無効にすると、すべてのサーバーがオンラインとして表示される。"
+        },
+        "interval": {
+          "title": "点検間隔",
+          "description": "サーバーの状態を確認する間隔（10～300秒）"
+        }
+      },
+      "dataCollection": {
+        "title": "データ収集",
+        "description": "CPU、メモリ、ディスク、ネットワークの各メトリクスについて、監視データの収集を設定する。",
+        "enable": {
+          "title": "監視を有効にする",
+          "description": "監視機能が有効になっているサーバーから、詳細なパフォーマンス指標を収集する。"
+        },
+        "interval": {
+          "title": "収集間隔",
+          "description": "モニタリングデータの収集間隔（30～600秒）"
+        },
+        "retention": {
+          "title": "データの保存期間",
+          "description": "モニタリングデータをどのくらいの期間保存するか（1～24時間）"
+        }
+      },
+      "advanced": {
+        "title": "詳細設定",
+        "description": "監視のパフォーマンスとリソース使用状況を微調整する。",
+        "timeout": {
+          "title": "接続タイムアウト",
+          "description": "サーバーからの応答を待つ最大時間（5～120秒）"
+        },
+        "batchSize": {
+          "title": "バッチサイズ",
+          "description": "同時に確認するサーバーの数（1～50）"
+        }
+      },
+      "errors": {
+        "loadSettings": "監視設定の読み込みに失敗した",
+        "saveSettings": "監視設定の保存に失敗した"
+      }
+    },
+    "identities": {
+      "title": "SSHキーと認証情報",
+      "description": "任意のサーバーに紐付けられるIDだ。サーバー固有のIDは、そのサーバーの設定内に存在する。",
+      "createIdentity": "アイデンティティを作成する",
+      "personal": "個人用",
+      "noUsername": "ユーザー名なし",
+      "notInUse": "使用されていない",
+      "notInUseHint": "どのサーバーやフォルダにもリンクされていない",
+      "sshKey": "SSHキー",
+      "password": "パスワード",
+      "editIdentity": "IDを編集する",
+      "deleteIdentity": "IDを削除する",
+      "noIdentities": "該当するIDが見つかりませんでした",
+      "noIdentitiesDescription": "サーバー接続を始めるには、まず最初のIDを作成する",
+      "deleteConfirm": "「{{name}}」を削除してもよろしいか？この操作は元に戻せない。また、このIDを使用しているすべてのサーバーからこのIDが削除される。",
+      "deleteSuccess": "IDの削除に成功した",
+      "deleteError": "IDの削除に失敗した",
+      "dialog": {
+        "createTitle": "新しいアイデンティティを作成する",
+        "editTitle": "IDを編集する",
+        "fields": {
+          "name": "識別名",
+          "namePlaceholder": "ID名を入力する",
+          "username": "ユーザー名",
+          "usernamePlaceholder": "ユーザー名（任意）",
+          "authType": "認証タイプ",
+          "password": "パスワード",
+          "passwordPlaceholder": "パスワードを入力する",
+          "passwordPlaceholderEdit": "現在のパスワードを維持する場合は、空欄のままにしておく",
+          "sshKey": "SSH秘密鍵",
+          "passphrase": "パスフレーズ（任意）",
+          "passphrasePlaceholder": "パスフレーズを入力する（任意）",
+          "passphrasePlaceholderEdit": "現在のパスフレーズを維持する場合は、空欄のままにしておく"
+        },
+        "authTypes": {
+          "password": "パスワード",
+          "password-only": "ユーザー名なし",
+          "ssh": "SSHキー",
+          "both": "キー＋パス"
+        },
+        "actions": {
+          "cancel": "キャンセル",
+          "create": "アイデンティティを作成する",
+          "update": "IDを更新する"
+        },
+        "messages": {
+          "nameRequired": "ID名は必須だ",
+          "passwordRequired": "パスワードが必要だ",
+          "sshKeyRequired": "SSHキーが必要だ",
+          "createSuccess": "IDの作成に成功した",
+          "updateSuccess": "IDの更新に成功した",
+          "createFailed": "IDの作成に失敗した",
+          "updateFailed": "IDの更新に失敗した"
+        }
+      }
+    },
+    "sources": {
+      "title": "スクリプトおよびスニペットの出典",
+      "description": "スクリプトやスニペットを自動的に同期するように、外部ソースを設定する。",
+      "loading": "ソースを読み込み中……",
+      "noSources": "ソースが設定されていない",
+      "noSourcesDescription": "外部ソースを追加して、スクリプトやスニペットを自動的に同期させる。",
+      "addSource": "ソースを追加する",
+      "snippets": "スニペット",
+      "scripts": "スクリプト",
+      "themes": "テーマ",
+      "neverSynced": "一度も同期されていない",
+      "sync": "今すぐ同期する",
+      "edit": "編集",
+      "delete": "削除",
+      "deleteConfirm": "ソース「{{name}}」を削除してもよろしいか？このソースから同期されたスクリプトやスニペットもすべて削除される。",
+      "status": {
+        "success": "同期済み",
+        "error": "エラー",
+        "pending": "保留中",
+        "syncing": "同期",
+        "disabled": "無効"
+      },
+      "dialog": {
+        "createTitle": "ソースを追加する",
+        "editTitle": "ソースを編集",
+        "name": "名前",
+        "namePlaceholder": "例：企業用スクリプト",
+        "url": "出典URL",
+        "urlPlaceholder": "https://scripts.example.com",
+        "enabled": "有効",
+        "enabledDescription": "無効にすると、このソースは同期されなくなる",
+        "validating": "URLの検証中...",
+        "validationSuccess": "有効なソースが見つかった： {{snippets}} スニペット、 {{scripts}} スクリプト、 {{themes}} テーマ",
+        "create": "作成する"
+      },
+      "messages": {
+        "created": "ソースの作成に成功した",
+        "updated": "ソースの更新に成功した",
+        "deleted": "ソースの削除に成功した",
+        "synced": "ソースの同期に成功した"
+      },
+      "errors": {
+        "loadFailed": "ソースの読み込みに失敗した",
+        "saveFailed": "ソースの保存に失敗した",
+        "deleteFailed": "ソースの削除に失敗した",
+        "syncFailed": "ソースの同期に失敗した",
+        "validationFailed": "URLの検証に失敗した",
+        "requiredFields": "名前とURLは必須だ"
+      }
+    },
+    "backup": {
+      "loading": "ストレージ設定を読み込んでいる……",
+      "storage": {
+        "title": "ストレージ",
+        "description": "Nextermデータのディスク使用状況を確認する。",
+        "database": "データベース",
+        "recordings": "録音",
+        "logs": "ログ",
+        "total": "合計"
+      },
+      "backupsSection": {
+        "title": "バックアップ",
+        "description": "バックアッププロバイダを設定し、自動バックアップのスケジュールを設定する。"
+      },
+      "addProvider": "プロバイダーを追加する",
+      "editProvider": "プロバイダーを編集する",
+      "providerName": "プロバイダー名",
+      "providerNamePlaceholder": "マイ・バックアップ",
+      "providerType": "種類",
+      "providerTypes": {
+        "local": "ローカル",
+        "smb": "SMB共有",
+        "webdav": "WebDAV"
+      },
+      "localPath": "バックアップパス",
+      "localPathPlaceholder": "/バックアップのパス/",
+      "smbShare": "SMB共有",
+      "smbSharePlaceholder": "\\\\server\\share",
+      "smbFolder": "フォルダ（任意）",
+      "smbFolderPlaceholder": "バックアップ",
+      "smbUsername": "ユーザー名",
+      "smbUsernamePlaceholder": "ユーザー",
+      "smbPassword": "パスワード",
+      "smbPasswordPlaceholder": "パスワード",
+      "smbDomain": "ドメイン（任意）",
+      "smbDomainPlaceholder": "ワークグループ",
+      "webdavUrl": "サーバーのURL",
+      "webdavUrlPlaceholder": "https://cloud.example.com/remote.php/dav/files/user",
+      "webdavFolder": "フォルダ（任意）",
+      "webdavFolderPlaceholder": "バックアップ",
+      "webdavUsername": "ユーザー名",
+      "webdavUsernamePlaceholder": "ユーザー",
+      "webdavPassword": "パスワード",
+      "webdavPasswordPlaceholder": "パスワード",
+      "passwordUnchanged": "現在のままにする場合は空欄のままにしておく",
+      "schedule": {
+        "title": "自動バックアップ",
+        "disabled": "無効",
+        "hourly": "1時間ごとに",
+        "every6h": "6時間ごと",
+        "every12h": "12時間ごとに",
+        "daily": "毎日",
+        "weekly": "週刊"
+      },
+      "retention": {
+        "title": "保存方針"
+      },
+      "backups": "バックアップ",
+      "includes": {
+        "title": "バックアップに含める",
+        "database": "データベース",
+        "recordings": "録音",
+        "logs": "ログ"
+      },
+      "providers": "プロバイダー",
+      "saveSettings": "設定を保存する",
+      "noProviders": "バックアッププロバイダーなし",
+      "noProvidersDescription": "バックアッププロバイダーを追加して、バックアップの作成を開始する。",
+      "backupList": "バックアップ - {{name}}",
+      "loadingBackups": "バックアップを読み込んでいる……",
+      "noBackups": "バックアップが見つかりませんでした",
+      "restoreConfirm": "「{{name}}」を復元してもよろしいか？ これにより、現在のデータが上書きされ、サーバーが再起動する。",
+      "deleteProviderConfirm": "「{{name}}」を削除してもよろしいか？ これにより、既存のバックアップは削除されない。",
+      "providerCreated": "バックアッププロバイダーが作成された",
+      "providerUpdated": "バックアッププロバイダーが更新された",
+      "providerDeleted": "バックアッププロバイダーが削除された",
+      "backupCreated": "バックアップの作成に成功した",
+      "restoreStarted": "復元が開始された。サーバーが再起動する",
+      "saveSuccess": "設定が正常に保存された",
+      "errors": {
+        "loadFailed": "バックアップ設定の読み込みに失敗した",
+        "saveFailed": "設定の保存に失敗した",
+        "deleteFailed": "削除に失敗した",
+        "backupFailed": "バックアップの作成に失敗した",
+        "loadBackupsFailed": "バックアップの読み込みに失敗した",
+        "restoreFailed": "バックアップの復元に失敗した",
+        "exportFailed": "データのエクスポートに失敗した",
+        "nameRequired": "プロバイダー名の入力は必須だ"
+      },
+      "noFiles": "ファイルが見つかりませんでした"
+    },
+    "engines": {
+      "title": "エンジン",
+      "description": "リモート接続を処理するエンジンインスタンスを管理する。",
+      "addEngine": "エンジンを追加する",
+      "noEngines": "エンジンなし",
+      "noEnginesDescription": "エンジンを追加して、リモートサーバーへの接続を開始する。",
+      "status": {
+        "connected": "接続済み",
+        "disconnected": "接続が切れた"
+      },
+      "lastSeen": "最終確認日時 {{date}}",
+      "neverConnected": "一度も接続されたことがない",
+      "regenerateToken": "トークンを再生成する",
+      "deleteEngine": "エンジンを削除する",
+      "dismiss": "閉じる",
+      "copyToken": "トークンをコピーする",
+      "transport": {
+        "encrypted": "暗号化済み",
+        "unencrypted": "暗号化されていない"
+      },
+      "tokenLabel": "の登録トークン <strong>{{name}}</strong>",
+      "tokenHint": "これを<code1>config.yaml</code1>に設定するか、<code2>REGISTRATION_TOKENという</code2>環境変数として設定する。",
+      "dialog": {
+        "title": "エンジンを追加する",
+        "engineName": "エンジン名",
+        "namePlaceholder": "例：オフィスネットワーク",
+        "create": "エンジンを作成する"
+      },
+      "deleteConfirm": "「{{name}} 」を削除してもよろしいか？",
+      "messages": {
+        "deleted": "エンジンの削除に成功した"
+      },
+      "errors": {
+        "loadFailed": "エンジンの読み込みに失敗した",
+        "createFailed": "エンジンの作成に失敗した",
+        "deleteFailed": "エンジンの削除に失敗した",
+        "regenerateFailed": "トークンの再生成に失敗した"
+      }
+    },
+    "permissions": {
+      "subtitle": "きめ細かな権限を持つロールを作成するか、個々のユーザーに権限を割り当てる。デフォルトのロールは、すべてのユーザーに自動的に適用される。",
+      "createRole": "ロールの作成",
+      "rolesTitle": "役割",
+      "rolesTab": "役割",
+      "overridesTab": "直接的な権限",
+      "permissionsTab": "権限",
+      "membersTab": "メンバー",
+      "settingsTab": "設定",
+      "managePermissions": "権限の管理",
+      "memberCount_one": "{{count}} メンバー",
+      "memberCount_other": "{{count}} メンバー",
+      "dangerousHint": "これを許可すると、広範囲にわたる、あるいは破壊的なアクセス権が与えられることになる。割り当てる際は注意が必要だ。",
+      "roleName": "役割名",
+      "roleNamePlaceholder": "例：演算子",
+      "roleColor": "色",
+      "nameRequired": "ロールの名前を入力してください。",
+      "saveError": "変更を保存できなかった。",
+      "loadError": "権限を読み込めなかった。",
+      "userSaved": "権限が更新された。",
+      "noAssignableRoles": "まだ役割は登録されていない。まず役割を作成する必要がある。",
+      "noMembers": "この役割にはまだメンバーがいない。",
+      "addMemberPlaceholder": "… を追加するユーザーを検索する",
+      "deleteRole": "ロールの削除",
+      "deleteConfirm": "これにより、「{{name}}」というロールが完全に削除され、すべてのメンバーからそのロールが外される。",
+      "inheritsAllow": "継承：許可",
+      "inheritsDeny": "継承：拒否された"
+    },
+    "search": "検索設定",
+    "trustedCertificates": {
+      "title": "信頼された証明書",
+      "description": "接続時に受け入れた証明書とホストキー。いずれかを削除すると、次回接続時に再度確認を求められる。",
+      "personal": "個人用",
+      "system": "システム",
+      "kinds": {
+        "ssh": "SSHホストキー",
+        "tls": "TLS証明書"
+      },
+      "empty": "まだ信頼できるものは何もない",
+      "emptyDescription": "接続のために証明書やホストキーを受け入れると、それらがここに表示される。",
+      "remove": "削除",
+      "removeConfirm": "{{endpoint}}を信頼しないようにするか？　次の接続時に再度確認が表示される。",
+      "removeSuccess": "信頼済み証明書が削除された",
+      "removeError": "信頼済み証明書の削除に失敗した",
+      "ignore": {
+        "title": "証明書の警告を無視する",
+        "description": "証明書やホストキーを確認せずに、個人のサーバーに接続する。そうすると、本人が気づかないうちに通信が傍受される可能性がある。組織のサーバーについては、常に確認が行われる。",
+        "error": "設定の保存に失敗した"
+      }
+    }
+  },
+  "tunnel": {
+    "title": "ポートフォワーディング",
+    "identity": "アイデンティティ",
+    "remoteHost": "リモートホスト",
+    "remotePort": "リモートポート",
+    "localPort": "地元の港",
+    "start": "トンネルを開始する",
+    "stop": "トンネル停止",
+    "status": {
+      "idle": "接続されていない",
+      "starting": "開始……",
+      "listening": "localhost:{{port}} で待機中",
+      "error": "エラー",
+      "stopped": "停止した"
+    },
+    "error": {
+      "fillAllFields": "すべての項目に記入してください"
+    }
+  },
+  "share": {
+    "errors": {
+      "unableToConnect": "接続できません",
+      "failedToJoin": "セッションへの参加に失敗した"
+    },
+    "sessionEnded": {
+      "title": "セッションが終了した",
+      "description": "共有セッションが終了した"
+    }
+  },
+  "servers": {
+    "addServerNote": "右クリックして新しいサーバーを追加する",
+    "searchPlaceholder": "検索",
+    "time": {
+      "justNow": "ついさっき",
+      "minuteAgo": "{{count}} 数分前",
+      "minutesAgo": "{{count}} 数分前",
+      "hourAgo": "{{count}} 1時間前",
+      "hoursAgo": "{{count}} 数時間前",
+      "dayAgo": "{{count}} 1日前",
+      "daysAgo": "{{count}} 数日前"
+    },
+    "tags": {
+      "title": "タグ",
+      "createNewTag": "新しいタグを作成する",
+      "tagName": "タグ名",
+      "create": "作成する",
+      "filterByTags": "タグで絞り込む",
+      "clearAll": "すべて消去する",
+      "noTagsCreated": "まだタグは作成されていない",
+      "editTag": "タグを編集する",
+      "deleteTag": "タグを削除する"
+    },
+    "contextMenu": {
+      "createFolder": "フォルダを作成する",
+      "deleteFolder": "フォルダを削除する",
+      "renameFolder": "フォルダの名前を変更する",
+      "folderSettings": "フォルダの設定",
+      "new": "新着",
+      "sshServer": "SSHサーバー",
+      "telnetServer": "Telnet サーバー",
+      "rdpServer": "RDPサーバー",
+      "vncServer": "VNCサーバー",
+      "demoServer": "デモ接続",
+      "sftpServer": "SFTPサーバー",
+      "ftpServer": "FTPサーバー",
+      "ftpsServer": "FTPSサーバー",
+      "createServer": "サーバーを作成する",
+      "import": "インポート",
+      "pve": "Proxmox VE",
+      "sshConfig": "SSH設定",
+      "syncIntegration": "今すぐ同期する",
+      "syncSuccess": "統合が同期された",
+      "syncFailed": "連携の同期に失敗した",
+      "removeIntegration": "統合を解除する",
+      "connect": "接続する",
+      "quickConnect": "クイックコネクト",
+      "openSFTP": "SFTPを開く",
+      "openBrowser": "ブラウザを開く",
+      "forwardPort": "フォワードポート",
+      "runScript": "スクリプトを実行する",
+      "openNotes": "「オープン・ノーツ」",
+      "addNotes": "メモを追加する",
+      "editServer": "サーバーの編集",
+      "editIntegration": "統合の編集",
+      "duplicateServer": "サーバーの複製",
+      "pasteIdentityPassword": "パスワードを貼り付ける",
+      "deleteServer": "サーバーを削除する",
+      "deleteConfirm": "「{{name}}」を削除してもよろしいか？この操作は元に戻せない。",
+      "deleteFailServer": "「{{name}} 」の削除に失敗した。",
+      "deleteFailFolder": "フォルダ「{{name}} 」の削除に失敗した。",
+      "wakeOnLan": "Wake-On-LAN",
+      "shutdown": "シャットダウン",
+      "stop": "停止",
+      "start": "開始",
+      "joinSession": "セッションに参加する",
+      "joinSessionOf": "のセッションに参加する {{user}}"
+    },
+    "passwordHint": {
+      "paste": "パスワードを貼り付ける",
+      "pasteFor": "{{username}} を貼り付け　パスワード",
+      "cycle": "矢印キーを使ってアイデンティティを切り替える"
+    },
+    "tabs": {
+      "contextMenu": {
+        "popOut": "ポップアウト",
+        "startSharing": "共有を始める",
+        "readOnly": "読み取り専用",
+        "readWrite": "読み書き",
+        "copyShareLink": "リンクをコピー・共有する",
+        "changePermissions": "権限の変更",
+        "stopSharing": "共有を停止する",
+        "duplicate": "重複",
+        "openNotes": "「オープン・ノーツ」",
+        "hibernateSession": "ハイバーネート",
+        "reconnect": "再接続",
+        "closeSession": "切断",
+        "splitRight": "右分割",
+        "splitDown": "スプリット・ダウン",
+        "sendShortcut": "ショートカットを送信…",
+        "zoom": "ズーム（{{zoom}}％）",
+        "zoomReset": "ズームをリセット",
+        "displayScale": "表示倍率（{{scale}}％）",
+        "displayScaleAuto": "自動（{{scale}}％）",
+        "displayScaleReset": "「既定値」を使用する"
+      },
+      "enableSplitView": "スプリットビューを有効にする",
+      "disableSplitView": "スプリットビューを無効にする",
+      "sessionMenu": "セッションメニュー"
+    },
+    "wol": {
+      "successDescription": "送信先のマジックパケット {{name}}",
+      "errorDescription": "マジックパケットの送信に失敗した"
+    },
+    "messages": {
+      "fillRequiredFields": "必須項目はすべて入力してください",
+      "serverCreated": "サーバーの作成に成功した",
+      "serverUpdated": "サーバーの更新に成功した",
+      "folderUpdated": "フォルダが正常に更新された",
+      "createFailed": "サーバーの作成に失敗した",
+      "updateFailed": "サーバーの更新に失敗した",
+      "identitiesRemovedOnMove": "一部のIDは、宛先で利用できないため削除された。"
+    },
+    "dialog": {
+      "addServer": "サーバーを追加する",
+      "addProtocolServer": "{{protocol}} サーバーを追加する",
+      "editServer": "サーバーを編集する",
+      "actions": {
+        "save": "保存",
+        "create": "作成する"
+      },
+      "fields": {
+        "name": "名前",
+        "icon": "アイコン",
+        "serverIp": "ホスト",
+        "port": "ポート",
+        "protocol": "プロトコル",
+        "username": "ユーザー名",
+        "password": "パスワード",
+        "host": "ホスト",
+        "macAddress": "MACアドレス",
+        "wolBroadcastAddress": "ブロードキャストアドレス",
+        "engine": "エンジン"
+      },
+      "placeholders": {
+        "serverName": "サーバー名",
+        "serverIp": "ホスト名またはIPアドレス",
+        "port": "ポート",
+        "username": "ユーザー名",
+        "password": "パスワード",
+        "host": "ホスト",
+        "macAddress": "AA:BB:CC:DD:EE:FF",
+        "wolBroadcastAddress": "255.255.255.255"
+      },
+      "engineOffline": "(オフライン)",
+      "settings": {
+        "jumpHosts": {
+          "title": "Jumpホスト",
+          "description": "中間サーバーを経由して、このターゲットサーバーに接続する",
+          "addButton": "ジャンプホストを追加する",
+          "removeTooltip": "ジャンプホストを削除する",
+          "noServersAvailable": "ジャンプホスト用のSSHサーバーがない。まずSSHサーバーを作成する。"
+        },
+        "monitoring": {
+          "title": "パフォーマンス監視を有効にする",
+          "description": "このサーバーのCPU、メモリ、ディスク、ネットワークのメトリクスを収集する"
+        },
+        "wakeOnLan": {
+          "title": "Wake-On-LAN を有効にする",
+          "description": "このサーバーのMACアドレスを使用して、リモートから起動できるようにする"
+        },
+        "rdpSecurity": {
+          "description": "リモートの Windows マシンに接続するために使用される認証方法。NTLM が無効になっている環境（例：Protected Users グループ）では、NLA を使用する。",
+          "method": "セキュリティ手法"
+        },
+        "keyboardLayout": {
+          "title": "キーボードの配列",
+          "description": "この接続で使用するキーボードレイアウトを選択する。"
+        },
+        "display": {
+          "title": "表示設定",
+          "description": "リモートディスプレイの色深度、サイズ変更時の動作、および拡大縮小の設定を行う",
+          "colorDepth": "色深度",
+          "resizeMethod": "サイズ変更の方法",
+          "displayScale": "表示スケール",
+          "displayScaleAuto": "自動（このデバイスに合わせる）",
+          "displayScaleAccount": "アカウントのデフォルト設定"
+        },
+        "performance": {
+          "title": "パフォーマンス設定",
+          "description": "低速な接続環境においてパフォーマンスに影響を与える可能性のある視覚効果の表示を切り替える",
+          "enableWallpaper": "壁紙を有効にする",
+          "enableWallpaperDesc": "リモートシステム上のデスクトップの壁紙を表示する",
+          "enableTheming": "テーマ機能を有効にする",
+          "enableThemingDesc": "リモートシステム上で、テーマに応じたウィンドウやコントロールを使用する",
+          "enableFontSmoothing": "フォントの滑らか化を有効にする",
+          "enableFontSmoothingDesc": "読みやすさを高めるため、テキストの縁を滑らかにして表示する",
+          "enableFullWindowDrag": "ウィンドウ全体のドラッグを有効にする",
+          "enableFullWindowDragDesc": "ウィンドウをドラッグしている間も、ウィンドウ内の内容を表示する",
+          "enableDesktopComposition": "デスクトップコンポジションを有効にする",
+          "enableDesktopCompositionDesc": "透過ウィンドウと視覚効果を有効にする",
+          "enableMenuAnimations": "メニューのアニメーションを有効にする",
+          "enableMenuAnimationsDesc": "メニューの開閉アニメーションを有効にする"
+        },
+        "audio": {
+          "enableAudio": "音声を有効にする",
+          "enableAudioDesc": "リモートシステムからブラウザへオーディオをストリーミングする"
+        },
+        "terminal": {
+          "title": "端末の互換性",
+          "description": "端末の種類に応じてキーの動作を調整する",
+          "backspace": "バックスペース",
+          "delete": "削除",
+          "functionKeys": "ファンクションキー"
+        }
+      },
+      "identities": {
+        "identityName": "識別名",
+        "username": "ユーザー名",
+        "authentication": "認証",
+        "passwordField": "パスワード",
+        "userPassword": "パスワード",
+        "passwordOnly": "ユーザー名なし",
+        "sshKey": "SSHキー",
+        "both": "キー＋パス",
+        "sshPrivateKey": "SSH秘密鍵",
+        "passphrase": "パスフレーズ（任意）",
+        "add": "IDを追加する",
+        "linkGlobal": "LinkのグローバルID · {{count}}",
+        "empty": "まだ身元は特定されていない。",
+        "removeIdentity": "IDを削除する",
+        "unlinkIdentity": "IDの紐付けを解除する",
+        "moveToOrg": "組織へ移動する",
+        "noUsername": "ユーザー名なし",
+        "globalToggle": "他のサーバーでの使用",
+        "globalInUse": "このIDは、 {{count}} サーバーで使用されている。まず、他のIDとの関連付けを解除する。",
+        "shareToggle": "組織と共有する",
+        "inheritedHint": "フォルダの設定から引き継がれる。",
+        "onlyMe": "僕だけ",
+        "onlyMeHint": "このIDを確認・利用できるのはあなただけだ。"
+      },
+      "sections": {
+        "general": "概要",
+        "connection": "接続",
+        "identities": "アイデンティティ",
+        "options": "オプション",
+        "credentials": "資格"
+      },
+      "useInherited": "継承された値を使用する",
+      "reset": "リセット"
+    },
+    "proxmoxDialog": {
+      "title": {
+        "import": "Proxmox VE を追加する",
+        "edit": "Proxmox VE を編集する"
+      },
+      "fields": {
+        "username": "ユーザー名",
+        "password": "パスワード",
+        "nodeName": "ノード名（任意）",
+        "monitoring": "パフォーマンスの監視"
+      },
+      "monitoringDescription": "クラスタ全体のCPU、メモリ、ストレージのメトリクスを収集する",
+      "placeholders": {
+        "name": "名前",
+        "username": "ユーザー名（例：root@pam）",
+        "password": "パスワード",
+        "specificNode": "特定のノード名"
+      },
+      "actions": {
+        "import": "追加",
+        "edit": "保存"
+      },
+      "messages": {
+        "created": "Proxmoxとの統合が正常に完了した",
+        "updated": "Proxmoxとの連携が正常に更新された",
+        "createFailed": "Proxmox 連携の作成に失敗した",
+        "updateFailed": "Proxmox 連携の更新に失敗した"
+      },
+      "credentialsDescription": "API アクセス権を持つ Proxmox ユーザー。例えば、root@pam や専用の API ユーザーなどだ。"
+    },
+    "connectionReasonDialog": {
+      "title": "接続理由の入力が必要だ",
+      "reasonLabel": "接続する理由を記入してください <strong>{{serverName}}</strong>:",
+      "placeholder": "この接続の理由を入力してください…",
+      "characterCount": "{{count}}/500",
+      "actions": {
+        "cancel": "キャンセル",
+        "connect": "接続する"
+      }
+    },
+    "sshConfigImport": {
+      "title": "SSH設定のインポート",
+      "configContent": {
+        "label": "SSH設定の内容",
+        "placeholder": "SSH設定の内容をここに貼り付けてください…"
+      },
+      "keyFiles": {
+        "label": "SSH 鍵ファイル（{{count}} が見つかった）",
+        "userLabel": "ユーザー： {{username}}",
+        "uploaded": "✓ アップロード済み",
+        "uploadButton": "アップロード"
+      },
+      "actions": {
+        "cancel": "キャンセル",
+        "import": "インポート",
+        "importing": "読み込み中..."
+      },
+      "messages": {
+        "noContent": "SSHの設定内容を記載してください",
+        "noFolder": "フォルダが選択されていない",
+        "uploadSuccess": "キー「 {{name}} 」のアップロードに成功した",
+        "uploadFailed": "キーのアップロードに失敗した {{name}}",
+        "importFailed": "SSH設定のインポートに失敗した"
+      }
+    },
+    "fileManager": {
+      "dropOverlay": "ファイルやフォルダをドラッグ＆ドロップしてアップロードする",
+      "createFile": {
+        "title": "ファイルを作成する",
+        "placeholder": "ファイル名",
+        "button": "ファイルを作成する"
+      },
+      "createFolder": {
+        "title": "フォルダを作成する",
+        "placeholder": "フォルダ名",
+        "button": "フォルダを作成する"
+      },
+      "renameItem": {
+        "title": "名前を変更する",
+        "placeholder": "新しい名前",
+        "button": "名前を変更する"
+      },
+      "fileEditor": {
+        "title": "ファイルエディタ",
+        "save": "保存",
+        "cancel": "キャンセル",
+        "loading": "読み込み中...",
+        "saving": "保存中...",
+        "saveSuccess": "ファイルが正常に保存された",
+        "saveFailed": "ファイルの保存に失敗した",
+        "loadFailed": "ファイルの読み込みに失敗した",
+        "unsavedChanges": "保存されていない変更がある。このファイルを閉じてよいのか？"
+      },
+      "contextMenu": {
+        "open": "開く",
+        "download": "ダウンロード",
+        "rename": "名前を変更する",
+        "delete": "削除",
+        "copy": "コピー",
+        "cut": "カット",
+        "paste": "貼り付け",
+        "createFolder": "フォルダを作成する",
+        "upload": "ファイルをアップロードする",
+        "edit": "編集",
+        "preview": "プレビュー",
+        "moveHere": "ここに移動する",
+        "copyHere": "ここにコピーする",
+        "bigFileConfirm": "このファイルのサイズは {{size}} MB だ。本当に編集してもよいか？",
+        "deleteConfirm": "「{{name}}」を削除してもよろしいか？この操作は元に戻せない。",
+        "selectAll": "すべて選択",
+        "insertSnippet": "スニペットを挿入する",
+        "sendCtrlC": "Ctrl+C を送信",
+        "clearTerminal": "ターミナルをクリアする",
+        "properties": "プロパティ",
+        "openTerminal": "ここでターミナルを開く",
+        "downloadFolder": "ダウンロードフォルダ",
+        "newFile": "新しいファイル",
+        "newFolder": "新しいフォルダ"
+      },
+      "properties": {
+        "general": "概要",
+        "permissions": "権限",
+        "checksum": "チェックサム",
+        "folder": "フォルダ",
+        "file": "ファイル",
+        "path": "場所",
+        "size": "サイズ",
+        "calculateSize": "計算する",
+        "owner": "所有者",
+        "group": "グループ",
+        "modified": "変更済み",
+        "accessed": "アクセス日",
+        "calculating": "計算中……",
+        "calculate": "計算する"
+      },
+      "permissions": {
+        "owner": "所有者",
+        "group": "グループ",
+        "others": "その他",
+        "read": "読む",
+        "write": "書く",
+        "execute": "実行する",
+        "octal": "8進数",
+        "preview": "プレビュー",
+        "apply": "応募する"
+      },
+      "filePreview": {
+        "title": "ファイルのプレビュー",
+        "loading": "読み込み中...",
+        "cannotPreview": "ファイルのプレビューができない",
+        "unsupportedFileType": "このファイル形式はプレビューに対応していない",
+        "videoNotSupported": "お使いのブラウザは動画の再生に対応していない",
+        "audioNotSupported": "お使いのブラウザは音声再生に対応していない",
+        "download": "ダウンロード",
+        "close": "閉じる"
+      },
+      "selection": {
+        "itemsSelected": "{{count}} 選択された商品",
+        "filesSelected": "{{count}} 選択されたファイル",
+        "foldersSelected": "{{count}} 選択されたフォルダ",
+        "clearSelection": "選択を解除する",
+        "downloadSelected": "選択したものをダウンロード",
+        "deleteSelected": "選択したものを削除する",
+        "download": "ダウンロード",
+        "delete": "削除",
+        "deleteConfirm": "{{count}} の項目を削除してもよろしいか？"
+      },
+      "header": {
+        "name": "名前",
+        "size": "サイズ",
+        "permissions": "権限",
+        "modified": "変更済み"
+      },
+      "actionBar": {
+        "enterDirectory": "ディレクトリのパスを入力してください…",
+        "hiddenDirectories": "{{count}} 隠しディレクトリ",
+        "switchToGrid": "グリッド表示に切り替える",
+        "switchToList": "リスト表示に切り替える",
+        "uploadFile": "ファイルをアップロードする",
+        "uploadFolder": "アップロード用フォルダ",
+        "search": "ファイルを検索",
+        "closeSearch": "検索を閉じる",
+        "refresh": "更新",
+        "back": "戻る",
+        "forward": "次へ",
+        "up": "親ディレクトリ",
+        "home": "ホームディレクトリ",
+        "switchToCompact": "コンパクト表示に切り替える"
+      },
+      "item": {
+        "link": "リンク",
+        "expand": "フォルダを展開する",
+        "collapse": "フォルダを折りたたむ"
+      },
+      "search": {
+        "placeholder": "このフォルダ内のファイルをフィルタリングする...",
+        "results_one": "{{count}} 結果",
+        "results_other": "{{count}} 結果",
+        "noResultsTitle": "一致する結果はありません",
+        "noResults": "「{{query}} 」に一致するファイルはない"
+      },
+      "states": {
+        "loading": "ファイルを読み込んでいる……",
+        "accessDenied": "アクセス拒否",
+        "emptyFolder": "このフォルダは空だ",
+        "dropFilesHint": "ファイルをここにドラッグ＆ドロップしてアップロードする"
+      },
+      "toast": {
+        "uploadFailed": "アップロードに失敗した： {{message}}",
+        "connectionLost": "SFTP接続が切断された。再接続してください。",
+        "error": "エラーが発生した"
+      },
+      "transfers": {
+        "title": "移籍",
+        "activeCount": "{{count}} アクティブ",
+        "allDone": "すべて終わった",
+        "clearFinished": "クリア仕上げ",
+        "queued": "待機中",
+        "cancelling": "キャンセル中……",
+        "completed": "完了した",
+        "savedTo": "保存先 {{path}}",
+        "cancelled": "中止となった",
+        "failed": "失敗： {{message}}",
+        "dismiss": "閉じる"
+      },
+      "status": {
+        "folders_one": "{{count}} フォルダ",
+        "folders_other": "{{count}} フォルダ",
+        "files_one": "{{count}} ファイル",
+        "files_other": "{{count}} ファイル",
+        "hidden_one": "{{count}} 非表示",
+        "hidden_other": "{{count}} 非表示",
+        "selected": "{{count}} 選択済み",
+        "showHidden": "隠しファイルを表示する",
+        "hideHidden": "隠しファイルを非表示にする"
+      },
+      "conflict": {
+        "title_one": "その項目はすでに存在する",
+        "title_other": "{{count}} その項目はすでに存在する",
+        "upload_one": "保存先にこの名前のファイルがすでに存在する。どうする？",
+        "upload_other": "これらのファイルは保存先にすでに存在する。これらをどう処理するか？",
+        "move_one": "移動先のフォルダには、この名前のアイテムがすでに存在する。移動すると、そのアイテムが上書きされる。",
+        "move_other": "これらのアイテムは、移動先の場所にすでに存在する。移動すると、それらは上書きされる。",
+        "copy_one": "宛先には、この名前の項目がすでに存在する。コピーすると、その項目が上書きされる。",
+        "copy_other": "これらの項目は、コピー先の場所にすでに存在する。コピーすると、それらが上書きされる。",
+        "more": "+ {{count}} 続きを見る",
+        "skip": "スキップ",
+        "rename": "両方とも残しておく",
+        "overwrite": "上書き"
+      }
+    },
+    "browser": {
+      "back": "戻る",
+      "forward": "次へ",
+      "reload": "再読み込み",
+      "stop": "停止",
+      "address": "住所",
+      "addressPlaceholder": "住所を入力する"
+    },
+    "remoteDesktop": {
+      "dropOverlay": "ファイルをドロップしてリモートにアップロードする",
+      "toast": {
+        "uploadedSingle": "「{{name}}」をリモートドライブにアップロードした",
+        "uploadedMultiple": "{{count}} のファイルをリモートドライブにアップロードした",
+        "uploadFailed": "{{count}} ファイルのアップロードに失敗した",
+        "uploadPartial": "{{failed}} ファイルのアップロードに失敗した。 {{succeeded}} は成功した。",
+        "downloaded": "リモートから「{{name}}」をダウンロードした"
+      }
+    },
+    "automatedSession": {
+      "viewOnlyAi": "このセッションではAIアシスタントが作動している。閲覧はできるが、入力はできない。",
+      "viewOnlyMcp": "このセッションでは、外部エージェント（MCP）が作業を行っている。閲覧はできるが、入力はできない。"
+    },
+    "aiAssistant": {
+      "title": "AIアシスタント",
+      "open": "AIアシスタント",
+      "empty": "アシスタントに、サーバーの点検や変更を依頼する。アシスタントは、以下に追加したサーバーに対して独自のセッションを開き、コマンドを実行したり、ファイルを編集したり、さらにはリモートデスクトップを操作したりすることもできる。",
+      "addServer": "サーバーを追加する",
+      "removeServer": "サーバーを削除する",
+      "searchServers": "サーバーを検索中……",
+      "noMatches": "一致するサーバーがない",
+      "current": "現在",
+      "openSessions": "{{count}} 公開セッション",
+      "approval": {
+        "ask": "行動する前に確認する",
+        "askDescription": "コマンド、入力、およびファイルの変更は、承認を待っている",
+        "allow": "すべて許可する",
+        "allowDescription": "確認を求めずにツール呼び出しを実行する",
+        "readonly": "読み取り専用",
+        "readonlyDescription": "サーバーの検査のみを行う。サーバーに変更を加える行為はすべて拒否される"
+      },
+      "placeholder": "アシスタントにメッセージを送る……",
+      "connecting": "接続中...",
+      "send": "送信",
+      "copyMessage": "メッセージをコピーする",
+      "copied": "コピーした",
+      "editMessage": "メッセージを編集する",
+      "stop": "停止",
+      "connectionError": "アシスタントとの接続が切断された。",
+      "reconnecting": "接続が切断された。再接続中……",
+      "confirmPrompt": "この操作を実行してもよいか？",
+      "allow": "許可する",
+      "allowShortcut": "許可する ({{key}})",
+      "deny": "拒否する",
+      "denied": "あなたはこのアクションを拒否した。",
+      "stopped": "止まった。",
+      "continuePrompt": "アシスタントは、長い階段を駆け上がった後、立ち止まった。続けるか？",
+      "continue": "続ける",
+      "compacted": "文脈を明確にするため、以前のメッセージは要約された。",
+      "retryPrompt": "最後のステップが失敗した。中断した箇所から再試行するか？",
+      "retry": "再試行",
+      "questionOther": "あるいは、別の答えを入力してもよい……",
+      "questionAnswer": "答えを入力してください…",
+      "questionSend": "答え",
+      "questionPickOne": "1つ選ぶか、答えを入力する",
+      "questionPickMany": "該当するものを選んでください",
+      "exitCode": "終了 {{code}}",
+      "truncated": "[省略]",
+      "toolSummary": {
+        "recursive": "{{path}} (再帰的)",
+        "doubleClick": "{{target}} ×2"
+      },
+      "tools": {
+        "list_entries": "メーリングリスト",
+        "get_entry": "サーバーを点検する",
+        "list_folders": "フォルダの一覧",
+        "list_organizations": "組織の一覧",
+        "list_identities": "リストの恒等式",
+        "list_snippets": "リストの抜粋",
+        "list_scripts": "スクリプトの一覧",
+        "list_tags": "タグ一覧",
+        "list_users": "ユーザー一覧",
+        "get_permissions": "権限を確認する",
+        "get_monitoring": "読み取り監視",
+        "list_sessions": "セッション一覧",
+        "open_session": "公開セッション",
+        "get_session": "セッションを確認する",
+        "close_session": "セッションを終了する",
+        "close_all_sessions": "すべてのセッションを閉じる",
+        "terminal_run": "コマンドを実行する",
+        "terminal_send": "入力を送信する",
+        "terminal_read": "端末を読み取る",
+        "terminal_resize": "ターミナルのサイズを変更する",
+        "run_command": "コマンドを実行する",
+        "exec_command": "コマンドを実行する",
+        "file_list": "ディレクトリ一覧",
+        "file_stat": "パスを確認する",
+        "file_read": "ファイルを読み込む",
+        "file_write": "ファイルの書き込み",
+        "file_edit": "ファイルを編集する",
+        "file_mkdir": "ディレクトリを作成する",
+        "file_delete": "削除",
+        "file_move": "移動",
+        "file_chmod": "権限を変更する",
+        "file_search_dirs": "ディレクトリを検索する",
+        "desktop_screenshot": "スクリーンショット",
+        "desktop_info": "デスクトップを確認する",
+        "desktop_click": "クリック",
+        "desktop_mouse_move": "マウスを動かす",
+        "desktop_drag": "ドラッグ",
+        "desktop_scroll": "スクロール",
+        "desktop_type": "テキストを入力する",
+        "desktop_key": "キーを押す",
+        "desktop_resize": "デスクトップのサイズを変更する",
+        "desktop_clipboard_set": "クリップボードを設定する",
+        "desktop_clipboard_get": "クリップボードを読み取る",
+        "batch": "複数のアクションを実行する",
+        "ask_user": "質問"
+      }
+    },
+    "commandSuggestion": {
+      "open": "コマンドを生成する",
+      "placeholder": "そのコマンドについて説明してください……",
+      "generating": "生成中...",
+      "accept": "「Accept」コマンド",
+      "cycle": "サイクリングの提案",
+      "error": "コマンドの生成に失敗した。"
+    },
+    "snippets": {
+      "title": "スニペット",
+      "noSnippets": "利用可能なスニペットはありません",
+      "searchPlaceholder": "検索結果の抜粋…",
+      "createNew": "新しいスニペットを作成する"
+    },
+    "toolbar": {
+      "drag": "ドラッグして移動する",
+      "shortcuts": "キーボードショートカット",
+      "holdModifier": "保留 {{key}}",
+      "zoomIn": "拡大する",
+      "zoomOut": "ズームアウトする",
+      "zoomReset": "ズームをリセット（マウスの中ボタンでドラッグしてパンする）"
+    },
+    "monitors": {
+      "title": "モニター {{number}}",
+      "select": "モニターに切り替える {{number}}",
+      "selectOrPopOut": "{{number}} に切り替える（ダブルクリックすると別ウィンドウで開く）",
+      "add": "モニターを追加する",
+      "remove": "最後のモニターを削除する"
+    },
+    "terminalActions": {
+      "menuTitle": "ターミナルでの操作",
+      "snippets": "スニペット",
+      "keyboardShortcuts": "キーボードショートカット",
+      "broadcasting": "放送",
+      "fullScreen": "全画面表示",
+      "exitFullScreen": "全画面表示を終了する",
+      "badgeOn": "ON"
+    },
+    "notesPanel": {
+      "title": "注記",
+      "placeholder": "このサーバー「… 」に関するメモを書く",
+      "showInList": "リストに表示する",
+      "showInListTooltip": "サイドバーのサーバー名の下に、これらのメモの最初の行を表示する。",
+      "status": {
+        "saving": "保存",
+        "saved": "保存済み",
+        "unsaved": "未保存",
+        "error": "保存に失敗した"
+      }
+    },
+    "liveSessions": {
+      "activeOn": "ライブセッション： {{users}}",
+      "unknownUser": "不明なユーザー"
+    },
+    "folderSettings": {
+      "name": "フォルダ名",
+      "nameRequired": "フォルダ名は必須だ",
+      "loadFailed": "フォルダの設定を読み込めない",
+      "protocol": "のデフォルト設定は",
+      "protocolHint": "このフォルダ内のサーバーは、独自の値を設定していない限り、以下で設定した値を使用する。各プロトコルには独自のデフォルト値がある。",
+      "unset": "フォルダから削除する"
+    },
+    "trust": {
+      "certificate": "証明書",
+      "hostKey": "ホストキー",
+      "newTitle": "このサイト {{subject}} は信頼できるか？",
+      "newMessage": "これは {{endpoint}}への最初の接続だ。続行する前にフィンガープリントを確認すること。",
+      "changedTitle": "{{subject}} が変更された",
+      "changedMessage": "{{endpoint}} 以前とは異なる {{subject}} が表示される。これを想定している場合のみ、続行すること。",
+      "fingerprint": "指紋",
+      "previous": "これまで信頼されてきた",
+      "presented": "今、紹介する",
+      "subject": "発行先",
+      "issuer": "発行元",
+      "selfSigned": "自己署名",
+      "validUntil": "有効期限は",
+      "blocked": "{{organization}} の証明書管理者のみが、この変更を受け入れることができる。",
+      "accept": "信頼し、つながる",
+      "cancel": "キャンセル",
+      "acceptChanged": "新しいものを信じて",
+      "disconnect": "切断",
+      "failed": "選択内容を保存できなかった",
+      "acceptOnly": "信頼証明書"
+    }
+  },
+  "support": {
+    "title": "サポートを受ける",
+    "subtitle": "助けが必要か、あるいは協力したいか？",
+    "footer": "Nextermをご利用いただき、ありがとうございます！",
+    "issues": {
+      "title": "問題を報告する",
+      "description": "バグを見つけた、あるいは機能のリクエストがあるか？"
+    },
+    "discord": {
+      "title": "Discordに参加する",
+      "description": "コミュニティのメンバーとチャットして、助けを求めよう。"
+    },
+    "docs": {
+      "title": "ドキュメントを表示する",
+      "description": "ドキュメントを読んで、Nextermの使い方を学ぼう。"
+    },
+    "github": {
+      "title": "GitHubで閲覧する",
+      "description": "ソースコードを閲覧し、貢献しよう。"
+    }
+  },
+  "welcome": {
+    "hello": "こんにちは",
+    "defaultName": "ユーザー",
+    "subtitle": "Nextermへようこそ。SSH、VNC、RDPに対応したオープンソースのサーバー管理ツールだ。",
+    "downloadApps": "アプリのダウンロード",
+    "connectDevice": "デバイスを接続する",
+    "recentConnections": "最近のつながり",
+    "getStarted": "はじめに",
+    "getStartedHint": "サイドバーからサーバーを追加して、インフラの管理を始めよう。",
+    "hibernated": "休眠状態だった",
+    "demo": {
+      "explore": "探索を始めよう"
+    }
+  },
+  "downloadApps": {
+    "title": "アプリのダウンロード",
+    "subtitle": "お使いのデバイスにNextermをインストールしよう",
+    "platforms": {
+      "windows": "Windows",
+      "macos": "macOS",
+      "linux": "Linux",
+      "android": "Android",
+      "ios": "iOS"
+    },
+    "recommended": "おすすめ",
+    "versionUnavailable": "サーバーのバージョンが特定できなかったため、直接ダウンロードは利用できない。ただし、GitHubでリリース一覧を閲覧することはできる。",
+    "sourceHint": "ダウンロードはGitHubのリリースページから提供されている。",
+    "allReleases": "すべてのリリース"
+  }
+}

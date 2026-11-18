@@ -60,9 +60,11 @@ COPY server/ server/
 COPY --from=schema-builder /app/server/lib/generated/ server/lib/generated/
 
 
-FROM alpine:3.22
+FROM alpine:3.24
 
-RUN apk add --no-cache nodejs
+RUN apk add --no-cache libstdc++ libgcc libatomic
+
+COPY --from=server-builder /usr/local/bin/node /usr/local/bin/node
 
 ENV NODE_ENV=production
 ENV LOG_LEVEL=system

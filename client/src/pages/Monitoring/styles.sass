@@ -1,291 +1,222 @@
 @use "@/common/styles/colors"
 @use "@/common/styles/breakpoints"
 
-.monitoring-page
+$panel-overlay: 1100px
+
+.page.monitoring-page
+  flex-direction: row
+  position: relative
+
+.monitoring-main
+  flex: 1
+  min-width: 0
   display: flex
   flex-direction: column
-  height: 100%
-  background-color: colors.$background
   overflow: hidden
 
-.monitoring-content
-  flex: 1
+  > .page-header
+    padding-left: var(--page-gutter)
+    padding-right: var(--page-gutter)
+
+.monitoring-filters__chips
+  display: flex
+  flex-wrap: wrap
+  gap: 0.5rem
+
+.monitoring-panel
+  width: 40rem
+  max-width: 55%
+  flex-shrink: 0
   display: flex
   flex-direction: column
-  overflow-y: auto
-  overflow-x: hidden
+  min-height: 0
+  background-color: colors.$lighter-background
+  border-left: 1px solid colors.$border
+  box-shadow: colors.$shadow-lg
+  animation: monitoring-panel-in 0.2s cubic-bezier(0.2, 0, 0, 1)
+
+  @media (max-width: $panel-overlay)
+    position: absolute
+    inset: 0
+    width: auto
+    max-width: none
+    border-left: none
+    z-index: 5
+
+  @media (prefers-reduced-motion: reduce)
+    animation: none
+
+@keyframes monitoring-panel-in
+  from
+    opacity: 0
+    transform: translateX(1.5rem)
 
 .monitoring-grid
-  padding: 2rem
   display: grid
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr))
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr))
   gap: 0.75rem
   min-height: fit-content
 
-  @media (max-width: breakpoints.$tablet)
-    padding: 1.5rem
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))
-
   @media (max-width: breakpoints.$mobile)
-    padding: 1rem
     grid-template-columns: 1fr
     gap: 0.625rem
 
-  &.loading, &.empty
+  &.empty
     display: flex
     justify-content: center
     align-items: center
-    height: calc(100vh - 200px)
-    grid-template-columns: none
+    flex: 1
 
-.server-card
+    > *
+      width: 100%
+      max-width: 32rem
+
+.fleet-card
+  display: flex
+  flex-direction: column
+  gap: 1.125rem
   background-color: colors.$lighter-background
-  border: 1px solid colors.$dark-gray
+  border: 1px solid colors.$border
   border-radius: 0.75rem
-  padding: 1.25rem
+  box-shadow: colors.$shadow-sm
+  padding: 1.125rem 1.25rem
   cursor: pointer
-  transition: border-color 0.1s ease
-  position: relative
+  user-select: none
+  outline: none
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease
   min-width: 0
 
   @media (max-width: breakpoints.$mobile)
     padding: 1rem
 
-  &.pve
-    border-color: rgba(227, 125, 2, 0.3)
-
-    &:hover
-      border-color: rgba(227, 125, 2, 0.5)
-
   &:hover
     border-color: colors.$gray
+    box-shadow: colors.$shadow-md
 
-  .server-header
+  &:focus-visible
+    border-color: colors.$primary
+    box-shadow: colors.$focus-ring
+
+  &.selected
+    border-color: colors.$primary
+    box-shadow: colors.$focus-ring
+
+  &__header
     display: flex
     align-items: center
-    gap: 1rem
-    margin-bottom: 1rem
+    gap: 0.75rem
     min-width: 0
 
-    @media (max-width: breakpoints.$mobile)
-      gap: 0.75rem
-      margin-bottom: 0.75rem
-
-    .server-icon
-      display: flex
-      align-items: center
-      justify-content: center
-      width: 2.5rem
-      height: 2.5rem
-      background-color: colors.$dark-gray
-      border-radius: 0.5rem
-      flex-shrink: 0
-
-      @media (max-width: breakpoints.$mobile)
-        width: 2.25rem
-        height: 2.25rem
-
-      svg
-        width: 1.5rem
-        height: 1.5rem
-        opacity: 0.9
-
-        @media (max-width: breakpoints.$mobile)
-          width: 1.25rem
-          height: 1.25rem
-
-    .server-info
-      flex: 1
-      min-width: 0
-
-      h3
-        margin: 0 0 0.25rem 0
-        color: colors.$white
-        font-size: 0.95rem
-        font-weight: 600
-        white-space: nowrap
-        overflow: hidden
-        text-overflow: ellipsis
-
-        @media (max-width: breakpoints.$mobile)
-          font-size: 0.9rem
-
-      p
-        margin: 0
-        color: colors.$subtext
-        font-size: 0.85rem
-        white-space: nowrap
-        overflow: hidden
-        text-overflow: ellipsis
-
-        @media (max-width: breakpoints.$mobile)
-          font-size: 0.8rem
-
-  .status-indicator
-    position: absolute
-    top: 1rem
-    right: 1rem
-    width: 10px
-    height: 10px
+  &__dot
+    width: 0.5rem
+    height: 0.5rem
+    margin: 0 0.125rem
     border-radius: 50%
+    background-color: var(--state-color)
+    flex-shrink: 0
 
-    &.online
-      background-color: colors.$success
+  &.mon-state--pending, &.mon-state--unknown
+    --state-background: #{colors.$dark-gray}
 
-    &.offline
-      background-color: colors.$error
+  &:not(.mon-state--online) .mon-server-icon svg
+    opacity: 0.5
 
-    &.error
-      background-color: colors.$warning
-
-    &.unknown
-      background-color: colors.$gray
-
-  .metrics
+  &__metrics
     display: grid
     grid-template-columns: 1fr 1fr
-    gap: 0.5rem
-    margin-bottom: 0.75rem
+    gap: 1.25rem
 
-    @media (max-width: breakpoints.$mobile)
-      gap: 0.375rem
-      margin-bottom: 0.5rem
+  .mon-facts
+    display: grid
+    grid-template-columns: repeat(3, 1fr)
+    gap: 0.75rem
 
-    .metric
-      display: flex
-      flex-direction: column
-      align-items: center
-      padding: 0.625rem
-      background-color: colors.$dark-gray
-      border-radius: 0.5rem
+    dt, dd
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
 
-      @media (max-width: breakpoints.$mobile)
-        padding: 0.5rem
-
-      .metric-label
-        font-size: 0.75rem
-        color: colors.$subtext
-        margin-bottom: 0.25rem
-
-        @media (max-width: breakpoints.$mobile)
-          font-size: 0.7rem
-
-      .metric-value
-        font-size: 1.1rem
-        font-weight: 600
-        color: colors.$white
-
-        @media (max-width: breakpoints.$mobile)
-          font-size: 1rem
-
-      .metric-unit
-        font-size: 0.75rem
-        color: colors.$subtext
-
-  .uptime-info
+  &__issue
+    flex: 1
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
     text-align: center
-    padding: 0.5rem
-    background-color: colors.$dark-gray
-    border-radius: 0.5rem
-    font-size: 0.8rem
-    color: colors.$subtext
+    gap: 0.25rem
+    min-height: 8.5rem
+    padding: 1rem
+    border: 1px dashed colors.$gray
+    border-radius: 0.625rem
 
-  .error-message
-    color: colors.$error
-    font-size: 0.8rem
-    text-align: center
-    margin-top: 0.75rem
-    padding: 0.5rem
-    background-color: colors.$error-opacity
-    border-radius: 0.5rem
+    h4
+      margin: 0
+      color: colors.$white
+      font-size: 0.875rem
+      font-weight: 600
 
-  .offline-state
+    p
+      margin: 0
+      max-width: 22rem
+      color: colors.$subtext
+      font-size: 0.8rem
+      font-weight: 500
+      line-height: 1.45
+      overflow-wrap: anywhere
+      display: -webkit-box
+      -webkit-line-clamp: 2
+      -webkit-box-orient: vertical
+      overflow: hidden
+
+    > span
+      margin-top: 0.125rem
+      color: colors.$subtext
+      font-size: 0.75rem
+      font-weight: 500
+      opacity: 0.8
+
+  &__issue-icon
     display: flex
     align-items: center
-    gap: 1rem
-    margin-top: 0.75rem
-    padding: 1rem
-    background-color: colors.$error-opacity
-    border: 1px solid rgba(255, 59, 48, 0.2)
-    border-radius: 0.5rem
+    justify-content: center
+    width: 2.25rem
+    height: 2.25rem
+    margin-bottom: 0.375rem
+    border-radius: 0.625rem
+    background-color: var(--state-background)
+    color: var(--state-color)
 
-    .offline-icon
-      display: flex
-      align-items: center
-      justify-content: center
-      width: 2.5rem
-      height: 2.5rem
-      background-color: rgba(255, 59, 48, 0.1)
-      border-radius: 50%
-      flex-shrink: 0
+    svg
+      width: 1.125rem
+      height: 1.125rem
 
-      svg
-        width: 1.25rem
-        height: 1.25rem
-        color: colors.$error
-        opacity: 0.9
-
-    .offline-info
-      flex: 1
-
-      h4
-        margin: 0 0 0.5rem 0
-        color: colors.$error
-        font-size: 0.9rem
-        font-weight: 600
-
-      p
-        margin: 0 0 0.5rem 0
-        color: colors.$subtext
-        font-size: 0.8rem
-        line-height: 1.4
-
-      .offline-actions
-        .last-seen
-          font-size: 0.75rem
-          color: colors.$subtext
-          opacity: 0.8
-
-.no-servers
+.fleet-metric
   display: flex
   flex-direction: column
-  align-items: center
-  justify-content: center
-  height: 100%
-  color: colors.$subtext
+  gap: 0.5rem
+  min-width: 0
 
-  svg
-    width: 3rem
-    height: 3rem
-    margin-bottom: 1rem
-    opacity: 0.9
+  &__head
+    display: flex
+    align-items: baseline
+    justify-content: space-between
+    gap: 0.5rem
 
-  h2
-    margin: 0 0 0.5rem 0
+  &__label
+    color: colors.$subtext
+    font-size: 0.8rem
+    font-weight: 500
+
+  &__value
     color: colors.$white
-    font-size: 1.1rem
+    font-size: 1.375rem
+    font-weight: 600
+    line-height: 1.1
+    letter-spacing: -0.01em
+    font-variant-numeric: tabular-nums
 
-  p
-    margin: 0
-    text-align: center
-    font-size: 0.9rem
-
-.loading-spinner
-  display: flex
-  align-items: center
-  justify-content: center
-  height: 100%
-
-  .spinner
-    width: 3rem
-    height: 3rem
-    border: 3px solid colors.$gray
-    border-top: 3px solid colors.$primary
-    border-radius: 50%
-    animation: spin 1s linear infinite
-
-@keyframes spin
-  0%
-    transform: rotate(0deg)
-  100%
-    transform: rotate(360deg)
+  &__unit
+    margin-left: 0.125rem
+    color: colors.$subtext
+    font-size: 0.8rem
+    font-weight: 500

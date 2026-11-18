@@ -6,13 +6,27 @@ const Account = require("../models/Account");
 const MonitoringSnapshot = require("../models/MonitoringSnapshot");
 const { validateEntryAccess } = require("./entry");
 const { getIdentityCredentials, getIdentity } = require("./identity");
-const { getOrganizationAuditSettingsInternal, createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
+const { getOrganizationAuditSettingsInternal, createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES, CONNECTION_REASON_REQUIRED } = require("./audit");
 const { resolveIdentity } = require("../utils/identityResolver");
 const { Permission } = require("../permissions/registry");
 const Organization = require('../models/Organization');
 const logger = require("../utils/logger");
 const stateBroadcaster = require("../lib/StateBroadcaster");
+const { getEffectiveEntryConfig } = require("../utils/folderInheritance");
+const { isWatchableAutomatedSession } = require("../lib/agentTools/context");
+const { acceptPeer, peerAuditDetails } = require("../utils/hostTrust");
 const reconnectOperations = new Map();
+const closedSessions = new Map();
+const CLOSED_SESSION_TTL = 10 * 60 * 1000;
+const SESSION_CLOSED = { code: 410, message: "Session was closed", errorCode: "SESSION_CLOSED" };
+
+const wasClosed = (sessionId) => {
+    const now = Date.now();
+    for (const [id, closedAt] of closedSessions) {
+        if (now - closedAt > CLOSED_SESSION_TTL) closedSessions.delete(id);
+    }
+    return closedSessions.has(sessionId);
+};
 
 const ENTRY_TYPE_TO_AUDIT_ACTION = {
     'ssh': AUDIT_ACTIONS.SSH_CONNECT,
@@ -69,20 +83,27 @@ const createSession = async ({
     tabId = null,
     browserId = null,
     displayDpi = 96,
+    displayWidth = null,
+    displayHeight = null,
     scriptId = null,
     startPath = null,
+    trustPrompt = false,
     ipAddress = null,
     userAgent = null,
     sessionId = null,
     broadcast = true,
     connectionGeneration = 0,
+    automated = false,
+    origin = null,
+    apiKeyId = null,
 }) => {
     const entry = await Entry.findByPk(entryId);
     if (!entry) {
         return { code: 404, message: "Entry not found" };
     }
+    const effectiveEntry = { ...entry, config: await getEffectiveEntryConfig(entry) };
 
-    const requiredPermission = getRequiredConnectPermission(entry, type, scriptId);
+    const requiredPermission = getRequiredConnectPermission(effectiveEntry, type, scriptId);
     const accessResult = await validateEntryAccess(accountId, entry, "Access denied", requiredPermission);
     if (!accessResult.valid) {
         return { code: 403, message: "Access denied" };
@@ -95,7 +116,7 @@ const createSession = async ({
     if (entry.organizationId) {
         const auditSettings = await getOrganizationAuditSettingsInternal(entry.organizationId);
         if (auditSettings?.requireConnectionReason && !connectionReason) {
-            return { code: 400, message: "Connection reason required" };
+            return CONNECTION_REASON_REQUIRED;
         }
     }
 
@@ -113,10 +134,14 @@ const createSession = async ({
     const auditLogId = await createAuditLog({
         accountId,
         organizationId: entry.organizationId,
-        action: getAuditAction(entry, type, scriptId),
+        action: getAuditAction(effectiveEntry, type, scriptId),
         resource: scriptId ? RESOURCE_TYPES.SCRIPT : RESOURCE_TYPES.ENTRY,
         resourceId: scriptId || entry.id,
-        details: { connectionReason, ...(scriptId && { serverId: entry.id }) },
+        details: {
+            connectionReason,
+            ...(scriptId && { serverId: entry.id }),
+            ...(automated && { automated: true, origin: origin || "automation", apiKeyId: apiKeyId || undefined }),
+        },
         ipAddress,
         userAgent,
     });
@@ -126,10 +151,14 @@ const createSession = async ({
     const configuration = {
         identityId: identity ? identity.id : null,
         type: type || null,
+        connectionReason: connectionReason || null,
         directIdentity: directIdentity || null,
         displayDpi,
+        displayWidth,
+        displayHeight,
         scriptId: scriptId || null,
         startPath: startPath || null,
+        trustPrompt: trustPrompt === true,
         renderer,
     };
 
@@ -144,6 +173,10 @@ const createSession = async ({
         organizationId: entry.organizationId,
         sessionId: sessionId || undefined,
         connectionGeneration,
+        automated,
+        origin,
+        apiKeyId,
+        watchable: !automated || isWatchableAutomatedSession(entry, configuration),
     });
 
     if (broadcast) {
@@ -151,21 +184,68 @@ const createSession = async ({
         if (entry.organizationId) stateBroadcaster.broadcast("LIVE_SESSIONS", { organizationId: entry.organizationId });
     }
 
-    createConnectionForSession(session.sessionId, accountId)
+    startConnection(session.sessionId, accountId);
+
+    return { sessionId: session.sessionId, connectionGeneration: session.connectionGeneration };
+};
+
+const startConnection = (sessionId, accountId) => {
+    createConnectionForSession(sessionId, accountId)
         .then(() => {
-            logger.info("Session connection established", { sessionId: session.sessionId, entryId, type: entry.type });
+            logger.info("Session connection established", { sessionId });
         })
         .catch((error) => {
+            if (SessionManager.isTrustPending(sessionId)) return;
             logger.error("Failed to create connection for session", {
-                sessionId: session.sessionId,
+                sessionId,
                 error: error.message,
                 stack: error.stack
             });
-            SessionManager.markFailed(session.sessionId, error.message);
-            SessionManager.remove(session.sessionId, { code: 4017, reason: error.message });
+            SessionManager.markFailed(sessionId, error.message);
+            SessionManager.remove(sessionId, { code: 4017, reason: error.message });
         });
+};
 
-    return { sessionId: session.sessionId, connectionGeneration: session.connectionGeneration };
+const answerTrustChallenge = async (accountId, sessionId, { fingerprint, accept }, requestInfo = {}) => {
+    const { session, error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
+
+    const challenge = session.trustChallenge;
+    if (!challenge) return { code: 409, message: "This session is not waiting for a certificate decision" };
+    if (challenge.peer.fingerprint !== fingerprint) {
+        return { code: 409, message: "The certificate changed since it was shown. Review it again." };
+    }
+
+    const audit = (action, details = {}) => createAuditLog({
+        accountId,
+        organizationId: challenge.scope.organizationId || null,
+        action,
+        resource: RESOURCE_TYPES.ENTRY,
+        resourceId: session.entryId,
+        details: { ...peerAuditDetails(challenge.peer), ...details },
+        ipAddress: requestInfo.ipAddress,
+        userAgent: requestInfo.userAgent,
+    });
+
+    if (!accept) {
+        await audit(AUDIT_ACTIONS.TRUST_REJECT, { status: challenge.view.status });
+        SessionManager.remove(sessionId);
+        closedSessions.set(sessionId, Date.now());
+        return { message: "Connection cancelled" };
+    }
+
+    const result = await acceptPeer(challenge.scope, challenge.peer, accountId);
+    if (result.code) return result;
+
+    await audit(result.changed ? AUDIT_ACTIONS.TRUST_ACCEPT_CHANGED : AUDIT_ACTIONS.TRUST_ACCEPT,
+        result.changed ? { previousFingerprint: result.previousFingerprint } : {});
+
+    SessionManager.clearTrustChallenge(sessionId);
+    SessionManager.clearFailedReason(sessionId);
+    startConnection(sessionId, accountId);
+    stateBroadcaster.broadcast("CONNECTIONS", { accountId });
+
+    return { message: "Certificate trusted" };
 };
 
 const reconnectSession = ({ accountId, sessionId, ...options }) => {
@@ -179,6 +259,7 @@ const reconnectSession = ({ accountId, sessionId, ...options }) => {
     const operation = (async () => {
         const expectedGeneration = options.connectionGeneration ?? 0;
         const existing = SessionManager.get(sessionId);
+        if (!existing && wasClosed(sessionId)) return SESSION_CLOSED;
         if (existing?.accountId !== undefined && existing.accountId !== accountId) {
             return { code: 403, message: "Access denied" };
         }
@@ -190,6 +271,10 @@ const reconnectSession = ({ accountId, sessionId, ...options }) => {
         }
         if (existing && existing.entryId !== options.entryId) {
             return { code: 400, message: "Session entry cannot be changed" };
+        }
+        // Other clients are still on this session, so the caller rejoins it instead of tearing it down for everyone
+        if (existing && SessionManager.hasAttachedClients(sessionId)) {
+            return { sessionId, connectionGeneration: existing.connectionGeneration };
         }
 
         if (existing) await SessionManager.remove(sessionId, { broadcast: false });
@@ -226,7 +311,9 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
     if (sessionSync === 'same_tab') filterTabId = tabId;
     else if (sessionSync === 'same_browser') filterBrowserId = browserId;
 
-    const sessions = SessionManager.getAll(accountId, filterTabId, filterBrowserId);
+    const showAgentSessions = account.preferences?.sessions?.showAgentSessions !== false;
+    const sessions = SessionManager.getAll(accountId, filterTabId, filterBrowserId)
+        .filter(session => session.watchable && (showAgentSessions || !session.automated));
     if (!sessions.length) return [];
 
     const entryIds = [...new Set(sessions.map(s => s.entryId))];
@@ -259,11 +346,16 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
             shareWritable: session.shareWritable || false,
             sftpPath: session.sftpPath || null,
             participants: SessionManager.getParticipants(session.sessionId),
+            automated: session.automated,
+            origin: session.origin || null,
+            trustChallenge: session.trustChallenge?.view || null,
         };
     });
 };
 
-const hibernateSession = (sessionId) => {
+const hibernateSession = (accountId, sessionId) => {
+    const { error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
     const success = SessionManager.hibernate(sessionId);
     if (success) {
         return { message: "Session hibernated" };
@@ -271,7 +363,9 @@ const hibernateSession = (sessionId) => {
     return { code: 404, message: "Session not found" };
 };
 
-const resumeSession = (sessionId, tabId = null, browserId = null) => {
+const resumeSession = (accountId, sessionId, tabId = null, browserId = null) => {
+    const { error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
     const success = SessionManager.resume(sessionId, tabId, browserId);
     if (success) {
         return { message: "Session resumed" };
@@ -279,9 +373,12 @@ const resumeSession = (sessionId, tabId = null, browserId = null) => {
     return { code: 404, message: "Session not found" };
 };
 
-const deleteSession = (sessionId) => {
+const deleteSession = (accountId, sessionId) => {
+    const { error } = validateSessionOwnership(accountId, sessionId);
+    if (error) return error;
     const success = SessionManager.remove(sessionId);
     if (success) {
+        closedSessions.set(sessionId, Date.now());
         return { message: "Session deleted" };
     }
     return { code: 404, message: "Session not found" };
@@ -331,6 +428,8 @@ const getSession = async (accountId, sessionId) => {
         scriptId: session.configuration.scriptId || undefined,
         shareId: session.shareId || null,
         shareWritable: session.shareWritable || false,
+        automated: session.automated,
+        origin: session.origin || null,
     };
 };
 
@@ -383,14 +482,17 @@ const duplicateSession = async (accountId, sessionId, tabId = null, browserId = 
         accountId,
         entryId: session.entryId,
         identityId: config.identityId,
-        connectionReason: null,
+        connectionReason: config.connectionReason || null,
         type: config.type,
         directIdentity: config.directIdentity,
         tabId,
         browserId,
         displayDpi: config.displayDpi,
+        displayWidth: config.displayWidth,
+        displayHeight: config.displayHeight,
         scriptId: config.scriptId,
         startPath: config.startPath || null,
+        trustPrompt: config.trustPrompt === true,
         ipAddress,
         userAgent,
     });
@@ -399,6 +501,7 @@ const duplicateSession = async (accountId, sessionId, tabId = null, browserId = 
 const pasteIdentityPassword = async (accountId, sessionId, ipAddress = null, userAgent = null, requestedIdentityId = null, submit = false) => {
     const { session, error } = validateSessionOwnership(accountId, sessionId);
     if (error) return error;
+    if (session.automated) return { code: 403, message: 'Automated sessions are view-only' };
 
     let identityId = session.configuration?.identityId;
     if (requestedIdentityId && requestedIdentityId !== identityId) {
@@ -441,4 +544,4 @@ const pasteIdentityPassword = async (accountId, sessionId, ipAddress = null, use
     }
 };
 
-module.exports = { createSession, reconnectSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword };
+module.exports = { createSession, answerTrustChallenge, reconnectSession, getSessions, getSession, hibernateSession, resumeSession, deleteSession, startSharing, stopSharing, updateSharePermissions, duplicateSession, pasteIdentityPassword };

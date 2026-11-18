@@ -7,24 +7,48 @@
 .input-icon
   position: absolute
   top: 50%
-  left: 0.75rem
-  width: 2rem
-  height: 2rem
+  left: 0.875rem
+  width: 1.25rem
+  height: 1.25rem
   transform: translateY(-50%)
   color: colors.$subtext
-  opacity: 0.9
+  pointer-events: none
+  transition: color 0.15s ease
 
 .input
-  padding: 0.8rem 2rem 0.8rem 3.5rem
+  padding: 0.75rem 1rem 0.75rem 2.75rem
   border: 1px solid colors.$gray
-  background-color: colors.$lighter-background
+  background-color: colors.$dark-gray
   color: colors.$white
   box-sizing: border-box
-  border-radius: 0.7rem
-  font-size: 14pt
+  border-radius: 0.625rem
+  font-size: 0.95rem
+  font-family: inherit
+  font-weight: 500
   width: 100%
   outline: none
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease
+
+  &::placeholder
+    color: colors.$subtext
+    opacity: 0.8
+
+  &:hover
+    border-color: colors.$subtext
 
   &:focus
-    border: 1px solid colors.$primary
-    background-color: colors.$dark-gray
+    border-color: colors.$primary
+    box-shadow: colors.$focus-ring
+
+  &:focus + .input-icon, &:focus ~ .input-icon
+    color: colors.$primary
+
+.input[type="file"]
+  color: colors.$subtext
+  cursor: pointer
+
+  &::file-selector-button
+    display: none
+
+  &:disabled
+    cursor: default

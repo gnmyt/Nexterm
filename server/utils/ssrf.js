@@ -1,5 +1,36 @@
 const dns = require("node:dns").promises;
 const net = require("node:net");
+const logger = require("./logger");
+
+const parseAllowedHosts = (raw) => {
+    const hostnames = new Set();
+    const addresses = new net.BlockList();
+
+    for (const entry of (raw || "").split(",").map((e) => e.trim().toLowerCase()).filter(Boolean)) {
+        const [address, prefix] = entry.split("/");
+        const family = net.isIPv6(address) ? "ipv6" : "ipv4";
+
+        if (!net.isIP(address)) {
+            if (prefix === undefined) hostnames.add(entry);
+            else logger.warn(`Ignoring invalid SOURCES_ALLOWED_HOSTS entry: ${entry}`);
+            continue;
+        }
+
+        try {
+            if (prefix === undefined) addresses.addAddress(address, family);
+            else addresses.addSubnet(address, Number(prefix), family);
+        } catch {
+            logger.warn(`Ignoring invalid SOURCES_ALLOWED_HOSTS entry: ${entry}`);
+        }
+    }
+
+    return { hostnames, addresses };
+};
+
+const allowedHosts = parseAllowedHosts(process.env.SOURCES_ALLOWED_HOSTS);
+
+const isAllowedAddress = (ip) =>
+    allowedHosts.addresses.check(ip, net.isIPv6(ip) ? "ipv6" : "ipv4");
 
 const isBlockedIPv4 = (ip) => {
     const p = ip.split(".").map(Number);
@@ -41,6 +72,10 @@ module.exports.assertPublicUrl = async (rawUrl, { allowInsecureProtocols = false
         throw new Error(`Blocked URL protocol: ${url.protocol}`);
 
     const host = url.hostname;
+    const bareHost = host.replace(/^\[|]$/g, "");
+
+    if (allowedHosts.hostnames.has(bareHost.toLowerCase())) return;
+    if (net.isIP(bareHost) && isAllowedAddress(bareHost)) return;
 
     if (net.isIP(host)) {
         if (isBlockedAddress(host)) throw new Error("Blocked private/loopback address");
@@ -55,7 +90,7 @@ module.exports.assertPublicUrl = async (rawUrl, { allowInsecureProtocols = false
     }
     if (!addresses.length) throw new Error(`Could not resolve host: ${host}`);
     for (const { address } of addresses) {
-        if (isBlockedAddress(address))
+        if (isBlockedAddress(address) && !isAllowedAddress(address))
             throw new Error("Blocked private/loopback address");
     }
 };

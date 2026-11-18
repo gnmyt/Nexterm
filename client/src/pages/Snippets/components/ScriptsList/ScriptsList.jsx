@@ -10,6 +10,7 @@ import { useDrag, useDrop } from "react-dnd";
 import Button from "@/common/components/Button";
 import Tooltip from "@/common/components/Tooltip";
 import { parseOsFilter } from "@/common/utils/osUtils.js";
+import EmptyState from "@/common/components/EmptyState";
 
 const ScriptItem = ({ script, onEdit, onDelete, isReadOnly, onReposition, t }) => {
     const [{ isDragging }, drag] = useDrag({ type: "script", item: { id: script.id }, canDrag: !isReadOnly, collect: m => ({ isDragging: m.isDragging() }) });
@@ -38,14 +39,8 @@ const ScriptItem = ({ script, onEdit, onDelete, isReadOnly, onReposition, t }) =
             </div>
             {!isReadOnly && (
                 <div className="script-actions">
-                    <button className="action-button" aria-label={t('scripts.list.actions.edit')}
-                            onClick={e => { e.stopPropagation(); onEdit(script.id); }}>
-                        <Icon path={mdiPencil} />
-                    </button>
-                    <button className="action-button delete" aria-label={t('scripts.list.actions.delete')}
-                            onClick={e => { e.stopPropagation(); onDelete(script.id); }}>
-                        <Icon path={mdiTrashCan} />
-                    </button>
+                    <Button icon={mdiPencil} title={t('scripts.list.actions.edit')} onClick={e => { e.stopPropagation(); onEdit(script.id); }} />
+                    <Button type="danger" icon={mdiTrashCan} title={t('scripts.list.actions.delete')} onClick={e => { e.stopPropagation(); onDelete(script.id); }} />
                 </div>
             )}
         </div>
@@ -78,7 +73,7 @@ export const ScriptsList = ({ scripts, onEdit, selectedOrganization, isReadOnly 
         } catch (e) { sendToast("Error", e.message || t('scripts.messages.errors.reorderFailed')); }
     };
 
-    if (!scripts?.length) return <div className="scripts-list-container"><div className="empty-scripts"><p>{t('scripts.list.empty')}</p></div></div>;
+    if (!scripts?.length) return <div className="scripts-list-container"><EmptyState compact description={t('scripts.list.empty')} /></div>;
 
     return (
         <div className="scripts-list-container">

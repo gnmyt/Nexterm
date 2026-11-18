@@ -1,4 +1,5 @@
 @use "@/common/styles/colors"
+@use "@/common/components/SettingsDialog/page" as settings-page
 @use "@/common/styles/breakpoints"
 
 .css-theme-card
@@ -69,22 +70,9 @@
     transition: opacity 0.15s ease
     margin-top: auto
 
-    .action-btn
-      background: transparent
-      border: none
-      border-radius: 0.3rem
-      padding: 0.3rem
-      cursor: pointer
-      color: colors.$subtext
-      display: flex
-      align-items: center
-      justify-content: center
-      transition: all 0.12s ease
-
-      &:hover
-        background-color: colors.$gray
-        color: colors.$white
-
-      &.delete-btn:hover
-        background-color: colors.$error-opacity
-        color: colors.$error
++settings-page.scope
+  .source-badge
+    background: colors.$gray
+    color: colors.$subtext
+    border: none
+    font-weight: 600

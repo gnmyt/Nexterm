@@ -332,15 +332,19 @@ Guacamole.Client = function(tunnel) {
      *
      * @param {number} [top_offset=0]
      *     The offset of the monitor from the top of the layout, in pixels.
+     *
+     * @param {number} [scale=0]
+     *     The desired desktop scale as a percentage, or 0 to leave the
+     *     current scale unchanged.
      */
-    this.sendSize = function(width, height, x_position, top_offset) {
+    this.sendSize = function(width, height, x_position, top_offset, scale) {
 
         // Do not send requests if not connected
         if (!isConnected())
             return;
 
         tunnel.sendMessage("size", width, height,
-            x_position || 0, top_offset || 0);
+            x_position || 0, top_offset || 0, scale || 0);
 
     };
 

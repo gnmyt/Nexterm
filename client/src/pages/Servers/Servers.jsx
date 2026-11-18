@@ -5,7 +5,6 @@ import { createPortal } from "react-dom";
 import WelcomePanel from "@/pages/Servers/components/WelcomePanel";
 import ServerDialog from "@/pages/Servers/components/ServerDialog";
 import ViewContainer from "@/pages/Servers/components/ViewContainer";
-import ProxmoxDialog from "@/pages/Servers/components/ProxmoxDialog";
 import SSHConfigImportDialog from "@/pages/Servers/components/SSHConfigImportDialog";
 import ConnectionReasonDialog from "@/pages/Servers/components/ConnectionReasonDialog";
 import DirectConnectDialog from "@/pages/Servers/components/DirectConnectDialog";
@@ -22,6 +21,7 @@ import { StateStreamContext, STATE_TYPES } from "@/common/contexts/StateStreamCo
 import { isTauri } from "@/common/utils/TauriUtil.js";
 import { getTabId, getBrowserId, requiresIdentity, canConnectWithoutPrompt } from "@/common/utils/ConnectionUtil.js";
 import { postRequest, deleteRequest } from "@/common/utils/RequestUtil";
+import { getExpectedDisplaySize, resolveScale, resolveScaleSetting, scaleToDpi } from "@/common/utils/displayScale.js";
 
 const makeReconnectKey = () => {
     const values = new Uint32Array(4);
@@ -44,7 +44,6 @@ export const Servers = () => {
 
     const [serverDialogOpen, setServerDialogOpen] = useState(false);
     const [serverDialogProtocol, setServerDialogProtocol] = useState(null);
-    const [proxmoxDialogOpen, setProxmoxDialogOpen] = useState(false);
     const [sshConfigImportDialogOpen, setSSHConfigImportDialogOpen] = useState(false);
     const [connectionReasonDialogOpen, setConnectionReasonDialogOpen] = useState(false);
     const [directConnectDialogOpen, setDirectConnectDialogOpen] = useState(false);
@@ -62,7 +61,11 @@ export const Servers = () => {
     const { liveSessions } = useLiveSessions();
     const { getServerById, servers } = useContext(ServerContext);
     const { registerHandler, isConnected } = useContext(StateStreamContext);
-    const { autoReconnect } = usePreferences();
+    const { autoReconnect, defaultDisplayScale } = usePreferences();
+    const defaultDisplayScaleRef = useRef(defaultDisplayScale);
+    useEffect(() => {
+        defaultDisplayScaleRef.current = defaultDisplayScale;
+    }, [defaultDisplayScale]);
     const sessionLayout = useSessionLayout();
     const location = useLocation();
     const navigate = useNavigate();
@@ -89,7 +92,7 @@ export const Servers = () => {
         connectionVersion = null,
     } = {}) => {
         const session = activeSessionsRef.current.find(current => current.id === sessionId);
-        if (!session) return;
+        if (!session || session.trustChallenge) return;
         const currentVersion = getConnectionVersion(session);
         const reportedVersion = connectionVersion ?? currentVersion;
         const targetVersion = reconnectingKeysRef.current.get(session.reconnectKey);
@@ -129,11 +132,13 @@ export const Servers = () => {
         const mappedSessions = sessions.map(session => {
             const server = getServerById(session.entryId);
             if (!server) return null;
+            if (session.trustChallenge) erroredSessionsRef.current.delete(session.sessionId);
             return {
                 id: session.sessionId,
                 connectionGeneration: session.connectionGeneration ?? 0,
                 server,
                 identity: session.configuration.identityId,
+                connectionReason: session.configuration.connectionReason || null,
                 isHibernated: session.isHibernated,
                 lastActivity: session.lastActivity,
                 type: session.configuration.type || undefined,
@@ -144,6 +149,9 @@ export const Servers = () => {
                 shareId: session.shareId || null,
                 shareWritable: session.shareWritable || false,
                 participants: session.participants || [],
+                automated: session.automated === true,
+                origin: session.origin || null,
+                trustChallenge: session.trustChallenge || null,
             };
         }).filter(Boolean);
 
@@ -282,9 +290,10 @@ export const Servers = () => {
     };
 
     const performConnection = async (options, connectionReason = null) => {
-        const { server, identity = null, type = null, directIdentity = null, scriptId = null, scriptName = null, placement = null, reconnectSessionId = null, reconnectKey: existingReconnectKey = null } = options;
+        const { server, identity = null, type = null, directIdentity = null, scriptId = null, scriptName = null, placement = null, reconnectSessionId = null, reconnectKey: existingReconnectKey = null, connectionGeneration = null } = options;
         try {
             const existingSession = activeSessionsRef.current.find(s => s.id === reconnectSessionId);
+            const displaySize = getExpectedDisplaySize();
             const payload = {
                 entryId: server.id,
                 identityId: identity?.id,
@@ -292,8 +301,10 @@ export const Servers = () => {
                 type,
                 tabId: getTabId(),
                 browserId: getBrowserId(),
-                displayDpi: Math.round((window.devicePixelRatio || 1) * 96),
-                ...(reconnectSessionId && { connectionGeneration: existingSession?.connectionGeneration ?? 0 }),
+                trustPrompt: true,
+                displayDpi: scaleToDpi(resolveScale(resolveScaleSetting(server.id, server.displayScale, defaultDisplayScaleRef.current))),
+                ...(displaySize && { displayWidth: displaySize.width, displayHeight: displaySize.height }),
+                ...(reconnectSessionId && { connectionGeneration: connectionGeneration ?? existingSession?.connectionGeneration ?? 0 }),
             };
 
             if (directIdentity) payload.directIdentity = directIdentity;
@@ -309,6 +320,7 @@ export const Servers = () => {
             const sessionData = {
                 server,
                 identity: identity?.id,
+                connectionReason: connectionReason || null,
                 id: session.sessionId,
                 type: type || undefined,
                 organizationId: organizationId,
@@ -330,6 +342,10 @@ export const Servers = () => {
             setActiveSessionId(session.sessionId);
             return true;
         } catch (error) {
+            if (reconnectSessionId && error?.code === "SESSION_CLOSED") {
+                disconnectFromServer(reconnectSessionId, { force: true });
+                return false;
+            }
             console.error("Failed to connect session", error);
             return false;
         }
@@ -339,13 +355,13 @@ export const Servers = () => {
         if (!options.server) return { connected: false, deferred: true };
 
         const requiresReason = checkConnectionReasonRequired(options.server.id, servers);
-        if (requiresReason) {
+        if (requiresReason && !options.connectionReason) {
             setPendingConnection(options);
             setConnectionReasonDialogOpen(true);
             return { connected: false, deferred: true };
         }
 
-        const connected = await performConnection(options);
+        const connected = await performConnection(options, options.connectionReason ?? null);
         return { connected, deferred: false };
     };
 
@@ -394,6 +410,7 @@ export const Servers = () => {
 
     const disconnectFromServer = useCallback((sessionId, { force = false, connectionVersion = null } = {}) => {
         const session = activeSessionsRef.current.find(current => current.id === sessionId);
+        if (!force && session?.trustChallenge) return;
         if (!force && session) {
             const currentVersion = getConnectionVersion(session);
             const reportedVersion = connectionVersion ?? currentVersion;
@@ -441,6 +458,8 @@ export const Servers = () => {
             scriptName: session.scriptName ?? null,
             reconnectSessionId: sessionId,
             reconnectKey: session.reconnectKey,
+            connectionReason: session.connectionReason,
+            connectionGeneration: session.connectionGeneration ?? 0,
         });
         if (!result.connected && !result.deferred) {
             reconnectingKeysRef.current.delete(session.reconnectKey);
@@ -546,6 +565,7 @@ export const Servers = () => {
                 startPath: path,
                 tabId: getTabId(),
                 browserId: getBrowserId(),
+                trustPrompt: true,
             };
 
             const session = await postRequest("/connections", payload);
@@ -569,12 +589,6 @@ export const Servers = () => {
     const closeDialog = () => {
         setServerDialogOpen(false);
         setServerDialogProtocol(null);
-        setCurrentFolderId(null);
-        setEditServerId(null);
-    };
-
-    const closePVEDialog = () => {
-        setProxmoxDialogOpen(false);
         setCurrentFolderId(null);
         setEditServerId(null);
     };
@@ -644,10 +658,6 @@ export const Servers = () => {
             <ServerDialog open={serverDialogOpen} onClose={closeDialog} currentFolderId={currentFolderId}
                           currentOrganizationId={currentOrganizationId} editServerId={editServerId}
                           initialProtocol={serverDialogProtocol} />
-            <ProxmoxDialog open={proxmoxDialogOpen} onClose={closePVEDialog}
-                           currentFolderId={currentFolderId}
-                           currentOrganizationId={currentOrganizationId}
-                           editServerId={editServerId} />
             <SSHConfigImportDialog open={sshConfigImportDialogOpen} onClose={closeSSHConfigImportDialog}
                                    currentFolderId={currentFolderId}
                                    currentOrganizationId={currentOrganizationId} />
@@ -669,7 +679,6 @@ export const Servers = () => {
                     setServerDialogOpen(true);
                 }}
                             connectToServer={connectToServer}
-                            setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
                             setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
                             setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
                             setEditServerId={setEditServerId} openSFTP={openSFTP} openBrowser={openBrowser}

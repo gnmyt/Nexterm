@@ -18,16 +18,16 @@ jobs:
     name: "Generate Schema"
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "26"
 
       - name: Install flatc
         run: |
-          curl -sSL -o /tmp/flatc.zip https://github.com/google/flatbuffers/releases/download/v24.12.23/Linux.flatc.binary.g++-13.zip
+          curl -sSL -o /tmp/flatc.zip https://github.com/google/flatbuffers/releases/download/v25.12.19/Linux.flatc.binary.g++-13.zip
           sudo unzip -o /tmp/flatc.zip -d /usr/local/bin
           sudo chmod +x /usr/local/bin/flatc
 
@@ -43,7 +43,7 @@ jobs:
           rm -rf server/lib/generated/nexterm
 
       - name: Upload generated schema
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: server-generated-schema
           path: server/lib/generated/
@@ -83,10 +83,10 @@ jobs:
             is_linux: false
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "26"
 
@@ -100,7 +100,7 @@ jobs:
           node -e "const f='package.json',p=require('./'+f);p.version='${{ inputs.version }}';require('fs').writeFileSync(f,JSON.stringify(p,null,2)+'\n')"
 
       - name: Download generated schema
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: server-generated-schema
           path: server/lib/generated/
@@ -120,9 +120,7 @@ jobs:
         run: ./scripts/build-sea.sh
 
       - name: Upload to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/upload-release-asset
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: build/sea/nexterm-server${{ matrix.output_ext }}
@@ -133,7 +131,7 @@ jobs:
         if: matrix.is_linux
         shell: bash
         run: |
-          NFPM_VERSION=2.43.0
+          NFPM_VERSION=2.49.0
           case "$(uname -m)" in
             x86_64) HOST=x86_64 ;;
             aarch64|arm64) HOST=arm64 ;;
@@ -169,9 +167,7 @@ jobs:
 
       - name: Upload .deb
         if: matrix.is_linux
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/upload-release-asset
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: dist/nexterm-server_${{ inputs.semver }}_${{ matrix.deb_arch }}.deb
@@ -180,9 +176,7 @@ jobs:
 
       - name: Upload .rpm
         if: matrix.is_linux
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/upload-release-asset
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: dist/nexterm-server-${{ inputs.semver }}-1.${{ matrix.rpm_arch }}.rpm

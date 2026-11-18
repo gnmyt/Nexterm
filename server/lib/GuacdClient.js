@@ -25,6 +25,7 @@ class GuacdClient {
         this.sessionId = options.sessionId;
         this.connectionSettings = options.connectionSettings || {};
         this.joinConnectionId = options.joinConnectionId || null;
+        this.serveFiles = options.serveFiles || false;
         this.onReadyCallback = options.onReady || null;
         this.onCloseCallback = options.onClose || null;
         this.onDataCallback = options.onData || null;
@@ -103,12 +104,12 @@ class GuacdClient {
 
         const connectionOptions = ['connect'];
         for (let i = 1; i < attributes.length; i++) {
+            const name = attributes[i].substring(attributes[i].indexOf('.') + 1);
             if (i === 1) {
                 connectionOptions.push('VERSION_1_5_0');
             } else if (this.joinConnectionId) {
-                connectionOptions.push('');
+                connectionOptions.push(this.serveFiles && name === 'enable-drive' ? 'true' : '');
             } else {
-                const name = attributes[i].substring(attributes[i].indexOf('.') + 1);
                 connectionOptions.push(conn[name] !== undefined ? conn[name] : '');
             }
         }

@@ -11,13 +11,16 @@ const { createSFTPConnectionForSession, getSFTPBackgroundClient } = require("../
 const { hasResourcePermission } = require("../utils/permission");
 const { Permission } = require("../permissions/registry");
 const Entry = require("../models/Entry");
+const TransferRegistry = require("../lib/TransferRegistry");
 const logger = require("../utils/logger");
+const { TRUST_CLOSE_CODE, TRUST_CLOSE_REASON } = require("../utils/hostTrust");
 
 const OP = {
     READY: 0x0, LIST_FILES: 0x1, CREATE_FILE: 0x4, CREATE_FOLDER: 0x5, DELETE_FILE: 0x6,
     DELETE_FOLDER: 0x7, RENAME_FILE: 0x8, ERROR: 0x9, SEARCH_DIRECTORIES: 0xA,
     RESOLVE_SYMLINK: 0xB, MOVE_FILES: 0xC, COPY_FILES: 0xD, CHMOD: 0xE,
     STAT: 0xF, CHECKSUM: 0x10, FOLDER_SIZE: 0x11, PATH_SYNC: 0x12,
+    TRANSFER_PROGRESS: TransferRegistry.OP_TRANSFER_PROGRESS, CANCEL_TRANSFER: 0x14, CHECK_EXISTS: 0x15,
 };
 
 const CHECKSUM_COMMANDS = { md5: "md5sum", sha1: "sha1sum", sha256: "sha256sum", sha512: "sha512sum" };
@@ -40,7 +43,12 @@ const sendError = (ws, msg) => sendResult(ws, OP.ERROR, { message: msg });
 
 const requirePath = (p) => { if (!p?.path) throw new Error("Invalid path"); };
 const requirePaths = (p) => { if (!p?.path || !p?.newPath) throw new Error("Invalid paths"); };
-const requireMultiPaths = (p) => { if (!p?.sources?.length || !p?.destination) throw new Error("Invalid paths"); };
+const normalizePath = (p) => p.replace(/\/+/g, "/").replace(/(.)\/$/, "$1");
+const destinationFor = (destination, src) => normalizePath(`${destination}/${normalizePath(src).split("/").pop()}`);
+const requireMultiPaths = (p) => {
+    if (!p?.sources?.length || !p?.destination) throw new Error("Invalid paths");
+    if (p.sources.some((src) => normalizePath(src) === destinationFor(p.destination, src))) throw new Error("Source and destination are the same");
+};
 
 const SHELL_LESS_PROTOCOLS = new Set(["ftp", "ftps"]);
 const TERMINAL_LESS_PROTOCOLS = new Set(["sftp", "ftp", "ftps"]);
@@ -60,7 +68,7 @@ const requireShell = (capabilities) => {
 const buildOperationHandlers = (sftp, getBg, ws, logAudit, capabilities) => ({
     [OP.LIST_FILES]: async (p) => {
         requirePath(p);
-        sendResult(ws, OP.LIST_FILES, { files: await sftp.listDir(p.path) });
+        sendResult(ws, OP.LIST_FILES, { path: p.path, files: await sftp.listDir(p.path) });
     },
     [OP.CREATE_FILE]: async (p) => {
         requirePath(p);
@@ -99,12 +107,53 @@ const buildOperationHandlers = (sftp, getBg, ws, logAudit, capabilities) => ({
     },
     [OP.RESOLVE_SYMLINK]: async (p) => {
         requirePath(p);
-        sendResult(ws, OP.RESOLVE_SYMLINK, await sftp.realpath(p.path));
+        const resolved = await sftp.realpath(p.path);
+        const size = resolved.isDirectory ? 0 : (await sftp.stat(resolved.path)).size;
+        sendResult(ws, OP.RESOLVE_SYMLINK, { ...resolved, size });
+    },
+    [OP.CHECK_EXISTS]: async (p) => {
+        const paths = Array.isArray(p?.paths) ? p.paths.filter((path) => typeof path === "string") : [];
+        const byDirectory = new Map();
+        for (const path of paths) {
+            const normalized = normalizePath(path);
+            const cut = normalized.lastIndexOf("/");
+            const directory = cut < 0 ? "." : normalized.slice(0, cut) || "/";
+            if (!byDirectory.has(directory)) byDirectory.set(directory, []);
+            byDirectory.get(directory).push({ path, name: normalized.slice(cut + 1) });
+        }
+        const existing = [];
+        for (const [directory, entries] of byDirectory) {
+            if (entries.length === 1) {
+                if (await sftp.stat(entries[0].path).catch(() => null)) existing.push(entries[0].path);
+                continue;
+            }
+            const listing = await sftp.listDir(directory).catch(() => []);
+            const names = new Set(listing.map((entry) => entry.name));
+            for (const entry of entries) {
+                if (names.has(entry.name)) existing.push(entry.path);
+            }
+        }
+        sendResult(ws, OP.CHECK_EXISTS, { id: p?.id, existing });
     },
     [OP.MOVE_FILES]: async (p) => {
         requireMultiPaths(p);
         for (const src of p.sources) {
-            await sftp.rename(src, `${p.destination}/${src.split("/").pop()}`);
+            const dest = destinationFor(p.destination, src);
+            const replaced = p.overwrite ? await sftp.stat(dest).catch(() => null) : null;
+            if (!replaced) {
+                await sftp.rename(src, dest);
+                continue;
+            }
+            const backup = `${dest}.nexterm-replaced-${Date.now()}`;
+            await sftp.rename(dest, backup);
+            try {
+                await sftp.rename(src, dest);
+            } catch (err) {
+                await sftp.rename(backup, dest).catch(() => {});
+                throw err;
+            }
+            if (replaced.isDir) await sftp.rmdir(backup, true);
+            else await sftp.unlink(backup);
         }
         sendAck(ws, OP.MOVE_FILES);
         logAudit(AUDIT_ACTIONS.FILE_RENAME, RESOURCE_TYPES.FILE, { sources: p.sources, destination: p.destination });
@@ -113,8 +162,9 @@ const buildOperationHandlers = (sftp, getBg, ws, logAudit, capabilities) => ({
         requireMultiPaths(p);
         requireShell(capabilities);
         const cmds = p.sources.map((src) => {
-            const dest = `${p.destination}/${src.split("/").pop()}`;
-            return `cp -r ${escapePath(src)} ${escapePath(dest)}`;
+            const dest = destinationFor(p.destination, src);
+            const copy = `cp -r ${escapePath(src)} ${escapePath(dest)}`;
+            return p.overwrite ? `rm -rf ${escapePath(dest)} && ${copy}` : copy;
         }).join(" && ");
         const bg = await getBg();
         const result = await bg.exec(cmds);
@@ -179,6 +229,7 @@ module.exports = async (ws, req) => {
         return;
     }
 
+    if (serverSession?.trustChallenge) return ws.close(TRUST_CLOSE_CODE, TRUST_CLOSE_REASON);
     if (serverSession) SessionManager.resume(serverSession.sessionId);
 
     const sessionId = serverSession?.sessionId;
@@ -204,6 +255,7 @@ module.exports = async (ws, req) => {
             }
         };
 
+        ws.isSftp = true;
         SessionManager.addWebSocket(sessionId, ws, false, buildParticipant(ctx));
 
         const onSftpClose = () => {
@@ -214,7 +266,8 @@ module.exports = async (ws, req) => {
 
         const capabilities = getCapabilities(entry);
         const storedPath = SessionManager.getSftpPath(sessionId);
-        sendResult(ws, OP.READY, { path: storedPath, capabilities });
+        const home = await sftpClient.realpath(".").then((resolved) => resolved.path).catch(() => null);
+        sendResult(ws, OP.READY, { path: storedPath, home, capabilities, transfers: TransferRegistry.list(sessionId) });
 
         const logAudit = (action, resource, details) => {
             createAuditLog({ accountId: user.id, organizationId: entry.organizationId, action, resource, details, ipAddress, userAgent });
@@ -241,6 +294,13 @@ module.exports = async (ws, req) => {
                 return;
             }
 
+            if (opCode === OP.CANCEL_TRANSFER) {
+                let payload;
+                try { payload = JSON.parse(msg.slice(1).toString()); } catch {}
+                if (TransferRegistry.isValidTransferId(payload?.id)) TransferRegistry.cancel(payload.id, sessionId);
+                return;
+            }
+
             const handler = handlers[opCode];
             if (!handler) return;
             if (MUTATING_OPS.has(opCode) && !canModify) {
@@ -262,6 +322,10 @@ module.exports = async (ws, req) => {
             try { await updateAuditLogWithSessionDuration(auditLogId, startTime); } catch {}
         });
     } catch (err) {
+        if (SessionManager.get(sessionId)?.trustChallenge) {
+            try { ws.close(TRUST_CLOSE_CODE, TRUST_CLOSE_REASON); } catch {}
+            return;
+        }
         sendError(ws, "Connection failed: " + err.message);
         try { ws.close(4005); } catch {}
     }

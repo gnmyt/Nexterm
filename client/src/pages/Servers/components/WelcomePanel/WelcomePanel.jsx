@@ -2,8 +2,13 @@ import "./styles.sass";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
+import { QuickActionContext } from "@/common/contexts/QuickActionContext.jsx";
+import { useKeymaps } from "@/common/contexts/KeymapContext.jsx";
+import { useAI } from "@/common/contexts/AIContext.jsx";
+import Tooltip from "@/common/components/Tooltip";
 import Icon from "@mdi/react";
-import { mdiHistory, mdiPower, mdiPlay, mdiServerNetwork, mdiConnection, mdiFolderOpen, mdiCursorDefaultClick, mdiDownload, mdiLinkVariant, mdiWeb } from "@mdi/js";
+import EmptyState from "@/common/components/EmptyState";
+import { mdiCompassOutline, mdiHistory, mdiPower, mdiPlay, mdiServerNetwork, mdiConnection, mdiFolderOpen, mdiCursorDefaultClick, mdiDownload, mdiLinkVariant, mdiWeb, mdiMagnify, mdiRobotHappyOutline } from "@mdi/js";
 import { getRequest } from "@/common/utils/RequestUtil";
 import { useTranslation } from "react-i18next";
 import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
@@ -13,6 +18,7 @@ import DownloadAppsDialog from "@/common/components/DownloadAppsDialog";
 import { DeviceLinkDialog } from "@/common/components/DeviceLinkDialog/DeviceLinkDialog.jsx";
 import { getAvatarLabel } from "@/common/utils/avatar.js";
 import { useDrop } from "react-dnd";
+import { isDemoGuest } from "@/common/utils/demo.js";
 
 const formatTimeAgo = (timestamp) => {
     const diffMins = Math.floor((Date.now() - new Date(timestamp)) / 60000);
@@ -21,6 +27,29 @@ const formatTimeAgo = (timestamp) => {
     if (diffMins < 1440) return `${Math.floor(diffMins / 60)}h ago`;
     return `${Math.floor(diffMins / 1440)}d ago`;
 };
+
+const EXPLORE_LIMIT = 5;
+
+const flattenServers = (entries, parent = null, result = []) => {
+    for (const entry of entries || []) {
+        if (entry.type === "folder" || entry.type === "organization") flattenServers(entry.entries, entry.name, result);
+        else if (entry.type === "server") result.push({ ...entry, parentName: parent });
+    }
+    return result;
+};
+
+const ConnectionItem = ({ icon, name, meta, className = "", ...props }) => (
+    <div className={`recent-item${className}`} {...props}>
+        <div className="item-icon"><Icon path={getIconPath(icon)} /></div>
+        <div className="item-info">
+            <span className="item-name">{name}</span>
+            <span className="item-meta">{meta}</span>
+        </div>
+        <div className="item-action">
+            <Icon path={mdiPlay} className="play-icon" />
+        </div>
+    </div>
+);
 
 const PROTOCOL_LABELS = {
     "entry.ssh_connect": "SSH", "entry.sftp_connect": "SFTP", "entry.rdp_connect": "RDP",
@@ -37,8 +66,15 @@ export const WelcomePanel = ({
                                  openDirectConnect,
                              }) => {
     const { user } = useContext(UserContext);
-    const { getServerById } = useContext(ServerContext);
+    const { servers, getServerById } = useContext(ServerContext);
+    const exploreServers = isDemoGuest(user) ? flattenServers(servers).slice(0, EXPLORE_LIMIT) : [];
     const { t } = useTranslation();
+    const { open: openQuickAction } = useContext(QuickActionContext);
+    const { getKeybind, formatKey } = useKeymaps();
+    const quickActionKey = formatKey(getKeybind("quick-action"));
+    const { available: aiAvailable, openAssistant } = useAI();
+    const aiKey = formatKey(getKeybind("ai-menu"));
+    const aiLabel = aiKey ? `${t("servers.aiAssistant.open")} · ${aiKey}` : t("servers.aiAssistant.open");
     const [recentConnections, setRecentConnections] = useState([]);
     const [loading, setLoading] = useState(true);
     const [contextItem, setContextItem] = useState(null);
@@ -113,6 +149,21 @@ export const WelcomePanel = ({
             </div>
 
             <div className="welcome-right">
+                <div className="welcome-search">
+                    <button type="button" className="welcome-search-trigger" onClick={openQuickAction}>
+                        <Icon path={mdiMagnify} className="welcome-search-icon" />
+                        <span className="welcome-search-placeholder">{t("common.quickAction.placeholder")}</span>
+                        {quickActionKey && <kbd>{quickActionKey}</kbd>}
+                    </button>
+                    {aiAvailable && (
+                        <Tooltip text={aiLabel}>
+                            <button type="button" className="welcome-search-ai" onClick={() => openAssistant()}
+                                    aria-label={t("servers.aiAssistant.open")}>
+                                <Icon path={mdiRobotHappyOutline} />
+                            </button>
+                        </Tooltip>
+                    )}
+                </div>
                 {loading ? (
                     <div className="loading-state">
                         <div className="loading-spinner" />
@@ -127,34 +178,39 @@ export const WelcomePanel = ({
                             {recentConnections.map((item, i) => {
                                 const hibernated = getHibernated(item.entryId);
                                 return (
-                                    <div key={`${item.entryId}-${i}`}
-                                         className={`recent-item${hibernated ? " hibernated" : ""}`}
-                                         onClick={() => handleClick(item)}
-                                         onContextMenu={(e) => handleContextMenu(e, item)}>
-                                        <div className="item-icon"><Icon path={getIconPath(item.icon)} /></div>
-                                        <div className="item-info">
-                                            <span className="item-name">{item.name}</span>
-                                            <span className="item-meta">
-                                                {hibernated ?
-                                                    <span className="hibernated-badge"><Icon path={mdiPower} />Hibernated</span> : formatTimeAgo(item.timestamp)}
-                                            </span>
-                                        </div>
-                                        <div className="item-action">
-                                            <span
-                                                className="protocol-badge">{PROTOCOL_LABELS[item.connectionType] || "Connect"}</span>
-                                            <Icon path={mdiPlay} className="play-icon" />
-                                        </div>
-                                    </div>
+                                    <ConnectionItem key={`${item.entryId}-${i}`} icon={item.icon} name={item.name}
+                                                    className={hibernated ? " hibernated" : ""}
+                                                    onClick={() => handleClick(item)}
+                                                    onContextMenu={(e) => handleContextMenu(e, item)}
+                                                    meta={<>
+                                                        {PROTOCOL_LABELS[item.connectionType] && <span className="item-protocol">{PROTOCOL_LABELS[item.connectionType]}</span>}
+                                                        {hibernated
+                                                            ? <span className="hibernated-badge"><Icon path={mdiPower} />{t("welcome.hibernated")}</span>
+                                                            : <span>{formatTimeAgo(item.timestamp)}</span>}
+                                                    </>} />
                                 );
                             })}
                         </div>
                     </div>
-                ) : (
-                    <div className="empty-state">
-                        <Icon path={mdiServerNetwork} />
-                        <h3>{t("welcome.getStarted")}</h3>
-                        <p>{t("welcome.getStartedHint")}</p>
+                ) : exploreServers.length > 0 ? (
+                    <div className="recent-connections">
+                        <div className="section-header">
+                            <Icon path={mdiCompassOutline} />
+                            <h3>{t("welcome.demo.explore")}</h3>
+                        </div>
+                        <div className="recent-list">
+                            {exploreServers.map(entry => (
+                                <ConnectionItem key={entry.id} icon={entry.icon} name={entry.name}
+                                                onClick={() => connectToServer(entry.id, entry.identities?.[0] ? { id: entry.identities[0] } : null)}
+                                                meta={<>
+                                                    {entry.protocol && <span className="item-protocol">{entry.protocol.toUpperCase()}</span>}
+                                                    <span>{entry.parentName}</span>
+                                                </>} />
+                            ))}
+                        </div>
                     </div>
+                ) : (
+                    <EmptyState icon={mdiServerNetwork} title={t("welcome.getStarted")} description={t("welcome.getStartedHint")} />
                 )}
             </div>
 

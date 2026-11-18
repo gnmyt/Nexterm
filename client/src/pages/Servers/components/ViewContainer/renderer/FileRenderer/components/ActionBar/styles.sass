@@ -1,64 +1,87 @@
 @use "@/common/styles/colors"
+@use "@/common/styles/breakpoints"
 
 .action-bar
   display: flex
   align-items: center
-  gap: 0.5rem
-  padding: 1rem 1.5rem
+  gap: 0.375rem
+  height: 2.75rem
+  padding: 0 0.625rem
   background-color: colors.$terminal
   border-bottom: 1px solid colors.$gray
   flex-shrink: 0
+  user-select: none
 
-  svg
-    width: 1.125rem
-    height: 1.125rem
-    cursor: pointer
-    transition: all 0.1s ease
-    padding: 0.5rem
-    border-radius: 0.5rem
+  .tool-group
+    display: flex
+    align-items: center
+    gap: 0.125rem
     flex-shrink: 0
-    color: colors.$white
-    opacity: 0.9
 
-    &:hover:not(.nav-disabled)
-      color: colors.$primary
+  .nav-group
+    margin-right: 0.25rem
+
+  .tool-divider
+    width: 1px
+    height: 1.25rem
+    background-color: colors.$gray
+    margin: 0 0.25rem
+    flex-shrink: 0
+
+  .tool-btn
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 1.875rem
+    height: 1.875rem
+    padding: 0
+    border: none
+    border-radius: 0.4rem
+    background: transparent
+    color: colors.$subtext
+    cursor: pointer
+    transition: background-color 0.1s ease, color 0.1s ease
+
+    svg
+      width: 1.125rem
+      height: 1.125rem
+
+    &:hover:not(:disabled)
       background-color: colors.$gray
+      color: colors.$white
 
-    &:active:not(.nav-disabled)
+    &:active:not(:disabled)
       transform: scale(0.95)
 
-  .nav-disabled
-    color: colors.$subtext
-    opacity: 0.4
-    cursor: not-allowed
+    &.active
+      background-color: colors.$primary-opacity
+      color: colors.$primary
 
-    &:hover
-      color: colors.$subtext
-      background-color: transparent
+    &:disabled
+      opacity: 0.35
+      cursor: default
 
   .address-bar
-    user-select: none
-    padding: 0.8rem 1rem
+    flex: 1
+    min-width: 0
+    display: flex
+    align-items: center
+    height: 1.875rem
+    padding: 0 0.375rem
     background-color: colors.$dark-gray
     border: 1px solid colors.$gray
-    border-radius: 0.5rem
-    display: flex
-    gap: 0.5rem
-    flex: 1
+    border-radius: 0.4rem
     cursor: text
-    transition: border-color 0.1s ease, background-color 0.1s ease
-    min-height: 1.2rem
     position: relative
-    min-width: 0
-    font-size: 0.875rem
+    font-size: 0.8125rem
+    transition: border-color 0.1s ease, background-color 0.1s ease
 
     &:hover
-      border-color: colors.$primary
-      background-color: colors.$gray
+      border-color: color-mix(in srgb, colors.$subtext 40%, transparent)
 
-    &:focus-within
+    &.editing, &:focus-within
       border-color: colors.$primary
-      background-color: colors.$gray
+      background-color: colors.$terminal
 
     .path-input-container
       width: 100%
@@ -67,7 +90,7 @@
     .breadcrumb-container
       display: flex
       align-items: center
-      gap: 0.375rem
+      gap: 0.0625rem
       overflow: hidden
       flex: 1
       min-width: 0
@@ -79,17 +102,19 @@
       color: colors.$white
       font-family: inherit
       font-size: inherit
+      font-weight: 500
       width: 100%
-      padding: 0
-      
+      padding: 0 0.25rem
+      line-height: 1.75rem
+
       &::placeholder
         color: colors.$subtext
 
     .suggestions-dropdown
       position: absolute
       top: calc(100% + 0.5rem)
-      left: -1rem
-      right: -1rem
+      left: -0.5rem
+      right: -0.5rem
       background-color: colors.$lighter-background
       border: 1px solid colors.$dark-gray
       border-radius: 0.75rem
@@ -100,7 +125,7 @@
       box-shadow: colors.$shadow-lg
       scrollbar-width: thin
       scrollbar-color: colors.$gray transparent
-      
+
       &::-webkit-scrollbar
         width: 4px
 
@@ -112,10 +137,11 @@
         border-radius: 10px
 
       .suggestion-item
-        padding: 0.625rem 0.75rem
+        padding: 0.5rem 0.75rem
         cursor: pointer
         transition: background-color 0.1s ease
-        font-size: 0.875rem
+        font-size: 0.8125rem
+        font-weight: 500
         color: colors.$white
         user-select: none
         overflow: hidden
@@ -131,78 +157,85 @@
           outline: 2px solid colors.$primary
           outline-offset: -2px
 
-    .path-part-divider
+    .crumb-sep
+      width: 0.875rem
+      height: 0.875rem
       color: colors.$subtext
-      cursor: pointer
-      transition: color 0.1s ease, background-color 0.1s ease
-      font-weight: 500
-      padding: 0.25rem
-      border-radius: 0.25rem
+      opacity: 0.5
+      flex-shrink: 0
 
-      &:hover
-        color: colors.$primary
-
-      &.root-drop
-        margin-left: -0.25rem
-
-      &.drop-target
-        color: colors.$primary
-        background-color: colors.$primary-opacity
-
-    .path-part
+    .crumb
+      display: flex
+      align-items: center
+      height: 1.375rem
+      padding: 0 0.375rem
+      border-radius: 0.3rem
       cursor: pointer
       border: none
       background: transparent
-      color: inherit
       font: inherit
-      transition: all 0.1s ease
-      padding: 0.25rem 0.5rem
-      border-radius: 0.375rem
       white-space: nowrap
       overflow: hidden
       text-overflow: ellipsis
-      max-width: 120px
+      max-width: 10rem
       flex-shrink: 1
       font-weight: 500
+      color: colors.$subtext
+      transition: color 0.1s ease, background-color 0.1s ease
 
       &:hover
-        color: colors.$primary
-        background-color: colors.$primary-opacity
+        color: colors.$white
+        background-color: colors.$gray
+
+      &.current
+        color: colors.$white
+        flex-shrink: 0
 
       &.drop-target
         color: colors.$white
         background-color: colors.$primary
-        border-color: colors.$primary
+
+      &.crumb-root
+        padding: 0 0.3rem
+        flex-shrink: 0
+
+        svg
+          width: 1rem
+          height: 1rem
 
       &.ellipsis
         cursor: help
-        color: colors.$subtext
-        font-weight: 600
-        max-width: none
         flex-shrink: 0
-        opacity: 0.7
+        padding: 0 0.25rem
 
         &:hover
-          color: colors.$subtext
           background-color: transparent
-          opacity: 1
+          color: colors.$subtext
 
   .file-search
     display: flex
     align-items: center
-    gap: 0.5rem
-    padding: 0 0.5rem 0 0.9rem
+    gap: 0.375rem
+    height: 1.875rem
+    padding: 0 0.25rem 0 0.5rem
     background-color: colors.$dark-gray
     border: 1px solid colors.$gray
-    border-radius: 0.5rem
-    flex: 1 1 14rem
+    border-radius: 0.4rem
+    flex: 1 1 12rem
     min-width: 0
-    max-width: 22rem
-    height: 2.4rem
+    max-width: 18rem
     transition: border-color 0.1s ease
+    animation: searchIn 0.15s ease
 
     &:focus-within
       border-color: colors.$primary
+      background-color: colors.$terminal
+
+    .search-icon
+      width: 0.95rem
+      height: 0.95rem
+      color: colors.$subtext
+      flex-shrink: 0
 
     .search-input
       background: transparent
@@ -210,8 +243,8 @@
       outline: none
       color: colors.$white
       font-family: inherit
-      font-size: 0.875rem
-      line-height: 2.4rem
+      font-weight: 500
+      font-size: 0.8125rem
       flex: 1
       min-width: 0
       padding: 0
@@ -222,78 +255,73 @@
 
     .search-count
       color: colors.$subtext
-      font-size: 0.75rem
+      font-size: 0.7rem
+      font-variant-numeric: tabular-nums
       white-space: nowrap
       flex-shrink: 0
 
     .search-close
-      width: 1.5rem
-      height: 1.5rem
-      padding: 0.3rem
-      border-radius: 0.375rem
-      flex-shrink: 0
+      display: flex
+      align-items: center
+      justify-content: center
+      width: 1.375rem
+      height: 1.375rem
+      padding: 0
+      border: none
+      border-radius: 0.3rem
+      background: transparent
       color: colors.$subtext
+      cursor: pointer
+      flex-shrink: 0
+
+      svg
+        width: 0.875rem
+        height: 0.875rem
 
       &:hover
         color: colors.$white
         background-color: colors.$gray
 
-  .file-actions
-    display: flex
-    gap: 0.5rem
-    flex-shrink: 0
-    margin-left: 0.5rem
+@keyframes searchIn
+  from
+    opacity: 0
+    transform: translateX(0.25rem)
+  to
+    opacity: 1
+    transform: translateX(0)
 
-    svg.active
-      color: colors.$primary
-      background-color: colors.$gray
-
-@media (max-width: 768px)
+@media (max-width: breakpoints.$mobile)
   .action-bar
-    padding: 0.75rem 1rem
+    height: auto
+    flex-wrap: wrap
+    padding: 0.375rem 0.5rem
     gap: 0.25rem
 
-    svg
-      padding: 0.375rem
+    .nav-group
+      order: 0
+      margin-right: 0
+
+      .tooltip-trigger-as-child:nth-child(2) .tool-btn
+        display: none
 
     .address-bar
-      padding: 0.625rem 0.75rem
-      font-size: 0.8rem
-      min-height: 1rem
+      order: 3
+      flex-basis: 100%
+      margin-top: 0.125rem
 
-      .path-part
-        max-width: 80px
-        padding: 0.125rem 0.375rem
+      .crumb
+        max-width: 6rem
 
-      .suggestions-dropdown
-        left: -0.75rem
-        right: -0.75rem
+    .file-search
+      order: 4
+      flex-basis: 100%
+      max-width: none
 
-    .file-actions
-      gap: 0.25rem
-      margin-left: 0.25rem
-
-@media (max-width: 480px)
-  .action-bar
-    padding: 0.625rem 0.75rem
-    flex-wrap: wrap
-
-    > svg:nth-child(2),
-    > svg:nth-child(3)
+    .tool-divider
       display: none
 
-    .address-bar
-      order: 2
-      flex-basis: 100%
-      margin-top: 0.5rem
-
-      .path-part
-        max-width: 60px
-        font-size: 0.75rem
-
-    .file-actions
+    .tool-group:not(.nav-group)
       order: 1
-      margin-left: auto
 
-      svg:nth-child(1)
-        display: none
+    .tool-group:last-of-type
+      margin-left: auto

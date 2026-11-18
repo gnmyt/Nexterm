@@ -8,6 +8,7 @@
 #include "io.h"
 #include "log.h"
 #include "thumbnail.h"
+#include "trust.h"
 
 extern nexterm_session_manager_t g_session_manager;
 
@@ -47,6 +48,8 @@ typedef struct {
     ftp_tls_mode_t tls;
     int mlsd_state;
     char errbuf[CURL_ERROR_SIZE];
+    nexterm_trust_t trust;
+    nexterm_tls_trust_t tls_trust;
 } ftp_conn_t;
 
 typedef struct {
@@ -168,10 +171,8 @@ static void ftp_setup_common(ftp_conn_t* c, CURL* curl) {
     if (c->tls == FTP_TLS_EXPLICIT)
         curl_easy_setopt(curl, CURLOPT_USE_SSL, (long)CURLUSESSL_ALL);
 
-    if (c->tls != FTP_TLS_NONE) {
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-    }
+    if (c->tls != FTP_TLS_NONE)
+        nexterm_trust_apply_curl(curl, &c->tls_trust);
 }
 
 static const char* ftp_strerror(long response) {
@@ -799,6 +800,7 @@ typedef struct {
     uint8_t* buf;
     size_t len;
     bool failed;
+    bool cancelled;
 } ftp_download_t;
 
 static bool ftp_download_flush(ftp_download_t* d) {
@@ -808,6 +810,16 @@ static bool ftp_download_flush(ftp_download_t* d) {
         return false;
     }
     d->len = 0;
+
+    fp_cancel_state_t cancel = fp_poll_cancel(d->fd, d->rid);
+    if (cancel == FP_CANCEL_REQUESTED) {
+        d->cancelled = true;
+        return false;
+    }
+    if (cancel == FP_CANCEL_CONNECTION_LOST) {
+        d->failed = true;
+        return false;
+    }
     return true;
 }
 
@@ -853,6 +865,13 @@ static void handle_read_file(ftp_conn_t* c, int fd, uint32_t rid, const char* pa
     curl_easy_setopt(c->curl, CURLOPT_WRITEDATA, &dl);
 
     CURLcode rc = curl_easy_perform(c->curl);
+
+    if (dl.cancelled) {
+        LOG_INFO("FTP: read of %.200s cancelled by client", path);
+        fp_send_error(fd, rid, FP_TRANSFER_CANCELLED_MSG, FP_ERR_CANCELLED);
+        free(dl.buf);
+        return;
+    }
 
     if (rc != CURLE_OK) {
         if (!dl.failed) ftp_send_curl_error(c, fd, rid, rc);
@@ -973,7 +992,9 @@ typedef struct {
     bool done;
     bool failed;
     bool active;
+    bool error_sent;
     char error[CURL_ERROR_SIZE];
+    char path[FP_MAX_PATH];
 } ftp_upload_t;
 
 static size_t ftp_upload_read_cb(char* dest, size_t size, size_t nmemb, void* userp) {
@@ -1040,6 +1061,14 @@ static void ftp_upload_abort(ftp_upload_t* up) {
     ftp_upload_dispose(up);
 }
 
+static void ftp_discard_upload(ftp_conn_t* c, ftp_upload_t* up) {
+    char path[FP_MAX_PATH];
+    snprintf(path, sizeof(path), "%s", up->path);
+    ftp_upload_abort(up);
+    if (ftp_command_path(c, "DELE", path) != CURLE_OK)
+        LOG_WARN("FTP: failed to remove aborted upload %.200s", path);
+}
+
 static ftp_upload_t* handle_write_begin(ftp_conn_t* c, int fd, uint32_t rid,
                                         const char* path) {
     char url[FTP_URL_MAX];
@@ -1066,6 +1095,7 @@ static ftp_upload_t* handle_write_begin(ftp_conn_t* c, int fd, uint32_t rid,
 
     up->cap = FTP_UPLOAD_BUF;
     up->rid = rid;
+    snprintf(up->path, sizeof(up->path), "%s", path);
     pthread_mutex_init(&up->mutex, NULL);
     pthread_cond_init(&up->cond, NULL);
 
@@ -1183,21 +1213,38 @@ static void dispatch_write_op(Nexterm_SftpProtocol_SftpMsgType_enum_t mt,
         size_t dlen = flatbuffers_uint8_vec_len(data);
         if (dlen == 0) return;
 
-        ftp_upload_push(*upload, data, dlen);
-        return;
-    }
-
-    if (mt == Nexterm_SftpProtocol_SftpMsgType_WriteEnd) {
-        if (*upload) {
-            handle_write_end(*upload, data_fd);
-            free(*upload);
-            *upload = NULL;
+        if (ftp_upload_push(*upload, data, dlen) != 0 && !(*upload)->error_sent) {
+            (*upload)->error_sent = true;
+            fp_send_error(data_fd, rid, (*upload)->error[0] ? (*upload)->error : "Upload failed", -1);
         }
         return;
     }
 
+    if (mt == Nexterm_SftpProtocol_SftpMsgType_WriteEnd) {
+        if (!*upload) {
+            fp_send_error(data_fd, rid, "No write in progress", -1);
+            return;
+        }
+        handle_write_end(*upload, data_fd);
+        free(*upload);
+        *upload = NULL;
+        return;
+    }
+
+    if (mt == Nexterm_SftpProtocol_SftpMsgType_WriteAbort) {
+        if (*upload) {
+            LOG_INFO("FTP: write of %.200s aborted by client", (*upload)->path);
+            ftp_discard_upload(c, *upload);
+            free(*upload);
+            *upload = NULL;
+        }
+        fp_send_ok(data_fd, rid);
+        return;
+    }
+
     if (*upload) {
-        ftp_upload_abort(*upload);
+        LOG_WARN("FTP: WriteBegin while a write is in progress, discarding %.200s", (*upload)->path);
+        ftp_discard_upload(c, *upload);
         free(*upload);
         *upload = NULL;
     }
@@ -1277,7 +1324,11 @@ static void ftp_dispatch_message(ftp_conn_t* c, int data_fd,
         case Nexterm_SftpProtocol_SftpMsgType_WriteBegin:
         case Nexterm_SftpProtocol_SftpMsgType_WriteData:
         case Nexterm_SftpProtocol_SftpMsgType_WriteEnd:
+        case Nexterm_SftpProtocol_SftpMsgType_WriteAbort:
             dispatch_write_op(mt, c, data_fd, rid, msg, upload);
+            return;
+
+        case Nexterm_SftpProtocol_SftpMsgType_CancelRead:
             return;
 
         case Nexterm_SftpProtocol_SftpMsgType_Rmdir:
@@ -1334,7 +1385,8 @@ static void ftp_request_loop(nexterm_session_t* session, ftp_conn_t* c, int data
     }
 
     if (upload) {
-        ftp_upload_abort(upload);
+        LOG_WARN("FTP: connection ended with write of %.200s in progress, discarding", upload->path);
+        ftp_discard_upload(c, upload);
         free(upload);
     }
 }
@@ -1381,6 +1433,11 @@ static void* ftp_session_thread(void* arg) {
              session->host, session->port ? session->port : 21);
     snprintf(conn.userpwd, sizeof(conn.userpwd), "%s:%s", username,
              password ? password : "");
+
+    nexterm_trust_from_session(session, &conn.trust);
+    conn.tls_trust.trust = &conn.trust;
+    conn.tls_trust.host = session->host;
+    conn.tls_trust.port = session->port ? session->port : 21;
 
     LOG_INFO("FTP session %s: connecting to %s:%u as %s (%s)",
              session->session_id, session->host, session->port, username,

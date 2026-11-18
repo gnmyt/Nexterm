@@ -14,6 +14,10 @@ Add your own scripts and snippets to Nexterm by connecting a Git repository. You
 
 The name is just for display purposes, so choose something descriptive.
 
+> [!NOTE]
+> Sources on private addresses are blocked by default. To use an internal Git server, set
+> `SOURCES_ALLOWED_HOSTS=git.example.lan,10.0.0.5` and restart Nexterm.
+
 ## Using Your Scripts & Snippets
 
 Once added, your scripts and snippets are available in the Snippets panel. Select your repository from the dropdown to see its contents.

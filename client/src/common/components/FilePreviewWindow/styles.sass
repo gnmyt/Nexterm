@@ -11,13 +11,28 @@
     padding: 1.25rem
     min-height: 0
 
+    .preview-file-icon.brand
+      padding: 0.375rem
+      box-sizing: border-box
+
     &.image-preview
       img
+        display: block
+        border-radius: 0.5rem
+        box-shadow: colors.$shadow-sm
+
+      &.fit img
         max-width: 100%
         max-height: 100%
         object-fit: contain
-        border-radius: 0.5rem
-        box-shadow: colors.$shadow-sm
+
+      &.zoomed
+        display: flex
+
+        img
+          margin: auto
+          max-width: none
+          max-height: none
 
     &.video-preview
       padding: 0

@@ -1,5 +1,6 @@
 const { Router } = require("express");
-const { validateSchema } = require("../utils/schema");
+const { route } = require("../utils/route");
+const { objectList } = require("../validations/common");
 const {
     createSource,
     listSources,
@@ -18,16 +19,11 @@ const {
 
 const app = Router();
 
-/**
- * GET /sources
- * @summary List All Sources
- * @description Retrieves all configured snippet/script sources
- * @tags Sources
- * @produces application/json
- * @security BearerAuth
- * @return {array} 200 - List of all sources
- */
-app.get("/", async (req, res) => {
+app.get("/", route({
+    summary: "List all sources",
+    description: "Retrieves all configured snippet/script sources",
+    returns: objectList,
+}), async (req, res) => {
     try {
         const sources = await listSources();
         res.json(sources);
@@ -36,18 +32,10 @@ app.get("/", async (req, res) => {
     }
 });
 
-/**
- * GET /sources/:sourceId
- * @summary Get Source Details
- * @description Retrieves detailed information about a specific source
- * @tags Sources
- * @produces application/json
- * @security BearerAuth
- * @param {number} sourceId.path.required - The source ID
- * @return {object} 200 - Source details
- * @return {object} 404 - Source not found
- */
-app.get("/:sourceId", async (req, res) => {
+app.get("/:sourceId", route({
+    summary: "Get source details",
+    description: "Retrieves detailed information about a specific source",
+}), async (req, res) => {
     try {
         const source = await getSource(parseInt(req.params.sourceId));
         if (source?.code) return res.status(source.code).json(source);
@@ -57,19 +45,11 @@ app.get("/:sourceId", async (req, res) => {
     }
 });
 
-/**
- * POST /sources/validate
- * @summary Validate Source URL
- * @description Validates a source URL by checking if NTINDEX is accessible and valid
- * @tags Sources
- * @produces application/json
- * @security BearerAuth
- * @param {object} request.body.required - URL to validate
- * @return {object} 200 - Validation result
- */
-app.post("/validate", async (req, res) => {
-    if (validateSchema(res, validateUrlValidation, req.body)) return;
-
+app.post("/validate", route({
+    summary: "Validate source URL",
+    description: "Validates a source URL by checking if NTINDEX is accessible and valid",
+    body: validateUrlValidation,
+}), async (req, res) => {
     try {
         const result = await validateSourceUrl(req.body.url);
         if (result.valid) {
@@ -87,21 +67,12 @@ app.post("/validate", async (req, res) => {
     }
 });
 
-/**
- * POST /sources
- * @summary Create New Source
- * @description Creates a new snippet/script source and performs initial sync
- * @tags Sources
- * @produces application/json
- * @security BearerAuth
- * @param {object} request.body.required - Source configuration
- * @return {object} 201 - Source created successfully
- * @return {object} 400 - Invalid URL
- * @return {object} 409 - Source with URL already exists
- */
-app.post("/", async (req, res) => {
-    if (validateSchema(res, sourceCreationValidation, req.body)) return;
-
+app.post("/", route({
+    summary: "Create new source",
+    status: 201,
+    description: "Creates a new snippet/script source and performs initial sync",
+    body: sourceCreationValidation,
+}), async (req, res) => {
     try {
         const source = await createSource(req.body);
         if (source?.code) return res.status(source.code).json(source);
@@ -111,21 +82,11 @@ app.post("/", async (req, res) => {
     }
 });
 
-/**
- * PATCH /sources/:sourceId
- * @summary Update Source
- * @description Updates an existing source's name, URL, or enabled status
- * @tags Sources
- * @produces application/json
- * @security BearerAuth
- * @param {number} sourceId.path.required - The source ID
- * @param {object} request.body.required - Updated source fields
- * @return {object} 200 - Source updated successfully
- * @return {object} 404 - Source not found
- */
-app.patch("/:sourceId", async (req, res) => {
-    if (validateSchema(res, sourceUpdateValidation, req.body)) return;
-
+app.patch("/:sourceId", route({
+    summary: "Update source",
+    description: "Updates an existing source's name, URL, or enabled status",
+    body: sourceUpdateValidation,
+}), async (req, res) => {
     try {
         const source = await updateSource(parseInt(req.params.sourceId), req.body);
         if (source?.code) return res.status(source.code).json(source);
@@ -135,18 +96,10 @@ app.patch("/:sourceId", async (req, res) => {
     }
 });
 
-/**
- * DELETE /sources/:sourceId
- * @summary Delete Source
- * @description Deletes a source and all its synced snippets/scripts
- * @tags Sources
- * @produces application/json
- * @security BearerAuth
- * @param {number} sourceId.path.required - The source ID
- * @return {object} 200 - Source deleted successfully
- * @return {object} 404 - Source not found
- */
-app.delete("/:sourceId", async (req, res) => {
+app.delete("/:sourceId", route({
+    summary: "Delete source",
+    description: "Deletes a source and all its synced snippets/scripts",
+}), async (req, res) => {
     try {
         const result = await deleteSource(parseInt(req.params.sourceId));
         if (result?.code) return res.status(result.code).json(result);
@@ -156,17 +109,10 @@ app.delete("/:sourceId", async (req, res) => {
     }
 });
 
-/**
- * POST /sources/:sourceId/sync
- * @summary Sync Source
- * @description Manually triggers a sync for a specific source
- * @tags Sources
- * @produces application/json
- * @security BearerAuth
- * @param {number} sourceId.path.required - The source ID
- * @return {object} 200 - Sync result
- */
-app.post("/:sourceId/sync", async (req, res) => {
+app.post("/:sourceId/sync", route({
+    summary: "Sync source",
+    description: "Manually triggers a sync for a specific source",
+}), async (req, res) => {
     try {
         const result = await syncSource(parseInt(req.params.sourceId));
         if (result.success) {
@@ -179,16 +125,10 @@ app.post("/:sourceId/sync", async (req, res) => {
     }
 });
 
-/**
- * POST /sources/sync-all
- * @summary Sync All Sources
- * @description Manually triggers a sync for all enabled sources
- * @tags Sources
- * @produces application/json
- * @security BearerAuth
- * @return {object} 200 - Sync initiated
- */
-app.post("/sync-all", async (req, res) => {
+app.post("/sync-all", route({
+    summary: "Sync all sources",
+    description: "Manually triggers a sync for all enabled sources",
+}), async (req, res) => {
     try {
         syncAllSources().catch(err => {
             console.error("Background sync failed:", err);

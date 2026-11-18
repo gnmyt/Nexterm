@@ -5,6 +5,7 @@ import { mdiCloudUpload } from "@mdi/js";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useKeymaps, matchesKeybind, isMac } from "@/common/contexts/KeymapContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
+import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { useTranslation } from "react-i18next";
 import ConnectionLoader from "./components/ConnectionLoader";
 import ConnectionError from "./components/ConnectionError";
@@ -13,7 +14,12 @@ import { getWebSocketUrl } from "@/common/utils/ConnectionUtil.js";
 import { openPopout, onPopoutClosed } from "@/common/utils/PopoutUtil.js";
 import { createHostFsProvider } from "@/common/utils/HostFsProvider.js";
 import { createBrowserFsProvider } from "@/common/utils/BrowserFsProvider.js";
+import {
+    AUTO_SCALE, getDeviceScale, getDeviceScaleOverride, rememberViewInset, resolveScale, resolveScaleSetting,
+    setDeviceScaleOverride, toDisplayHeight, toDisplayWidth, watchDeviceScale,
+} from "@/common/utils/displayScale.js";
 import "./styles/guacamole.sass";
+import "./styles/automated-session.sass";
 
 const SIZE_RESEND_INTERVAL = 5000;
 const SIZE_CONFIRM_INTERVAL = 500;
@@ -30,14 +36,8 @@ const ZOOM_MIN = 1;
 const ZOOM_MAX = 4;
 
 const ZOOM_STEP = 0.25;
-const REMOTE_CLIPBOARD_TIMEOUT = 1000;
 
-
-const MACOS_RDP_SHORTCUTS = new Set(["c", "x", "v", "a", "z", "f", "w"]);
-
-const CTRL_KEYSYM = 0xffe3;
-
-const WIN_KEYSYM = 0xffeb;
+const NATIVE_SNAP_TOLERANCE = 1.02;
 
 const resumeAudioContext = () => {
     const context = Guacamole.AudioContextFactory.getAudioContext();
@@ -45,6 +45,8 @@ const resumeAudioContext = () => {
         context.resume();
     }
 };
+
+const TRUST_REQUIRED_REASON = "Certificate verification required";
 
 const GuacamoleRenderer = ({
                                session,
@@ -70,7 +72,8 @@ const GuacamoleRenderer = ({
     const scaleRef = useRef(1);
     const offsetRef = useRef({ x: 0, y: 0 });
 
-    const ownsSession = !isShared && pinnedMonitor === null;
+    const isAutomated = session.automated;
+    const ownsSession = !isShared && !isAutomated && pinnedMonitor === null;
     const initialMonitor = pinnedMonitor ?? 0;
 
     const [ready, setReady] = useState(false);
@@ -86,6 +89,13 @@ const GuacamoleRenderer = ({
     const heldModifiersRef = useRef(heldModifiers);
 
     const [zoom, setZoom] = useState(ZOOM_MIN);
+    const entryId = session.server?.id;
+    const isRdp = (session.server?.config?.protocol || session.server?.protocol || session.server?.type) === "rdp";
+    const { defaultDisplayScale } = usePreferences();
+    const [scaleSetting, setScaleSetting] = useState(() =>
+        resolveScaleSetting(entryId, session.server?.displayScale, defaultDisplayScale));
+    const scaleSettingRef = useRef(scaleSetting);
+    const [deviceScale, setDeviceScale] = useState(getDeviceScale);
     const zoomRef = useRef(ZOOM_MIN);
     const panRef = useRef({ x: 0, y: 0 });
     const panDragRef = useRef(null);
@@ -94,7 +104,7 @@ const GuacamoleRenderer = ({
     const activeMonitorRef = useRef(initialMonitor);
     const maxMonitorsRef = useRef(1);
     const layoutRef = useRef(null);
-    const lastSentRef = useRef({ w: 0, h: 0, monitor: -1, at: 0 });
+    const lastSentRef = useRef({ w: 0, h: 0, monitor: -1, scale: 0, at: 0 });
     const confirmAttemptsRef = useRef(0);
     const { getParsedKeybind } = useKeymaps();
     const { sendToast } = useToast();
@@ -104,11 +114,8 @@ const GuacamoleRenderer = ({
     const connectionLoaderRef = useRef(null);
     const audioPlayersRef = useRef([]);
     const [isDragOver, setIsDragOver] = useState(false);
-    const macCommandRef = useRef({ active: false, forwarded: false, handled: false });
-    const interceptedKeysRef = useRef(new Set());
     const browserFsRef = useRef(null);
     const clipboardIntervalRef = useRef(null);
-    const remoteClipboardCopyRef = useRef(null);
     const clipboardReadInFlightRef = useRef(false);
     const clipboardSyncRef = useRef(null);
     const ctrlPressedRef = useRef(false);
@@ -119,6 +126,7 @@ const GuacamoleRenderer = ({
     const reportError = (rawMessage, statusCode = null) => {
         if (errorShownRef.current) return;
         errorShownRef.current = true;
+        if (rawMessage === TRUST_REQUIRED_REASON) return;
         const protocol = session.server?.config?.protocol || session.server?.protocol || session.server?.type;
         const failure = classifyConnectionError({ rawMessage, statusCode, protocol, t });
         markSessionErrored?.(session.id, failure.message, { autoReconnect: failure.autoReconnect });
@@ -137,7 +145,7 @@ const GuacamoleRenderer = ({
         return () => registerGuacamoleRef?.(session.id, null);
     }, [session.id, registerGuacamoleRef, clientRef.current]);
 
-    const samplingFor = (scale) => Math.abs(scale - 1) < 0.001 ? "pixelated" : "auto";
+    const samplingFor = (scale) => Math.abs(scale * (window.devicePixelRatio || 1) - 1) < 0.001 ? "pixelated" : "auto";
 
     const applyDisplayStyles = (el, x, y, scale, width, height) => Object.assign(el.style, {
         position: "absolute", width: width + "px", height: height + "px",
@@ -172,7 +180,10 @@ const GuacamoleRenderer = ({
         const mh = monitor?.height || display.getHeight();
         if (!mw || !mh) return;
 
-        const scale = Math.min(cw / mw, ch / mh) * zoomRef.current;
+        const density = window.devicePixelRatio || 1;
+        const fit = Math.min(cw / mw, ch / mh);
+        const fitsNatively = mw / density <= cw && mh / density <= ch && fit * density < NATIVE_SNAP_TOLERANCE;
+        const scale = (fitsNatively ? 1 / density : fit) * zoomRef.current;
         scaleRef.current = scale;
 
         panRef.current = {
@@ -212,12 +223,13 @@ const GuacamoleRenderer = ({
 
         if (cw > 0 && ch > 0) {
             const density = window.devicePixelRatio || 1;
-            const dw = Math.round(cw * density);
-            const dh = Math.round(ch * density);
+            const dw = toDisplayWidth(Math.round(cw * density));
+            const dh = toDisplayHeight(Math.round(ch * density));
 
             const monitor = activeMonitorRef.current;
+            const scale = resolveScale(scaleSettingRef.current);
             const last = lastSentRef.current;
-            const changed = last.w !== dw || last.h !== dh || last.monitor !== monitor;
+            const changed = last.w !== dw || last.h !== dh || last.monitor !== monitor || last.scale !== scale;
 
             const display = clientRef.current.getDisplay();
             const applied = display.getWidth() === dw && display.getHeight() === dh;
@@ -225,13 +237,24 @@ const GuacamoleRenderer = ({
             const elapsed = Date.now() - last.at;
 
             if (changed || elapsed >= (retrying ? SIZE_CONFIRM_INTERVAL : SIZE_RESEND_INTERVAL)) {
-                clientRef.current.sendSize(dw, dh, monitor, 0);
-                lastSentRef.current = { w: dw, h: dh, monitor, at: Date.now() };
+                clientRef.current.sendSize(dw, dh, monitor, 0, scale);
+                lastSentRef.current = { w: dw, h: dh, monitor, scale, at: Date.now() };
                 confirmAttemptsRef.current = changed ? 0 : confirmAttemptsRef.current + 1;
             }
         }
 
         applyViewport();
+    };
+
+    const changeDisplayScale = (setting) => {
+        setDeviceScaleOverride(entryId, setting);
+        applyScaleSetting(resolveScaleSetting(entryId, session.server?.displayScale, defaultDisplayScale));
+    };
+
+    const applyScaleSetting = (next) => {
+        scaleSettingRef.current = next;
+        setScaleSetting(next);
+        resizeHandler();
     };
 
     const toggleModifier = (keysym) => {
@@ -257,12 +280,6 @@ const GuacamoleRenderer = ({
         setHeldModifiers(new Set());
     };
 
-    const releaseMacCommand = () => {
-        if (macCommandRef.current.forwarded) clientRef.current?.sendKeyEvent(0, WIN_KEYSYM);
-        macCommandRef.current = { active: false, forwarded: false, handled: false };
-        interceptedKeysRef.current.clear();
-    };
-
     const sendShortcut = (keys) => {
         if (!clientRef.current) return;
         keys.forEach((key) => clientRef.current.sendKeyEvent(1, key));
@@ -273,12 +290,36 @@ const GuacamoleRenderer = ({
 
     const sendClipboardShortcut = () => {
         if (!clientRef.current) return;
-        if (ctrlPressedRef.current || heldModifiersRef.current.has(CTRL_KEYSYM)) {
+        if (ctrlPressedRef.current || heldModifiersRef.current.has(0xffe3)) {
             clientRef.current.sendKeyEvent(1, 0x0076);
             clientRef.current.sendKeyEvent(0, 0x0076);
             return;
         }
-        sendShortcut([CTRL_KEYSYM, 0x0076]);
+        sendShortcut([0xffe3, 0x0076]);
+    };
+
+    const pasteText = (text) => {
+        if (!text) return;
+        const sync = sendClipboardToServer(text);
+        if (sync.pasteInFlight) return;
+        sync.pasteInFlight = true;
+        const sendShortcut = () => {
+            if (clipboardSyncRef.current === sync) sendClipboardShortcut();
+            queueMicrotask(() => sync.pasteInFlight = false);
+        };
+        if (sync.ready) sendShortcut();
+        else sync.promise.then(sendShortcut);
+    };
+
+    // macOS only fires a paste event for ⌘V, so Ctrl+V reads the clipboard itself
+    const pasteFromLocalClipboard = async () => {
+        let text = "";
+        try {
+            text = await navigator.clipboard.readText();
+        } catch {
+        }
+        if (text) pasteText(text);
+        else sendClipboardShortcut();
     };
 
     const selectMonitor = (index) => {
@@ -342,48 +383,6 @@ const GuacamoleRenderer = ({
             if (poppedOut.delete(monitor)) updatePoppedOutMonitors(poppedOut);
         });
     }, [session.id, ownsSession]);
-
-    const beginRemoteClipboardCopy = () => {
-        remoteClipboardCopyRef.current?.cancel();
-
-        let resolve;
-        const copy = {
-            promise: new Promise((done) => resolve = done),
-            timeout: null,
-            expiry: null,
-            settled: false,
-            complete: null,
-            cancel: null,
-        };
-        copy.complete = (text) => {
-            if (copy.settled) return;
-            copy.settled = true;
-            clearTimeout(copy.timeout);
-            copy.timeout = null;
-            resolve(text);
-            if (text === null) {
-                if (remoteClipboardCopyRef.current === copy) remoteClipboardCopyRef.current = null;
-                return;
-            }
-            copy.expiry = setTimeout(() => {
-                if (remoteClipboardCopyRef.current === copy) remoteClipboardCopyRef.current = null;
-            }, REMOTE_CLIPBOARD_TIMEOUT);
-        };
-        copy.cancel = () => {
-            clearTimeout(copy.timeout);
-            clearTimeout(copy.expiry);
-            if (!copy.settled) copy.complete(null);
-            if (remoteClipboardCopyRef.current === copy) remoteClipboardCopyRef.current = null;
-        };
-        copy.timeout = setTimeout(() => copy.complete(null), REMOTE_CLIPBOARD_TIMEOUT);
-        remoteClipboardCopyRef.current = copy;
-        return copy;
-    };
-
-    const completeRemoteClipboardCopy = (text) => {
-        if (text === clipboardSyncRef.current?.text) return;
-        remoteClipboardCopyRef.current?.complete(text);
-    };
 
     const sendClipboardToServer = (text) => {
         const current = clipboardSyncRef.current;
@@ -572,7 +571,6 @@ const GuacamoleRenderer = ({
             let data = "";
             reader.ontext = (t) => data += t;
             reader.onend = async () => {
-                completeRemoteClipboardCopy(data);
                 try {
                     await navigator.clipboard.writeText(data);
                 } catch (e) {
@@ -582,7 +580,7 @@ const GuacamoleRenderer = ({
         };
 
         initClipboardPolling();
-        const onPaste = async (e) => {
+        const onPaste = (e) => {
             if (e.clipboardData?.files?.length > 0) {
             if (!ref.current?.contains(e.target)) return;
             e.stopImmediatePropagation();
@@ -592,28 +590,8 @@ const GuacamoleRenderer = ({
             }
             if (!ref.current?.contains(e.target)) return;
             if (!interceptPaste) return;
-            const pendingRemoteCopy = remoteClipboardCopyRef.current;
-            let text = e.clipboardData?.getData("text");
             e.preventDefault();
-            if (pendingRemoteCopy) {
-                const remoteText = await pendingRemoteCopy.promise;
-                if (remoteClipboardCopyRef.current === pendingRemoteCopy) pendingRemoteCopy.cancel();
-                if (remoteText !== null) text = remoteText;
-            }
-            if (text) {
-                const sync = sendClipboardToServer(text);
-                if (sync.pasteInFlight) return;
-                sync.pasteInFlight = true;
-                const sendShortcut = () => {
-                    if (clipboardSyncRef.current === sync) sendClipboardShortcut();
-                    queueMicrotask(() => sync.pasteInFlight = false);
-                };
-                if (sync.ready) {
-                    sendShortcut();
-                    return;
-                }
-                sync.promise.then(sendShortcut);
-            }
+            pasteText(e.clipboardData?.getData("text"));
         };
         document.addEventListener("paste", onPaste, true);
         return () => {
@@ -623,18 +601,17 @@ const GuacamoleRenderer = ({
                 clipboardIntervalRef.current = null;
             }
             clipboardSyncRef.current?.complete();
-            remoteClipboardCopyRef.current?.cancel();
         };
     };
 
-    const canConnect = () => {
-        if (getSessionError?.(session.id) || clientRef.current) return false;
-        const credential = session.joinSessionId ? sessionToken : isShared ? session.shareId : sessionToken;
-        return Boolean(credential);
-    };
-
     const connect = () => {
-        if (!canConnect()) return;
+        if (getSessionError?.(session.id)) return;
+        if (clientRef.current) return;
+        if (session.joinSessionId) {
+            if (!sessionToken) return;
+        } else if (isShared) {
+            if (!session.shareId) return;
+        } else if (!sessionToken) return;
         let isCleaningUp = false;
         const tunnelUrl = getWebSocketUrl("/api/ws/guac/", {});
         const tunnel = new Guacamole.WebSocketTunnel(tunnelUrl);
@@ -747,89 +724,9 @@ const GuacamoleRenderer = ({
         };
         ref.current.focus();
 
-        const translatesMacShortcuts = isMac() && (session.server?.protocol || session.server?.config?.protocol || session.server?.type) === "rdp";
-        const sendKey = (keysym) => {
-            client.sendKeyEvent(1, keysym);
-            client.sendKeyEvent(0, keysym);
-        };
-        const interceptMacMetaKey = (e) => {
-            if (e.key !== "Meta") return false;
-            if (!e.repeat) macCommandRef.current = { active: true, forwarded: false, handled: false };
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            return true;
-        };
-        const interceptMacRdpShortcut = (e, key) => {
-            const command = macCommandRef.current;
-            if (!command.active || command.forwarded || !MACOS_RDP_SHORTCUTS.has(key) || e.ctrlKey || e.altKey) return false;
-
-            command.handled = true;
-            interceptedKeysRef.current.add(e.code);
-            e.stopImmediatePropagation();
-            if (key === "v") return true;
-
-            e.preventDefault();
-            if (e.repeat) return true;
-            const keysym = key.codePointAt(0);
-            if (!keysym) return true;
-            if (key !== "c" && key !== "x") {
-                sendShortcut([CTRL_KEYSYM, keysym]);
-                return true;
-            }
-
-            const copy = beginRemoteClipboardCopy();
-            const sendCopyShortcut = () => {
-                if (remoteClipboardCopyRef.current === copy) sendShortcut([CTRL_KEYSYM, keysym]);
-            };
-            const sync = clipboardSyncRef.current;
-            if (sync && !sync.ready) sync.promise.then(sendCopyShortcut);
-            else sendCopyShortcut();
-            return true;
-        };
-        const forwardMacCommand = () => {
-            const command = macCommandRef.current;
-            if (!command.active || command.forwarded) return;
-            client.sendKeyEvent(1, WIN_KEYSYM);
-            command.forwarded = true;
-        };
-        const interceptPhysicalControlCopy = (e, key) => {
-            if (!e.ctrlKey || e.metaKey || e.altKey || key !== "c") return false;
-            interceptedKeysRef.current.add(e.code);
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            if (!e.repeat) sendKey(0x0063);
-            return true;
-        };
-        const interceptMacRdpKeyDown = (e) => {
-            if (!translatesMacShortcuts) return false;
-            if (interceptMacMetaKey(e)) return true;
-
-            const key = e.key.toLowerCase();
-            if (interceptMacRdpShortcut(e, key)) return true;
-            forwardMacCommand();
-            return interceptPhysicalControlCopy(e, key);
-        };
-        const interceptMacRdpKeyUp = (e) => {
-            if (!translatesMacShortcuts) return false;
-
-            if (e.key === "Meta" && macCommandRef.current.active) {
-                const command = macCommandRef.current;
-                if (!command.forwarded && !command.handled) sendShortcut([WIN_KEYSYM]);
-                macCommandRef.current = { active: false, forwarded: false, handled: false };
-                e.preventDefault();
-                e.stopImmediatePropagation();
-                return true;
-            }
-
-            if (!interceptedKeysRef.current.delete(e.code)) return false;
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            return true;
-        };
         const handleKeyDown = (e) => {
             if (e.key === "Control") ctrlPressedRef.current = true;
             if (!ref.current?.contains(e.target)) return;
-            if (interceptMacRdpKeyDown(e)) return;
             const kb = getParsedKeybind("fullscreen");
             if (kb && matchesKeybind(e, kb)) {
                 e.preventDefault();
@@ -840,12 +737,15 @@ const GuacamoleRenderer = ({
 
             if (interceptPaste && (e.ctrlKey || e.metaKey) && (e.key === "v" || e.key === "V")) {
                 e.stopImmediatePropagation();
+                if (isMac() && e.ctrlKey && !e.metaKey) {
+                    e.preventDefault();
+                    if (!e.repeat) void pasteFromLocalClipboard();
+                }
             }
         };
         const handleKeyUp = (e) => {
             if (!ref.current?.contains(e.target)) return;
             if (e.key === "Control") ctrlPressedRef.current = false;
-            if (interceptMacRdpKeyUp(e)) return;
             if (interceptPaste && (e.ctrlKey || e.metaKey) && (e.key === "v" || e.key === "V")) {
                 e.stopImmediatePropagation();
             }
@@ -860,10 +760,7 @@ const GuacamoleRenderer = ({
         document.addEventListener("keypress", handleKeyPress, true);
         document.addEventListener("keyup", handleKeyUp, true);
         ref.current.addEventListener("keypress", handleKeyPress, true);
-        const handleBlur = () => {
-            releaseMacCommand();
-            ctrlPressedRef.current = false;
-        };
+        const handleBlur = () => ctrlPressedRef.current = false;
         ref.current.addEventListener("keydown", handleKeyDown, true);
         ref.current.addEventListener("keyup", handleKeyUp, true);
         ref.current.addEventListener("blur", handleBlur, true);
@@ -878,9 +775,10 @@ const GuacamoleRenderer = ({
         client.onstatechange = (st) => {
             if (isCleaningUp) return;
             if (st === Guacamole.Client.State.CONNECTED) {
-                lastSentRef.current = { w: 0, h: 0, monitor: -1, at: 0 };
+                lastSentRef.current = { w: 0, h: 0, monitor: -1, scale: 0, at: 0 };
                 confirmAttemptsRef.current = 0;
                 resizeHandler();
+                rememberViewInset();
                 markSessionConnected?.(session.id);
             }
             if (st === Guacamole.Client.State.DISCONNECTED || st === Guacamole.Client.State.ERROR) {
@@ -940,15 +838,13 @@ const GuacamoleRenderer = ({
             clientRef.current = null;
 
             layoutRef.current = null;
-            lastSentRef.current = { w: 0, h: 0, monitor: -1, at: 0 };
+            lastSentRef.current = { w: 0, h: 0, monitor: -1, scale: 0, at: 0 };
             confirmAttemptsRef.current = 0;
             monitorCountRef.current = 1;
             activeMonitorRef.current = initialMonitor;
             maxMonitorsRef.current = 1;
             heldModifiersRef.current = new Set();
             ctrlPressedRef.current = false;
-            macCommandRef.current = { active: false, forwarded: false, handled: false };
-            interceptedKeysRef.current.clear();
             zoomRef.current = ZOOM_MIN;
             panRef.current = { x: 0, y: 0 };
             panDragRef.current = null;
@@ -974,12 +870,8 @@ const GuacamoleRenderer = ({
     }, [sessionToken, session.id, isShared]);
 
     useEffect(() => {
-        const releaseKeyboardState = () => {
-            releaseModifiers();
-            releaseMacCommand();
-        };
-        window.addEventListener("blur", releaseKeyboardState);
-        return () => window.removeEventListener("blur", releaseKeyboardState);
+        window.addEventListener("blur", releaseModifiers);
+        return () => window.removeEventListener("blur", releaseModifiers);
     }, []);
 
     useEffect(() => {
@@ -993,7 +885,7 @@ const GuacamoleRenderer = ({
             zoom,
             minZoom: ZOOM_MIN,
             maxZoom: ZOOM_MAX,
-            readOnly: isShared,
+            readOnly: isShared || isAutomated,
             allowMonitors: pinnedMonitor === null,
             selectMonitor,
             addMonitor,
@@ -1004,9 +896,26 @@ const GuacamoleRenderer = ({
             zoomIn,
             zoomOut,
             resetZoom,
+            displayScale: isRdp && !isShared ? {
+                setting: scaleSetting,
+                deviceScale,
+                effective: scaleSetting === AUTO_SCALE ? deviceScale : scaleSetting,
+                overridden: getDeviceScaleOverride(entryId) !== null,
+                set: changeDisplayScale,
+            } : null,
             focus: () => ref.current?.focus(),
         } : null);
-    }, [ready, monitorCount, activeMonitor, maxMonitors, heldModifiers, poppedOutMonitors, zoom, isShared, pinnedMonitor]);
+    }, [ready, monitorCount, activeMonitor, maxMonitors, heldModifiers, poppedOutMonitors, zoom, isShared, pinnedMonitor, scaleSetting, deviceScale]);
+
+    useEffect(() => {
+        const next = resolveScaleSetting(entryId, session.server?.displayScale, defaultDisplayScale);
+        if (next !== scaleSettingRef.current) applyScaleSetting(next);
+    }, [defaultDisplayScale, session.server?.displayScale]);
+
+    useEffect(() => watchDeviceScale((scale) => {
+        setDeviceScale(scale);
+        resizeHandler();
+    }), []);
 
     useEffect(() => () => onControlsChange?.(null), []);
 
@@ -1043,7 +952,8 @@ const GuacamoleRenderer = ({
                     <h2>{t("servers.remoteDesktop.dropOverlay")}</h2>
                 </div>
             </div>
-            <ConnectionLoader onReady={(loader) => {
+            {isAutomated && <div className="automated-session-frame" aria-hidden="true" />}
+            <ConnectionLoader sessionId={session.id} onReady={(loader) => {
                 connectionLoaderRef.current = loader;
             }} />
             {connectionError && (

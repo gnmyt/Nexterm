@@ -35,7 +35,7 @@ jobs:
             tarball_name: nexterm-engine-linux-arm64.tar.gz
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Update engine version
         shell: bash
@@ -52,9 +52,7 @@ jobs:
             sh scripts/build-engine-release.sh all-with-pkg
 
       - name: Upload tarball
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/upload-release-asset
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: dist/${{ matrix.tarball_name }}
@@ -62,9 +60,7 @@ jobs:
           asset_content_type: application/gzip
 
       - name: Upload .deb
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/upload-release-asset
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: dist/nexterm-engine_${{ inputs.semver }}_${{ matrix.deb_arch }}.deb
@@ -72,9 +68,7 @@ jobs:
           asset_content_type: application/vnd.debian.binary-package
 
       - name: Upload .rpm
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/upload-release-asset
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: dist/nexterm-engine-${{ inputs.semver }}-1.${{ matrix.rpm_arch }}.rpm

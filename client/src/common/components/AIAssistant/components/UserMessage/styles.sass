@@ -1,0 +1,96 @@
+@use "@/common/styles/colors"
+
+.message-user
+  align-self: flex-end
+  max-width: 85%
+  display: flex
+  flex-direction: column
+  align-items: flex-end
+  gap: 0.2rem
+
+  .message.user
+    max-width: 100%
+
+  &.editing
+    align-self: stretch
+    max-width: 100%
+    align-items: stretch
+
+  .message-actions
+    display: flex
+    gap: 0.15rem
+    opacity: 0
+    transition: opacity 0.15s ease
+
+  &:hover .message-actions, .message-actions:focus-within
+    opacity: 1
+
+  @media (hover: none)
+    .message-actions
+      opacity: 1
+
+  .message-actions button
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 1.6rem
+    height: 1.6rem
+    padding: 0
+    border: none
+    border-radius: 0.4rem
+    background: transparent
+    color: colors.$subtext
+    cursor: pointer
+    transition: background-color 0.15s ease, color 0.15s ease
+
+    svg
+      width: 0.95rem
+      height: 0.95rem
+
+    &:hover:not(:disabled), &:focus-visible
+      background: colors.$gray
+      color: colors.$white
+      outline: none
+
+    &:disabled
+      opacity: 0.4
+      cursor: default
+
+.message-editor
+  display: flex
+  flex-direction: column
+  gap: 0.4rem
+  padding: 0.55rem 0.6rem 0.45rem
+  background: colors.$dark-gray
+  border: 1px solid colors.$primary
+  border-radius: 0.75rem
+  box-shadow: colors.$focus-ring
+
+  textarea
+    width: 100%
+    resize: none
+    min-height: 1.6rem
+    max-height: 11rem
+    padding: 0.25rem 0.15rem
+    box-sizing: border-box
+    overflow-y: auto
+    background: transparent
+    border: none
+    outline: none
+    color: colors.$white
+    font-family: inherit
+    font-size: 0.875rem
+    font-weight: 500
+    line-height: 1.45
+
+  .message-editor-footer
+    display: flex
+    align-items: center
+    justify-content: flex-end
+    gap: 0.4rem
+
+    .btn
+      padding: 0.35rem 0.7rem
+
+      h3
+        font-size: 0.8rem

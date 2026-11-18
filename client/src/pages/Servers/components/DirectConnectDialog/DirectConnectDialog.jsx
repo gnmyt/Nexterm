@@ -119,7 +119,7 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
     return (
         <DialogProvider open={open} onClose={onClose}>
             <div className="direct-connect-dialog">
-                <div className="direct-connect-header">
+                <div className="direct-connect-header dialog-heading">
                     <h2>{t("servers.contextMenu.quickConnect")}</h2>
                 </div>
 
