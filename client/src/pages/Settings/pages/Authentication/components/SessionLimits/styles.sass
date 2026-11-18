@@ -1,0 +1,47 @@
+@use "@/common/styles/colors"
+@use "@/common/styles/breakpoints"
+
+.session-limits
+  margin-top: 2.5rem
+
+  .section-header
+    display: flex
+    justify-content: space-between
+    align-items: center
+    margin-bottom: 1rem
+
+  h2
+    margin: 0
+
+    svg
+      opacity: 0.7
+
+  p
+    color: colors.$subtext
+    margin: 0
+
+  .section-inner
+    margin-top: 1rem
+
+.session-limits__fields
+  display: flex
+  flex-wrap: wrap
+  gap: 1.5rem 2rem
+
+  @media (max-width: breakpoints.$mobile)
+    flex-direction: column
+    gap: 1rem
+
+.session-limits__field
+  display: flex
+  flex-direction: column
+  gap: 0.5rem
+  min-width: 200px
+
+  @media (max-width: breakpoints.$mobile)
+    min-width: 100%
+
+.session-limits__label
+  font-weight: 600
+  color: colors.$subtext
+  font-size: 0.875rem

@@ -90,7 +90,7 @@ app.delete("/:accountId", requirePermission(Permission.USERS_MANAGE), async (req
 /**
  * PATCH /users/{accountId}/password
  * @summary Update User Password
- * @description Updates a user's password. Requires the "users.manage" permission.
+ * @description Updates a user's password and signs the user out everywhere. Requires the "users.manage" permission.
  * @tags Users
  * @produces application/json
  * @security BearerAuth
@@ -103,7 +103,8 @@ app.delete("/:accountId", requirePermission(Permission.USERS_MANAGE), async (req
 app.patch("/:accountId/password", requirePermission(Permission.USERS_MANAGE), async (req, res) => {
     if (validateSchema(res, passwordChangeValidation, req.body)) return;
 
-    const account = await updatePassword(req.params.accountId, req.body.password);
+    const ownAccount = Number(req.params.accountId) === req.user.id;
+    const account = await updatePassword(req.params.accountId, req.body.password, ownAccount ? req.session?.id : null);
     if (account?.code) return res.json(account);
 
     res.json({ message: "Password got successfully updated" });

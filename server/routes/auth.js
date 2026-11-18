@@ -10,7 +10,7 @@ const { createCode, pollToken, authorizeCode, getCodeInfo, checkLinkStatus } = r
 const { authenticate } = require("../middlewares/auth");
 const { createGuestSession, removeGuestByToken } = require("../controllers/demo");
 const { isDemoMode, DEMO_SETTINGS } = require("../utils/demoMode");
-const Session = require("../models/Session");
+const { findActiveSession } = require("../utils/loginSession");
 const Account = require("../models/Account");
 
 const optionalAuth = async (req, res, next) => {
@@ -19,7 +19,7 @@ const optionalAuth = async (req, res, next) => {
     const parts = authHeader.split(" ");
     if (parts.length !== 2) return next();
     try {
-        const session = await Session.findOne({ where: { token: parts[1] } });
+        const session = await findActiveSession(parts[1]);
         if (session) {
             req.session = session;
             req.user = await Account.findByPk(session.accountId);

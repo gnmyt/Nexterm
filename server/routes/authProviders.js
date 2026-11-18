@@ -8,7 +8,43 @@ const { validateSchema } = require("../utils/schema");
 const { oidcProviderValidation, oidcProviderUpdateValidation } = require("../validations/oidc");
 const { ldapProviderValidation, ldapProviderUpdateValidation } = require("../validations/ldap");
 
+const Joi = require("joi");
+const { getSessionSettings, updateSessionSettings } = require("../utils/loginSession");
+
 const app = Router();
+
+const sessionSettingsValidation = Joi.object({
+    idleTimeoutDays: Joi.number().integer().min(0).max(3650),
+    maxLifetimeDays: Joi.number().integer().min(0).max(3650),
+}).min(1);
+
+/**
+ * GET /auth/sessions/settings
+ * @summary Get Session Limits
+ * @description Returns after how many idle days and after how many days in total a login session ends. 0 means never.
+ * @tags Auth Providers
+ * @produces application/json
+ * @security BearerAuth
+ * @return {object} 200 - Session limits
+ */
+app.get("/sessions/settings", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
+    res.json(await getSessionSettings());
+});
+
+/**
+ * PATCH /auth/sessions/settings
+ * @summary Update Session Limits
+ * @description Updates after how many idle days and after how many days in total a login session ends. 0 means never.
+ * @tags Auth Providers
+ * @produces application/json
+ * @security BearerAuth
+ * @param {object} request.body.required - idleTimeoutDays and/or maxLifetimeDays
+ * @return {object} 200 - Updated session limits
+ */
+app.patch("/sessions/settings", authenticate, requirePermission(Permission.SETTINGS_AUTH_PROVIDERS), async (req, res) => {
+    if (validateSchema(res, sessionSettingsValidation, req.body)) return;
+    res.json(await updateSessionSettings(req.body));
+});
 
 /**
  * GET /auth/providers

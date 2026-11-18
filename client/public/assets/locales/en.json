@@ -831,7 +831,12 @@
       "description": "A strong password contains special characters, numbers, and letters in both uppercase and lowercase.",
       "newPassword": "New password",
       "confirmPassword": "Confirm new password",
-      "changePasswordButton": "Change password"
+      "changePasswordButton": "Change password",
+      "currentPassword": "Current password",
+      "descriptionOwn": "Enter your current password and choose a new one. You will be signed out on all other devices.",
+      "descriptionOther": "Choose a new password for this user. They will be signed out on all devices.",
+      "successOwn": "Your password was changed. Other devices were signed out.",
+      "successOther": "The password was changed and the user was signed out everywhere."
     },
     "organizations": {
       "title": "Your Organizations",
@@ -1291,6 +1296,17 @@
           "testSuccess": "Connection test successful",
           "testFailed": "Connection test failed"
         }
+      },
+      "sessions": {
+        "title": "Sessions",
+        "description": "When signed-in devices, including the mobile and desktop apps, have to sign in again.",
+        "idle": "Sign out after inactivity",
+        "lifetime": "Maximum session length",
+        "days_one": "{{count}} day",
+        "days_other": "{{count}} days",
+        "never": "Never",
+        "loadError": "Failed to load the session settings",
+        "saveError": "Failed to save the session settings"
       }
     },
     "ai": {

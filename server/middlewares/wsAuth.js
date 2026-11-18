@@ -1,4 +1,5 @@
 const Session = require("../models/Session");
+const { findActiveSession } = require("../utils/loginSession");
 const Account = require("../models/Account");
 const Entry = require("../models/Entry");
 const Integration = require("../models/Integration");
@@ -14,7 +15,7 @@ const SHARED_ENTRY_ATTRIBUTES = ["id", "type", "config", "folderId", "organizati
 const authenticateToken = async (ws, sessionToken) => {
     if (!sessionToken) return ws.close(4001, "You need to provide the token in the 'sessionToken' parameter"), null;
 
-    const session = await Session.findOne({ where: { token: sessionToken } });
+    const session = await findActiveSession(sessionToken);
     if (!session) return ws.close(4003, "The token is not valid"), null;
 
     await Session.update({ lastActivity: new Date() }, { where: { id: session.id } });

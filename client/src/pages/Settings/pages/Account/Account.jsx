@@ -338,6 +338,7 @@ export const Account = () => {
                     </div>
                 </div>
 
+{!user?.externalSignIn && (
                 <div className="account-section settings-page-section">
                     <SettingsHeading><Icon path={mdiLockReset} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.changePassword")}</SettingsHeading>
                     <div className="section-inner">
@@ -347,6 +348,7 @@ export const Account = () => {
                                 onClick={() => setPasswordChangeOpen(true)} />
                     </div>
                 </div>
+                )}
             </>)}
 
             <div className="account-section settings-page-section">

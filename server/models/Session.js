@@ -23,6 +23,14 @@ module.exports = db.define("sessions", {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW,
     },
+    createdAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+    },
+    expiresAt: {
+        type: Sequelize.DATE,
+        allowNull: true,
+    },
     oidcProviderId: {
         type: Sequelize.INTEGER,
         allowNull: true,

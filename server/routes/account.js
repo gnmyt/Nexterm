@@ -1,7 +1,7 @@
 const { Router } = require("express");
-const { registerValidation, totpSetup, passwordChangeValidation, updateNameValidation, updateSessionSyncValidation } = require("../validations/account");
+const { registerValidation, totpSetup, ownPasswordChangeValidation, updateNameValidation, updateSessionSyncValidation } = require("../validations/account");
 const { preferencesValidation } = require("../validations/preferences");
-const { createAccount, selfRegister, getFTSStatus, updateTOTP, updatePassword, updateName, updateSessionSync, updatePreferences, searchUsers, updateAvatar, removeAvatar } = require("../controllers/account");
+const { createAccount, selfRegister, getFTSStatus, updateTOTP, changeOwnPassword, updateName, updateSessionSync, updatePreferences, searchUsers, updateAvatar, removeAvatar } = require("../controllers/account");
 const speakeasy = require("speakeasy");
 const express = require("express");
 const stateBroadcaster = require("../lib/StateBroadcaster");
@@ -54,6 +54,7 @@ app.get("/me", authenticate, async (req, res) => {
         activeThemeId: req.user.activeThemeId || null,
         avatarHash: req.user.avatarHash || null,
         demoExpiresAt: req.user.demoExpiresAt || null,
+        externalSignIn: Boolean(req.user.externalProvider),
     });
 });
 
@@ -133,7 +134,7 @@ app.get("/:accountId/avatar", authenticateQuery, async (req, res) => {
 /**
  * PATCH /account/password
  * @summary Update Password
- * @description Updates the authenticated user's password. Requires current authentication.
+ * @description Updates the authenticated user's password. Requires the current password and signs out all other sessions of the account.
  * @tags Account
  * @produces application/json
  * @security BearerAuth
@@ -142,11 +143,13 @@ app.get("/:accountId/avatar", authenticateQuery, async (req, res) => {
  * @return {object} 401 - User is not authenticated
  */
 app.patch("/password", authenticate, async (req, res) => {
-    if (validateSchema(res, passwordChangeValidation, req.body)) return;
+    if (validateSchema(res, ownPasswordChangeValidation, req.body)) return;
 
     if (!req.user) return sendError(res, 401, 205, "You are not authenticated.");
+    if (!req.session) return sendError(res, 403, 207, "Your password can only be changed from a signed-in session.");
 
-    await updatePassword(req.user.id, req.body.password);
+    const result = await changeOwnPassword(req.user, req.session.id, req.body.currentPassword, req.body.password);
+    if (result?.code) return sendError(res, result.code, result.code, result.message);
 
     res.json({ message: "Your password has been successfully updated." });
 });

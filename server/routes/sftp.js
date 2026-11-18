@@ -3,6 +3,7 @@ const express = require("express");
 const { Transform } = require("node:stream");
 const { pipeline } = require("node:stream/promises");
 const Session = require("../models/Session");
+const { findActiveSession } = require("../utils/loginSession");
 const Account = require("../models/Account");
 const SessionManager = require("../lib/SessionManager");
 const TransferRegistry = require("../lib/TransferRegistry");
@@ -122,7 +123,7 @@ const createArchiveJob = (sftpClient, archive) => {
 };
 
 const validateSession = async (sessionToken, sessionId) => {
-    const session = await Session.findOne({ where: { token: sessionToken } });
+    const session = await findActiveSession(sessionToken);
     if (!session) return { error: "Invalid session", status: 401 };
 
     const [user, serverSession] = await Promise.all([

@@ -1,4 +1,5 @@
 const Session = require("../models/Session");
+const { findActiveSession } = require("../utils/loginSession");
 const Account = require("../models/Account");
 const stateBroadcaster = require("../lib/StateBroadcaster");
 const { isGuestExpired } = require("../utils/demoMode");
@@ -7,7 +8,7 @@ module.exports = async (ws, req) => {
     const { sessionToken, tabId, browserId } = req.query;
     if (!sessionToken) return ws.close(4001, "Missing sessionToken");
 
-    const session = await Session.findOne({ where: { token: sessionToken } });
+    const session = await findActiveSession(sessionToken);
     if (!session) return ws.close(4003, "Invalid session");
 
     await Session.update({ lastActivity: new Date() }, { where: { id: session.id } });

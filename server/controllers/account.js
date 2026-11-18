@@ -1,4 +1,4 @@
-const { genSalt, hash } = require("bcrypt");
+const { genSalt, hash, compare } = require("bcrypt");
 const { Op } = require("sequelize");
 const Account = require("../models/Account");
 const OIDCProvider = require("../models/OIDCProvider");
@@ -16,6 +16,7 @@ const { ACCOUNT_VIEW_ATTRIBUTES } = require("../utils/accountView");
 const logger = require("../utils/logger");
 const SessionManager = require("../lib/SessionManager");
 const stateBroadcaster = require("../lib/StateBroadcaster");
+const { endSessions } = require("../utils/loginSession");
 
 module.exports.createAccount = async (configuration, firstTimeSetup = true) => {
     if (await Account.count() > 0 && firstTimeSetup)
@@ -123,7 +124,7 @@ module.exports.removeAvatar = async (id) => {
     await Account.update({ avatarHash: null }, { where: { id } });
 };
 
-module.exports.updatePassword = async (id, password) => {
+module.exports.updatePassword = async (id, password, keepSessionId = null) => {
     const account = await Account.findByPk(id);
 
     if (account === null)
@@ -133,6 +134,23 @@ module.exports.updatePassword = async (id, password) => {
     const hashedPassword = await hash(password, salt);
 
     await Account.update({ password: hashedPassword }, { where: { id } });
+    if (keepSessionId) {
+        await endSessions({ accountId: account.id, id: { [Op.ne]: keepSessionId } });
+    } else {
+        await endSessions({ accountId: account.id });
+        await SessionManager.removeAllByAccountId(account.id);
+    }
+};
+
+module.exports.changeOwnPassword = async (account, currentSessionId, currentPassword, password) => {
+    if (account.externalProvider)
+        return { code: 403, message: "Your password is managed by your sign-in provider" };
+    if (!(await compare(currentPassword, account.password)))
+        return { code: 403, message: "Your current password is incorrect" };
+
+    const hashedPassword = await hash(password, await genSalt(10));
+    await Account.update({ password: hashedPassword }, { where: { id: account.id } });
+    await endSessions({ accountId: account.id, id: { [Op.ne]: currentSessionId } });
 };
 
 module.exports.updateExternalLink = async (id, { allow }) => {
