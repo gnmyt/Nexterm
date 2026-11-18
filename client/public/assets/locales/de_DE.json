@@ -2447,9 +2447,13 @@
     "title": "Unterstützung erhalten",
     "subtitle": "Brauchst du Hilfe oder möchtest du etwas beitragen?",
     "footer": "Danke, dass du Nexterm benutzt!",
+    "bug": {
+      "title": "Report a Bug",
+      "description": "Opens a bug report with your version filled in."
+    },
     "issues": {
-      "title": "Ein Problem melden",
-      "description": "Hast du einen Fehler gefunden oder willst du eine Feature-Anfrage stellen?"
+      "title": "Browse Issues",
+      "description": "Search existing reports or request a feature."
     },
     "discord": {
       "title": "Discord beitreten",
