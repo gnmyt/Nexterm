@@ -2447,9 +2447,13 @@
     "title": "サポートを受ける",
     "subtitle": "助けが必要か、あるいは協力したいか？",
     "footer": "Nextermをご利用いただき、ありがとうございます！",
+    "bug": {
+      "title": "Report a Bug",
+      "description": "Opens a bug report with your version filled in."
+    },
     "issues": {
-      "title": "問題を報告する",
-      "description": "バグを見つけた、あるいは機能のリクエストがあるか？"
+      "title": "Browse Issues",
+      "description": "Search existing reports or request a feature."
     },
     "discord": {
       "title": "Discordに参加する",
