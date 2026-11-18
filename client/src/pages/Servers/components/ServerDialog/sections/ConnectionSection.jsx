@@ -1,5 +1,5 @@
-import { useContext, useMemo } from "react";
-import { mdiIp, mdiEthernet, mdiLanConnect, mdiNumeric, mdiClose, mdiPlus } from "@mdi/js";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { mdiIp, mdiEthernet, mdiLanConnect, mdiNumeric, mdiClose, mdiPlus, mdiFormTextbox, mdiTimerOutline } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import Input from "@/common/components/IconInput";
 import SelectBox from "@/common/components/SelectBox";
@@ -7,6 +7,7 @@ import Button from "@/common/components/Button";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { SectionBlock } from "@/common/components/SectionedDialog";
 import Field, { InheritanceReset, useInheritedClass } from "@/common/components/Field";
+import { getRequest } from "@/common/utils/RequestUtil.js";
 
 export const PROTOCOL_OPTIONS = [
     { label: "SSH", value: "ssh" },
@@ -119,7 +120,56 @@ export const JumpHosts = ({ config, setConfig, isAllowed }) => {
     );
 };
 
-const ConnectionSection = ({ config, setConfig, fieldConfig, editServerId }) => {
+export const usesSshCertificates = (protocol) => protocol === "ssh" || protocol === "sftp";
+
+export const SshCertificateFields = ({ config, setConfig, organizationId }) => {
+    const { t } = useTranslation();
+    const [authorities, setAuthorities] = useState([]);
+    const update = (patch) => setConfig(prev => ({ ...prev, ...patch }));
+
+    useEffect(() => {
+        getRequest("ssh-cas").then((list) => {
+            setAuthorities((list || []).filter((authority) => authority.enabled !== false
+                && (!authority.organizationId || Number(authority.organizationId) === Number(organizationId))));
+        }).catch(() => setAuthorities([]));
+    }, [organizationId]);
+
+    const options = [
+        { label: t("servers.dialog.settings.sshCertificate.none"), value: "" },
+        ...authorities.map((authority) => ({ label: authority.name, value: String(authority.id) })),
+    ];
+
+    return (
+        <div className="sd-subsection">
+            <div className="sd-subsection__header">
+                <div>
+                    <h4>{t("servers.dialog.settings.sshCertificate.title")}</h4>
+                    <p>{t("servers.dialog.settings.sshCertificate.description")}</p>
+                </div>
+            </div>
+            <Field label={t("servers.dialog.settings.sshCertificate.authority")} configKey="sshCaId">
+                <SelectBox options={options} selected={config.sshCaId ? String(config.sshCaId) : ""}
+                           setSelected={(value) => update({ sshCaId: value ? Number(value) : null })} />
+            </Field>
+            <div className="sd-row sd-row--split">
+                <Field label={t("servers.dialog.settings.sshCertificate.domain")} htmlFor="ssh-domain" configKey="domain">
+                    <Input icon={mdiFormTextbox} id="ssh-domain" autoComplete="off" value={config.domain || ""}
+                           setValue={(value) => update({ domain: value })} />
+                </Field>
+                <Field label={t("servers.dialog.settings.sshCertificate.environment")} htmlFor="ssh-environment" configKey="environment">
+                    <Input icon={mdiFormTextbox} id="ssh-environment" autoComplete="off" value={config.environment || ""}
+                           setValue={(value) => update({ environment: value })} />
+                </Field>
+            </div>
+            <Field label={t("servers.dialog.settings.sshCertificate.ttl")} htmlFor="ssh-ttl" configKey="sshCertTtl">
+                <Input icon={mdiTimerOutline} id="ssh-ttl" type="number" autoComplete="off" value={config.sshCertTtl ? String(config.sshCertTtl) : ""}
+                       setValue={(value) => update({ sshCertTtl: value ? Number(value) : null })} />
+            </Field>
+        </div>
+    );
+};
+
+const ConnectionSection = ({ config, setConfig, fieldConfig, editServerId, organizationId }) => {
     const { t } = useTranslation();
     const notSelf = useMemo(() => (server) => server.id !== editServerId, [editServerId]);
 
@@ -135,6 +185,7 @@ const ConnectionSection = ({ config, setConfig, fieldConfig, editServerId }) => 
             )}
 
             {config.protocol === "ssh" && <JumpHosts config={config} setConfig={setConfig} isAllowed={notSelf} />}
+            {usesSshCertificates(config.protocol) && <SshCertificateFields config={config} setConfig={setConfig} organizationId={organizationId} />}
         </SectionBlock>
     );
 };

@@ -317,7 +317,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             <GeneralSection name={name} setName={setName} icon={icon} setIcon={setIcon} config={config} setConfig={setConfig}
                             showIcon={!isIntegration} showEngine={!isIntegration}
                             namePlaceholder={isIntegration ? t("servers.proxmoxDialog.placeholders.name") : undefined} />
-            {has("connection") && <ConnectionSection config={config} setConfig={setConfig} fieldConfig={fieldConfig} editServerId={editServerId} />}
+            {has("connection") && <ConnectionSection config={config} setConfig={setConfig} fieldConfig={fieldConfig} editServerId={editServerId} organizationId={currentOrganizationId} />}
             {has("credentials") && <CredentialsSection config={config} setConfig={setConfig} description={t("servers.proxmoxDialog.credentialsDescription")} />}
             {has("identities") && (
                 <IdentitiesSection serverIdentities={serverIdentities} specificIdentities={identities} setIdentityUpdates={setIdentityUpdates}

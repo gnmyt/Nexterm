@@ -14,6 +14,7 @@ typedef struct {
     char* password;
     char* private_key;
     char* passphrase;
+    char* certificate;
 } jump_host_t;
 
 typedef struct {
@@ -36,7 +37,7 @@ int nexterm_ssh_setup_with_jumphosts(const char* target_host, uint16_t target_po
 
 int nexterm_ssh_auth(LIBSSH2_SESSION* session, const char* username,
                      const char* password, const char* private_key,
-                     const char* passphrase);
+                     const char* passphrase, const char* certificate);
 
 void nexterm_ssh_teardown(LIBSSH2_SESSION* session, LIBSSH2_CHANNEL* channel,
                           int sock, const char* reason);

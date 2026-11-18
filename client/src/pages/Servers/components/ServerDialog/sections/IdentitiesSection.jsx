@@ -29,6 +29,7 @@ export const buildIdentityPayload = (identity, fallbackName = "") => {
     if (usesPassword && (identity.passwordTouched || identity.password)) payload.password = identity.password;
     if (usesKey && identity.sshKey) payload.sshKey = identity.sshKey;
     if (usesKey && identity.passphrase) payload.passphrase = identity.passphrase;
+    if (usesKey && identity.sshCertificate !== undefined) payload.sshCertificate = identity.sshCertificate;
     return payload;
 };
 
@@ -53,6 +54,7 @@ const Identity = ({ identity, onPatch, onDelete, onMoveToOrg, orgId, allowedAuth
     const [authType, setAuthType] = useState(identity.authType || identity.type || (allowedAuthTypes?.[0] || "password"));
     const [password, setPassword] = useState(identity.password || "");
     const [sshKey, setSshKey] = useState(identity.sshKey || null);
+    const [sshCertificate, setSshCertificate] = useState(identity.sshCertificate);
     const [passphrase, setPassphrase] = useState(identity.passphrase || "");
     const [pwTouched, setPwTouched] = useState(false);
     const [ppTouched, setPpTouched] = useState(false);
@@ -70,11 +72,14 @@ const Identity = ({ identity, onPatch, onDelete, onMoveToOrg, orgId, allowedAuth
         ? allAuthOptions.filter(opt => allowedAuthTypes.includes(opt.value))
         : allAuthOptions.filter(opt => ["password", "ssh", "both"].includes(opt.value));
 
-    const readFile = (e) => {
+    const readFile = (setter) => (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
         const reader = new FileReader();
-        reader.onload = (ev) => touch(setSshKey)(ev.target.result);
-        reader.readAsText(e.target.files[0]);
+        reader.onload = (ev) => touch(setter)(ev.target.result);
+        reader.readAsText(file);
     };
+    const certificate = sshCertificate !== undefined ? { sshCertificate } : {};
 
     useEffect(() => {
         if (!edited.current) return;
@@ -83,10 +88,10 @@ const Identity = ({ identity, onPatch, onDelete, onMoveToOrg, orgId, allowedAuth
             ...(authType === "password" || authType === "password-only"
                 ? { password, passwordTouched: pwTouched || isNew || password !== "" }
                 : authType === "both"
-                ? { password, passwordTouched: pwTouched || isNew || password !== "", sshKey, passphrase, passphraseTouched: ppTouched || passphrase !== "" }
-                : { sshKey, passphrase, passphraseTouched: ppTouched || passphrase !== "" }),
+                ? { password, passwordTouched: pwTouched || isNew || password !== "", sshKey, ...certificate, passphrase, passphraseTouched: ppTouched || passphrase !== "" }
+                : { sshKey, ...certificate, passphrase, passphraseTouched: ppTouched || passphrase !== "" }),
         });
-    }, [name, username, authType, password, sshKey, passphrase, identity.id, pwTouched, ppTouched, isNew]);
+    }, [name, username, authType, password, sshKey, sshCertificate, passphrase, identity.id, pwTouched, ppTouched, isNew]);
 
     const showUsername = authType !== "password-only";
     const usesPassword = authType === "password" || authType === "password-only" || authType === "both";
@@ -133,12 +138,21 @@ const Identity = ({ identity, onPatch, onDelete, onMoveToOrg, orgId, allowedAuth
                 {usesKey && (
                     <div className="sd-row sd-row--split">
                         <Field label={t("servers.dialog.identities.sshPrivateKey")}>
-                            <Input icon={mdiFileUploadOutline} type="file" autoComplete="off" onChange={readFile} />
+                            <Input icon={mdiFileUploadOutline} type="file" autoComplete="off" onChange={readFile(setSshKey)} />
                         </Field>
                         <Field label={t("servers.dialog.identities.passphrase")}>
                             <Input icon={mdiLockOutline} type="password" id={`identity-passphrase-${identity.id}`} name="passphrase" placeholder={t("servers.dialog.identities.passphrase")} autoComplete="new-password" value={passphrase} setValue={(v) => { touch(setPassphrase)(v); setPpTouched(true); }} />
                         </Field>
                     </div>
+                )}
+                {usesKey && (
+                    <Field label={t("servers.dialog.identities.sshCertificate")}>
+                        <Input icon={mdiFileUploadOutline} type="file" autoComplete="off" onChange={readFile(setSshCertificate)} />
+                        {identity.hasSshCertificate && sshCertificate === undefined && (
+                            <Button type="secondary" size="small" text={t("servers.dialog.identities.removeCertificate")}
+                                    onClick={() => touch(setSshCertificate)("")} />
+                        )}
+                    </Field>
                 )}
             </div>
             {(onToggleGlobal || (isNew && orgId)) && (

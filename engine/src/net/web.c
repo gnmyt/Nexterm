@@ -1065,6 +1065,7 @@ int nexterm_web_prepare(nexterm_session_t* session,
     const char* password = nexterm_session_get_param(session, "password");
     const char* private_key = nexterm_session_get_param(session, "privateKey");
     const char* passphrase = nexterm_session_get_param(session, "passphrase");
+    const char* certificate = nexterm_session_get_param(session, "certificate");
 
     if (!username) {
         nexterm_cp_send_session_result(cp, session->session_id, false,
@@ -1086,7 +1087,7 @@ int nexterm_web_prepare(nexterm_session_t* session,
         return -1;
     }
 
-    if (nexterm_ssh_auth(ctx->ssh, username, password, private_key, passphrase) != 0) {
+    if (nexterm_ssh_auth(ctx->ssh, username, password, private_key, passphrase, certificate) != 0) {
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "SSH authentication failed", NULL);
         web_ctx_free(ctx);
