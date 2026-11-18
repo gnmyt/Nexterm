@@ -62,29 +62,29 @@
       "authenticating": "Аутентификация...",
       "noAccount": "У тебя ещё нет аккаунта?",
       "haveAccount": "У тебя уже есть аккаунт?",
-      "welcome": "Welcome back",
-      "subtitle": "Sign in to continue to Nexterm.",
-      "registrationSubtitle": "Create your account to get started.",
-      "firstTimeSubtitle": "Create the first administrator account for this instance.",
-      "twoFactorTitle": "Two-factor authentication",
-      "twoFactorDescription": "Enter the code from your authenticator app.",
-      "qrTitle": "Sign in with the app",
+      "welcome": "С возвращением!",
+      "subtitle": "Войди, чтобы перейти на Nexterm.",
+      "registrationSubtitle": "Заведи аккаунт, чтобы начать.",
+      "firstTimeSubtitle": "Создай первую учетную запись администратора для этого экземпляра.",
+      "twoFactorTitle": "Двухфакторная аутентификация",
+      "twoFactorDescription": "Введи код из приложения-аутентификатора.",
+      "qrTitle": "Войди через приложение",
       "demo": {
-        "title": "Try Nexterm",
-        "subtitle": "Explore a live instance with simulated servers, no account needed.",
-        "start": "Start the demo",
-        "orSignIn": "or sign in to your account",
-        "failed": "Could not start a demo session"
+        "title": "Попробуй Nexterm",
+        "subtitle": "Попробуй рабочую версию с симулированными серверами — учетная запись не требуется.",
+        "start": "Запусти демо",
+        "orSignIn": "или войди в свою учетную запись",
+        "failed": "Не удалось запустить демо-сессию"
       }
     },
     "demo": {
-      "timeLeft": "Demo · {{time}} left",
-      "end": "End demo",
-      "endConfirmText": "End your demo session? Everything you created will be removed.",
-      "minutes_one": "{{count}} min",
-      "minutes_other": "{{count}} min",
-      "hours_one": "{{count}} hour",
-      "hours_other": "{{count}} hours",
+      "timeLeft": "Демо · {{time}} слева",
+      "end": "Конец демо",
+      "endConfirmText": "Хочешь завершить демо-сессию? Всё, что ты создал, будет удалено.",
+      "minutes_one": "{{count}} мин",
+      "minutes_other": "{{count}} мин",
+      "hours_one": "{{count}} час",
+      "hours_other": "{{count}} часов",
       "hoursMinutes": "{{hours}}h {{minutes}}m"
     },
     "deviceLink": {
@@ -207,10 +207,10 @@
         "title": "Не удалось установить соединение",
         "close": "Закрыть вкладку",
         "reconnect": "Переподключиться",
-        "reconnectNow": "Reconnect",
-        "reconnecting": "Reconnecting…",
-        "reconnectingIn": "Reconnecting in {{seconds}}s",
-        "reconnectAttempt": "attempt {{count}} of {{max}}",
+        "reconnectNow": "Восстановить соединение",
+        "reconnecting": "Повторное подключение к…",
+        "reconnectingIn": "Восстановление связи через {{seconds}}секунд",
+        "reconnectAttempt": "попробуй {{count}} из {{max}}",
         "hostUnreachable": "Удаленный хост недоступен",
         "refused": "Удаленный хост отказал в подключении",
         "timeout": "Соединение прервалось по таймеру",
@@ -221,11 +221,11 @@
         "error": "Произошла ошибка подключения",
         "scriptClosedUnexpectedly": "Неожиданно закрылось соединение со сценарием",
         "scriptError": "Произошла ошибка подключения к сценарию",
-        "rdpSessionConflict": "The session was disconnected by the server because another connection was opened.",
-        "rdpSessionTimeout": "The RDP session was disconnected because its session time limit was reached.",
-        "rdpSessionClosed": "The RDP session was ended by the remote server or an administrator."
+        "rdpSessionConflict": "Сервер прервал сессию, потому что было открыто ещё одно соединение.",
+        "rdpSessionTimeout": "Сеанс RDP был прерван из-за истечения времени его действия.",
+        "rdpSessionClosed": "Сеанс RDP был завершён удалённым сервером или администратором."
       },
-      "accountLinkRequired": "An account with this username already exists. Ask an administrator to allow linking it to your sign-in."
+      "accountLinkRequired": "Аккаунт с этим именем пользователя уже существует. Попроси администратора разрешить привязать его к твоему аккаунту."
     },
     "messages": {
       "invitationAccepted": "Приглашение принято",
@@ -237,9 +237,9 @@
       "leaveOrganizationError": "Не удалось покинуть организацию"
     },
     "unsavedChanges": {
-      "title": "Unsaved changes",
-      "text": "Discard them, or keep editing and save when you're done.",
-      "keepEditing": "Keep editing"
+      "title": "Несохранённые изменения",
+      "text": "Удали их или продолжай редактировать и сохрани, когда закончишь.",
+      "keepEditing": "Продолжай редактировать"
     }
   },
   "audit": {
@@ -468,15 +468,15 @@
       "subtitle": "Статистика и контроль состояния серверов в реальном времени",
       "searchPlaceholder": "Поиск серверов...",
       "filters": {
-        "all": "All ({{count}})",
-        "online": "Online ({{count}})",
-        "issues": "Issues ({{count}})"
+        "all": "Все ({{count}})",
+        "online": "Онлайн ({{count}})",
+        "issues": "Выпуски ({{count}})"
       }
     },
     "errors": {
       "loadFailed": "Не удалось загрузить данные мониторинга",
-      "loadFailedDescription": "The monitoring data could not be retrieved. Check your connection and try again.",
-      "retry": "Retry"
+      "loadFailedDescription": "Не удалось получить данные мониторинга. Проверь подключение и попробуй ещё раз.",
+      "retry": "Попробовать ещё раз"
     },
     "grid": {
       "noServers": {
@@ -484,8 +484,8 @@
         "subtitle": "Нет SSH-серверов для мониторинга.\nДобавьте серверы, чтобы начать отслеживание."
       },
       "noResults": {
-        "title": "No matching servers",
-        "subtitle": "No monitored server matches your search."
+        "title": "Серверов не найдено",
+        "subtitle": "Ни один из отслеживаемых серверов не соответствует твоему запросу."
       },
       "metrics": {
         "loadAverage": "Средняя нагрузка",
@@ -493,8 +493,8 @@
         "uptime": "Время работы",
         "nodes": "Узлы",
         "vms": "ВМ/контейнеры",
-        "cpu": "CPU",
-        "memory": "Memory"
+        "cpu": "Процессор",
+        "memory": "Память"
       },
       "status": {
         "serverOffline": "Сервер недоступен",
@@ -505,14 +505,14 @@
         "unknownMessage": "Не удалось определить статус сервера.",
         "lastSeen": "Последнее подключение: {{time}}",
         "noRecentActivity": "Нет недавней активности",
-        "waitingForData": "Waiting for data",
-        "pendingMessage": "Monitoring data will appear after the next monitoring cycle.",
+        "waitingForData": "Ожидание данных",
+        "pendingMessage": "Данные мониторинга появятся после следующего цикла мониторинга.",
         "labels": {
-          "online": "Online",
-          "offline": "Offline",
-          "error": "Error",
-          "pending": "Pending",
-          "unknown": "Unknown"
+          "online": "Онлайн",
+          "offline": "В автономном режиме",
+          "error": "Ошибка",
+          "pending": "В процессе",
+          "unknown": "Неизвестно"
         }
       },
       "uptime": {
@@ -555,7 +555,7 @@
           "processes": "Активные процессы",
           "total": "Всего: {{value}}",
           "loadDetail": "5м: {{fiveMin}}, 15м: {{fifteenMin}}",
-          "memory": "Memory"
+          "memory": "Память"
         },
         "uptime": {
           "format": {
@@ -575,51 +575,51 @@
         "title": "Использование диска",
         "noData": "Нет данных об использовании диска",
         "noPartitions": "Никаких смонтированных перегородок",
-        "usedOf": "{{used}} of {{total}} used",
-        "free": "{{value}} free",
-        "filesystems": "Filesystems",
-        "disks": "Disks",
-        "on": "{{volume}} on {{partition}}",
-        "swap": "Swap",
-        "unmounted": "Not mounted",
-        "unallocated": "Unallocated",
-        "inodes": "Inodes",
-        "inodesDetail": "{{used}} of {{total}}",
+        "usedOf": "{{used}} с сайта {{total}}",
+        "free": "{{value}} бесплатно",
+        "filesystems": "Файловые системы",
+        "disks": "Диски",
+        "on": "{{volume}} на {{partition}}",
+        "swap": "Обмен",
+        "unmounted": "Не установлено",
+        "unallocated": "Нераспределённое",
+        "inodes": "Иноды",
+        "inodesDetail": "{{used}} из {{total}}",
         "health": {
-          "passed": "Healthy",
-          "warning": "Warning",
-          "failed": "Failing",
-          "denied": "SMART needs root",
-          "temperature": "Temperature",
-          "powerOn": "Power-on time",
-          "wear": "Wear",
-          "reallocated": "Reallocated sectors",
-          "pending": "Pending sectors",
-          "mediaErrors": "Media errors",
-          "years": "{{value}} years",
-          "days": "{{value}} days",
-          "hours": "{{value}} hours",
-          "failedTitle": "Disk failure predicted",
-          "failedMessage": "{{disks}} failed its SMART self-assessment. Back up the data and replace the disk."
+          "passed": "Здоровый",
+          "warning": "Предупреждение",
+          "failed": "Неудача",
+          "denied": "Для работы SMART нужны права суперпользователя",
+          "temperature": "Температура",
+          "powerOn": "Время включения",
+          "wear": "Износ",
+          "reallocated": "Перераспределенные секторы",
+          "pending": "Ожидающие рассмотрения секторы",
+          "mediaErrors": "Ошибки в медиафайлах",
+          "years": "{{value}} годы",
+          "days": "{{value}} дней",
+          "hours": "{{value}} часов",
+          "failedTitle": "Предсказано отказ диска",
+          "failedMessage": "{{disks}} Не прошла самодиагностику SMART. Сделай резервную копию данных и замени диск."
         }
       },
       "network": {
         "speed": "Скорость",
         "noData": "Нет данных о сетевых интерфейсах",
-        "download": "Download",
-        "upload": "Upload",
-        "interface": "Interface",
-        "address": "Address",
-        "gateway": "Gateway",
-        "interfaces": "Interfaces",
-        "virtual": "Virtual interfaces",
-        "defaultRoute": "Default route",
-        "up": "Up",
-        "down": "Down",
-        "errors": "{{count}} errors",
-        "dropped": "{{count}} dropped",
-        "copy": "Copy {{address}}",
-        "total": "{{value}} total"
+        "download": "Скачать",
+        "upload": "Загрузить",
+        "interface": "Интерфейс",
+        "address": "Адрес",
+        "gateway": "Шлюз",
+        "interfaces": "Интерфейсы",
+        "virtual": "Виртуальные интерфейсы",
+        "defaultRoute": "Маршрут по умолчанию",
+        "up": "Вверх",
+        "down": "Вниз",
+        "errors": "{{count}} ошибки",
+        "dropped": "{{count}} упал",
+        "copy": "Копировать {{address}}",
+        "total": "{{value}} всего"
       },
       "processes": {
         "searchPlaceholder": "Поисковые процессы...",
@@ -627,9 +627,9 @@
         "noData": "Данные о процессе недоступны. Данные о процессе появятся после следующего цикла мониторинга.",
         "noResults": "Ни один процесс не соответствует твоим критериям поиска.",
         "columns": {
-          "command": "Command",
-          "cpu": "CPU",
-          "mem": "Memory"
+          "command": "Команда",
+          "cpu": "Процессор",
+          "mem": "Память"
         }
       },
       "pve": {
@@ -674,13 +674,13 @@
       "backup": "Хранение",
       "engines": "Двигатели",
       "permissions": "Роли и права доступа",
-      "trustedCertificates": "Trusted Certificates"
+      "trustedCertificates": "Доверенные сертификаты"
     },
     "account": {
       "title": "Аккаунт",
       "demo": {
-        "title": "Security",
-        "description": "Password, two-factor authentication, passkeys, API keys and profile pictures can't be changed while you're exploring as a guest."
+        "title": "Безопасность",
+        "description": "Пароль, двухфакторную аутентификацию, ключи доступа, ключи API и аватарки нельзя изменить, пока ты просматриваешь сайт в качестве гостя."
       },
       "avatar": {
         "label": "Картинка",
@@ -765,7 +765,7 @@
       "sessionSyncAcrossDevicesDesc": "Сессии будут доступны на всех устройствах и синхронизироваться",
       "sessionSyncSameBrowserDesc": "Сессии будут синхронизироваться в рамках текущей сессии пользователя",
       "sessionSyncSameTabDesc": "Сессии будут синхронизироваться только внутри текущей вкладки",
-      "showAgentSessionsDesc": "Show sessions opened by the AI assistant or MCP agents as view-only tabs",
+      "showAgentSessionsDesc": "Показывать сеансы, открытые ИИ-помощником или агентами MCP, в виде вкладок только для просмотра",
       "twoFactorDialog": {
         "title": "Включить 2FA",
         "description": "Отсканируйте QR-код в приложении-аутентификаторе или введите <span class=\"totp-code\">{{secret}}</span> вручную.",
@@ -819,12 +819,12 @@
         "expires": "Срок действия истекает {{date}}",
         "delete": "Удалить"
       },
-      "remoteDesktop": "Remote Desktop",
-      "remoteDesktopDescription": "Default display scale for remote desktop sessions. Connections can override it, and a scale picked during a session is remembered on that device.",
-      "remoteDesktopScale": "Display Scale",
-      "remoteDesktopScaleAuto": "Automatic (match device)",
-      "remoteDesktopSyncEnabled": "Remote desktop settings will now sync across devices",
-      "remoteDesktopSyncDisabled": "Remote desktop settings are now saved on this device only"
+      "remoteDesktop": "Удаленный рабочий стол",
+      "remoteDesktopDescription": "Масштаб отображения по умолчанию для сеансов удалённого рабочего стола. При подключении его можно переопределить, а масштаб, выбранный во время сеанса, сохраняется на этом устройстве.",
+      "remoteDesktopScale": "Масштаб отображения",
+      "remoteDesktopScaleAuto": "Автоматический (подбор по устройству)",
+      "remoteDesktopSyncEnabled": "Настройки удалённого рабочего стола теперь будут синхронизироваться между устройствами",
+      "remoteDesktopSyncDisabled": "Настройки удалённого рабочего стола теперь сохраняются только на этом устройстве"
     },
     "passwordChange": {
       "title": "Изменить пароль",
@@ -832,11 +832,11 @@
       "newPassword": "Новый пароль",
       "confirmPassword": "Подтвердите новый пароль",
       "changePasswordButton": "Изменить пароль",
-      "currentPassword": "Current password",
-      "descriptionOwn": "Enter your current password and choose a new one. You will be signed out on all other devices.",
-      "descriptionOther": "Choose a new password for this user. They will be signed out on all devices.",
-      "successOwn": "Your password was changed. Other devices were signed out.",
-      "successOther": "The password was changed and the user was signed out everywhere."
+      "currentPassword": "Текущий пароль",
+      "descriptionOwn": "Введи свой текущий пароль и выбери новый. Ты будешь выведен из системы на всех остальных устройствах.",
+      "descriptionOther": "Выбери новый пароль для этого пользователя. Он будет выведен из системы на всех устройствах.",
+      "successOwn": "Твой пароль был сменён. С других устройств был выполнен выход из системы.",
+      "successOther": "Пароль был сменён, и пользователь был выведен из системы везде."
     },
     "organizations": {
       "title": "Ваши организации",
@@ -875,8 +875,8 @@
         "folderManagementDescription": "Веди журнал создания, изменения и удаления папок",
         "scriptExecutionLabel": "Выполнение сценария",
         "scriptExecutionDescription": "Веди журнал выполнения скриптов и задач автоматизации",
-        "agentOperationsLabel": "AI Agent Operations",
-        "agentOperationsDescription": "Log commands, input, screenshots and file changes performed by the AI assistant and by agents connected through the MCP server",
+        "agentOperationsLabel": "Работа с ИИ-агентами",
+        "agentOperationsDescription": "Регистрируй команды, ввод, скриншоты и изменения файлов, выполненные ИИ-помощником и агентами, подключенными через сервер MCP",
         "actions": {
           "save": "Сохранить настройки"
         },
@@ -943,9 +943,9 @@
         "loginAsUser": "Войти как пользователь",
         "deleteConfirm": "Это действие безвозвратно удалит пользователя и все связанные с ним данные.",
         "managePermissions": "Управление правами доступа",
-        "allowExternalLink": "Allow SSO/LDAP linking",
-        "cancelExternalLink": "Cancel SSO/LDAP linking",
-        "unlinkExternal": "Unlink SSO/LDAP sign-in"
+        "allowExternalLink": "Разрешить подключение через SSO/LDAP",
+        "cancelExternalLink": "Отменить связь SSO/LDAP",
+        "unlinkExternal": "Отвязать вход через SSO/LDAP"
       }
     },
     "userDialog": {
@@ -1008,11 +1008,11 @@
         },
         "copy": {
           "title": "Копировать",
-          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+          "description": "Скопировать выделенный текст из терминала на клавиатуру. Для этого в настройках терминала должен быть включен режим «Мышь» или «Клавиатура»."
         },
         "paste": {
-          "title": "Paste",
-          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
+          "title": "Вставить",
+          "description": "Вставить текст из буфера обмена в терминал. Для этого в настройках терминала должен быть включен режим «Smart Ctrl+C», «Мышь» или «Клавиатура»."
         },
         "fullscreen": {
           "title": "Полный экран",
@@ -1027,7 +1027,7 @@
         "pressKeys": "Нажмите клавиши...",
         "save": "Сохранить",
         "cancel": "Отмена",
-        "disabled": "Disabled",
+        "disabled": "С ограниченными возможностями",
         "reset": "Сбросить"
       },
       "messages": {
@@ -1063,19 +1063,19 @@
       "input": {
         "title": "Ввод",
         "description": "Настрой поведение горячих клавиш в терминале.",
-        "copyPasteBehavior": "Copy/Paste Behavior",
-        "copyPasteBehaviorNone": "None",
-        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
-        "copyPasteBehaviorSmart": "Smart Ctrl+C",
-        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
-        "copyPasteBehaviorKeyboard": "Keyboard",
-        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
-        "copyPasteBehaviorMouse": "Mouse",
-        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
-        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
-        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
+        "copyPasteBehavior": "Поведение при копировании и вставке",
+        "copyPasteBehaviorNone": "Нет",
+        "copyPasteBehaviorNoneHint": "Только «Копировать» и «Вставить» из контекстного меню.",
+        "copyPasteBehaviorSmart": "Умное Ctrl+C",
+        "copyPasteBehaviorSmartHint": "Если текст выделен, копировать его «умно», в противном случае отправлять в терминал необработанный сигнал Ctrl+C.",
+        "copyPasteBehaviorKeyboard": "Клавиатура",
+        "copyPasteBehaviorKeyboardHint": "Использует настроенные тобой комбинации клавиш для копирования и вставки",
+        "copyPasteBehaviorMouse": "Мышь",
+        "copyPasteBehaviorMouseHint": "Выдели текста, чтобы скопировать, щелкни правой кнопкой мыши, чтобы вставить. Нажми Ctrl + правая кнопка мыши, чтобы открыть контекстное меню.",
+        "copyPasteBehaviorMouseKeyboard": "Мышь/клавиатура",
+        "copyPasteBehaviorMouseKeyboardHint": "Включает режимы как мыши, так и клавиатуры.",
         "passwordPromptDetection": "Обнаружение ввода пароля",
-        "autoReconnect": "Auto-reconnect",
+        "autoReconnect": "Автоматическое восстановление соединения",
         "enabled": "Включено",
         "disabled": "Отключено",
         "syncEnabled": "Настройки ввода теперь будут синхронизироваться с твоей учетной записью",
@@ -1098,12 +1098,12 @@
       "syncEnabled": "Настройки файлового менеджера теперь будут синхронизироваться с твоим аккаунтом",
       "syncDisabled": "Настройки файлового менеджера больше не будут синхронизироваться",
       "view": {
-        "title": "View",
-        "description": "How files and folders are shown when you open the file manager."
+        "title": "Посмотреть",
+        "description": "Как отображаются файлы и папки при открытии файлового менеджера."
       },
       "behavior": {
-        "title": "Behavior",
-        "description": "What happens when you open, delete and move files."
+        "title": "Поведение",
+        "description": "Что происходит, когда ты открываешь, удаляешь и перемещаешь файлы."
       },
       "defaultView": {
         "title": "Режим просмотра по умолчанию",
@@ -1112,9 +1112,9 @@
         "listDescription": "Покажи файлы в подробном списке с колонками размера и даты",
         "grid": "Вид на сетку",
         "gridDescription": "Показывай файлы в виде иконок в макете сетки с миниатюрами",
-        "compact": "Compact View",
-        "compactDescription": "Show only names in dense columns to fit many files on screen",
-        "label": "Default view"
+        "compact": "Компактный вид",
+        "compactDescription": "Показывать только названия в плотных столбцах, чтобы на экран поместилось как можно больше файлов",
+        "label": "Вид по умолчанию"
       },
       "thumbnails": {
         "title": "Эскизы изображений",
@@ -1123,9 +1123,9 @@
         "enabledDescription": "Отображай предварительные просмотры изображений в виде сетки для быстрого визуального определения",
         "disabled": "Скрыть миниатюры",
         "disabledDescription": "Показывай только иконки файлов, чтобы сэкономить полосу пропускания и повысить производительность",
-        "label": "Image thumbnails",
-        "show": "Show",
-        "hide": "Hide"
+        "label": "Миниатюры изображений",
+        "show": "Показать",
+        "hide": "Скрыть"
       },
       "hiddenFiles": {
         "title": "Скрытые файлы",
@@ -1134,9 +1134,9 @@
         "showDescription": "Отобрази все файлы, включая .dotfiles и системные каталоги",
         "hide": "Скрыть скрытые файлы",
         "hideDescription": "Показывай только обычные файлы и папки",
-        "label": "Hidden files",
-        "showShort": "Show",
-        "hideShort": "Hide"
+        "label": "Скрытые файлы",
+        "showShort": "Показать",
+        "hideShort": "Скрыть"
       },
       "deleteConfirmation": {
         "title": "Подтверждение удаления",
@@ -1145,9 +1145,9 @@
         "enabledDescription": "Показывай диалог подтверждения перед удалением элементов",
         "disabled": "Удалить немедленно",
         "disabledDescription": "Удаляй файлы, не спрашивая подтверждения",
-        "label": "Before deleting",
-        "ask": "Ask for confirmation",
-        "immediately": "Delete immediately"
+        "label": "Перед удалением",
+        "ask": "Попроси подтверждения",
+        "immediately": "Сразу удали"
       },
       "dragDropAction": {
         "title": "Drag & Drop Action",
@@ -1155,32 +1155,32 @@
         "move": "Двигайся",
         "copy": "Копируй",
         "ask": "Спроси",
-        "label": "When dropping files"
+        "label": "При перетаскивании файлов"
       },
       "singleClickOpen": {
-        "title": "Open with single click",
-        "description": "Open files and folders with a single click instead of selecting them. Double-click opens when this is off.",
-        "single": "Single click",
-        "double": "Double click",
-        "label": "Open items with"
+        "title": "Открыть одним щелчком",
+        "description": "Открывай файлы и папки одним щелчком, а не выбирая их. Если эта функция отключена, для открытия потребуется двойной щелчок.",
+        "single": "Один клик",
+        "double": "Двойной щелчок",
+        "label": "Открытые позиции с"
       },
       "sharedDrive": {
-        "title": "Shared Drive",
-        "description": "What remote desktops can see of this computer through their shared drive. Changes apply to new connections.",
+        "title": "Общий диск",
+        "description": "Какую информацию об этом компьютере могут видеть удалённые пользователи через общий диск. Изменения вступают в силу при новых подключениях.",
         "mode": {
-          "title": "Share",
-          "folder": "One folder",
-          "disk": "Entire disk",
-          "off": "Nothing",
-          "diskWarning": "Remote desktops can read, change and delete every file on this computer."
+          "title": "Поделиться",
+          "folder": "Одна папка",
+          "disk": "Весь диск",
+          "off": "Ничего",
+          "diskWarning": "Удаленные пользователи могут просматривать, изменять и удалять любой файл на этом компьютере."
         },
         "folder": {
-          "title": "Shared folder",
-          "default": "Nexterm Shared in your home folder",
-          "choose": "Choose folder",
-          "reset": "Use default"
+          "title": "Общая папка",
+          "default": "Nexterm — в твоей домашней папке",
+          "choose": "Выбери папку",
+          "reset": "Использовать настройки по умолчанию"
         },
-        "folderError": "The shared folder could not be prepared"
+        "folderError": "Не удалось подготовить общую папку"
       }
     },
     "authentication": {
@@ -1214,7 +1214,7 @@
           "clientSecretPlaceholderEdit": "Оставьте пустым, чтобы сохранить текущий",
           "redirectUri": "URI перенаправления",
           "redirectUriPlaceholder": "https://ваш-домен.com/api/oidc/callback",
-          "endSessionEndpoint": "End Session Endpoint (Optional)",
+          "endSessionEndpoint": "Конечная точка завершения сеанса (необязательно)",
           "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
           "scope": "Область",
           "scopePlaceholder": "профиль openid",
@@ -1237,19 +1237,19 @@
           "saveFailed": "Не удалось сохранить провайдера"
         },
         "groupSync": {
-          "title": "Group Sync",
-          "hint": "Automatically add users to organizations and control access based on group claims from your identity provider.",
-          "groupsAttribute": "Groups Claim",
-          "groupsAttributePlaceholder": "groups",
-          "requiredGroup": "Required Group",
+          "title": "Групповая синхронизация",
+          "hint": "Автоматически добавляй пользователей в организации и управляй доступом на основе групповых прав, предоставленных твоим поставщиком услуг аутентификации.",
+          "groupsAttribute": "Заявления групп",
+          "groupsAttributePlaceholder": "группы",
+          "requiredGroup": "Обязательная группа",
           "requiredGroupPlaceholder": "nexterm-users",
-          "requiredGroupHint": "If set, only users whose groups claim contains this value are allowed to log in.",
-          "mappings": "Organization Mappings",
-          "mappingsHint": "Map a group claim value to an organization. Membership is kept in sync on every login.",
-          "mappingValuePlaceholder": "Group value",
-          "roleMember": "Member",
-          "roleOwner": "Owner",
-          "addMapping": "Add Mapping"
+          "requiredGroupHint": "Если этот параметр установлен, войти в систему смогут только те пользователи, в списке групп которых есть это значение.",
+          "mappings": "Сопоставления организаций",
+          "mappingsHint": "Привяжи значение группового права к организации. Информация о членстве синхронизируется при каждом входе в систему.",
+          "mappingValuePlaceholder": "Значение группы",
+          "roleMember": "Участник",
+          "roleOwner": "Владелец",
+          "addMapping": "Добавить сопоставление"
         }
       },
       "ldapDialog": {
@@ -1298,20 +1298,20 @@
         }
       },
       "sessions": {
-        "title": "Sessions",
-        "description": "When signed-in devices, including the mobile and desktop apps, have to sign in again.",
-        "idle": "Sign out after inactivity",
-        "lifetime": "Maximum session length",
-        "days_one": "{{count}} day",
-        "days_other": "{{count}} days",
-        "never": "Never",
-        "loadError": "Failed to load the session settings",
-        "saveError": "Failed to save the session settings"
+        "title": "Сессии",
+        "description": "Когда устройства, на которых уже был вход в систему, включая мобильные и настольные приложения, должны войти в систему заново.",
+        "idle": "Выйти из системы после бездействия",
+        "lifetime": "Максимальная продолжительность сеанса",
+        "days_one": "{{count}} день",
+        "days_other": "{{count}} дней",
+        "never": "Никогда",
+        "loadError": "Не удалось загрузить настройки сеанса",
+        "saveError": "Не удалось сохранить настройки сеанса"
       }
     },
     "ai": {
       "title": "Настройка ИИ-ассистента",
-      "description": "Configure the AI provider used by the assistant, which can operate your servers through its own sessions.",
+      "description": "Настрой поставщика ИИ, которым пользуется помощник, — он может управлять твоими серверами через собственные сессии.",
       "loading": "Загрузка настроек ИИ...",
       "enable": {
         "title": "Включить ИИ-ассистента",
@@ -1426,12 +1426,12 @@
     },
     "identities": {
       "title": "SSH-ключи и учётные данные",
-      "description": "Identities you can link to any server. Server-specific ones live in that server's settings.",
+      "description": "Эти идентификаторы можно привязать к любому серверу. Идентификаторы, привязанные к конкретному серверу, находятся в настройках этого сервера.",
       "createIdentity": "Создать учётные данные",
       "personal": "Личные",
       "noUsername": "Без имени пользователя",
-      "notInUse": "Not in use",
-      "notInUseHint": "Not linked to any server or folder",
+      "notInUse": "Не используется",
+      "notInUseHint": "Не привязано ни к какому серверу, ни к какой-либо папке",
       "sshKey": "SSH-ключ",
       "password": "Пароль",
       "editIdentity": "Изменить учётные данные",
@@ -1499,7 +1499,7 @@
         "success": "Синхронизировано",
         "error": "Ошибка",
         "pending": "Ожидание",
-        "syncing": "Syncing",
+        "syncing": "Синхронизация",
         "disabled": "Отключено"
       },
       "dialog": {
@@ -1688,26 +1688,26 @@
       "inheritsAllow": "Наследование: разрешено",
       "inheritsDeny": "Наследуется: Отклонено"
     },
-    "search": "Search settings",
+    "search": "Настройки поиска",
     "trustedCertificates": {
-      "title": "Trusted Certificates",
-      "description": "Certificates and host keys you accepted when connecting. Remove one to be asked again the next time.",
-      "personal": "Personal",
-      "system": "System",
+      "title": "Доверенные сертификаты",
+      "description": "Сертификаты и ключи хоста, которые ты принял при подключении. Удали один из них, чтобы при следующем подключении тебе снова задали этот вопрос.",
+      "personal": "Личное",
+      "system": "Система",
       "kinds": {
-        "ssh": "SSH host key",
-        "tls": "TLS certificate"
+        "ssh": "Ключ хоста SSH",
+        "tls": "Сертификат TLS"
       },
-      "empty": "Nothing trusted yet",
-      "emptyDescription": "Certificates and host keys appear here once you accept them for a connection.",
-      "remove": "Remove",
-      "removeConfirm": "Stop trusting {{endpoint}}? The next connection asks again.",
-      "removeSuccess": "Trusted certificate removed",
-      "removeError": "Failed to remove the trusted certificate",
+      "empty": "Пока ничего не добавлено",
+      "emptyDescription": "Сертификаты и ключи хоста появятся здесь, как только ты их примешь для подключения.",
+      "remove": "Удалить",
+      "removeConfirm": "Перестать доверять сайту {{endpoint}}? При следующем подключении появится новый запрос.",
+      "removeSuccess": "Удален доверенный сертификат",
+      "removeError": "Не удалось удалить доверенный сертификат",
       "ignore": {
-        "title": "Ignore certificate warnings",
-        "description": "Connect to your personal servers without checking their certificate or host key. Connections can then be intercepted without you noticing. Organization servers are always checked.",
-        "error": "Failed to save the setting"
+        "title": "Игнорировать предупреждения о сертификатах",
+        "description": "Подключайся к своим личным серверам, не проверяя их сертификаты или ключи хоста. В этом случае соединения могут быть перехвачены, и ты этого даже не заметишь. Серверы организации всегда проверяются.",
+        "error": "Не удалось сохранить настройку"
       }
     }
   },
@@ -1767,7 +1767,7 @@
       "createFolder": "Создать папку",
       "deleteFolder": "Удалить папку",
       "renameFolder": "Переименовать папку",
-      "folderSettings": "Folder Settings",
+      "folderSettings": "Настройки папки",
       "new": "Новый",
       "sshServer": "SSH-сервер",
       "telnetServer": "Telnet-сервер",
@@ -1788,7 +1788,7 @@
       "connect": "Подключиться",
       "quickConnect": "Быстрое подключение",
       "openSFTP": "Открыть SFTP",
-      "openBrowser": "Open Browser",
+      "openBrowser": "Открой браузер",
       "forwardPort": "Передовой порт",
       "runScript": "Запустить скрипт",
       "openNotes": "Открытые заметки",
@@ -1825,20 +1825,20 @@
         "duplicate": "Дублировать",
         "openNotes": "Открытые заметки",
         "hibernateSession": "Гибернация",
-        "reconnect": "Reconnect",
+        "reconnect": "Восстановить соединение",
         "closeSession": "Отключиться",
-        "splitRight": "Split Right",
-        "splitDown": "Split Down",
-        "sendShortcut": "Send Shortcut…",
-        "zoom": "Zoom ({{zoom}}%)",
-        "zoomReset": "Reset Zoom",
-        "displayScale": "Display Scale ({{scale}}%)",
-        "displayScaleAuto": "Automatic ({{scale}}%)",
-        "displayScaleReset": "Use Default"
+        "splitRight": "Разделить справа",
+        "splitDown": "Разделить по вертикали",
+        "sendShortcut": "Отправить ярлык…",
+        "zoom": "Масштаб ({{zoom}}%)",
+        "zoomReset": "Сбросить масштаб",
+        "displayScale": "Масштаб отображения ({{scale}}%)",
+        "displayScaleAuto": "Автоматический ({{scale}}%)",
+        "displayScaleReset": "Использовать значения по умолчанию"
       },
-      "enableSplitView": "Enable Split View",
-      "disableSplitView": "Disable Split View",
-      "sessionMenu": "Session Menu"
+      "enableSplitView": "Включить режим «Разделенный экран»",
+      "disableSplitView": "Отключить режим «Разделенный экран»",
+      "sessionMenu": "Меню сессии"
     },
     "wol": {
       "successDescription": "Волшебный пакет, отправленный на {{name}}",
@@ -1848,10 +1848,10 @@
       "fillRequiredFields": "Пожалуйста, заполните все обязательные поля",
       "serverCreated": "Сервер успешно создан",
       "serverUpdated": "Сервер успешно обновлён",
-      "folderUpdated": "Folder updated successfully",
+      "folderUpdated": "Папка успешно обновлена",
       "createFailed": "Не удалось создать сервер",
       "updateFailed": "Не удалось обновить сервер",
-      "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination."
+      "identitiesRemovedOnMove": "Некоторые идентификаторы были удалены, так как они недоступны в месте назначения."
     },
     "dialog": {
       "addServer": "Добавить сервер",
@@ -1911,12 +1911,12 @@
         },
         "display": {
           "title": "Настройки дисплея",
-          "description": "Configure color depth, resize behavior and scaling for the remote display",
+          "description": "Настрой глубины цвета, поведения при изменении размера и масштабирования удалённого экрана",
           "colorDepth": "Глубина цвета",
           "resizeMethod": "Метод изменения размера",
-          "displayScale": "Display Scale",
-          "displayScaleAuto": "Automatic (match this device)",
-          "displayScaleAccount": "Account default"
+          "displayScale": "Масштаб отображения",
+          "displayScaleAuto": "Автоматически (подбирать по этому устройству)",
+          "displayScaleAccount": "Настройки по умолчанию для аккаунта"
         },
         "performance": {
           "title": "Настройки производительности",
@@ -1957,29 +1957,29 @@
         "both": "Ключ+пасс",
         "sshPrivateKey": "Приватный SSH-ключ",
         "passphrase": "Парольная фраза (необязательно)",
-        "add": "Add identity",
-        "linkGlobal": "Link global identity · {{count}}",
-        "empty": "No identities yet.",
+        "add": "Добавить идентификатор",
+        "linkGlobal": "Глобальная идентичность Link · {{count}}",
+        "empty": "Пока никого не опознали.",
         "removeIdentity": "Удалить учётные данные",
         "unlinkIdentity": "Отвязать учётные данные",
         "moveToOrg": "Переместить в организацию",
         "noUsername": "Без имени пользователя",
-        "globalToggle": "Use on other servers",
-        "globalInUse": "This identity is used by {{count}} servers. Unlink it from the others first.",
-        "shareToggle": "Share with organization",
-        "inheritedHint": "Inherited from the folder settings.",
-        "onlyMe": "Only me",
-        "onlyMeHint": "Only you can see and use this identity."
+        "globalToggle": "Использование на других серверах",
+        "globalInUse": "Этот идентификатор используется серверами {{count}} . Сначала отвяжи его от остальных.",
+        "shareToggle": "Поделиться с организацией",
+        "inheritedHint": "Наследуется из настроек папки.",
+        "onlyMe": "Только я",
+        "onlyMeHint": "Только ты можешь видеть и использовать этот профиль."
       },
       "sections": {
-        "general": "General",
-        "connection": "Connection",
-        "identities": "Identities",
-        "options": "Options",
-        "credentials": "Credentials"
+        "general": "Общие сведения",
+        "connection": "Подключение",
+        "identities": "Идентичности",
+        "options": "Параметры",
+        "credentials": "Квалификация"
       },
-      "useInherited": "Use inherited value",
-      "reset": "Reset"
+      "useInherited": "Использовать унаследованное значение",
+      "reset": "Сброс"
     },
     "proxmoxDialog": {
       "title": {
@@ -2009,7 +2009,7 @@
         "createFailed": "Не удалось создать интеграцию с Proxmox",
         "updateFailed": "Не удалось обновить интеграцию Proxmox"
       },
-      "credentialsDescription": "Proxmox user with API access, e.g. root@pam or a dedicated API user."
+      "credentialsDescription": "Пользователь Proxmox с доступом к API, например root@pam или специальный пользователь API."
     },
     "connectionReasonDialog": {
       "title": "Требуется указать причину подключения",
@@ -2164,16 +2164,16 @@
         "search": "Поиск файлов",
         "closeSearch": "Закрыть поиск",
         "refresh": "Обновить",
-        "back": "Back",
-        "forward": "Forward",
-        "up": "Parent directory",
-        "home": "Home directory",
-        "switchToCompact": "Switch to compact view"
+        "back": "Назад",
+        "forward": "Вперед",
+        "up": "Родительский каталог",
+        "home": "Домашний каталог",
+        "switchToCompact": "Перейти в компактный режим просмотра"
       },
       "item": {
         "link": "ссылка",
-        "expand": "Expand folder",
-        "collapse": "Collapse folder"
+        "expand": "Развернуть папку",
+        "collapse": "Свернуть папку"
       },
       "search": {
         "placeholder": "Отфильтровать файлы в этой папке...",
@@ -2194,51 +2194,51 @@
         "error": "Произошла ошибка"
       },
       "transfers": {
-        "title": "Transfers",
-        "activeCount": "{{count}} active",
-        "allDone": "All done",
-        "clearFinished": "Clear finished",
-        "queued": "Queued",
-        "cancelling": "Cancelling...",
-        "completed": "Completed",
-        "savedTo": "Saved to {{path}}",
-        "cancelled": "Cancelled",
-        "failed": "Failed: {{message}}",
-        "dismiss": "Dismiss"
+        "title": "Переводы",
+        "activeCount": "{{count}} активный",
+        "allDone": "Всё готово",
+        "clearFinished": "Готово",
+        "queued": "В очереди",
+        "cancelling": "Отмена...",
+        "completed": "Завершено",
+        "savedTo": "Сохранено в {{path}}",
+        "cancelled": "Отменено",
+        "failed": "Не удалось: {{message}}",
+        "dismiss": "Закрыть"
       },
       "status": {
-        "folders_one": "{{count}} folder",
-        "folders_other": "{{count}} folders",
-        "files_one": "{{count}} file",
-        "files_other": "{{count}} files",
-        "hidden_one": "{{count}} hidden",
-        "hidden_other": "{{count}} hidden",
-        "selected": "{{count}} selected",
-        "showHidden": "Show hidden files",
-        "hideHidden": "Hide hidden files"
+        "folders_one": "{{count}} папка",
+        "folders_other": "{{count}} папки",
+        "files_one": "{{count}} файл",
+        "files_other": "{{count}} файлы",
+        "hidden_one": "{{count}} скрыто",
+        "hidden_other": "{{count}} скрыто",
+        "selected": "{{count}} выбранный",
+        "showHidden": "Показать скрытые файлы",
+        "hideHidden": "Скрыть скрытые файлы"
       },
       "conflict": {
-        "title_one": "Item already exists",
-        "title_other": "{{count}} items already exist",
-        "upload_one": "A file with this name already exists in the destination. What would you like to do?",
-        "upload_other": "These files already exist in the destination. What would you like to do with them?",
-        "move_one": "An item with this name already exists in the destination. Moving will replace it.",
-        "move_other": "These items already exist in the destination. Moving will replace them.",
-        "copy_one": "An item with this name already exists in the destination. Copying will replace it.",
-        "copy_other": "These items already exist in the destination. Copying will replace them.",
-        "more": "+ {{count}} more",
-        "skip": "Skip",
-        "rename": "Keep both",
-        "overwrite": "Overwrite"
+        "title_one": "Этот элемент уже существует",
+        "title_other": "{{count}} эти элементы уже есть",
+        "upload_one": "Файл с таким именем уже существует в папке назначения. Что хочешь сделать?",
+        "upload_other": "Эти файлы уже есть в папке назначения. Что с ними сделать?",
+        "move_one": "В месте назначения уже есть элемент с таким именем. При перемещении он будет заменен.",
+        "move_other": "Эти предметы уже есть в месте назначения. При перемещении они будут заменены.",
+        "copy_one": "Элемент с таким именем уже есть в месте назначения. При копировании он будет заменен.",
+        "copy_other": "Эти элементы уже есть в месте назначения. При копировании они будут заменены.",
+        "more": "+ {{count}} ещё",
+        "skip": "Пропустить",
+        "rename": "Сохрани и то, и другое",
+        "overwrite": "Перезаписать"
       }
     },
     "browser": {
-      "back": "Back",
-      "forward": "Forward",
-      "reload": "Reload",
-      "stop": "Stop",
-      "address": "Address",
-      "addressPlaceholder": "Enter an address"
+      "back": "Назад",
+      "forward": "Вперед",
+      "reload": "Обновить",
+      "stop": "Стоп",
+      "address": "Адрес",
+      "addressPlaceholder": "Введи адрес"
     },
     "remoteDesktop": {
       "dropOverlay": "Перетащи файлы, чтобы загрузить их на удаленный сервер",
@@ -2251,33 +2251,33 @@
       }
     },
     "automatedSession": {
-      "viewOnlyAi": "The AI assistant is working in this session. You can watch, but not type.",
-      "viewOnlyMcp": "An external agent (MCP) is working in this session. You can watch, but not type."
+      "viewOnlyAi": "В этом сеансе работает ИИ-помощник. Ты можешь смотреть, но не печатать.",
+      "viewOnlyMcp": "В этом сеансе работает внешний агент (MCP). Ты можешь наблюдать, но не печатать."
     },
     "aiAssistant": {
       "title": "ИИ-ассистент",
       "open": "AI-помощник",
-      "empty": "Ask the assistant to inspect or change your servers. It opens its own sessions to the servers you add below, runs commands, edits files and can even operate remote desktops.",
-      "addServer": "Add server",
-      "removeServer": "Remove server",
-      "searchServers": "Search servers...",
-      "noMatches": "No matching servers",
-      "current": "current",
-      "openSessions": "{{count}} open session(s)",
+      "empty": "Попроси помощника проверить или заменить твои серверы. Он открывает собственные сеансы подключения к серверам, которые ты укажешь ниже, запускает команды, редактирует файлы и даже может управлять удалёнными рабочими столами.",
+      "addServer": "Добавить сервер",
+      "removeServer": "Удалить сервер",
+      "searchServers": "Поиск серверов...",
+      "noMatches": "Серверов не найдено",
+      "current": "текущий",
+      "openSessions": "{{count}} открытое заседание (заседания)",
       "approval": {
-        "ask": "Ask before actions",
-        "askDescription": "Commands, input and file changes wait for your approval",
-        "allow": "Allow all",
-        "allowDescription": "Runs tool calls without asking",
-        "readonly": "Read-only",
-        "readonlyDescription": "Only inspects servers; anything that changes them is denied"
+        "ask": "Сначала спроси, потом действуй",
+        "askDescription": "Команды, ввод данных и изменения в файлах ждут твоего одобрения",
+        "allow": "Разрешить всем",
+        "allowDescription": "Запускает вызовы инструментов без запроса подтверждения",
+        "readonly": "Только для чтения",
+        "readonlyDescription": "Проводит только проверку серверов; любые действия, связанные с их изменением, запрещены"
       },
       "placeholder": "Напиши помощнику...",
       "connecting": "Подключение...",
       "send": "Отправить",
-      "copyMessage": "Copy message",
-      "copied": "Copied",
-      "editMessage": "Edit message",
+      "copyMessage": "Скопировать сообщение",
+      "copied": "Скопировано",
+      "editMessage": "Изменить сообщение",
       "stop": "Стоп",
       "connectionError": "Связь с помощником прервалась.",
       "reconnecting": "Соединение прервано. Попытка восстановить соединение...",
@@ -2290,65 +2290,65 @@
       "continuePrompt": "Помощник сделал паузу после длинной череды шагов. Продолжить?",
       "continue": "Продолжить",
       "compacted": "Предыдущие сообщения были сжаты, чтобы освободить место для контекста.",
-      "retryPrompt": "The last step failed. Retry from where it stopped?",
-      "retry": "Retry",
-      "questionOther": "Or type another answer...",
-      "questionAnswer": "Type your answer...",
-      "questionSend": "Answer",
-      "questionPickOne": "Pick one or type an answer",
-      "questionPickMany": "Pick any that apply",
-      "exitCode": "exit {{code}}",
-      "truncated": "[truncated]",
+      "retryPrompt": "Последний шаг не удался. Хочешь повторить с того места, где остановилось?",
+      "retry": "Попробовать ещё раз",
+      "questionOther": "Или введи другой ответ...",
+      "questionAnswer": "Введи свой ответ...",
+      "questionSend": "Ответ",
+      "questionPickOne": "Выбери один вариант или введи свой ответ",
+      "questionPickMany": "Выбери всё, что подходит",
+      "exitCode": "выход {{code}}",
+      "truncated": "[сокращено]",
       "toolSummary": {
-        "recursive": "{{path}} (recursive)",
+        "recursive": "{{path}} (рекурсивный)",
         "doubleClick": "{{target}} ×2"
       },
       "tools": {
-        "list_entries": "List servers",
-        "get_entry": "Inspect server",
-        "list_folders": "List folders",
-        "list_organizations": "List organizations",
-        "list_identities": "List identities",
-        "list_snippets": "List snippets",
-        "list_scripts": "List scripts",
-        "list_tags": "List tags",
-        "list_users": "List users",
-        "get_permissions": "Check permissions",
-        "get_monitoring": "Read monitoring",
-        "list_sessions": "List sessions",
-        "open_session": "Open session",
-        "get_session": "Inspect session",
-        "close_session": "Close session",
-        "close_all_sessions": "Close all sessions",
-        "terminal_run": "Run command",
-        "terminal_send": "Send input",
-        "terminal_read": "Read terminal",
-        "terminal_resize": "Resize terminal",
-        "run_command": "Run command",
-        "exec_command": "Run command",
-        "file_list": "List directory",
-        "file_stat": "Inspect path",
-        "file_read": "Read file",
-        "file_write": "Write file",
-        "file_edit": "Edit file",
-        "file_mkdir": "Create directory",
-        "file_delete": "Delete",
-        "file_move": "Move",
-        "file_chmod": "Change permissions",
-        "file_search_dirs": "Find directories",
-        "desktop_screenshot": "Screenshot",
-        "desktop_info": "Inspect desktop",
-        "desktop_click": "Click",
-        "desktop_mouse_move": "Move mouse",
-        "desktop_drag": "Drag",
-        "desktop_scroll": "Scroll",
-        "desktop_type": "Type text",
-        "desktop_key": "Press keys",
-        "desktop_resize": "Resize desktop",
-        "desktop_clipboard_set": "Set clipboard",
-        "desktop_clipboard_get": "Read clipboard",
-        "batch": "Run several actions",
-        "ask_user": "Question"
+        "list_entries": "Списки рассылки",
+        "get_entry": "Проверить сервер",
+        "list_folders": "Список папок",
+        "list_organizations": "Список организаций",
+        "list_identities": "Список тождеств",
+        "list_snippets": "Фрагменты списка",
+        "list_scripts": "Список скриптов",
+        "list_tags": "Список тегов",
+        "list_users": "Вывести список пользователей",
+        "get_permissions": "Проверь права доступа",
+        "get_monitoring": "Считывание показаний",
+        "list_sessions": "Список сессий",
+        "open_session": "Открытое заседание",
+        "get_session": "Просмотреть сессию",
+        "close_session": "Закрыть сессию",
+        "close_all_sessions": "Закрыть все сессии",
+        "terminal_run": "Запустить команду",
+        "terminal_send": "Отправить данные",
+        "terminal_read": "Читать терминал",
+        "terminal_resize": "Изменить размер терминала",
+        "run_command": "Запустить команду",
+        "exec_command": "Запустить команду",
+        "file_list": "Список каталогов",
+        "file_stat": "Проверить путь",
+        "file_read": "Прочитать файл",
+        "file_write": "Записать файл",
+        "file_edit": "Редактировать файл",
+        "file_mkdir": "Создать папку",
+        "file_delete": "Удалить",
+        "file_move": "Переместиться",
+        "file_chmod": "Изменить права доступа",
+        "file_search_dirs": "Найти каталоги",
+        "desktop_screenshot": "Скриншот",
+        "desktop_info": "Проверить рабочий стол",
+        "desktop_click": "Нажми",
+        "desktop_mouse_move": "Подвигай мышкой",
+        "desktop_drag": "Перетащить",
+        "desktop_scroll": "Прокрутить",
+        "desktop_type": "Введи текст",
+        "desktop_key": "Нажми клавиши",
+        "desktop_resize": "Изменить размер рабочего стола",
+        "desktop_clipboard_set": "Установить буфер обмена",
+        "desktop_clipboard_get": "Прочитать содержимое буфера обмена",
+        "batch": "Выполни несколько действий",
+        "ask_user": "Вопрос"
       }
     },
     "commandSuggestion": {
@@ -2371,7 +2371,7 @@
       "holdModifier": "Подожди {{key}}",
       "zoomIn": "Увеличить",
       "zoomOut": "Уменьшить масштаб",
-      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
+      "zoomReset": "Сбросить масштаб (перетаскивай, удерживая среднюю кнопку мыши, чтобы перемещаться по изображению)"
     },
     "monitors": {
       "title": "Монитор {{number}}",
@@ -2406,34 +2406,34 @@
       "unknownUser": "Неизвестный пользователь"
     },
     "folderSettings": {
-      "name": "Folder name",
-      "nameRequired": "Folder name is required",
-      "loadFailed": "Unable to load folder settings",
-      "protocol": "Defaults for",
-      "protocolHint": "Servers in this folder use what you set below unless they set their own value. Each protocol has its own defaults.",
-      "unset": "Remove from folder"
+      "name": "Название папки",
+      "nameRequired": "Название папки — обязательное поле",
+      "loadFailed": "Не удалось загрузить настройки папки",
+      "protocol": "Значения по умолчанию для",
+      "protocolHint": "Серверы в этой папке будут использовать значения, указанные ниже, если только они не зададут свои собственные. Для каждого протокола есть свои собственные значения по умолчанию.",
+      "unset": "Удалить из папки"
     },
     "trust": {
-      "certificate": "certificate",
-      "hostKey": "host key",
-      "newTitle": "Trust this {{subject}}?",
-      "newMessage": "This is the first connection to {{endpoint}}. Check the fingerprint before you continue.",
-      "changedTitle": "The {{subject}} has changed",
-      "changedMessage": "{{endpoint}} presents a different {{subject}} than before. Only continue if you expect this.",
-      "fingerprint": "Fingerprint",
-      "previous": "Trusted until now",
-      "presented": "Presented now",
-      "subject": "Issued to",
-      "issuer": "Issued by",
-      "selfSigned": "Self-signed",
-      "validUntil": "Valid until",
-      "blocked": "Only certificate managers of {{organization}} can accept this change.",
-      "accept": "Trust and connect",
-      "cancel": "Cancel",
-      "acceptChanged": "Trust the new one",
-      "disconnect": "Disconnect",
-      "failed": "Your decision could not be saved",
-      "acceptOnly": "Trust certificate"
+      "certificate": "сертификат",
+      "hostKey": "ключ хоста",
+      "newTitle": "Можно ли доверять этому сайту {{subject}}?",
+      "newMessage": "Это первое подключение к сайту {{endpoint}}. Перед тем как продолжить, проверь отпечаток.",
+      "changedTitle": "Сайт {{subject}} изменился",
+      "changedMessage": "{{endpoint}} Здесь представлен другой {{subject}} , чем раньше. Продолжай только в том случае, если ты этого ожидал.",
+      "fingerprint": "Отпечаток пальца",
+      "previous": "До сих пор ему доверяли",
+      "presented": "Представляем тебе",
+      "subject": "Выдано",
+      "issuer": "Выпущено",
+      "selfSigned": "С самоподписью",
+      "validUntil": "Срок действия до",
+      "blocked": "Только администраторы сертификатов сайта {{organization}} могут одобрить это изменение.",
+      "accept": "Доверяй и общайся",
+      "cancel": "Отменить",
+      "acceptChanged": "Поверь новому",
+      "disconnect": "Отключить",
+      "failed": "Твоё решение не удалось сохранить",
+      "acceptOnly": "Сертификат доверия"
     }
   },
   "support": {
@@ -2449,8 +2449,8 @@
       "description": "Общайся с сообществом и получай помощь."
     },
     "docs": {
-      "title": "View Documentation",
-      "description": "Read the documentation and learn how to use Nexterm."
+      "title": "Посмотреть документацию",
+      "description": "Прочитай документацию и узнай, как пользоваться Nexterm."
     },
     "github": {
       "title": "Посмотреть на GitHub",
@@ -2466,9 +2466,9 @@
     "recentConnections": "Последние связи",
     "getStarted": "Начни",
     "getStartedHint": "Добавь сервер с боковой панели, чтобы начать управлять своей инфраструктурой.",
-    "hibernated": "Hibernated",
+    "hibernated": "В режиме гибернации",
     "demo": {
-      "explore": "Start exploring"
+      "explore": "Начни знакомиться"
     }
   },
   "downloadApps": {
@@ -2481,9 +2481,9 @@
       "android": "Android",
       "ios": "iOS"
     },
-    "recommended": "Recommended",
-    "versionUnavailable": "The server version could not be determined, so direct downloads are unavailable. You can still browse the releases on GitHub.",
-    "sourceHint": "Downloads are served from the GitHub releases.",
-    "allReleases": "All releases"
+    "recommended": "Рекомендуется",
+    "versionUnavailable": "Не удалось определить версию сервера, поэтому прямая загрузка недоступна. Но ты всё равно можешь посмотреть версии на GitHub.",
+    "sourceHint": "Файлы для скачивания доступны в релизах на GitHub.",
+    "allReleases": "Все релизы"
   }
 }
