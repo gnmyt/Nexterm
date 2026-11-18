@@ -39,10 +39,10 @@ jobs:
 
     steps:
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "26"
 
@@ -91,9 +91,7 @@ jobs:
           echo "artifact_file=$ARTIFACT" >> $GITHUB_OUTPUT
 
       - name: Upload to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/upload-release-asset
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: ${{ steps.find_artifact.outputs.artifact_file }}
@@ -118,10 +116,10 @@ jobs:
 
     steps:
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "26"
 
@@ -168,9 +166,7 @@ jobs:
           echo "artifact_file=$ARTIFACT" >> $GITHUB_OUTPUT
 
       - name: Upload to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/upload-release-asset
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: ${{ steps.find_artifact.outputs.artifact_file }}
@@ -196,10 +192,10 @@ jobs:
 
     steps:
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "26"
 
@@ -249,9 +245,7 @@ jobs:
           echo "artifact_file=$ARTIFACT" >> $GITHUB_OUTPUT
 
       - name: Upload to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/upload-release-asset
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: ${{ steps.find_artifact.outputs.artifact_file }}

@@ -321,7 +321,7 @@ pkg() {
 
 install_nfpm() {
     if command -v nfpm >/dev/null 2>&1; then return 0; fi
-    NFPM_VERSION="${NFPM_VERSION:-2.43.0}"
+    NFPM_VERSION="${NFPM_VERSION:-2.49.0}"
     case "$(uname -m)" in
         x86_64|amd64) NFPM_HOST_ARCH=x86_64 ;;
         aarch64|arm64) NFPM_HOST_ARCH=arm64 ;;

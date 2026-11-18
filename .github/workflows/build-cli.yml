@@ -46,7 +46,7 @@ jobs:
 
     steps:
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -73,9 +73,7 @@ jobs:
         run: cargo build --release --target ${{ matrix.target }}
 
       - name: Upload to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/upload-release-asset
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: cli/target/${{ matrix.target }}/release/${{ runner.os == 'Windows' && 'nt.exe' || 'nt' }}
@@ -86,7 +84,7 @@ jobs:
         if: matrix.is_linux
         shell: bash
         run: |
-          NFPM_VERSION=2.43.0
+          NFPM_VERSION=2.49.0
           case "$(uname -m)" in
             x86_64) HOST=x86_64 ;;
             aarch64|arm64) HOST=arm64 ;;
@@ -122,9 +120,7 @@ jobs:
 
       - name: Upload .deb
         if: matrix.is_linux
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/upload-release-asset
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: dist/nexterm-cli_${{ inputs.semver }}_${{ matrix.deb_arch }}.deb
@@ -133,9 +129,7 @@ jobs:
 
       - name: Upload .rpm
         if: matrix.is_linux
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/upload-release-asset
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: dist/nexterm-cli-${{ inputs.semver }}-1.${{ matrix.rpm_arch }}.rpm

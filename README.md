@@ -59,7 +59,7 @@ Want to see how it performs? Our [live demo](https://demo.nexterm.dev) runs on H
 
 ### Prerequisites
 
--   Node.js 18+
+-   Node.js 26+
 -   Yarn
 -   FlatBuffers compiler (`flatc`)
 -   Docker (optional)
