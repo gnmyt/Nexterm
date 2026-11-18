@@ -549,6 +549,13 @@
           "unknown": "غير معروف",
           "noData": "لا توجد معلومات نظام متاحة"
         },
+        "memory": {
+          "title": "Memory",
+          "summary": "{{used}} of {{total}} ({{percent}}%)",
+          "used": "Used",
+          "cache": "Buffers / Cache",
+          "free": "Free"
+        },
         "performance": {
           "title": "مقاييس الأداء",
           "loadAverage": "متوسط الحمل",
