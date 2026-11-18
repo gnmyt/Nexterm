@@ -1,4 +1,5 @@
 const crypto = require("node:crypto");
+const { route } = require("../utils/route");
 const { Router } = require("express");
 const { Transform } = require("node:stream");
 const { pipeline } = require("node:stream/promises");
@@ -66,18 +67,11 @@ const abort = (ticket, res, counter, err) => {
     fail(res, statusFor(err), error);
 };
 
-/**
- * GET /transfers/{token}
- * @summary Download a file through an agent transfer link
- * @description Streams a remote file for a single-use link created by the transfer_create MCP tool. The link itself authorizes the request.
- * @tags Transfers
- * @produces application/octet-stream
- * @param {string} token.path.required - Transfer token from the link
- * @return {file} 200 - File content
- * @return {object} 404 - Unknown, used or expired link
- * @return {object} 405 - The link is for uploads
- */
-app.get("/:token", async (req, res) => {
+app.get("/:token", route({
+    summary: "Download a file through an agent transfer link",
+    description: "Streams a remote file for a single-use link created by the transfer_create MCP tool. The link itself authorizes the request.",
+    produces: "application/octet-stream",
+}), async (req, res) => {
     const ticket = takeTicket(req, res, "download");
     if (!ticket) return;
 
@@ -103,18 +97,6 @@ app.get("/:token", async (req, res) => {
     }
 });
 
-/**
- * PUT /transfers/{token}
- * @summary Upload a file through an agent transfer link
- * @description Writes the raw request body to the remote path of a single-use link created by the transfer_create MCP tool. POST is accepted as well. The link itself authorizes the request.
- * @tags Transfers
- * @produces application/json
- * @param {string} token.path.required - Transfer token from the link
- * @return {object} 200 - Path, byte count and sha256 of the stored data
- * @return {object} 404 - Unknown, used or expired link
- * @return {object} 405 - The link is for downloads
- * @return {object} 413 - Upload exceeds the size limit of the link
- */
 const upload = async (req, res) => {
     const ticket = takeTicket(req, res, "upload");
     if (!ticket) return;
@@ -142,7 +124,13 @@ const upload = async (req, res) => {
     }
 };
 
-app.put("/:token", upload);
-app.post("/:token", upload);
+const uploadRoute = route({
+    summary: "Upload a file through an agent transfer link",
+    description: "Writes the raw request body to the remote path of a single-use link created by the transfer_create MCP tool. PUT and POST are both accepted. The link itself authorizes the request.",
+    consumes: "application/octet-stream",
+});
+
+app.put("/:token", uploadRoute, upload);
+app.post("/:token", uploadRoute, upload);
 
 module.exports = app;
