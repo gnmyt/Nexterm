@@ -62,29 +62,29 @@
       "authenticating": "驗證...",
       "noAccount": "還沒有帳號嗎？",
       "haveAccount": "已經有帳號了嗎？",
-      "welcome": "Welcome back",
-      "subtitle": "Sign in to continue to Nexterm.",
-      "registrationSubtitle": "Create your account to get started.",
-      "firstTimeSubtitle": "Create the first administrator account for this instance.",
-      "twoFactorTitle": "Two-factor authentication",
-      "twoFactorDescription": "Enter the code from your authenticator app.",
-      "qrTitle": "Sign in with the app",
+      "welcome": "歡迎回來",
+      "subtitle": "請登入以繼續使用 Nexterm。",
+      "registrationSubtitle": "請建立您的帳戶，開始使用。",
+      "firstTimeSubtitle": "為此執行個體建立第一個管理員帳戶。",
+      "twoFactorTitle": "雙因素驗證",
+      "twoFactorDescription": "請輸入驗證器應用程式中的驗證碼。",
+      "qrTitle": "透過應用程式登入",
       "demo": {
-        "title": "Try Nexterm",
-        "subtitle": "Explore a live instance with simulated servers, no account needed.",
-        "start": "Start the demo",
-        "orSignIn": "or sign in to your account",
-        "failed": "Could not start a demo session"
+        "title": "試試 Nexterm",
+        "subtitle": "透過模擬伺服器探索實機環境，無需註冊帳號。",
+        "start": "開始試用",
+        "orSignIn": "或登入您的帳戶",
+        "failed": "無法啟動示範會話"
       }
     },
     "demo": {
-      "timeLeft": "Demo · {{time}} left",
-      "end": "End demo",
-      "endConfirmText": "End your demo session? Everything you created will be removed.",
+      "timeLeft": "試玩版 · {{time}} 剩餘時間",
+      "end": "結束示範",
+      "endConfirmText": "要結束您的試用 session 嗎？您所建立的所有內容都將被刪除。",
       "minutes_one": "{{count}} min",
       "minutes_other": "{{count}} min",
-      "hours_one": "{{count}} hour",
-      "hours_other": "{{count}} hours",
+      "hours_one": "{{count}} 小時",
+      "hours_other": "{{count}} 小時",
       "hoursMinutes": "{{hours}}h {{minutes}}m"
     },
     "deviceLink": {
@@ -206,11 +206,11 @@
       "connection": {
         "title": "連線失敗",
         "close": "關閉標籤",
-        "reconnect": "Reconnect",
-        "reconnectNow": "Reconnect",
-        "reconnecting": "Reconnecting…",
-        "reconnectingIn": "Reconnecting in {{seconds}}s",
-        "reconnectAttempt": "attempt {{count}} of {{max}}",
+        "reconnect": "重新連線",
+        "reconnectNow": "重新連線",
+        "reconnecting": "重新連線至…",
+        "reconnectingIn": "將於 {{seconds}}秒後重新連線",
+        "reconnectAttempt": "嘗試 {{count}} 的 {{max}}",
         "hostUnreachable": "遠端主機無法連線",
         "refused": "遠端主機拒絕連線",
         "timeout": "連線超時",
@@ -221,11 +221,11 @@
         "error": "發生連線錯誤",
         "scriptClosedUnexpectedly": "腳本連線意外關閉",
         "scriptError": "發生腳本連線錯誤",
-        "rdpSessionConflict": "The session was disconnected by the server because another connection was opened.",
-        "rdpSessionTimeout": "The RDP session was disconnected because its session time limit was reached.",
-        "rdpSessionClosed": "The RDP session was ended by the remote server or an administrator."
+        "rdpSessionConflict": "由於開啟了另一條連線，該連線已被伺服器中斷。",
+        "rdpSessionTimeout": "RDP 連線已因達到連線時間限制而中斷。",
+        "rdpSessionClosed": "該 RDP 連線是由遠端伺服器或管理員終止的。"
       },
-      "accountLinkRequired": "An account with this username already exists. Ask an administrator to allow linking it to your sign-in."
+      "accountLinkRequired": "已存在此使用者名稱的帳戶。請向管理員申請，將該帳戶與您的登入帳戶關聯。"
     },
     "messages": {
       "invitationAccepted": "接受邀請",
@@ -237,9 +237,9 @@
       "leaveOrganizationError": "未能離開組織"
     },
     "unsavedChanges": {
-      "title": "Unsaved changes",
-      "text": "Discard them, or keep editing and save when you're done.",
-      "keepEditing": "Keep editing"
+      "title": "未儲存的變更",
+      "text": "將它們刪除，或者繼續編輯，完成後再儲存。",
+      "keepEditing": "繼續編輯"
     }
   },
   "audit": {
@@ -468,15 +468,15 @@
       "subtitle": "即時伺服器統計和健康監控",
       "searchPlaceholder": "搜尋伺服器...",
       "filters": {
-        "all": "All ({{count}})",
-        "online": "Online ({{count}})",
-        "issues": "Issues ({{count}})"
+        "all": "全部 ({{count}})",
+        "online": "線上 ({{count}})",
+        "issues": "問題 ({{count}})"
       }
     },
     "errors": {
       "loadFailed": "載入監控資料失敗",
-      "loadFailedDescription": "The monitoring data could not be retrieved. Check your connection and try again.",
-      "retry": "Retry"
+      "loadFailedDescription": "無法取得監測資料。請檢查您的連線狀態，然後再試一次。",
+      "retry": "重試"
     },
     "grid": {
       "noServers": {
@@ -484,8 +484,8 @@
         "subtitle": "沒有可用的 SSH 伺服器可供監控。\n新增一些伺服器以開始監控它們。"
       },
       "noResults": {
-        "title": "No matching servers",
-        "subtitle": "No monitored server matches your search."
+        "title": "沒有符合條件的伺服器",
+        "subtitle": "沒有任何受監控的伺服器符合您的搜尋條件。"
       },
       "metrics": {
         "loadAverage": "平均負載",
@@ -494,7 +494,7 @@
         "nodes": "節點",
         "vms": "虛擬機器/容器",
         "cpu": "CPU",
-        "memory": "Memory"
+        "memory": "記憶"
       },
       "status": {
         "serverOffline": "伺服器離線",
@@ -505,14 +505,14 @@
         "unknownMessage": "無法確定伺服器狀態。",
         "lastSeen": "最近瀏覽: {{time}}",
         "noRecentActivity": "最近沒有活動",
-        "waitingForData": "Waiting for data",
-        "pendingMessage": "Monitoring data will appear after the next monitoring cycle.",
+        "waitingForData": "正在等待資料",
+        "pendingMessage": "監測資料將於下一個監測週期結束後顯示。",
         "labels": {
-          "online": "Online",
-          "offline": "Offline",
-          "error": "Error",
-          "pending": "Pending",
-          "unknown": "Unknown"
+          "online": "線上",
+          "offline": "離線",
+          "error": "錯誤",
+          "pending": "待定",
+          "unknown": "未知"
         }
       },
       "uptime": {
@@ -555,7 +555,7 @@
           "processes": "主動製程",
           "total": "總計： {{value}}",
           "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}",
-          "memory": "Memory"
+          "memory": "記憶"
         },
         "uptime": {
           "format": {
@@ -575,51 +575,51 @@
         "title": "磁碟使用量",
         "noData": "沒有可用的磁碟使用量資料",
         "noPartitions": "無安裝隔板",
-        "usedOf": "{{used}} of {{total}} used",
-        "free": "{{value}} free",
-        "filesystems": "Filesystems",
-        "disks": "Disks",
-        "on": "{{volume}} on {{partition}}",
-        "swap": "Swap",
-        "unmounted": "Not mounted",
-        "unallocated": "Unallocated",
-        "inodes": "Inodes",
-        "inodesDetail": "{{used}} of {{total}}",
+        "usedOf": "{{used}} 使用 {{total}} 的",
+        "free": "{{value}} 免費",
+        "filesystems": "檔案系統",
+        "disks": "磁碟",
+        "on": "{{volume}} 於 {{partition}}",
+        "swap": "交換",
+        "unmounted": "未安裝",
+        "unallocated": "未分配",
+        "inodes": "inode",
+        "inodesDetail": "{{used}} 的 {{total}}",
         "health": {
-          "passed": "Healthy",
-          "warning": "Warning",
-          "failed": "Failing",
-          "denied": "SMART needs root",
-          "temperature": "Temperature",
-          "powerOn": "Power-on time",
-          "wear": "Wear",
-          "reallocated": "Reallocated sectors",
-          "pending": "Pending sectors",
-          "mediaErrors": "Media errors",
-          "years": "{{value}} years",
-          "days": "{{value}} days",
-          "hours": "{{value}} hours",
-          "failedTitle": "Disk failure predicted",
-          "failedMessage": "{{disks}} failed its SMART self-assessment. Back up the data and replace the disk."
+          "passed": "健康",
+          "warning": "警告",
+          "failed": "失敗",
+          "denied": "SMART 需要 root 權限",
+          "temperature": "溫度",
+          "powerOn": "開機時間",
+          "wear": "磨損",
+          "reallocated": "重新分配的磁區",
+          "pending": "待定領域",
+          "mediaErrors": "媒體錯誤",
+          "years": "{{value}} 年",
+          "days": "{{value}} 天",
+          "hours": "{{value}} 小時",
+          "failedTitle": "預測硬碟故障",
+          "failedMessage": "{{disks}} 未能通過 SMART 自我評估。請備份資料並更換硬碟。"
         }
       },
       "network": {
         "speed": "速度",
         "noData": "沒有可用的網路介面資料",
-        "download": "Download",
-        "upload": "Upload",
-        "interface": "Interface",
-        "address": "Address",
-        "gateway": "Gateway",
-        "interfaces": "Interfaces",
-        "virtual": "Virtual interfaces",
-        "defaultRoute": "Default route",
-        "up": "Up",
-        "down": "Down",
-        "errors": "{{count}} errors",
-        "dropped": "{{count}} dropped",
-        "copy": "Copy {{address}}",
-        "total": "{{value}} total"
+        "download": "下載",
+        "upload": "上傳",
+        "interface": "介面",
+        "address": "地址",
+        "gateway": "閘道器",
+        "interfaces": "介面",
+        "virtual": "虛擬介面",
+        "defaultRoute": "預設路由",
+        "up": "向上",
+        "down": "向下",
+        "errors": "{{count}} 錯誤",
+        "dropped": "{{count}} 掉落",
+        "copy": "複製 {{address}}",
+        "total": "{{value}} 總計"
       },
       "processes": {
         "searchPlaceholder": "搜尋流程...",
@@ -627,9 +627,9 @@
         "noData": "無製程資料可用。製程資料將在下一個監測週期後出現。",
         "noResults": "沒有符合您搜尋條件的程序。",
         "columns": {
-          "command": "Command",
+          "command": "指令",
           "cpu": "CPU",
-          "mem": "Memory"
+          "mem": "記憶"
         }
       },
       "pve": {
@@ -674,13 +674,13 @@
       "backup": "儲存",
       "engines": "引擎",
       "permissions": "角色與權限",
-      "trustedCertificates": "Trusted Certificates"
+      "trustedCertificates": "受信任的憑證"
     },
     "account": {
       "title": "帳戶",
       "demo": {
-        "title": "Security",
-        "description": "Password, two-factor authentication, passkeys, API keys and profile pictures can't be changed while you're exploring as a guest."
+        "title": "安全",
+        "description": "當您以訪客身分瀏覽時，無法變更密碼、雙因素驗證、通行金鑰、API 金鑰及個人大頭照。"
       },
       "avatar": {
         "label": "圖片",
@@ -765,7 +765,7 @@
       "sessionSyncAcrossDevicesDesc": "會話可跨裝置使用並同步處理",
       "sessionSyncSameBrowserDesc": "會話將同步處理目前使用者的會話",
       "sessionSyncSameTabDesc": "會話會同步顯示在您的瀏覽器標籤中",
-      "showAgentSessionsDesc": "Show sessions opened by the AI assistant or MCP agents as view-only tabs",
+      "showAgentSessionsDesc": "將由 AI 助理或 MCP 代理所開啟的會話以唯讀分頁顯示",
       "twoFactorDialog": {
         "title": "啟用 2FA",
         "description": "使用驗證器應用程式掃描驗證碼或手動輸入 <span class=\"totp-code\">{{secret}}</span>手動輸入。",
@@ -819,12 +819,12 @@
         "expires": "有效期至 {{date}}",
         "delete": "刪除"
       },
-      "remoteDesktop": "Remote Desktop",
-      "remoteDesktopDescription": "Default display scale for remote desktop sessions. Connections can override it, and a scale picked during a session is remembered on that device.",
-      "remoteDesktopScale": "Display Scale",
-      "remoteDesktopScaleAuto": "Automatic (match device)",
-      "remoteDesktopSyncEnabled": "Remote desktop settings will now sync across devices",
-      "remoteDesktopSyncDisabled": "Remote desktop settings are now saved on this device only"
+      "remoteDesktop": "遠端桌面",
+      "remoteDesktopDescription": "遠端桌面連線的預設顯示比例。連線可覆寫此設定，且在連線期間選用的比例會儲存在該裝置上。",
+      "remoteDesktopScale": "顯示比例",
+      "remoteDesktopScaleAuto": "自動（匹配裝置）",
+      "remoteDesktopSyncEnabled": "遠端桌面設定現在將在各裝置間同步",
+      "remoteDesktopSyncDisabled": "遠端桌面設定現僅儲存於此裝置上"
     },
     "passwordChange": {
       "title": "變更密碼",
@@ -832,11 +832,11 @@
       "newPassword": "新密碼",
       "confirmPassword": "確認新密碼",
       "changePasswordButton": "變更密碼",
-      "currentPassword": "Current password",
-      "descriptionOwn": "Enter your current password and choose a new one. You will be signed out on all other devices.",
-      "descriptionOther": "Choose a new password for this user. They will be signed out on all devices.",
-      "successOwn": "Your password was changed. Other devices were signed out.",
-      "successOther": "The password was changed and the user was signed out everywhere."
+      "currentPassword": "目前密碼",
+      "descriptionOwn": "請輸入您目前的密碼，並設定新密碼。您在所有其他裝置上的登入狀態將會被解除。",
+      "descriptionOther": "請為此使用者設定新密碼。該使用者將在所有裝置上被登出。",
+      "successOwn": "您的密碼已變更。其他裝置已登出。",
+      "successOther": "密碼已變更，且該使用者在所有裝置上均已登出。"
     },
     "organizations": {
       "title": "您的組織",
@@ -875,8 +875,8 @@
         "folderManagementDescription": "記錄資料夾的建立、修改和刪除",
         "scriptExecutionLabel": "腳本執行",
         "scriptExecutionDescription": "記錄腳本和自動化任務的執行",
-        "agentOperationsLabel": "AI Agent Operations",
-        "agentOperationsDescription": "Log commands, input, screenshots and file changes performed by the AI assistant and by agents connected through the MCP server",
+        "agentOperationsLabel": "AI 代理運作",
+        "agentOperationsDescription": "記錄由 AI 助理以及透過 MCP 伺服器連線的代理所執行的指令、輸入內容、螢幕截圖及檔案變更",
         "actions": {
           "save": "儲存設定"
         },
@@ -943,9 +943,9 @@
         "loginAsUser": "以使用者身分登入",
         "deleteConfirm": "這將永久刪除使用者及所有相關資料。",
         "managePermissions": "管理權限",
-        "allowExternalLink": "Allow SSO/LDAP linking",
-        "cancelExternalLink": "Cancel SSO/LDAP linking",
-        "unlinkExternal": "Unlink SSO/LDAP sign-in"
+        "allowExternalLink": "允許 SSO/LDAP 連結",
+        "cancelExternalLink": "取消 SSO/LDAP 連結",
+        "unlinkExternal": "解除 SSO/LDAP 登入的連結"
       }
     },
     "userDialog": {
@@ -1008,11 +1008,11 @@
         },
         "copy": {
           "title": "複製",
-          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+          "description": "將終端機中選取的文字複製到剪貼簿。此功能需在「終端機」設定中啟用「滑鼠」或「鍵盤」模式。"
         },
         "paste": {
-          "title": "Paste",
-          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
+          "title": "貼上",
+          "description": "將剪貼簿中的文字貼上至終端機。需在「終端機」設定中啟用「智慧型 Ctrl+C」、「滑鼠」或「鍵盤」模式。"
         },
         "fullscreen": {
           "title": "全螢幕",
@@ -1027,7 +1027,7 @@
         "pressKeys": "按鍵...",
         "save": "節省",
         "cancel": "取消",
-        "disabled": "Disabled",
+        "disabled": "已停用",
         "reset": "重設"
       },
       "messages": {
@@ -1063,19 +1063,19 @@
       "input": {
         "title": "輸入",
         "description": "控制鍵盤快捷鍵在終端機內的運作方式。",
-        "copyPasteBehavior": "Copy/Paste Behavior",
-        "copyPasteBehaviorNone": "None",
-        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
-        "copyPasteBehaviorSmart": "Smart Ctrl+C",
-        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
-        "copyPasteBehaviorKeyboard": "Keyboard",
-        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
-        "copyPasteBehaviorMouse": "Mouse",
-        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
-        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
-        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
+        "copyPasteBehavior": "複製／貼上行為",
+        "copyPasteBehaviorNone": "無",
+        "copyPasteBehaviorNoneHint": "僅限透過右鍵選單進行複製與貼上。",
+        "copyPasteBehaviorSmart": "智慧型 Ctrl+C",
+        "copyPasteBehaviorSmartHint": "當文字被選取時，會以智慧方式複製；否則則將原始的 Ctrl+C 傳送至終端機。",
+        "copyPasteBehaviorKeyboard": "鍵盤",
+        "copyPasteBehaviorKeyboardHint": "使用您所定義的鍵盤映射來執行複製／貼上操作",
+        "copyPasteBehaviorMouse": "滑鼠",
+        "copyPasteBehaviorMouseHint": "選取文字即可複製，按右鍵即可貼上。按下 Ctrl 鍵並按右鍵可開啟快顯選單。",
+        "copyPasteBehaviorMouseKeyboard": "滑鼠／鍵盤",
+        "copyPasteBehaviorMouseKeyboardHint": "同時啟用滑鼠和鍵盤模式。",
         "passwordPromptDetection": "密碼輸入偵測",
-        "autoReconnect": "Auto-reconnect",
+        "autoReconnect": "自動重新連線",
         "enabled": "已啟用",
         "disabled": "已停用",
         "syncEnabled": "輸入設定現在將同步至您的帳戶",
@@ -1098,12 +1098,12 @@
       "syncEnabled": "檔案管理員設定現在會同步至您的帳戶",
       "syncDisabled": "檔案管理員設定將不再同步",
       "view": {
-        "title": "View",
-        "description": "How files and folders are shown when you open the file manager."
+        "title": "檢視",
+        "description": "開啟檔案管理員時，檔案和資料夾的顯示方式。"
       },
       "behavior": {
-        "title": "Behavior",
-        "description": "What happens when you open, delete and move files."
+        "title": "行為",
+        "description": "開啟、刪除和移動檔案時會發生什麼事？"
       },
       "defaultView": {
         "title": "預設檢視模式",
@@ -1112,9 +1112,9 @@
         "listDescription": "在詳細清單中顯示檔案，並包含大小和日期列",
         "grid": "網格檢視",
         "gridDescription": "在縮圖的網格佈局中以圖示顯示檔案",
-        "compact": "Compact View",
-        "compactDescription": "Show only names in dense columns to fit many files on screen",
-        "label": "Default view"
+        "compact": "精簡檢視",
+        "compactDescription": "僅顯示密集欄位中的名稱，以便在螢幕上顯示更多檔案",
+        "label": "預設檢視"
       },
       "thumbnails": {
         "title": "圖片縮圖",
@@ -1123,9 +1123,9 @@
         "enabledDescription": "在網格檢視中顯示影像預覽，以便快速視覺辨識",
         "disabled": "隱藏縮圖",
         "disabledDescription": "只顯示檔案圖示，以節省頻寬並提昇效能",
-        "label": "Image thumbnails",
-        "show": "Show",
-        "hide": "Hide"
+        "label": "圖片縮圖",
+        "show": "顯示",
+        "hide": "隱藏"
       },
       "hiddenFiles": {
         "title": "隱藏檔案",
@@ -1134,9 +1134,9 @@
         "showDescription": "顯示所有檔案，包括 .dotfiles 和系統目錄",
         "hide": "隱藏隱藏檔案",
         "hideDescription": "只顯示一般檔案和資料夾",
-        "label": "Hidden files",
-        "showShort": "Show",
-        "hideShort": "Hide"
+        "label": "隱藏檔案",
+        "showShort": "顯示",
+        "hideShort": "隱藏"
       },
       "deleteConfirmation": {
         "title": "刪除確認",
@@ -1145,9 +1145,9 @@
         "enabledDescription": "刪除項目前會顯示確認對話框",
         "disabled": "立即刪除",
         "disabledDescription": "無需要求確認即可刪除檔案",
-        "label": "Before deleting",
-        "ask": "Ask for confirmation",
-        "immediately": "Delete immediately"
+        "label": "刪除前",
+        "ask": "請確認",
+        "immediately": "立即刪除"
       },
       "dragDropAction": {
         "title": "拖曳動作",
@@ -1155,32 +1155,32 @@
         "move": "移動",
         "copy": "複製",
         "ask": "詢問",
-        "label": "When dropping files"
+        "label": "在拖放檔案時"
       },
       "singleClickOpen": {
-        "title": "Open with single click",
-        "description": "Open files and folders with a single click instead of selecting them. Double-click opens when this is off.",
-        "single": "Single click",
-        "double": "Double click",
-        "label": "Open items with"
+        "title": "單擊即可開啟",
+        "description": "只需單擊一下即可開啟檔案和資料夾，無需先選取它們。若此功能關閉，則需雙擊才能開啟。",
+        "single": "單擊",
+        "double": "雙擊",
+        "label": "未結項目包含"
       },
       "sharedDrive": {
-        "title": "Shared Drive",
-        "description": "What remote desktops can see of this computer through their shared drive. Changes apply to new connections.",
+        "title": "共用磁碟機",
+        "description": "遠端桌面可透過共用磁碟機查看這台電腦的哪些內容。變更將套用至新的連線。",
         "mode": {
-          "title": "Share",
-          "folder": "One folder",
-          "disk": "Entire disk",
-          "off": "Nothing",
-          "diskWarning": "Remote desktops can read, change and delete every file on this computer."
+          "title": "分享",
+          "folder": "一個資料夾",
+          "disk": "整個磁碟",
+          "off": "沒有什麼",
+          "diskWarning": "遠端桌面可以讀取、修改及刪除這台電腦上的所有檔案。"
         },
         "folder": {
-          "title": "Shared folder",
-          "default": "Nexterm Shared in your home folder",
-          "choose": "Choose folder",
-          "reset": "Use default"
+          "title": "共用資料夾",
+          "default": "Nexterm 已分享至您的主資料夾",
+          "choose": "選擇資料夾",
+          "reset": "使用預設值"
         },
-        "folderError": "The shared folder could not be prepared"
+        "folderError": "無法準備共用資料夾"
       }
     },
     "authentication": {
@@ -1214,7 +1214,7 @@
           "clientSecretPlaceholderEdit": "留空以保留現有",
           "redirectUri": "重定向 URI",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
-          "endSessionEndpoint": "End Session Endpoint (Optional)",
+          "endSessionEndpoint": "結束會話的終點（可選）",
           "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
           "scope": "範圍",
           "scopePlaceholder": "開放資料",
@@ -1237,19 +1237,19 @@
           "saveFailed": "無法儲存提供者"
         },
         "groupSync": {
-          "title": "Group Sync",
-          "hint": "Automatically add users to organizations and control access based on group claims from your identity provider.",
-          "groupsAttribute": "Groups Claim",
-          "groupsAttributePlaceholder": "groups",
-          "requiredGroup": "Required Group",
+          "title": "群組同步",
+          "hint": "根據您的身分識別供應商提供的群組聲明，自動將使用者加入組織，並控制存取權限。",
+          "groupsAttribute": "團體聲稱",
+          "groupsAttributePlaceholder": "群組",
+          "requiredGroup": "必選群組",
           "requiredGroupPlaceholder": "nexterm-users",
-          "requiredGroupHint": "If set, only users whose groups claim contains this value are allowed to log in.",
-          "mappings": "Organization Mappings",
-          "mappingsHint": "Map a group claim value to an organization. Membership is kept in sync on every login.",
-          "mappingValuePlaceholder": "Group value",
-          "roleMember": "Member",
-          "roleOwner": "Owner",
-          "addMapping": "Add Mapping"
+          "requiredGroupHint": "若已設定此選項，則僅允許其「群組聲明」中包含此值的使用者登入。",
+          "mappings": "組織對應關係",
+          "mappingsHint": "將群組索賠值映射至某個組織。每次登入時，會員資格都會保持同步。",
+          "mappingValuePlaceholder": "群組價值",
+          "roleMember": "會員",
+          "roleOwner": "業主",
+          "addMapping": "新增對應關係"
         }
       },
       "ldapDialog": {
@@ -1298,20 +1298,20 @@
         }
       },
       "sessions": {
-        "title": "Sessions",
-        "description": "When signed-in devices, including the mobile and desktop apps, have to sign in again.",
-        "idle": "Sign out after inactivity",
-        "lifetime": "Maximum session length",
-        "days_one": "{{count}} day",
-        "days_other": "{{count}} days",
-        "never": "Never",
-        "loadError": "Failed to load the session settings",
-        "saveError": "Failed to save the session settings"
+        "title": "會期",
+        "description": "當已登入的裝置（包括行動應用程式和桌面應用程式）必須重新登入時。",
+        "idle": "閒置一段時間後自動登出",
+        "lifetime": "最大會話時間",
+        "days_one": "{{count}} 天",
+        "days_other": "{{count}} 天",
+        "never": "絕不",
+        "loadError": "無法載入會話設定",
+        "saveError": "無法儲存工作階段設定"
       }
     },
     "ai": {
       "title": "AI 助理設定",
-      "description": "Configure the AI provider used by the assistant, which can operate your servers through its own sessions.",
+      "description": "設定助理所使用的 AI 服務供應商，該服務供應商可透過其自身的連線來操作您的伺服器。",
       "loading": "載入 AI 設定...",
       "enable": {
         "title": "啟用 AI 助理",
@@ -1426,12 +1426,12 @@
     },
     "identities": {
       "title": "SSH 金鑰與憑證",
-      "description": "Identities you can link to any server. Server-specific ones live in that server's settings.",
+      "description": "您可以將這些身分連結至任何伺服器。特定於某個伺服器的身分則存於該伺服器的設定中。",
       "createIdentity": "建立身分",
       "personal": "個人",
       "noUsername": "無用戶名",
-      "notInUse": "Not in use",
-      "notInUseHint": "Not linked to any server or folder",
+      "notInUse": "未使用",
+      "notInUseHint": "未連結至任何伺服器或資料夾",
       "sshKey": "SSH 金鑰",
       "password": "密碼",
       "editIdentity": "編輯身分",
@@ -1499,7 +1499,7 @@
         "success": "同步",
         "error": "錯誤",
         "pending": "待定",
-        "syncing": "Syncing",
+        "syncing": "同步",
         "disabled": "殘障"
       },
       "dialog": {
@@ -1688,26 +1688,26 @@
       "inheritsAllow": "繼承：允許",
       "inheritsDeny": "繼承：駁回"
     },
-    "search": "Search settings",
+    "search": "搜尋設定",
     "trustedCertificates": {
-      "title": "Trusted Certificates",
-      "description": "Certificates and host keys you accepted when connecting. Remove one to be asked again the next time.",
-      "personal": "Personal",
-      "system": "System",
+      "title": "受信任的憑證",
+      "description": "您在連線時已接受的憑證與主機金鑰。若要移除其中一項，下次連線時系統將再次提示您確認。",
+      "personal": "個人",
+      "system": "系統",
       "kinds": {
-        "ssh": "SSH host key",
-        "tls": "TLS certificate"
+        "ssh": "SSH 主機金鑰",
+        "tls": "TLS 憑證"
       },
-      "empty": "Nothing trusted yet",
-      "emptyDescription": "Certificates and host keys appear here once you accept them for a connection.",
-      "remove": "Remove",
-      "removeConfirm": "Stop trusting {{endpoint}}? The next connection asks again.",
-      "removeSuccess": "Trusted certificate removed",
-      "removeError": "Failed to remove the trusted certificate",
+      "empty": "目前尚未信任任何項目",
+      "emptyDescription": "一旦您接受了連線所需的憑證和主機金鑰，它們就會顯示在此處。",
+      "remove": "移除",
+      "removeConfirm": "「不再信任 {{endpoint}}？」下一次連線時會再次詢問。",
+      "removeSuccess": "已移除受信任的憑證",
+      "removeError": "無法移除受信任的憑證",
       "ignore": {
-        "title": "Ignore certificate warnings",
-        "description": "Connect to your personal servers without checking their certificate or host key. Connections can then be intercepted without you noticing. Organization servers are always checked.",
-        "error": "Failed to save the setting"
+        "title": "忽略憑證警告",
+        "description": "在不檢查其憑證或主機金鑰的情況下，連線至您的個人伺服器。如此一來，連線便可能被攔截，而您卻渾然不覺。組織伺服器則會始終進行檢查。",
+        "error": "無法儲存設定"
       }
     }
   },
@@ -1767,7 +1767,7 @@
       "createFolder": "建立資料夾",
       "deleteFolder": "刪除資料夾",
       "renameFolder": "重新命名資料夾",
-      "folderSettings": "Folder Settings",
+      "folderSettings": "資料夾設定",
       "new": "新款",
       "sshServer": "SSH 伺服器",
       "telnetServer": "Telnet 伺服器",
@@ -1788,7 +1788,7 @@
       "connect": "連接",
       "quickConnect": "快速連接",
       "openSFTP": "開啟 SFTP",
-      "openBrowser": "Open Browser",
+      "openBrowser": "開啟瀏覽器",
       "forwardPort": "前進埠",
       "runScript": "執行腳本",
       "openNotes": "開啟筆記",
@@ -1825,20 +1825,20 @@
         "duplicate": "重複",
         "openNotes": "開啟筆記",
         "hibernateSession": "冬眠",
-        "reconnect": "Reconnect",
+        "reconnect": "重新連線",
         "closeSession": "斷開",
-        "splitRight": "Split Right",
-        "splitDown": "Split Down",
-        "sendShortcut": "Send Shortcut…",
-        "zoom": "Zoom ({{zoom}}%)",
-        "zoomReset": "Reset Zoom",
-        "displayScale": "Display Scale ({{scale}}%)",
-        "displayScaleAuto": "Automatic ({{scale}}%)",
-        "displayScaleReset": "Use Default"
+        "splitRight": "向右分流",
+        "splitDown": "向下分割",
+        "sendShortcut": "傳送捷徑…",
+        "zoom": "縮放 ({{zoom}}%)",
+        "zoomReset": "重設縮放比例",
+        "displayScale": "顯示比例 ({{scale}}%)",
+        "displayScaleAuto": "自動 ({{scale}}%)",
+        "displayScaleReset": "使用預設值"
       },
-      "enableSplitView": "Enable Split View",
-      "disableSplitView": "Disable Split View",
-      "sessionMenu": "Session Menu"
+      "enableSplitView": "啟用分屏檢視",
+      "disableSplitView": "停用分屏檢視",
+      "sessionMenu": "會話選單"
     },
     "wol": {
       "successDescription": "魔術封包已傳送到 {{name}}",
@@ -1848,10 +1848,10 @@
       "fillRequiredFields": "請填寫所有必填欄位",
       "serverCreated": "伺服器建立成功",
       "serverUpdated": "伺服器更新成功",
-      "folderUpdated": "Folder updated successfully",
+      "folderUpdated": "資料夾已成功更新",
       "createFailed": "建立伺服器失敗",
       "updateFailed": "更新伺服器失敗",
-      "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination."
+      "identitiesRemovedOnMove": "部分身分識別碼已被移除，因為目標位置中無法取得這些身分識別碼。"
     },
     "dialog": {
       "addServer": "新增伺服器",
@@ -1911,12 +1911,12 @@
         },
         "display": {
           "title": "顯示器設定",
-          "description": "Configure color depth, resize behavior and scaling for the remote display",
+          "description": "設定遠端顯示器的色彩深度、尺寸調整行為及縮放比例",
           "colorDepth": "色彩深度",
           "resizeMethod": "調整大小方法",
-          "displayScale": "Display Scale",
-          "displayScaleAuto": "Automatic (match this device)",
-          "displayScaleAccount": "Account default"
+          "displayScale": "顯示比例",
+          "displayScaleAuto": "自動（與此裝置配對）",
+          "displayScaleAccount": "帳戶預設值"
         },
         "performance": {
           "title": "效能設定",
@@ -1957,29 +1957,29 @@
         "both": "鑰匙+密碼",
         "sshPrivateKey": "SSH 私密金鑰",
         "passphrase": "密碼（可選）",
-        "add": "Add identity",
-        "linkGlobal": "Link global identity · {{count}}",
-        "empty": "No identities yet.",
+        "add": "新增身分",
+        "linkGlobal": "Link 全球身分識別 · {{count}}",
+        "empty": "目前尚未確認身分。",
         "removeIdentity": "移除身分",
         "unlinkIdentity": "解除連結身分",
         "moveToOrg": "移至組織",
         "noUsername": "無用戶名",
-        "globalToggle": "Use on other servers",
-        "globalInUse": "This identity is used by {{count}} servers. Unlink it from the others first.",
-        "shareToggle": "Share with organization",
-        "inheritedHint": "Inherited from the folder settings.",
-        "onlyMe": "Only me",
-        "onlyMeHint": "Only you can see and use this identity."
+        "globalToggle": "在其他伺服器上使用",
+        "globalInUse": "此身分識別碼由 {{count}} 伺服器使用。請先將其與其他項目解除關聯。",
+        "shareToggle": "與組織分享",
+        "inheritedHint": "從資料夾設定中繼承而來。",
+        "onlyMe": "只有我",
+        "onlyMeHint": "只有您才能查看並使用此身分。"
       },
       "sections": {
-        "general": "General",
-        "connection": "Connection",
-        "identities": "Identities",
-        "options": "Options",
-        "credentials": "Credentials"
+        "general": "概述",
+        "connection": "連結",
+        "identities": "身分認同",
+        "options": "選項",
+        "credentials": "資歷證明"
       },
-      "useInherited": "Use inherited value",
-      "reset": "Reset"
+      "useInherited": "使用繼承的值",
+      "reset": "重設"
     },
     "proxmoxDialog": {
       "title": {
@@ -2009,7 +2009,7 @@
         "createFailed": "建立 Proxmox 整合失敗",
         "updateFailed": "更新 Proxmox 整合失敗"
       },
-      "credentialsDescription": "Proxmox user with API access, e.g. root@pam or a dedicated API user."
+      "credentialsDescription": "具備 API 存取權限的 Proxmox 使用者，例如 root@pam 或專用的 API 使用者。"
     },
     "connectionReasonDialog": {
       "title": "需要連接的原因",
@@ -2164,16 +2164,16 @@
         "search": "搜尋檔案",
         "closeSearch": "關閉搜尋",
         "refresh": "重新整理",
-        "back": "Back",
-        "forward": "Forward",
-        "up": "Parent directory",
-        "home": "Home directory",
-        "switchToCompact": "Switch to compact view"
+        "back": "返回",
+        "forward": "前言",
+        "up": "父目錄",
+        "home": "主目錄",
+        "switchToCompact": "切換至精簡檢視"
       },
       "item": {
         "link": "連結",
-        "expand": "Expand folder",
-        "collapse": "Collapse folder"
+        "expand": "展開資料夾",
+        "collapse": "收起資料夾"
       },
       "search": {
         "placeholder": "篩選此資料夾中的檔案...",
@@ -2194,51 +2194,51 @@
         "error": "發生錯誤"
       },
       "transfers": {
-        "title": "Transfers",
-        "activeCount": "{{count}} active",
-        "allDone": "All done",
-        "clearFinished": "Clear finished",
-        "queued": "Queued",
-        "cancelling": "Cancelling...",
-        "completed": "Completed",
-        "savedTo": "Saved to {{path}}",
-        "cancelled": "Cancelled",
-        "failed": "Failed: {{message}}",
-        "dismiss": "Dismiss"
+        "title": "轉會",
+        "activeCount": "{{count}} 有效",
+        "allDone": "都搞定了",
+        "clearFinished": "已完成",
+        "queued": "已排入佇列",
+        "cancelling": "正在取消...",
+        "completed": "已完成",
+        "savedTo": "已儲存至 {{path}}",
+        "cancelled": "已取消",
+        "failed": "失敗： {{message}}",
+        "dismiss": "關閉"
       },
       "status": {
-        "folders_one": "{{count}} folder",
-        "folders_other": "{{count}} folders",
-        "files_one": "{{count}} file",
-        "files_other": "{{count}} files",
-        "hidden_one": "{{count}} hidden",
-        "hidden_other": "{{count}} hidden",
-        "selected": "{{count}} selected",
-        "showHidden": "Show hidden files",
-        "hideHidden": "Hide hidden files"
+        "folders_one": "{{count}} 資料夾",
+        "folders_other": "{{count}} 資料夾",
+        "files_one": "{{count}} 檔案",
+        "files_other": "{{count}} 檔案",
+        "hidden_one": "{{count}} 隱藏",
+        "hidden_other": "{{count}} 隱藏",
+        "selected": "{{count}} 已選取",
+        "showHidden": "顯示隱藏檔案",
+        "hideHidden": "隱藏隱藏檔案"
       },
       "conflict": {
-        "title_one": "Item already exists",
-        "title_other": "{{count}} items already exist",
-        "upload_one": "A file with this name already exists in the destination. What would you like to do?",
-        "upload_other": "These files already exist in the destination. What would you like to do with them?",
-        "move_one": "An item with this name already exists in the destination. Moving will replace it.",
-        "move_other": "These items already exist in the destination. Moving will replace them.",
-        "copy_one": "An item with this name already exists in the destination. Copying will replace it.",
-        "copy_other": "These items already exist in the destination. Copying will replace them.",
-        "more": "+ {{count}} more",
-        "skip": "Skip",
-        "rename": "Keep both",
-        "overwrite": "Overwrite"
+        "title_one": "該項目已存在",
+        "title_other": "{{count}} 這些項目已經存在",
+        "upload_one": "目標位置中已存在同名的檔案。您要如何處理？",
+        "upload_other": "這些檔案在目標位置已經存在。您想對它們執行什麼操作？",
+        "move_one": "目標位置中已存在同名的項目。若進行移動，該項目將會被取代。",
+        "move_other": "這些項目在目標位置已存在。若進行移動，將會取代現有項目。",
+        "copy_one": "目標位置中已存在同名的項目。複製將會取代該項目。",
+        "copy_other": "這些項目在目標位置已存在。複製將會覆寫它們。",
+        "more": "+ {{count}} 更多",
+        "skip": "跳過",
+        "rename": "兩者都保留",
+        "overwrite": "覆寫"
       }
     },
     "browser": {
-      "back": "Back",
-      "forward": "Forward",
-      "reload": "Reload",
-      "stop": "Stop",
-      "address": "Address",
-      "addressPlaceholder": "Enter an address"
+      "back": "返回",
+      "forward": "前言",
+      "reload": "重新載入",
+      "stop": "停止",
+      "address": "地址",
+      "addressPlaceholder": "輸入地址"
     },
     "remoteDesktop": {
       "dropOverlay": "將檔案拖放至此處以上傳至遠端",
@@ -2251,33 +2251,33 @@
       }
     },
     "automatedSession": {
-      "viewOnlyAi": "The AI assistant is working in this session. You can watch, but not type.",
-      "viewOnlyMcp": "An external agent (MCP) is working in this session. You can watch, but not type."
+      "viewOnlyAi": "在此會話中，AI 助理正在運作。您可以觀看，但無法輸入文字。",
+      "viewOnlyMcp": "目前有外部操作者（MCP）正在此會話中進行操作。您可以觀看，但無法輸入文字。"
     },
     "aiAssistant": {
       "title": "AI 助理",
       "open": "AI 助理",
-      "empty": "Ask the assistant to inspect or change your servers. It opens its own sessions to the servers you add below, runs commands, edits files and can even operate remote desktops.",
-      "addServer": "Add server",
-      "removeServer": "Remove server",
-      "searchServers": "Search servers...",
-      "noMatches": "No matching servers",
-      "current": "current",
-      "openSessions": "{{count}} open session(s)",
+      "empty": "請助理檢查或更換您的伺服器。它會針對您在下方的清單中新增的伺服器開啟專屬連線，執行指令、編輯檔案，甚至能操作遠端桌面。",
+      "addServer": "新增伺服器",
+      "removeServer": "移除伺服器",
+      "searchServers": "搜尋伺服器...",
+      "noMatches": "沒有符合條件的伺服器",
+      "current": "當前",
+      "openSessions": "{{count}} 公開會議",
       "approval": {
-        "ask": "Ask before actions",
-        "askDescription": "Commands, input and file changes wait for your approval",
-        "allow": "Allow all",
-        "allowDescription": "Runs tool calls without asking",
-        "readonly": "Read-only",
-        "readonlyDescription": "Only inspects servers; anything that changes them is denied"
+        "ask": "採取行動前先詢問",
+        "askDescription": "指令、輸入內容及檔案變更均待您核准",
+        "allow": "允許所有",
+        "allowDescription": "在不詢問的情況下執行工具呼叫",
+        "readonly": "唯讀",
+        "readonlyDescription": "僅檢查伺服器；任何會變更伺服器的操作均遭拒絕"
       },
       "placeholder": "傳訊給助理……",
       "connecting": "正在連線中...",
       "send": "傳送",
-      "copyMessage": "Copy message",
-      "copied": "Copied",
-      "editMessage": "Edit message",
+      "copyMessage": "複製訊息",
+      "copied": "已複製",
+      "editMessage": "編輯訊息",
       "stop": "停止",
       "connectionError": "與助理的連線已中斷。",
       "reconnecting": "連線中斷。正在重新連線...",
@@ -2290,65 +2290,65 @@
       "continuePrompt": "助理在跑了一長串台階後停了下來。要繼續嗎？",
       "continue": "繼續",
       "compacted": "為節省篇幅，已將先前訊息進行彙整。",
-      "retryPrompt": "The last step failed. Retry from where it stopped?",
-      "retry": "Retry",
-      "questionOther": "Or type another answer...",
-      "questionAnswer": "Type your answer...",
-      "questionSend": "Answer",
-      "questionPickOne": "Pick one or type an answer",
-      "questionPickMany": "Pick any that apply",
-      "exitCode": "exit {{code}}",
-      "truncated": "[truncated]",
+      "retryPrompt": "最後一步失敗了。要從中斷處重新嘗試嗎？",
+      "retry": "重試",
+      "questionOther": "或者輸入另一個答案……",
+      "questionAnswer": "請輸入您的答案...",
+      "questionSend": "答案",
+      "questionPickOne": "請選擇一項或直接輸入答案",
+      "questionPickMany": "請勾選適用的選項",
+      "exitCode": "退出 {{code}}",
+      "truncated": "[內容已截斷]",
       "toolSummary": {
-        "recursive": "{{path}} (recursive)",
+        "recursive": "{{path}} (遞迴)",
         "doubleClick": "{{target}} ×2"
       },
       "tools": {
-        "list_entries": "List servers",
-        "get_entry": "Inspect server",
-        "list_folders": "List folders",
-        "list_organizations": "List organizations",
-        "list_identities": "List identities",
-        "list_snippets": "List snippets",
-        "list_scripts": "List scripts",
-        "list_tags": "List tags",
-        "list_users": "List users",
-        "get_permissions": "Check permissions",
-        "get_monitoring": "Read monitoring",
-        "list_sessions": "List sessions",
-        "open_session": "Open session",
-        "get_session": "Inspect session",
-        "close_session": "Close session",
-        "close_all_sessions": "Close all sessions",
-        "terminal_run": "Run command",
-        "terminal_send": "Send input",
-        "terminal_read": "Read terminal",
-        "terminal_resize": "Resize terminal",
-        "run_command": "Run command",
-        "exec_command": "Run command",
-        "file_list": "List directory",
-        "file_stat": "Inspect path",
-        "file_read": "Read file",
-        "file_write": "Write file",
-        "file_edit": "Edit file",
-        "file_mkdir": "Create directory",
-        "file_delete": "Delete",
-        "file_move": "Move",
-        "file_chmod": "Change permissions",
-        "file_search_dirs": "Find directories",
-        "desktop_screenshot": "Screenshot",
-        "desktop_info": "Inspect desktop",
-        "desktop_click": "Click",
-        "desktop_mouse_move": "Move mouse",
-        "desktop_drag": "Drag",
-        "desktop_scroll": "Scroll",
-        "desktop_type": "Type text",
-        "desktop_key": "Press keys",
-        "desktop_resize": "Resize desktop",
-        "desktop_clipboard_set": "Set clipboard",
-        "desktop_clipboard_get": "Read clipboard",
-        "batch": "Run several actions",
-        "ask_user": "Question"
+        "list_entries": "郵件列表伺服器",
+        "get_entry": "檢查伺服器",
+        "list_folders": "列出資料夾",
+        "list_organizations": "列出組織",
+        "list_identities": "列出恒等式",
+        "list_snippets": "清單片段",
+        "list_scripts": "列出腳本",
+        "list_tags": "列出標籤",
+        "list_users": "列出使用者",
+        "get_permissions": "檢查權限",
+        "get_monitoring": "讀取監控",
+        "list_sessions": "列出會話",
+        "open_session": "公開會議",
+        "get_session": "檢視會話",
+        "close_session": "結束會話",
+        "close_all_sessions": "關閉所有工作階段",
+        "terminal_run": "執行指令",
+        "terminal_send": "傳送輸入內容",
+        "terminal_read": "讀取終端機",
+        "terminal_resize": "調整終端機大小",
+        "run_command": "執行指令",
+        "exec_command": "執行指令",
+        "file_list": "列出目錄",
+        "file_stat": "檢查路徑",
+        "file_read": "讀取檔案",
+        "file_write": "寫入檔案",
+        "file_edit": "編輯檔案",
+        "file_mkdir": "建立目錄",
+        "file_delete": "刪除",
+        "file_move": "移動",
+        "file_chmod": "變更權限",
+        "file_search_dirs": "尋找目錄",
+        "desktop_screenshot": "螢幕截圖",
+        "desktop_info": "檢查桌面",
+        "desktop_click": "點擊",
+        "desktop_mouse_move": "移動滑鼠",
+        "desktop_drag": "拖曳",
+        "desktop_scroll": "捲動",
+        "desktop_type": "輸入文字",
+        "desktop_key": "按下按鍵",
+        "desktop_resize": "調整桌面大小",
+        "desktop_clipboard_set": "設定剪貼簿",
+        "desktop_clipboard_get": "讀取剪貼簿",
+        "batch": "執行數項操作",
+        "ask_user": "問題"
       }
     },
     "commandSuggestion": {
@@ -2371,7 +2371,7 @@
       "holdModifier": "暫停 {{key}}",
       "zoomIn": "放大",
       "zoomOut": "縮小",
-      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
+      "zoomReset": "重設縮放比例（按住滑鼠中鍵拖曳以平移畫面）"
     },
     "monitors": {
       "title": "監視器 {{number}}",
@@ -2406,34 +2406,34 @@
       "unknownUser": "未知使用者"
     },
     "folderSettings": {
-      "name": "Folder name",
-      "nameRequired": "Folder name is required",
-      "loadFailed": "Unable to load folder settings",
-      "protocol": "Defaults for",
-      "protocolHint": "Servers in this folder use what you set below unless they set their own value. Each protocol has its own defaults.",
-      "unset": "Remove from folder"
+      "name": "資料夾名稱",
+      "nameRequired": "必須填寫資料夾名稱",
+      "loadFailed": "無法載入資料夾設定",
+      "protocol": "預設值為",
+      "protocolHint": "此資料夾中的伺服器會採用您在下方設定的值，除非它們自行設定了其他值。每種通訊協定都有其預設值。",
+      "unset": "從資料夾中移除"
     },
     "trust": {
-      "certificate": "certificate",
-      "hostKey": "host key",
-      "newTitle": "Trust this {{subject}}?",
-      "newMessage": "This is the first connection to {{endpoint}}. Check the fingerprint before you continue.",
-      "changedTitle": "The {{subject}} has changed",
-      "changedMessage": "{{endpoint}} presents a different {{subject}} than before. Only continue if you expect this.",
-      "fingerprint": "Fingerprint",
-      "previous": "Trusted until now",
-      "presented": "Presented now",
-      "subject": "Issued to",
-      "issuer": "Issued by",
-      "selfSigned": "Self-signed",
-      "validUntil": "Valid until",
-      "blocked": "Only certificate managers of {{organization}} can accept this change.",
-      "accept": "Trust and connect",
-      "cancel": "Cancel",
-      "acceptChanged": "Trust the new one",
-      "disconnect": "Disconnect",
-      "failed": "Your decision could not be saved",
-      "acceptOnly": "Trust certificate"
+      "certificate": "證書",
+      "hostKey": "主機金鑰",
+      "newTitle": "這個網站 {{subject}} 值得信賴嗎？",
+      "newMessage": "這是首次連線至 {{endpoint}}。請在繼續之前檢查指紋。",
+      "changedTitle": "{{subject}} 已變更",
+      "changedMessage": "{{endpoint}} 呈現出與先前不同的 {{subject}} 。若您已預期此情況，請繼續。",
+      "fingerprint": "指紋",
+      "previous": "至今仍備受信賴",
+      "presented": "現在呈獻",
+      "subject": "發給",
+      "issuer": "發佈單位：",
+      "selfSigned": "自行簽署",
+      "validUntil": "有效期至",
+      "blocked": "僅有 {{organization}} 的憑證管理員才能接受此變更。",
+      "accept": "建立信任與連結",
+      "cancel": "取消",
+      "acceptChanged": "相信這款新產品吧",
+      "disconnect": "斷開連接",
+      "failed": "您的決定無法儲存",
+      "acceptOnly": "信任憑證"
     }
   },
   "support": {
@@ -2449,8 +2449,8 @@
       "description": "與社群聊天並獲得協助。"
     },
     "docs": {
-      "title": "View Documentation",
-      "description": "Read the documentation and learn how to use Nexterm."
+      "title": "檢視文件",
+      "description": "請閱讀說明文件，並學習如何使用 Nexterm。"
     },
     "github": {
       "title": "在 GitHub 上檢視",
@@ -2466,9 +2466,9 @@
     "recentConnections": "近期連線",
     "getStarted": "開始使用",
     "getStartedHint": "從側邊欄新增伺服器，開始管理您的基礎架構。",
-    "hibernated": "Hibernated",
+    "hibernated": "休眠中",
     "demo": {
-      "explore": "Start exploring"
+      "explore": "開始探索"
     }
   },
   "downloadApps": {
@@ -2481,9 +2481,9 @@
       "android": "安卓",
       "ios": "iOS"
     },
-    "recommended": "Recommended",
-    "versionUnavailable": "The server version could not be determined, so direct downloads are unavailable. You can still browse the releases on GitHub.",
-    "sourceHint": "Downloads are served from the GitHub releases.",
-    "allReleases": "All releases"
+    "recommended": "推薦",
+    "versionUnavailable": "由於無法確定伺服器版本，因此無法提供直接下載。您仍可瀏覽 GitHub 上的發行版本。",
+    "sourceHint": "下載檔案取自 GitHub 的發行版本。",
+    "allReleases": "所有發行版本"
   }
 }
