@@ -62,29 +62,29 @@
       "authenticating": "Authentification...",
       "noAccount": "Tu n'as pas encore de compte ?",
       "haveAccount": "Tu as déjà un compte ?",
-      "welcome": "Welcome back",
-      "subtitle": "Sign in to continue to Nexterm.",
-      "registrationSubtitle": "Create your account to get started.",
-      "firstTimeSubtitle": "Create the first administrator account for this instance.",
-      "twoFactorTitle": "Two-factor authentication",
-      "twoFactorDescription": "Enter the code from your authenticator app.",
-      "qrTitle": "Sign in with the app",
+      "welcome": "Bon retour parmi nous",
+      "subtitle": "Connecte-toi pour accéder à Nexterm.",
+      "registrationSubtitle": "Crée ton compte pour commencer.",
+      "firstTimeSubtitle": "Crée le premier compte administrateur pour cette instance.",
+      "twoFactorTitle": "Authentification à deux facteurs",
+      "twoFactorDescription": "Saisis le code de ton application d'authentification.",
+      "qrTitle": "Se connecter avec l'appli",
       "demo": {
-        "title": "Try Nexterm",
-        "subtitle": "Explore a live instance with simulated servers, no account needed.",
-        "start": "Start the demo",
-        "orSignIn": "or sign in to your account",
-        "failed": "Could not start a demo session"
+        "title": "Essaie Nexterm",
+        "subtitle": "Découvre une instance en direct avec des serveurs simulés, sans avoir besoin de compte.",
+        "start": "Lancer la démo",
+        "orSignIn": "ou connecte-toi à ton compte",
+        "failed": "Impossible de lancer une session de démonstration"
       }
     },
     "demo": {
-      "timeLeft": "Demo · {{time}} left",
-      "end": "End demo",
-      "endConfirmText": "End your demo session? Everything you created will be removed.",
+      "timeLeft": "Démo · {{time}} à gauche",
+      "end": "Fin de la démo",
+      "endConfirmText": "Tu veux mettre fin à ta session de démo ? Tout ce que tu as créé sera supprimé.",
       "minutes_one": "{{count}} min",
       "minutes_other": "{{count}} min",
-      "hours_one": "{{count}} hour",
-      "hours_other": "{{count}} hours",
+      "hours_one": "{{count}} heure",
+      "hours_other": "{{count}} heures",
       "hoursMinutes": "{{hours}}h {{minutes}}m"
     },
     "deviceLink": {
@@ -206,11 +206,11 @@
       "connection": {
         "title": "La connexion a échoué",
         "close": "Fermer l'onglet",
-        "reconnect": "Reconnect",
-        "reconnectNow": "Reconnect",
-        "reconnecting": "Reconnecting…",
-        "reconnectingIn": "Reconnecting in {{seconds}}s",
-        "reconnectAttempt": "attempt {{count}} of {{max}}",
+        "reconnect": "Se reconnecter",
+        "reconnectNow": "Se reconnecter",
+        "reconnecting": "Se reconnecter à…",
+        "reconnectingIn": "Se reconnecter sur {{seconds}}s",
+        "reconnectAttempt": "tente {{count}} de {{max}}",
         "hostUnreachable": "Hôte distant inaccessible",
         "refused": "Connexion refusée par l'hôte distant",
         "timeout": "La connexion a expiré",
@@ -221,11 +221,11 @@
         "error": "Une erreur de connexion s'est produite",
         "scriptClosedUnexpectedly": "La connexion au script s'est fermée de manière inattendue",
         "scriptError": "Une erreur de connexion au script s'est produite",
-        "rdpSessionConflict": "The session was disconnected by the server because another connection was opened.",
-        "rdpSessionTimeout": "The RDP session was disconnected because its session time limit was reached.",
-        "rdpSessionClosed": "The RDP session was ended by the remote server or an administrator."
+        "rdpSessionConflict": "La session a été interrompue par le serveur parce qu'une autre connexion a été établie.",
+        "rdpSessionTimeout": "La session RDP a été déconnectée car la durée maximale de la session a été atteinte.",
+        "rdpSessionClosed": "La session RDP a été interrompue par le serveur distant ou par un administrateur."
       },
-      "accountLinkRequired": "An account with this username already exists. Ask an administrator to allow linking it to your sign-in."
+      "accountLinkRequired": "Un compte portant ce nom d'utilisateur existe déjà. Demande à un administrateur de t'autoriser à l'associer à ton compte."
     },
     "messages": {
       "invitationAccepted": "Invitation acceptée",
@@ -237,9 +237,9 @@
       "leaveOrganizationError": "Échec de la sortie de l'organisation"
     },
     "unsavedChanges": {
-      "title": "Unsaved changes",
-      "text": "Discard them, or keep editing and save when you're done.",
-      "keepEditing": "Keep editing"
+      "title": "Modifications non enregistrées",
+      "text": "Soit tu les supprimes, soit tu continues à les modifier et tu les enregistres quand tu as fini.",
+      "keepEditing": "Continue à modifier"
     }
   },
   "audit": {
@@ -468,15 +468,15 @@
       "subtitle": "Statistiques et surveillance de la santé du serveur en temps réel",
       "searchPlaceholder": "Recherche les serveurs...",
       "filters": {
-        "all": "All ({{count}})",
-        "online": "Online ({{count}})",
-        "issues": "Issues ({{count}})"
+        "all": "Tout ({{count}})",
+        "online": "En ligne ({{count}})",
+        "issues": "Numéros ({{count}})"
       }
     },
     "errors": {
       "loadFailed": "Échec du chargement des données de surveillance",
-      "loadFailedDescription": "The monitoring data could not be retrieved. Check your connection and try again.",
-      "retry": "Retry"
+      "loadFailedDescription": "Impossible de récupérer les données de surveillance. Vérifie ta connexion et réessaie.",
+      "retry": "Réessayer"
     },
     "grid": {
       "noServers": {
@@ -484,8 +484,8 @@
         "subtitle": "Aucun serveur SSH n'est disponible pour la surveillance.\nAjoute quelques serveurs pour commencer à les surveiller."
       },
       "noResults": {
-        "title": "No matching servers",
-        "subtitle": "No monitored server matches your search."
+        "title": "Aucun serveur correspondant",
+        "subtitle": "Aucun serveur surveillé ne correspond à ta recherche."
       },
       "metrics": {
         "loadAverage": "Moyenne de la charge",
@@ -493,8 +493,8 @@
         "uptime": "Temps de fonctionnement",
         "nodes": "Nœuds",
         "vms": "VMs/Conteneurs",
-        "cpu": "CPU",
-        "memory": "Memory"
+        "cpu": "Processeur",
+        "memory": "Mémoire"
       },
       "status": {
         "serverOffline": "Serveur hors ligne",
@@ -505,14 +505,14 @@
         "unknownMessage": "L'état du serveur n'a pas pu être déterminé.",
         "lastSeen": "Dernière visite : {{time}}",
         "noRecentActivity": "Aucune activité récente",
-        "waitingForData": "Waiting for data",
-        "pendingMessage": "Monitoring data will appear after the next monitoring cycle.",
+        "waitingForData": "En attente de données",
+        "pendingMessage": "Les données de suivi s'afficheront après le prochain cycle de suivi.",
         "labels": {
-          "online": "Online",
-          "offline": "Offline",
-          "error": "Error",
-          "pending": "Pending",
-          "unknown": "Unknown"
+          "online": "En ligne",
+          "offline": "Hors ligne",
+          "error": "Erreur",
+          "pending": "En attente",
+          "unknown": "Inconnu"
         }
       },
       "uptime": {
@@ -555,7 +555,7 @@
           "processes": "Processus actifs",
           "total": "Total : {{value}}",
           "loadDetail": "5m : {{fiveMin}}, 15m : {{fifteenMin}}",
-          "memory": "Memory"
+          "memory": "Mémoire"
         },
         "uptime": {
           "format": {
@@ -575,50 +575,50 @@
         "title": "Utilisation du disque",
         "noData": "Aucune donnée sur l'utilisation du disque n'est disponible",
         "noPartitions": "Aucune partition montée",
-        "usedOf": "{{used}} of {{total}} used",
-        "free": "{{value}} free",
-        "filesystems": "Filesystems",
-        "disks": "Disks",
-        "on": "{{volume}} on {{partition}}",
-        "swap": "Swap",
-        "unmounted": "Not mounted",
-        "unallocated": "Unallocated",
+        "usedOf": "{{used}} de {{total}} utilisé",
+        "free": "{{value}} gratuit",
+        "filesystems": "Systèmes de fichiers",
+        "disks": "Disques",
+        "on": "{{volume}} sur {{partition}}",
+        "swap": "Échange",
+        "unmounted": "Pas monté",
+        "unallocated": "Non attribué",
         "inodes": "Inodes",
-        "inodesDetail": "{{used}} of {{total}}",
+        "inodesDetail": "{{used}} de {{total}}",
         "health": {
-          "passed": "Healthy",
-          "warning": "Warning",
-          "failed": "Failing",
-          "denied": "SMART needs root",
-          "temperature": "Temperature",
-          "powerOn": "Power-on time",
-          "wear": "Wear",
-          "reallocated": "Reallocated sectors",
-          "pending": "Pending sectors",
-          "mediaErrors": "Media errors",
-          "years": "{{value}} years",
-          "days": "{{value}} days",
-          "hours": "{{value}} hours",
-          "failedTitle": "Disk failure predicted",
-          "failedMessage": "{{disks}} failed its SMART self-assessment. Back up the data and replace the disk."
+          "passed": "En bonne santé",
+          "warning": "Avertissement",
+          "failed": "Échec",
+          "denied": "SMART a besoin des droits root",
+          "temperature": "Température",
+          "powerOn": "Temps de mise sous tension",
+          "wear": "Usure",
+          "reallocated": "Secteurs réaffectés",
+          "pending": "Secteurs en attente",
+          "mediaErrors": "Erreurs liées aux supports",
+          "years": "{{value}} années",
+          "days": "{{value}} jours",
+          "hours": "{{value}} heures",
+          "failedTitle": "Prévision de panne de disque",
+          "failedMessage": "{{disks}} Il a échoué à l'auto-évaluation SMART. Sauvegarde les données et remplace le disque."
         }
       },
       "network": {
         "speed": "Débit",
         "noData": "Aucune donnée sur l'interface réseau n'est disponible",
-        "download": "Download",
-        "upload": "Upload",
+        "download": "Télécharger",
+        "upload": "Télécharger",
         "interface": "Interface",
-        "address": "Address",
-        "gateway": "Gateway",
+        "address": "Adresse",
+        "gateway": "Passerelle",
         "interfaces": "Interfaces",
-        "virtual": "Virtual interfaces",
-        "defaultRoute": "Default route",
-        "up": "Up",
-        "down": "Down",
-        "errors": "{{count}} errors",
-        "dropped": "{{count}} dropped",
-        "copy": "Copy {{address}}",
+        "virtual": "Interfaces virtuelles",
+        "defaultRoute": "Itinéraire par défaut",
+        "up": "Haut",
+        "down": "Bas",
+        "errors": "{{count}} erreurs",
+        "dropped": "{{count}} laissé tomber",
+        "copy": "Copier {{address}}",
         "total": "{{value}} total"
       },
       "processes": {
@@ -627,9 +627,9 @@
         "noData": "Aucune donnée de processus disponible. Les données de processus apparaîtront après le prochain cycle de surveillance.",
         "noResults": "Aucun processus ne correspond à vos critères de recherche.",
         "columns": {
-          "command": "Command",
-          "cpu": "CPU",
-          "mem": "Memory"
+          "command": "Commande",
+          "cpu": "Processeur",
+          "mem": "Mémoire"
         }
       },
       "pve": {
@@ -674,13 +674,13 @@
       "backup": "Stockage",
       "engines": "Moteurs",
       "permissions": "Rôles et autorisations",
-      "trustedCertificates": "Trusted Certificates"
+      "trustedCertificates": "Certificats de confiance"
     },
     "account": {
       "title": "Compte",
       "demo": {
-        "title": "Security",
-        "description": "Password, two-factor authentication, passkeys, API keys and profile pictures can't be changed while you're exploring as a guest."
+        "title": "Sécurité",
+        "description": "Le mot de passe, l'authentification à deux facteurs, les clés d'accès, les clés API et les photos de profil ne peuvent pas être modifiés lorsque tu navigues en tant qu'invité."
       },
       "avatar": {
         "label": "Photo",
@@ -765,7 +765,7 @@
       "sessionSyncAcrossDevicesDesc": "Les sessions seront disponibles sur tous les appareils et synchronisées.",
       "sessionSyncSameBrowserDesc": "Les sessions se synchroniseront pour la session de l'utilisateur actuel.",
       "sessionSyncSameTabDesc": "Les sessions se synchroniseront dans l'onglet de ton navigateur",
-      "showAgentSessionsDesc": "Show sessions opened by the AI assistant or MCP agents as view-only tabs",
+      "showAgentSessionsDesc": "Afficher les sessions ouvertes par l'assistant IA ou les agents MCP sous forme d'onglets en lecture seule",
       "twoFactorDialog": {
         "title": "Activer 2FA",
         "description": "Scannez le code avec votre application d'authentification ou saisissez <span class=\"totp-code\">{{secret}}</span> manuellement.",
@@ -819,12 +819,12 @@
         "expires": "Date d'expiration {{date}}",
         "delete": "Supprimer"
       },
-      "remoteDesktop": "Remote Desktop",
-      "remoteDesktopDescription": "Default display scale for remote desktop sessions. Connections can override it, and a scale picked during a session is remembered on that device.",
-      "remoteDesktopScale": "Display Scale",
-      "remoteDesktopScaleAuto": "Automatic (match device)",
-      "remoteDesktopSyncEnabled": "Remote desktop settings will now sync across devices",
-      "remoteDesktopSyncDisabled": "Remote desktop settings are now saved on this device only"
+      "remoteDesktop": "Bureau à distance",
+      "remoteDesktopDescription": "Échelle d'affichage par défaut pour les sessions de bureau à distance. Les connexions peuvent la remplacer, et l'échelle choisie pendant une session est mémorisée sur cet appareil.",
+      "remoteDesktopScale": "Échelle d'affichage",
+      "remoteDesktopScaleAuto": "Automatique (selon l'appareil)",
+      "remoteDesktopSyncEnabled": "Les paramètres du bureau à distance vont désormais se synchroniser sur tous les appareils",
+      "remoteDesktopSyncDisabled": "Les paramètres du bureau à distance sont désormais enregistrés uniquement sur cet appareil"
     },
     "passwordChange": {
       "title": "Modifier le mot de passe",
@@ -832,11 +832,11 @@
       "newPassword": "Nouveau mot de passe",
       "confirmPassword": "Confirmer le nouveau mot de passe",
       "changePasswordButton": "Modifier le mot de passe",
-      "currentPassword": "Current password",
-      "descriptionOwn": "Enter your current password and choose a new one. You will be signed out on all other devices.",
-      "descriptionOther": "Choose a new password for this user. They will be signed out on all devices.",
-      "successOwn": "Your password was changed. Other devices were signed out.",
-      "successOther": "The password was changed and the user was signed out everywhere."
+      "currentPassword": "Mot de passe actuel",
+      "descriptionOwn": "Saisis ton mot de passe actuel et choisis-en un nouveau. Tu seras déconnecté de tous les autres appareils.",
+      "descriptionOther": "Choisis un nouveau mot de passe pour cet utilisateur. Il sera déconnecté de tous ses appareils.",
+      "successOwn": "Ton mot de passe a été modifié. Les autres appareils ont été déconnectés.",
+      "successOther": "Le mot de passe a été modifié et l'utilisateur a été déconnecté de tous ses comptes."
     },
     "organizations": {
       "title": "Vos organisations",
@@ -875,8 +875,8 @@
         "folderManagementDescription": "Enregistre la création, la modification et la suppression des dossiers.",
         "scriptExecutionLabel": "Exécution du script",
         "scriptExecutionDescription": "Journal d'exécution des scripts et des tâches d'automatisation",
-        "agentOperationsLabel": "AI Agent Operations",
-        "agentOperationsDescription": "Log commands, input, screenshots and file changes performed by the AI assistant and by agents connected through the MCP server",
+        "agentOperationsLabel": "Exploitation des agents IA",
+        "agentOperationsDescription": "Enregistrer les commandes, les saisies, les captures d'écran et les modifications de fichiers effectuées par l'assistant IA et par les agents connectés via le serveur MCP",
         "actions": {
           "save": "Sauvegarder les paramètres"
         },
@@ -943,9 +943,9 @@
         "loginAsUser": "Connecte-toi en tant qu'utilisateur",
         "deleteConfirm": "Cela supprimera définitivement l'utilisateur et toutes les données associées.",
         "managePermissions": "Gérer les autorisations",
-        "allowExternalLink": "Allow SSO/LDAP linking",
-        "cancelExternalLink": "Cancel SSO/LDAP linking",
-        "unlinkExternal": "Unlink SSO/LDAP sign-in"
+        "allowExternalLink": "Autoriser la connexion via SSO/LDAP",
+        "cancelExternalLink": "Annuler la connexion SSO/LDAP",
+        "unlinkExternal": "Supprimer le lien avec la connexion SSO/LDAP"
       }
     },
     "userDialog": {
@@ -1008,11 +1008,11 @@
         },
         "copy": {
           "title": "Copie",
-          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+          "description": "Copier le texte sélectionné dans le terminal vers le clavier. Ça nécessite d'être en mode « Souris » ou « Clavier » dans les paramètres du terminal."
         },
         "paste": {
-          "title": "Paste",
-          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
+          "title": "Coller",
+          "description": "Coller le texte du presse-papiers dans le terminal. Ça nécessite d'activer le mode « Smart Ctrl+C », « Souris » ou « Clavier » dans les paramètres du terminal."
         },
         "fullscreen": {
           "title": "Plein écran",
@@ -1027,7 +1027,7 @@
         "pressKeys": "Appuie sur les touches...",
         "save": "Sauvegarde",
         "cancel": "Annuler",
-        "disabled": "Disabled",
+        "disabled": "Désactivé",
         "reset": "Remise à zéro"
       },
       "messages": {
@@ -1063,19 +1063,19 @@
       "input": {
         "title": "Saisie",
         "description": "Gère le fonctionnement des raccourcis clavier dans le terminal.",
-        "copyPasteBehavior": "Copy/Paste Behavior",
-        "copyPasteBehaviorNone": "None",
-        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
-        "copyPasteBehaviorSmart": "Smart Ctrl+C",
-        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
-        "copyPasteBehaviorKeyboard": "Keyboard",
-        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
-        "copyPasteBehaviorMouse": "Mouse",
-        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
-        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
-        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
+        "copyPasteBehavior": "Comportement du copier-coller",
+        "copyPasteBehaviorNone": "Aucun",
+        "copyPasteBehaviorNoneHint": "Uniquement via le menu contextuel : copier et coller.",
+        "copyPasteBehaviorSmart": "Ctrl+C intelligent",
+        "copyPasteBehaviorSmartHint": "Copier intelligemment quand du texte est sélectionné, sinon envoyer la commande brute Ctrl+C au terminal.",
+        "copyPasteBehaviorKeyboard": "Clavier",
+        "copyPasteBehaviorKeyboardHint": "Utilise les raccourcis clavier que tu as définis pour effectuer des opérations de copier-coller",
+        "copyPasteBehaviorMouse": "Souris",
+        "copyPasteBehaviorMouseHint": "Sélectionne pour copier, clique avec le bouton droit pour coller. Appuie sur Ctrl + clic droit pour accéder au menu contextuel.",
+        "copyPasteBehaviorMouseKeyboard": "Souris/Clavier",
+        "copyPasteBehaviorMouseKeyboardHint": "Active à la fois le mode souris et le mode clavier.",
         "passwordPromptDetection": "Détection de la saisie d'un mot de passe",
-        "autoReconnect": "Auto-reconnect",
+        "autoReconnect": "Reconnexion automatique",
         "enabled": "Activé",
         "disabled": "Désactivé",
         "syncEnabled": "Les paramètres de saisie vont désormais se synchroniser avec ton compte",
@@ -1098,12 +1098,12 @@
       "syncEnabled": "Les paramètres du gestionnaire de fichiers seront désormais synchronisés avec ton compte.",
       "syncDisabled": "Les paramètres du gestionnaire de fichiers ne seront plus synchronisés",
       "view": {
-        "title": "View",
-        "description": "How files and folders are shown when you open the file manager."
+        "title": "Afficher",
+        "description": "Comment les fichiers et les dossiers s'affichent quand tu ouvres le gestionnaire de fichiers."
       },
       "behavior": {
-        "title": "Behavior",
-        "description": "What happens when you open, delete and move files."
+        "title": "Comportement",
+        "description": "Que se passe-t-il quand tu ouvres, supprimes ou déplaces des fichiers ?"
       },
       "defaultView": {
         "title": "Mode d'affichage par défaut",
@@ -1112,9 +1112,9 @@
         "listDescription": "Affiche les fichiers dans une liste détaillée avec des colonnes de taille et de date.",
         "grid": "Vue en grille",
         "gridDescription": "Affiche les fichiers sous forme d'icônes dans une grille avec des vignettes.",
-        "compact": "Compact View",
-        "compactDescription": "Show only names in dense columns to fit many files on screen",
-        "label": "Default view"
+        "compact": "Affichage compact",
+        "compactDescription": "Afficher uniquement les noms dans des colonnes compactes pour pouvoir voir plusieurs fichiers à l'écran",
+        "label": "Affichage par défaut"
       },
       "thumbnails": {
         "title": "Vignettes d'images",
@@ -1123,9 +1123,9 @@
         "enabledDescription": "Affiche des aperçus d'images en vue grille pour une identification visuelle rapide.",
         "disabled": "Cacher les vignettes",
         "disabledDescription": "Affiche uniquement les icônes des fichiers pour économiser la bande passante et améliorer les performances.",
-        "label": "Image thumbnails",
-        "show": "Show",
-        "hide": "Hide"
+        "label": "Vignettes d'images",
+        "show": "Afficher",
+        "hide": "Masquer"
       },
       "hiddenFiles": {
         "title": "Fichiers cachés",
@@ -1134,9 +1134,9 @@
         "showDescription": "Affiche tous les fichiers, y compris les fichiers .dotfiles et les répertoires système.",
         "hide": "Cacher les fichiers cachés",
         "hideDescription": "Ne montre que les fichiers et dossiers ordinaires",
-        "label": "Hidden files",
-        "showShort": "Show",
-        "hideShort": "Hide"
+        "label": "Fichiers cachés",
+        "showShort": "Afficher",
+        "hideShort": "Masquer"
       },
       "deleteConfirmation": {
         "title": "Confirmation de suppression",
@@ -1145,9 +1145,9 @@
         "enabledDescription": "Affiche une boîte de dialogue de confirmation avant de supprimer des éléments",
         "disabled": "Supprimer immédiatement",
         "disabledDescription": "Supprime des fichiers sans demander de confirmation",
-        "label": "Before deleting",
-        "ask": "Ask for confirmation",
-        "immediately": "Delete immediately"
+        "label": "Avant de supprimer",
+        "ask": "Demande une confirmation",
+        "immediately": "Supprimer tout de suite"
       },
       "dragDropAction": {
         "title": "Action de glisser-déposer",
@@ -1155,32 +1155,32 @@
         "move": "Déplacer",
         "copy": "Copie",
         "ask": "Demande",
-        "label": "When dropping files"
+        "label": "Quand tu glisses-dépose des fichiers"
       },
       "singleClickOpen": {
-        "title": "Open with single click",
-        "description": "Open files and folders with a single click instead of selecting them. Double-click opens when this is off.",
-        "single": "Single click",
-        "double": "Double click",
-        "label": "Open items with"
+        "title": "Ouvrir d'un simple clic",
+        "description": "Ouvre les fichiers et les dossiers d'un simple clic, sans avoir à les sélectionner. Quand cette option est désactivée, un double-clic permet de les ouvrir.",
+        "single": "Un seul clic",
+        "double": "Double-clique",
+        "label": "Postes non soldés avec"
       },
       "sharedDrive": {
-        "title": "Shared Drive",
-        "description": "What remote desktops can see of this computer through their shared drive. Changes apply to new connections.",
+        "title": "Disque partagé",
+        "description": "Ce que les postes de travail distants peuvent voir de cet ordinateur via leur lecteur partagé. Les modifications s'appliquent aux nouvelles connexions.",
         "mode": {
-          "title": "Share",
-          "folder": "One folder",
-          "disk": "Entire disk",
-          "off": "Nothing",
-          "diskWarning": "Remote desktops can read, change and delete every file on this computer."
+          "title": "Partager",
+          "folder": "Un dossier",
+          "disk": "Disque entier",
+          "off": "Rien",
+          "diskWarning": "Les postes de travail à distance peuvent lire, modifier et supprimer tous les fichiers présents sur cet ordinateur."
         },
         "folder": {
-          "title": "Shared folder",
-          "default": "Nexterm Shared in your home folder",
-          "choose": "Choose folder",
-          "reset": "Use default"
+          "title": "Dossier partagé",
+          "default": "Nexterm Partagé dans ton dossier personnel",
+          "choose": "Choisis un dossier",
+          "reset": "Utiliser les paramètres par défaut"
         },
-        "folderError": "The shared folder could not be prepared"
+        "folderError": "Impossible de préparer le dossier partagé"
       }
     },
     "authentication": {
@@ -1214,7 +1214,7 @@
           "clientSecretPlaceholderEdit": "Laisser vide pour garder existant",
           "redirectUri": "Rediriger l'URI",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
-          "endSessionEndpoint": "End Session Endpoint (Optional)",
+          "endSessionEndpoint": "Point de fin de session (facultatif)",
           "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
           "scope": "Champ d'application",
           "scopePlaceholder": "profil openid",
@@ -1237,19 +1237,19 @@
           "saveFailed": "Échec de l'enregistrement du fournisseur"
         },
         "groupSync": {
-          "title": "Group Sync",
-          "hint": "Automatically add users to organizations and control access based on group claims from your identity provider.",
-          "groupsAttribute": "Groups Claim",
-          "groupsAttributePlaceholder": "groups",
-          "requiredGroup": "Required Group",
-          "requiredGroupPlaceholder": "nexterm-users",
-          "requiredGroupHint": "If set, only users whose groups claim contains this value are allowed to log in.",
-          "mappings": "Organization Mappings",
-          "mappingsHint": "Map a group claim value to an organization. Membership is kept in sync on every login.",
-          "mappingValuePlaceholder": "Group value",
-          "roleMember": "Member",
-          "roleOwner": "Owner",
-          "addMapping": "Add Mapping"
+          "title": "Synchronisation de groupe",
+          "hint": "Ajoute automatiquement des utilisateurs à des organisations et gère les accès en fonction des revendications de groupe fournies par ton fournisseur d'identité.",
+          "groupsAttribute": "Revendications des groupes",
+          "groupsAttributePlaceholder": "groupes",
+          "requiredGroup": "Groupe obligatoire",
+          "requiredGroupPlaceholder": "nexterm-utilisateurs",
+          "requiredGroupHint": "Si cette option est activée, seuls les utilisateurs dont la chaîne « claim » du groupe contient cette valeur sont autorisés à se connecter.",
+          "mappings": "Correspondances entre organisations",
+          "mappingsHint": "Associe la valeur d'une revendication de groupe à une organisation. L'appartenance est synchronisée à chaque connexion.",
+          "mappingValuePlaceholder": "Valeur du groupe",
+          "roleMember": "Membre",
+          "roleOwner": "Propriétaire",
+          "addMapping": "Ajouter un mappage"
         }
       },
       "ldapDialog": {
@@ -1299,19 +1299,19 @@
       },
       "sessions": {
         "title": "Sessions",
-        "description": "When signed-in devices, including the mobile and desktop apps, have to sign in again.",
-        "idle": "Sign out after inactivity",
-        "lifetime": "Maximum session length",
-        "days_one": "{{count}} day",
-        "days_other": "{{count}} days",
-        "never": "Never",
-        "loadError": "Failed to load the session settings",
-        "saveError": "Failed to save the session settings"
+        "description": "Quand les appareils déjà connectés, y compris les applications mobiles et de bureau, doivent se reconnecter.",
+        "idle": "Se déconnecter après une période d'inactivité",
+        "lifetime": "Durée maximale d'une session",
+        "days_one": "{{count}} jour",
+        "days_other": "{{count}} jours",
+        "never": "Jamais",
+        "loadError": "Impossible de charger les paramètres de session",
+        "saveError": "Impossible d'enregistrer les paramètres de session"
       }
     },
     "ai": {
       "title": "Configuration de l'assistant AI",
-      "description": "Configure the AI provider used by the assistant, which can operate your servers through its own sessions.",
+      "description": "Configure le fournisseur d'IA utilisé par l'assistant, qui peut faire fonctionner tes serveurs via ses propres sessions.",
       "loading": "Chargement des paramètres de l'IA...",
       "enable": {
         "title": "Activer l'assistant AI",
@@ -1426,12 +1426,12 @@
     },
     "identities": {
       "title": "Clés et justificatifs SSH",
-      "description": "Identities you can link to any server. Server-specific ones live in that server's settings.",
+      "description": "Les identités que tu peux associer à n'importe quel serveur. Celles qui sont spécifiques à un serveur se trouvent dans les paramètres de ce serveur.",
       "createIdentity": "Créer une identité",
       "personal": "Personnel",
       "noUsername": "Pas de nom d'utilisateur",
-      "notInUse": "Not in use",
-      "notInUseHint": "Not linked to any server or folder",
+      "notInUse": "Pas utilisé",
+      "notInUseHint": "Pas lié à un serveur ou à un dossier",
       "sshKey": "Clé SSH",
       "password": "Mot de passe",
       "editIdentity": "Modifier l'identité",
@@ -1499,7 +1499,7 @@
         "success": "Synchronisé",
         "error": "Erreur",
         "pending": "En attente",
-        "syncing": "Syncing",
+        "syncing": "Synchronisation",
         "disabled": "Désactivé"
       },
       "dialog": {
@@ -1688,26 +1688,26 @@
       "inheritsAllow": "Hérédité : autorisée",
       "inheritsDeny": "Hérite de : Refusé"
     },
-    "search": "Search settings",
+    "search": "Paramètres de recherche",
     "trustedCertificates": {
-      "title": "Trusted Certificates",
-      "description": "Certificates and host keys you accepted when connecting. Remove one to be asked again the next time.",
-      "personal": "Personal",
-      "system": "System",
+      "title": "Certificats de confiance",
+      "description": "Les certificats et les clés hôtes que tu as acceptés lors de la connexion. Supprime-en un pour qu'on te le demande à nouveau la prochaine fois.",
+      "personal": "Personnel",
+      "system": "Système",
       "kinds": {
-        "ssh": "SSH host key",
-        "tls": "TLS certificate"
+        "ssh": "Clé d'hôte SSH",
+        "tls": "Certificat TLS"
       },
-      "empty": "Nothing trusted yet",
-      "emptyDescription": "Certificates and host keys appear here once you accept them for a connection.",
-      "remove": "Remove",
-      "removeConfirm": "Stop trusting {{endpoint}}? The next connection asks again.",
-      "removeSuccess": "Trusted certificate removed",
-      "removeError": "Failed to remove the trusted certificate",
+      "empty": "Rien de fiable pour l'instant",
+      "emptyDescription": "Les certificats et les clés hôtes s'affichent ici une fois que tu les as acceptés pour une connexion.",
+      "remove": "Supprimer",
+      "removeConfirm": "Tu veux arrêter de faire confiance à {{endpoint}}? La connexion suivante te le demandera à nouveau.",
+      "removeSuccess": "Certificat de confiance supprimé",
+      "removeError": "Impossible de supprimer le certificat de confiance",
       "ignore": {
-        "title": "Ignore certificate warnings",
-        "description": "Connect to your personal servers without checking their certificate or host key. Connections can then be intercepted without you noticing. Organization servers are always checked.",
-        "error": "Failed to save the setting"
+        "title": "Ignorer les avertissements relatifs aux certificats",
+        "description": "Connecte-toi à tes serveurs personnels sans vérifier leur certificat ni leur clé d'hôte. Les connexions peuvent alors être interceptées sans que tu t'en rendes compte. Les serveurs de l'organisation sont toujours vérifiés.",
+        "error": "Impossible d'enregistrer le paramètre"
       }
     }
   },
@@ -1767,7 +1767,7 @@
       "createFolder": "Créer un dossier",
       "deleteFolder": "Supprimer le dossier",
       "renameFolder": "Renommer un dossier",
-      "folderSettings": "Folder Settings",
+      "folderSettings": "Paramètres du dossier",
       "new": "Nouveau",
       "sshServer": "Serveur SSH",
       "telnetServer": "Serveur Telnet",
@@ -1788,7 +1788,7 @@
       "connect": "Connecte-toi",
       "quickConnect": "Connexion rapide",
       "openSFTP": "Ouvrir SFTP",
-      "openBrowser": "Open Browser",
+      "openBrowser": "Ouvrir le navigateur",
       "forwardPort": "Transfert de port",
       "runScript": "Exécuter le script",
       "openNotes": "Notes ouvertes",
@@ -1825,20 +1825,20 @@
         "duplicate": "Duplicata",
         "openNotes": "Notes ouvertes",
         "hibernateSession": "Hibernation",
-        "reconnect": "Reconnect",
+        "reconnect": "Se reconnecter",
         "closeSession": "Déconnecte-toi",
-        "splitRight": "Split Right",
-        "splitDown": "Split Down",
-        "sendShortcut": "Send Shortcut…",
+        "splitRight": "Diviser à droite",
+        "splitDown": "Diviser vers le bas",
+        "sendShortcut": "Envoyer le lien…",
         "zoom": "Zoom ({{zoom}}%)",
-        "zoomReset": "Reset Zoom",
-        "displayScale": "Display Scale ({{scale}}%)",
-        "displayScaleAuto": "Automatic ({{scale}}%)",
-        "displayScaleReset": "Use Default"
+        "zoomReset": "Réinitialiser le zoom",
+        "displayScale": "Échelle d'affichage ({{scale}}%)",
+        "displayScaleAuto": "Automatique ({{scale}}%)",
+        "displayScaleReset": "Utiliser les paramètres par défaut"
       },
-      "enableSplitView": "Enable Split View",
-      "disableSplitView": "Disable Split View",
-      "sessionMenu": "Session Menu"
+      "enableSplitView": "Activer le mode « Split View »",
+      "disableSplitView": "Désactiver le mode « Split View »",
+      "sessionMenu": "Menu de la session"
     },
     "wol": {
       "successDescription": "Paquet magique envoyé à {{name}}",
@@ -1848,10 +1848,10 @@
       "fillRequiredFields": "Remplis tous les champs obligatoires",
       "serverCreated": "Le serveur a été créé avec succès",
       "serverUpdated": "Le serveur a été mis à jour avec succès",
-      "folderUpdated": "Folder updated successfully",
+      "folderUpdated": "Le dossier a bien été mis à jour",
       "createFailed": "Échec de la création du serveur",
       "updateFailed": "Échec de la mise à jour du serveur",
-      "identitiesRemovedOnMove": "Some identities were removed because they are unavailable in the destination."
+      "identitiesRemovedOnMove": "Certaines identités ont été supprimées car elles ne sont pas disponibles dans la destination."
     },
     "dialog": {
       "addServer": "Ajouter un serveur",
@@ -1911,12 +1911,12 @@
         },
         "display": {
           "title": "Paramètres d'affichage",
-          "description": "Configure color depth, resize behavior and scaling for the remote display",
+          "description": "Configurer la profondeur de couleur, le comportement de redimensionnement et la mise à l'échelle de l'écran distant",
           "colorDepth": "Profondeur couleur",
           "resizeMethod": "Méthode de redimensionnement",
-          "displayScale": "Display Scale",
-          "displayScaleAuto": "Automatic (match this device)",
-          "displayScaleAccount": "Account default"
+          "displayScale": "Échelle d'affichage",
+          "displayScaleAuto": "Automatique (adapter à cet appareil)",
+          "displayScaleAccount": "Compte en défaut de paiement"
         },
         "performance": {
           "title": "Paramètres de performance",
@@ -1957,29 +1957,29 @@
         "both": "Clé+Passe",
         "sshPrivateKey": "Clé privée SSH",
         "passphrase": "Phrase de passe (facultatif)",
-        "add": "Add identity",
-        "linkGlobal": "Link global identity · {{count}}",
-        "empty": "No identities yet.",
+        "add": "Ajouter une identité",
+        "linkGlobal": "Identité globale de Link · {{count}}",
+        "empty": "On n'a encore aucune identité.",
         "removeIdentity": "Supprimer l'identité",
         "unlinkIdentity": "Déconnecter l'identité",
         "moveToOrg": "Passer à l'organisation",
         "noUsername": "Pas de nom d'utilisateur",
-        "globalToggle": "Use on other servers",
-        "globalInUse": "This identity is used by {{count}} servers. Unlink it from the others first.",
-        "shareToggle": "Share with organization",
-        "inheritedHint": "Inherited from the folder settings.",
-        "onlyMe": "Only me",
-        "onlyMeHint": "Only you can see and use this identity."
+        "globalToggle": "Utilisation sur d'autres serveurs",
+        "globalInUse": "Cette identité est utilisée par les serveurs {{count}} . Commence par la dissocier des autres.",
+        "shareToggle": "Partager avec l'organisation",
+        "inheritedHint": "Hérité des paramètres du dossier.",
+        "onlyMe": "Juste moi",
+        "onlyMeHint": "Toi seul peux voir et utiliser cette identité."
       },
       "sections": {
-        "general": "General",
-        "connection": "Connection",
-        "identities": "Identities",
+        "general": "Généralités",
+        "connection": "Connexion",
+        "identities": "Identités",
         "options": "Options",
-        "credentials": "Credentials"
+        "credentials": "Références"
       },
-      "useInherited": "Use inherited value",
-      "reset": "Reset"
+      "useInherited": "Utiliser la valeur héritée",
+      "reset": "Réinitialiser"
     },
     "proxmoxDialog": {
       "title": {
@@ -2009,7 +2009,7 @@
         "createFailed": "Échec de la création de l'intégration Proxmox",
         "updateFailed": "Échec de la mise à jour de l'intégration Proxmox"
       },
-      "credentialsDescription": "Proxmox user with API access, e.g. root@pam or a dedicated API user."
+      "credentialsDescription": "Un utilisateur Proxmox disposant d'un accès à l'API, par exemple root@pam ou un utilisateur dédié à l'API."
     },
     "connectionReasonDialog": {
       "title": "Raison de la connexion requise",
@@ -2164,16 +2164,16 @@
         "search": "Rechercher des fichiers",
         "closeSearch": "Fermer la recherche",
         "refresh": "Actualiser",
-        "back": "Back",
-        "forward": "Forward",
-        "up": "Parent directory",
-        "home": "Home directory",
-        "switchToCompact": "Switch to compact view"
+        "back": "Retour",
+        "forward": "Suivant",
+        "up": "Répertoire parent",
+        "home": "Répertoire personnel",
+        "switchToCompact": "Passer en mode d'affichage compact"
       },
       "item": {
         "link": "lien",
-        "expand": "Expand folder",
-        "collapse": "Collapse folder"
+        "expand": "Déplier le dossier",
+        "collapse": "Réduire le dossier"
       },
       "search": {
         "placeholder": "Filtrer les fichiers de ce dossier...",
@@ -2194,51 +2194,51 @@
         "error": "Une erreur s'est produite"
       },
       "transfers": {
-        "title": "Transfers",
-        "activeCount": "{{count}} active",
-        "allDone": "All done",
-        "clearFinished": "Clear finished",
-        "queued": "Queued",
-        "cancelling": "Cancelling...",
-        "completed": "Completed",
-        "savedTo": "Saved to {{path}}",
-        "cancelled": "Cancelled",
-        "failed": "Failed: {{message}}",
-        "dismiss": "Dismiss"
+        "title": "Transferts",
+        "activeCount": "{{count}} actif",
+        "allDone": "C'est bon",
+        "clearFinished": "Terminé",
+        "queued": "En attente",
+        "cancelling": "Annulation...",
+        "completed": "Terminé",
+        "savedTo": "Enregistré dans {{path}}",
+        "cancelled": "Annulé",
+        "failed": "Échec : {{message}}",
+        "dismiss": "Fermer"
       },
       "status": {
-        "folders_one": "{{count}} folder",
-        "folders_other": "{{count}} folders",
-        "files_one": "{{count}} file",
-        "files_other": "{{count}} files",
-        "hidden_one": "{{count}} hidden",
-        "hidden_other": "{{count}} hidden",
-        "selected": "{{count}} selected",
-        "showHidden": "Show hidden files",
-        "hideHidden": "Hide hidden files"
+        "folders_one": "{{count}} dossier",
+        "folders_other": "{{count}} dossiers",
+        "files_one": "{{count}} fichier",
+        "files_other": "{{count}} fichiers",
+        "hidden_one": "{{count}} caché",
+        "hidden_other": "{{count}} caché",
+        "selected": "{{count}} sélectionné",
+        "showHidden": "Afficher les fichiers cachés",
+        "hideHidden": "Masquer les fichiers cachés"
       },
       "conflict": {
-        "title_one": "Item already exists",
-        "title_other": "{{count}} items already exist",
-        "upload_one": "A file with this name already exists in the destination. What would you like to do?",
-        "upload_other": "These files already exist in the destination. What would you like to do with them?",
-        "move_one": "An item with this name already exists in the destination. Moving will replace it.",
-        "move_other": "These items already exist in the destination. Moving will replace them.",
-        "copy_one": "An item with this name already exists in the destination. Copying will replace it.",
-        "copy_other": "These items already exist in the destination. Copying will replace them.",
-        "more": "+ {{count}} more",
-        "skip": "Skip",
-        "rename": "Keep both",
-        "overwrite": "Overwrite"
+        "title_one": "Cet élément existe déjà",
+        "title_other": "{{count}} ces éléments existent déjà",
+        "upload_one": "Un fichier portant ce nom existe déjà dans le dossier de destination. Que veux-tu faire ?",
+        "upload_other": "Ces fichiers existent déjà dans le dossier de destination. Que veux-tu en faire ?",
+        "move_one": "Un élément portant ce nom existe déjà dans le dossier de destination. Le déplacement le remplacera.",
+        "move_other": "Ces éléments existent déjà dans le dossier de destination. Le déplacement les remplacera.",
+        "copy_one": "Un élément portant ce nom existe déjà dans le dossier de destination. La copie le remplacera.",
+        "copy_other": "Ces éléments existent déjà dans le dossier de destination. La copie les remplacera.",
+        "more": "+ {{count}} en savoir plus",
+        "skip": "Passer",
+        "rename": "Garde les deux",
+        "overwrite": "Remplacer"
       }
     },
     "browser": {
-      "back": "Back",
-      "forward": "Forward",
-      "reload": "Reload",
-      "stop": "Stop",
-      "address": "Address",
-      "addressPlaceholder": "Enter an address"
+      "back": "Retour",
+      "forward": "Suivant",
+      "reload": "Actualiser",
+      "stop": "Arrête",
+      "address": "Adresse",
+      "addressPlaceholder": "Saisis une adresse"
     },
     "remoteDesktop": {
       "dropOverlay": "Glisse-dépose les fichiers que tu veux transférer sur le serveur distant",
@@ -2251,33 +2251,33 @@
       }
     },
     "automatedSession": {
-      "viewOnlyAi": "The AI assistant is working in this session. You can watch, but not type.",
-      "viewOnlyMcp": "An external agent (MCP) is working in this session. You can watch, but not type."
+      "viewOnlyAi": "L'assistant IA est actif dans cette session. Tu peux regarder, mais tu ne peux pas taper.",
+      "viewOnlyMcp": "Un utilisateur externe (MCP) travaille dans cette session. Tu peux regarder, mais tu ne peux pas taper."
     },
     "aiAssistant": {
       "title": "Assistant AI",
       "open": "Assistant IA",
-      "empty": "Ask the assistant to inspect or change your servers. It opens its own sessions to the servers you add below, runs commands, edits files and can even operate remote desktops.",
-      "addServer": "Add server",
-      "removeServer": "Remove server",
-      "searchServers": "Search servers...",
-      "noMatches": "No matching servers",
-      "current": "current",
-      "openSessions": "{{count}} open session(s)",
+      "empty": "Demande à l'assistant d'inspecter ou de modifier tes serveurs. Il ouvre ses propres sessions sur les serveurs que tu ajoutes ci-dessous, exécute des commandes, modifie des fichiers et peut même contrôler des bureaux à distance.",
+      "addServer": "Ajouter un serveur",
+      "removeServer": "Supprimer le serveur",
+      "searchServers": "Rechercher des serveurs...",
+      "noMatches": "Aucun serveur correspondant",
+      "current": "actuel",
+      "openSessions": "{{count}} séance(s) publique(s)",
       "approval": {
-        "ask": "Ask before actions",
-        "askDescription": "Commands, input and file changes wait for your approval",
-        "allow": "Allow all",
-        "allowDescription": "Runs tool calls without asking",
-        "readonly": "Read-only",
-        "readonlyDescription": "Only inspects servers; anything that changes them is denied"
+        "ask": "Demande avant d'agir",
+        "askDescription": "Les commandes, les saisies et les modifications de fichiers attendent ta validation",
+        "allow": "Tout autoriser",
+        "allowDescription": "Exécute les commandes de l'outil sans te demander ton avis",
+        "readonly": "En lecture seule",
+        "readonlyDescription": "Ça inspecte uniquement les serveurs ; tout ce qui les modifie est bloqué"
       },
       "placeholder": "Envoie un message à l'assistant...",
       "connecting": "Connexion en cours...",
       "send": "Envoyer",
-      "copyMessage": "Copy message",
-      "copied": "Copied",
-      "editMessage": "Edit message",
+      "copyMessage": "Copier le message",
+      "copied": "Copié",
+      "editMessage": "Modifier le message",
       "stop": "Arrête",
       "connectionError": "La connexion avec l'assistant a été perdue.",
       "reconnecting": "Connexion perdue. Je me reconnecte...",
@@ -2290,64 +2290,64 @@
       "continuePrompt": "L'assistant a marqué une pause après une longue série de marches. Tu veux qu'il continue ?",
       "continue": "Continuer",
       "compacted": "Les messages précédents ont été résumés pour gagner de la place.",
-      "retryPrompt": "The last step failed. Retry from where it stopped?",
-      "retry": "Retry",
-      "questionOther": "Or type another answer...",
-      "questionAnswer": "Type your answer...",
-      "questionSend": "Answer",
-      "questionPickOne": "Pick one or type an answer",
-      "questionPickMany": "Pick any that apply",
-      "exitCode": "exit {{code}}",
-      "truncated": "[truncated]",
+      "retryPrompt": "La dernière étape a échoué. Tu veux réessayer là où ça s'est arrêté ?",
+      "retry": "Réessayer",
+      "questionOther": "Ou tape une autre réponse...",
+      "questionAnswer": "Écris ta réponse...",
+      "questionSend": "Réponse",
+      "questionPickOne": "Choisis une réponse ou tape-la",
+      "questionPickMany": "Coche les cases qui s'appliquent",
+      "exitCode": "sortie {{code}}",
+      "truncated": "[tronqué]",
       "toolSummary": {
-        "recursive": "{{path}} (recursive)",
+        "recursive": "{{path}} (récursif)",
         "doubleClick": "{{target}} ×2"
       },
       "tools": {
-        "list_entries": "List servers",
-        "get_entry": "Inspect server",
-        "list_folders": "List folders",
-        "list_organizations": "List organizations",
-        "list_identities": "List identities",
-        "list_snippets": "List snippets",
-        "list_scripts": "List scripts",
-        "list_tags": "List tags",
-        "list_users": "List users",
-        "get_permissions": "Check permissions",
-        "get_monitoring": "Read monitoring",
-        "list_sessions": "List sessions",
-        "open_session": "Open session",
-        "get_session": "Inspect session",
-        "close_session": "Close session",
-        "close_all_sessions": "Close all sessions",
-        "terminal_run": "Run command",
-        "terminal_send": "Send input",
-        "terminal_read": "Read terminal",
-        "terminal_resize": "Resize terminal",
-        "run_command": "Run command",
-        "exec_command": "Run command",
-        "file_list": "List directory",
-        "file_stat": "Inspect path",
-        "file_read": "Read file",
-        "file_write": "Write file",
-        "file_edit": "Edit file",
-        "file_mkdir": "Create directory",
-        "file_delete": "Delete",
-        "file_move": "Move",
-        "file_chmod": "Change permissions",
-        "file_search_dirs": "Find directories",
-        "desktop_screenshot": "Screenshot",
-        "desktop_info": "Inspect desktop",
-        "desktop_click": "Click",
-        "desktop_mouse_move": "Move mouse",
-        "desktop_drag": "Drag",
-        "desktop_scroll": "Scroll",
-        "desktop_type": "Type text",
-        "desktop_key": "Press keys",
-        "desktop_resize": "Resize desktop",
-        "desktop_clipboard_set": "Set clipboard",
-        "desktop_clipboard_get": "Read clipboard",
-        "batch": "Run several actions",
+        "list_entries": "Serveurs de listes de diffusion",
+        "get_entry": "Vérifier le serveur",
+        "list_folders": "Afficher les dossiers",
+        "list_organizations": "Liste des organisations",
+        "list_identities": "Lister les identités",
+        "list_snippets": "Extraits de liste",
+        "list_scripts": "Liste des scripts",
+        "list_tags": "Liste des balises",
+        "list_users": "Afficher la liste des utilisateurs",
+        "get_permissions": "Vérifie les autorisations",
+        "get_monitoring": "Surveillance des mesures",
+        "list_sessions": "Liste des sessions",
+        "open_session": "Séance publique",
+        "get_session": "Consulter la session",
+        "close_session": "Fermer la session",
+        "close_all_sessions": "Fermer toutes les sessions",
+        "terminal_run": "Exécuter la commande",
+        "terminal_send": "Envoyer la saisie",
+        "terminal_read": "Terminal de lecture",
+        "terminal_resize": "Redimensionner le terminal",
+        "run_command": "Exécuter la commande",
+        "exec_command": "Exécuter la commande",
+        "file_list": "Liste des répertoires",
+        "file_stat": "Vérifier le chemin d'accès",
+        "file_read": "Lire le fichier",
+        "file_write": "Écrire un fichier",
+        "file_edit": "Modifier le fichier",
+        "file_mkdir": "Créer un répertoire",
+        "file_delete": "Supprimer",
+        "file_move": "Déplacer",
+        "file_chmod": "Modifier les droits d'accès",
+        "file_search_dirs": "Trouver des répertoires",
+        "desktop_screenshot": "Capture d'écran",
+        "desktop_info": "Vérifier le bureau",
+        "desktop_click": "Clique",
+        "desktop_mouse_move": "Déplace la souris",
+        "desktop_drag": "Glisser",
+        "desktop_scroll": "Faire défiler",
+        "desktop_type": "Écris du texte",
+        "desktop_key": "Appuie sur les touches",
+        "desktop_resize": "Redimensionner le bureau",
+        "desktop_clipboard_set": "Définir le presse-papiers",
+        "desktop_clipboard_get": "Lire le presse-papiers",
+        "batch": "Lancer plusieurs actions",
         "ask_user": "Question"
       }
     },
@@ -2371,7 +2371,7 @@
       "holdModifier": "Attends {{key}}",
       "zoomIn": "Agrandir",
       "zoomOut": "Zoomer en arrière",
-      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
+      "zoomReset": "Réinitialiser le zoom (fais glisser avec le bouton central de la souris pour faire un panoramique)"
     },
     "monitors": {
       "title": "Moniteur {{number}}",
@@ -2406,34 +2406,34 @@
       "unknownUser": "Utilisateur inconnu"
     },
     "folderSettings": {
-      "name": "Folder name",
-      "nameRequired": "Folder name is required",
-      "loadFailed": "Unable to load folder settings",
-      "protocol": "Defaults for",
-      "protocolHint": "Servers in this folder use what you set below unless they set their own value. Each protocol has its own defaults.",
-      "unset": "Remove from folder"
+      "name": "Nom du dossier",
+      "nameRequired": "Le nom du dossier est obligatoire",
+      "loadFailed": "Impossible de charger les paramètres du dossier",
+      "protocol": "Valeurs par défaut pour",
+      "protocolHint": "Les serveurs de ce dossier utilisent les paramètres que tu définis ci-dessous, sauf s'ils ont leur propre valeur. Chaque protocole a ses propres paramètres par défaut.",
+      "unset": "Supprimer du dossier"
     },
     "trust": {
-      "certificate": "certificate",
-      "hostKey": "host key",
-      "newTitle": "Trust this {{subject}}?",
-      "newMessage": "This is the first connection to {{endpoint}}. Check the fingerprint before you continue.",
-      "changedTitle": "The {{subject}} has changed",
-      "changedMessage": "{{endpoint}} presents a different {{subject}} than before. Only continue if you expect this.",
-      "fingerprint": "Fingerprint",
-      "previous": "Trusted until now",
-      "presented": "Presented now",
-      "subject": "Issued to",
-      "issuer": "Issued by",
-      "selfSigned": "Self-signed",
-      "validUntil": "Valid until",
-      "blocked": "Only certificate managers of {{organization}} can accept this change.",
-      "accept": "Trust and connect",
-      "cancel": "Cancel",
-      "acceptChanged": "Trust the new one",
-      "disconnect": "Disconnect",
-      "failed": "Your decision could not be saved",
-      "acceptOnly": "Trust certificate"
+      "certificate": "certificat",
+      "hostKey": "clé hôte",
+      "newTitle": "Tu peux te fier à ce lien : {{subject}}?",
+      "newMessage": "C'est la première connexion à {{endpoint}}. Vérifie l'empreinte numérique avant de continuer.",
+      "changedTitle": "Le site {{subject}} a changé",
+      "changedMessage": "{{endpoint}} affiche une {{subject}} différente de celle d'avant. Ne continue que si tu t'y attends.",
+      "fingerprint": "Empreinte digitale",
+      "previous": "On lui a fait confiance jusqu'à présent",
+      "presented": "On te présente ça maintenant",
+      "subject": "Délivré à",
+      "issuer": "Publié par",
+      "selfSigned": "Auto-signé",
+      "validUntil": "Valable jusqu'au",
+      "blocked": "Seuls les gestionnaires de certificats de {{organization}} peuvent accepter cette modification.",
+      "accept": "Fais confiance et crée des liens",
+      "cancel": "Annuler",
+      "acceptChanged": "Fais confiance au nouveau",
+      "disconnect": "Déconnecter",
+      "failed": "Ta décision n'a pas pu être enregistrée",
+      "acceptOnly": "Certificat de confiance"
     }
   },
   "support": {
@@ -2449,8 +2449,8 @@
       "description": "Discute avec la communauté et obtiens de l'aide."
     },
     "docs": {
-      "title": "View Documentation",
-      "description": "Read the documentation and learn how to use Nexterm."
+      "title": "Consulter la documentation",
+      "description": "Lis la documentation et découvre comment utiliser Nexterm."
     },
     "github": {
       "title": "Voir sur GitHub",
@@ -2466,9 +2466,9 @@
     "recentConnections": "Connexions récentes",
     "getStarted": "Commencer",
     "getStartedHint": "Ajoute un serveur dans la barre latérale pour commencer à gérer ton infrastructure.",
-    "hibernated": "Hibernated",
+    "hibernated": "En hibernation",
     "demo": {
-      "explore": "Start exploring"
+      "explore": "Commence à explorer"
     }
   },
   "downloadApps": {
@@ -2481,9 +2481,9 @@
       "android": "Android",
       "ios": "iOS"
     },
-    "recommended": "Recommended",
-    "versionUnavailable": "The server version could not be determined, so direct downloads are unavailable. You can still browse the releases on GitHub.",
-    "sourceHint": "Downloads are served from the GitHub releases.",
-    "allReleases": "All releases"
+    "recommended": "Recommandé",
+    "versionUnavailable": "On n'a pas pu déterminer la version du serveur, donc les téléchargements directs ne sont pas disponibles. Tu peux quand même consulter les versions sur GitHub.",
+    "sourceHint": "Les téléchargements sont disponibles depuis les versions sur GitHub.",
+    "allReleases": "Toutes les sorties"
   }
 }
