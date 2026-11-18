@@ -240,7 +240,12 @@ rfbClient* guac_vnc_get_client(guac_client* client) {
         rfb_client->appData.encodingsString = strdup(vnc_settings->encodings);
 
     /* Connect */
-    if (rfbInitClient(rfb_client, NULL, NULL))
+    guac_vnc_client_log_set_client(client);
+    rfbBool connected = rfbInitClient(rfb_client, NULL, NULL);
+    guac_vnc_client_log_set_client(NULL);
+    guac_vnc_remove_trusted_certificates(vnc_client);
+
+    if (connected)
         return rfb_client;
 
     /* If connection fails, return NULL */
