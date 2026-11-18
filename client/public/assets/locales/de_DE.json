@@ -63,28 +63,28 @@
       "noAccount": "Hast du noch kein Konto?",
       "haveAccount": "Hast du schon ein Konto?",
       "welcome": "Willkommen zurück",
-      "subtitle": "Melde dich an um zu Nexterm fo",
+      "subtitle": "Melde dich an um zu Nexterm fortzufahren.",
       "registrationSubtitle": "Erstelle deinen Account, um zu loszulegen.",
       "firstTimeSubtitle": "Erstelle den ersten Administrator-Account für diese Instanz.",
       "twoFactorTitle": "Zwei-Faktor Authentifizierung",
-      "twoFactorDescription": "Gib den Code aus deiner Authentifizierungs App ein.",
+      "twoFactorDescription": "Gib den Code aus deiner Authentifizierungs-App ein.",
       "qrTitle": "Mit der App einloggen",
       "demo": {
-        "title": "Try Nexterm",
-        "subtitle": "Explore a live instance with simulated servers, no account needed.",
-        "start": "Start the demo",
-        "orSignIn": "or sign in to your account",
-        "failed": "Could not start a demo session"
+        "title": "Probier Nexterm aus",
+        "subtitle": "Entdecke eine live Instanz mit simulierten Servern, kein Account erforderlich.",
+        "start": "Demo starten",
+        "orSignIn": "oder melde dich mit deinem Konto an",
+        "failed": "Demo Sitzung konnte nicht gestartet werden"
       }
     },
     "demo": {
-      "timeLeft": "Demo · {{time}} left",
-      "end": "End demo",
-      "endConfirmText": "End your demo session? Everything you created will be removed.",
-      "minutes_one": "{{count}} min",
-      "minutes_other": "{{count}} min",
-      "hours_one": "{{count}} hour",
-      "hours_other": "{{count}} hours",
+      "timeLeft": "Demo · {{time}} übrig",
+      "end": "Demo beenden",
+      "endConfirmText": "Willst du deine Demo Sitzung beenden? Alles, was du erstellt hast, wird gelöscht.",
+      "minutes_one": "{{count}} Min",
+      "minutes_other": "{{count}} Min",
+      "hours_one": "{{count}} Stunde",
+      "hours_other": "{{count}} Stunden",
       "hoursMinutes": "{{hours}}h {{minutes}}m"
     },
     "deviceLink": {
@@ -474,8 +474,8 @@
     },
     "errors": {
       "loadFailed": "Monitor-Daten konnten nicht geladen werden",
-      "loadFailedDescription": "The monitoring data could not be retrieved. Check your connection and try again.",
-      "retry": "Retry"
+      "loadFailedDescription": "Monitoring-Daten konnte nicht abgerufen werden. Prüfe deine Verbindung und versuche es erneut.",
+      "retry": "Erneut versuchen"
     },
     "grid": {
       "noServers": {
@@ -483,8 +483,8 @@
         "subtitle": "Es sind keine SSH-Server für Monitoring verfügbar.\nFüge einige Server hinzu, um sie zu überwachen."
       },
       "noResults": {
-        "title": "No matching servers",
-        "subtitle": "No monitored server matches your search."
+        "title": "Keine passenden Server",
+        "subtitle": "Kein überwachter Server stimmt mit deiner Suche überein."
       },
       "metrics": {
         "loadAverage": "Durchschnittliche Last",
@@ -493,7 +493,7 @@
         "nodes": "Nodes",
         "vms": "VMs/Container",
         "cpu": "CPU",
-        "memory": "Memory"
+        "memory": "Arbeitsspeicher"
       },
       "status": {
         "serverOffline": "Server offline",
@@ -504,14 +504,14 @@
         "unknownMessage": "Der Serverstatus konnte nicht ermittelt werden.",
         "lastSeen": "Zuletzt gesehen: {{time}}",
         "noRecentActivity": "Keine Aktivitäten bekannt",
-        "waitingForData": "Waiting for data",
-        "pendingMessage": "Monitoring data will appear after the next monitoring cycle.",
+        "waitingForData": "Warte auf Daten",
+        "pendingMessage": "Monitoring-Daten werden nach dem nächsten Monitoring-Zyklus erscheinen",
         "labels": {
           "online": "Online",
           "offline": "Offline",
-          "error": "Error",
-          "pending": "Pending",
-          "unknown": "Unknown"
+          "error": "Fehler",
+          "pending": "Ausstehend",
+          "unknown": "Unbekannt"
         }
       },
       "uptime": {
@@ -554,7 +554,7 @@
           "processes": "Aktive Prozesse",
           "total": "Insgesamt: {{value}}",
           "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}",
-          "memory": "Memory"
+          "memory": "Arbeitsspeicher"
         },
         "uptime": {
           "format": {
@@ -574,51 +574,51 @@
         "title": "Speichernutzung",
         "noData": "Keine Daten zur Speichernutzung verfügbar",
         "noPartitions": "Keine gemounteten Partitionen",
-        "usedOf": "{{used}} of {{total}} used",
-        "free": "{{value}} free",
-        "filesystems": "Filesystems",
-        "disks": "Disks",
-        "on": "{{volume}} on {{partition}}",
+        "usedOf": "{{used}} von {{total}} genutzt",
+        "free": "{{value}} frei",
+        "filesystems": "Dateisysteme",
+        "disks": "Festplatten",
+        "on": "{{volume}} auf {{partition}}",
         "swap": "Swap",
-        "unmounted": "Not mounted",
-        "unallocated": "Unallocated",
+        "unmounted": "Nicht gemountet",
+        "unallocated": "Nicht zugewiesen",
         "inodes": "Inodes",
-        "inodesDetail": "{{used}} of {{total}}",
+        "inodesDetail": "{{used}} von {{total}}",
         "health": {
-          "passed": "Healthy",
-          "warning": "Warning",
-          "failed": "Failing",
-          "denied": "SMART needs root",
-          "temperature": "Temperature",
-          "powerOn": "Power-on time",
+          "passed": "In Ordnung",
+          "warning": "Warnung",
+          "failed": "Fehlgeschlagen",
+          "denied": "SMART benötigt Root-Rechte",
+          "temperature": "Temperatur",
+          "powerOn": "Einschaltzeit",
           "wear": "Wear",
-          "reallocated": "Reallocated sectors",
-          "pending": "Pending sectors",
-          "mediaErrors": "Media errors",
-          "years": "{{value}} years",
-          "days": "{{value}} days",
-          "hours": "{{value}} hours",
-          "failedTitle": "Disk failure predicted",
-          "failedMessage": "{{disks}} failed its SMART self-assessment. Back up the data and replace the disk."
+          "reallocated": "Neu zugewiesene Sektoren",
+          "pending": "Ausstehende Sektoren",
+          "mediaErrors": "Medienfehler",
+          "years": "{{value}} Jahre",
+          "days": "{{value}} Tage",
+          "hours": "{{value}} Stunden",
+          "failedTitle": "Festplatten-Fehler prognostiziert",
+          "failedMessage": "Die SMART-Selbstüberprüfung von {{disks}} ist fehlgeschlagen. Sichere die Daten und tausche die Festplatte aus"
         }
       },
       "network": {
         "speed": "Geschwindigkeit",
         "noData": "Keine Daten zur Netzwerkschnittstelle verfügbar",
-        "download": "Download",
-        "upload": "Upload",
-        "interface": "Interface",
-        "address": "Address",
+        "download": "Herunterladen",
+        "upload": "Hochladen",
+        "interface": "Schnittstelle",
+        "address": "Adresse",
         "gateway": "Gateway",
-        "interfaces": "Interfaces",
-        "virtual": "Virtual interfaces",
-        "defaultRoute": "Default route",
-        "up": "Up",
-        "down": "Down",
-        "errors": "{{count}} errors",
-        "dropped": "{{count}} dropped",
-        "copy": "Copy {{address}}",
-        "total": "{{value}} total"
+        "interfaces": "Schnittstellen",
+        "virtual": "Virtuelle Schnittstellen",
+        "defaultRoute": "Standard Route",
+        "up": "Upload",
+        "down": "Download",
+        "errors": "{{count}} Fehler",
+        "dropped": "{{count}} ausgelassen",
+        "copy": "{{address}} kopieren",
+        "total": "{{value}} insgesamt"
       },
       "processes": {
         "searchPlaceholder": "Suchvorgänge...",
@@ -626,9 +626,9 @@
         "noData": "Keine Prozessdaten verfügbar. Die Prozessdaten werden nach dem nächsten Überwachungszyklus angezeigt.",
         "noResults": "Keine Prozesse entsprechen deinen Suchkriterien.",
         "columns": {
-          "command": "Command",
+          "command": "Befehl",
           "cpu": "CPU",
-          "mem": "Memory"
+          "mem": "Arbeitsspeicher"
         }
       },
       "pve": {
@@ -677,8 +677,8 @@
     "account": {
       "title": "Account",
       "demo": {
-        "title": "Security",
-        "description": "Password, two-factor authentication, passkeys, API keys and profile pictures can't be changed while you're exploring as a guest."
+        "title": "Sicherheit",
+        "description": "Passwort, Zwei-Faktor-Authentifizierung, Passkeys, API-Schlüssel und Profilbilder können nicht geändert werden, solange du als Gast unterwegs bist."
       },
       "avatar": {
         "label": "Bild",
@@ -763,7 +763,7 @@
       "sessionSyncAcrossDevicesDesc": "Die Sitzungen werden auf allen Geräten verfügbar sein und synchronisiert",
       "sessionSyncSameBrowserDesc": "Die Sitzungen werden für die aktuelle Benutzersitzung synchronisiert",
       "sessionSyncSameTabDesc": "Die Sitzungen werden innerhalb deines Browser-Tabs synchronisiert",
-      "showAgentSessionsDesc": "Show sessions opened by the AI assistant or MCP agents as view-only tabs",
+      "showAgentSessionsDesc": "Sitzungen, die vom KI-Assistenten oder von MCP-Agenten geöffnet wurden, als nur-lesen Tabs anzeigen",
       "twoFactorDialog": {
         "title": "2FA aktivieren",
         "description": "Scanne den Code mit deiner Authenticator-App oder gib den Code <span class=\"totp-code\">{{secret}}</span> manuell ein.",
@@ -868,8 +868,8 @@
         "folderManagementDescription": "Protokollierung der Erstellung, Änderung und Löschung von Ordnern",
         "scriptExecutionLabel": "Skript-Ausführung",
         "scriptExecutionDescription": "Protokollierung der Ausführung von Skripten und Automatisierungsaufgaben",
-        "agentOperationsLabel": "AI Agent Operations",
-        "agentOperationsDescription": "Log commands, input, screenshots and file changes performed by the AI assistant and by agents connected through the MCP server",
+        "agentOperationsLabel": "KI-Agent Operationen",
+        "agentOperationsDescription": "Protokolliere Befehle, Eingaben, Screenshots und Dateiänderungen, die vom KI-Assistenten und von den über den MCP-Server verbundenen Agenten vorgenommen wurden",
         "actions": {
           "save": "Einstellungen speichern"
         },
@@ -1129,8 +1129,8 @@
         "ask": "Fragen"
       },
       "singleClickOpen": {
-        "title": "Open with single click",
-        "description": "Open files and folders with a single click instead of selecting them. Double-click opens when this is off."
+        "title": "Mit einem Klick öffnen",
+        "description": "Öffne Dateien und Ordner mit einem einzigen Klick, anstatt sie auszuwählen. Wenn diese Option deaktiviert ist, werden sie per Doppelklick geöffnet."
       }
     },
     "authentication": {
@@ -1187,12 +1187,12 @@
           "saveFailed": "Anbieter konnte nicht gespeichert werden"
         },
         "groupSync": {
-          "title": "Group Sync",
-          "hint": "Automatically add users to organizations and control access based on group claims from your identity provider.",
-          "groupsAttribute": "Groups Claim",
-          "groupsAttributePlaceholder": "groups",
-          "requiredGroup": "Required Group",
-          "requiredGroupPlaceholder": "nexterm-users",
+          "title": "Gruppen-Sync",
+          "hint": "Füge Benutzer automatisch zu Organisationen hinzu und steuere den Zugriff anhand der Gruppenansprüche deines Identitätsanbieters.",
+          "groupsAttribute": "Gruppenanspruch",
+          "groupsAttributePlaceholder": "Gruppen",
+          "requiredGroup": "Erforderliche Gruppe",
+          "requiredGroupPlaceholder": "Nexterm-Benutzer",
           "requiredGroupHint": "If set, only users whose groups claim contains this value are allowed to log in.",
           "mappings": "Organization Mappings",
           "mappingsHint": "Map a group claim value to an organization. Membership is kept in sync on every login.",
