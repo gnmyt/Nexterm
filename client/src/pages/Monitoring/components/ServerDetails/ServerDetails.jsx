@@ -12,6 +12,7 @@ import StorageTab from "./components/StorageTab";
 import NetworkTab from "./components/NetworkTab";
 import {
     EMPTY, LoadFailedState, Meter, SectionHeading, ServerIdentity, StatusBadge, StateNotice, describeMonitoringState, formatUptime,
+    getUsageLevel,
 } from "../shared";
 import { useTranslation } from "react-i18next";
 
@@ -52,6 +53,37 @@ const SectionCard = ({ title, badge, children }) => (
         {children}
     </section>
 );
+
+const MEMORY_SEGMENTS = ["used", "cache", "free"];
+
+const MemoryCard = ({ memory, t }) => {
+    const label = (segment) => t(`monitoring.details.overview.memory.${segment}`);
+    const percent = (segment) => (memory[segment] / memory.total) * 100;
+    const summary = t("monitoring.details.overview.memory.summary", {
+        used: formatBytes(memory.used), total: formatBytes(memory.total), percent: Math.round(percent("used")),
+    });
+
+    return (
+        <SectionCard title={t("monitoring.details.overview.memory.title")}
+                     badge={<span className="section-card__muted">{summary}</span>}>
+            <div className={`memory-bar memory-bar--${getUsageLevel(percent("used"))}`} role="img" aria-label={summary}>
+                {MEMORY_SEGMENTS.slice(0, -1).map(segment => (
+                    <div key={segment} className={`memory-bar__segment memory-bar__segment--${segment}`}
+                         style={{ width: `${percent(segment)}%` }} title={`${label(segment)}: ${formatBytes(memory[segment])}`} />
+                ))}
+            </div>
+            <dl className="memory-legend">
+                {MEMORY_SEGMENTS.map(segment => (
+                    <div key={segment} className="memory-legend__item">
+                        <span className={`memory-legend__swatch memory-legend__swatch--${segment}`} />
+                        <dt>{label(segment)}</dt>
+                        <dd>{formatBytes(memory[segment])}</dd>
+                    </div>
+                ))}
+            </dl>
+        </SectionCard>
+    );
+};
 
 export const ServerDetails = ({ server, state = "online", activeTab = "overview", onTabChange, onClose }) => {
     const { t } = useTranslation();
@@ -147,6 +179,7 @@ const OverviewTab = ({ latest, data, range, t }) => {
                 <Fact label={t("monitoring.details.overview.performance.memory")} value={latest?.memoryTotal ? formatBytes(latest.memoryTotal) : null} />
                 <Fact label={t("monitoring.details.overview.systemInfo.uptime")} value={latest?.uptime ? formatUptime(latest.uptime, t) : null} />
             </dl>
+            {latest?.memory?.total > 0 && <MemoryCard memory={latest.memory} t={t} />}
             <Charts data={data} range={range} processesTitle={t("monitoring.details.charts.processes")} t={t} />
             <SectionCard title={t("monitoring.details.overview.systemInfo.title")}>
                 {hasSystemInfo ? (
