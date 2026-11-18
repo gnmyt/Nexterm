@@ -103,6 +103,8 @@ export const ViewContainer = ({
 
     const activeControls = sessionControls[activeSessionId] || null;
 
+    const getSessionElement = useCallback((sessionId) => sessionRefs.current[sessionId] || null, []);
+
     const registerTerminalRef = useCallback((sessionId, refs) => {
         refs ? terminalRefs.current[sessionId] = refs : delete terminalRefs.current[sessionId];
     }, []);
@@ -492,7 +494,7 @@ export const ViewContainer = ({
                     sessionProgress={sessionProgress} sessionPageInfo={sessionPageInfo}
                     fullscreenEnabled={fullscreenMode}
                     onFullscreenToggle={toggleFullscreenMode}
-                    openNotes={openNotes}
+                    openNotes={openNotes} getSessionElement={getSessionElement}
                     hibernateSession={hibernateSession} duplicateSession={duplicateSession} />
     );
 
