@@ -43,9 +43,17 @@ Nexterm is an open-source server management software that allows you to:
 
 ## 🚀 Install
 
+- **Try it first:** [Open the live demo](https://demo.nexterm.dev)
 - **Quick start with Docker:** [Install Nexterm](https://nexterm.dev/install)
 - **Full installation guide:** [Read the documentation](https://docs.nexterm.dev/installation)
 - **Desktop and mobile apps:** [Browse downloads](https://nexterm.dev/downloads)
+
+### Deploy on Hostinger
+
+Nexterm is available as a one-click Docker deployment on Hostinger, up and running within minutes, with full root
+access and a fixed monthly price.
+Want to see how it performs? Our [live demo](https://demo.nexterm.dev) runs on Hostinger as well.
+[Deploy Nexterm on Hostinger »](https://www.hostinger.com/applications/nexterm)
 
 ## 💻 Development
 
@@ -171,7 +179,21 @@ Contributions are welcome! Please feel free to:
 
 ## 💜 Powered by
 
-[![JetBrains logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://jb.gg/OpenSource)
+<p>
+  <a href="https://jb.gg/OpenSource">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/public/assets/sponsors/jetbrains-dark.svg">
+      <img src="docs/public/assets/sponsors/jetbrains.svg" alt="JetBrains logo" height="50">
+    </picture>
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://www.hostinger.com/applications/nexterm">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/public/assets/sponsors/hostinger-dark.svg">
+      <img src="docs/public/assets/sponsors/hostinger.svg" alt="Hostinger logo" height="50">
+    </picture>
+  </a>
+</p>
 
 ## 📄 License
 
