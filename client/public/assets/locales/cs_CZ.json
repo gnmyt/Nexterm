@@ -549,6 +549,13 @@
           "unknown": "Neznámo",
           "noData": "Žádné informace o systému nejsou k dispozici"
         },
+        "memory": {
+          "title": "Memory",
+          "summary": "{{used}} of {{total}} ({{percent}}%)",
+          "used": "Used",
+          "cache": "Buffers / Cache",
+          "free": "Free"
+        },
         "performance": {
           "title": "Výkonnostní metriky",
           "loadAverage": "Průměrná zátěž",
