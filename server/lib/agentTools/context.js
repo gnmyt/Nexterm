@@ -48,6 +48,7 @@ const createToolContext = ({
     origin = "mcp",
     ipAddress = null,
     userAgent = null,
+    baseUrl = null,
     allowedEntryIds = null,
     ownSessionsOnly = false,
 }) => {
@@ -59,6 +60,7 @@ const createToolContext = ({
         origin,
         ipAddress,
         userAgent,
+        baseUrl,
         allowedEntryIds: allowedEntryIds ? new Set(allowedEntryIds.map(Number)) : null,
         ownSessionsOnly,
     };

@@ -117,8 +117,8 @@ type, press Enter, take a screenshot, or for running the same command on several
 ## Auditing
 
 Agent actions get their own entries in the audit log: `agent.command`, `agent.terminal_input`, `agent.desktop_input`,
-`agent.screenshot` and `agent.file_*`. Each one records which API key was used, and the connection entry of an agent
-session is marked as automated.
+`agent.screenshot`, `agent.file_*` and `agent.transfer_create`. Each one records which API key was used, and the
+connection entry of an agent session is marked as automated.
 
 Organizations can turn this category on or off with **AI Agent Operations** in their audit settings.
 

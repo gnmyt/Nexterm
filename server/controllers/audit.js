@@ -69,6 +69,9 @@ const AUDIT_ACTIONS = {
     AGENT_FILE_RENAME: "agent.file_rename",
     AGENT_FILE_CHMOD: "agent.file_chmod",
     AGENT_FOLDER_CREATE: "agent.folder_create",
+    AGENT_TRANSFER_CREATE: "agent.transfer_create",
+    AGENT_FILE_UPLOAD: "agent.file_upload",
+    AGENT_FILE_DOWNLOAD: "agent.file_download",
 };
 
 const RESOURCE_TYPES = {
@@ -134,6 +137,9 @@ const ACTION_LABELS = {
     "agent.file_rename": "Agent moved / renamed a path",
     "agent.file_chmod": "Agent changed permissions",
     "agent.folder_create": "Agent created a folder",
+    "agent.transfer_create": "Agent created a file transfer link",
+    "agent.file_upload": "Agent uploaded a file",
+    "agent.file_download": "Agent downloaded a file",
 };
 
 const ACTION_CATEGORIES = [

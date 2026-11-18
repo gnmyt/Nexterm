@@ -63,6 +63,7 @@ generateOpenAPISpec(app);
 
 app.disable("x-powered-by");
 app.set("trust proxy", parseTrustProxy(process.env.TRUST_PROXY));
+app.use("/api/transfers", require("./routes/transfer"));
 app.use(express.json());
 
 app.use("/api/service", require("./routes/service"));

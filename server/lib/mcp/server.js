@@ -15,14 +15,16 @@ Typical workflow:
    - files (SFTP): file_list, file_read, file_write, file_edit, file_mkdir, file_delete, file_move, file_chmod.
 4. close_session when you are done.
 
-exec_command runs a single command on an SSH entry without keeping a session open.`;
+exec_command runs a single command on an SSH entry without keeping a session open.
 
-const createMcpServer = ({ user, apiKey, ipAddress, userAgent }) => {
+To copy whole files between your machine and a server (binaries, archives, anything larger than a few KB), use transfer_create instead of file_write / file_read: it returns a single-use HTTPS link that you upload to or download from with curl in your own shell. transfer_status returns the byte count and sha256 afterwards.`;
+
+const createMcpServer = ({ user, apiKey, ipAddress, userAgent, baseUrl = null }) => {
     const server = new McpServer(
         { name: "nexterm", version: packageJson.version },
         { instructions: INSTRUCTIONS },
     );
-    const ctx = createToolContext({ user, apiKey, origin: "mcp", ipAddress, userAgent });
+    const ctx = createToolContext({ user, apiKey, origin: "mcp", ipAddress, userAgent, baseUrl });
     registerMcpTools(server, ctx);
     return server;
 };

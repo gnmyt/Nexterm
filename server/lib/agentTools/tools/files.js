@@ -214,3 +214,5 @@ module.exports = (define, ctx) => {
         return { query, directories: await sftp.searchDirs(query, maxResults, 60000) };
     });
 };
+
+module.exports.resolveSftp = resolveSftp;
