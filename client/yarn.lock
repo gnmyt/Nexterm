@@ -541,11 +541,11 @@
     "@tauri-apps/api" "^2.11.0"
 
 "@tauri-apps/plugin-fs@^2":
-  version "2.5.2"
-  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-fs/-/plugin-fs-2.5.2.tgz#262ff39542e50e96f1ee8b6b7d471898736d6609"
-  integrity sha512-XXvMSnFiob+G1H+YHCDf+bzWVumseQuEIhzpbOJzevUfL4k0U+sTApZWJHpoLiamggnVPJm5dJ5sDsniRyWxlg==
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-fs/-/plugin-fs-2.7.1.tgz#b430106860dd6d5b11cdb30d19ab9cedccfb7676"
+  integrity sha512-4TBVjpi/q8PuNzjpkAc2iBGXMTLjOrAyfTiiOL8ORaJCZJRG3tjzmQ4sqs2CMG75FvLyRkOkERfP7AyY4iBNwQ==
   dependencies:
-    "@tauri-apps/api" "^2.11.0"
+    "@tauri-apps/api" "^2.12.0"
 
 "@tauri-apps/plugin-global-shortcut@^2.3.2":
   version "2.3.2"
