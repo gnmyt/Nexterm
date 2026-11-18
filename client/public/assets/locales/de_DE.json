@@ -224,7 +224,8 @@
         "rdpSessionConflict": "Die Sitzung wurde von dem Server getrennt, da eine andere Verbindung geöffnet wurde.",
         "rdpSessionTimeout": "Die RDP Sitzung wurde getrennt, da das Zeitlimit der Session erreicht wurde.",
         "rdpSessionClosed": "Die RDP Sitzung wurde durch den verbundenen Server oder einen Administrator beendet."
-      }
+      },
+      "accountLinkRequired": "An account with this username already exists. Ask an administrator to allow linking it to your sign-in."
     },
     "messages": {
       "invitationAccepted": "Einladung angenommen",
@@ -672,7 +673,8 @@
       "monitoring": "Monitoring",
       "backup": "Speicher",
       "engines": "Engines",
-      "permissions": "Benutzergruppen & Berechtigungen"
+      "permissions": "Benutzergruppen & Berechtigungen",
+      "trustedCertificates": "Trusted Certificates"
     },
     "account": {
       "title": "Account",
@@ -829,7 +831,12 @@
       "description": "Ein sicheres Passwort enthält Sonderzeichen, Zahlen und große bzw. kleine Buchstaben.",
       "newPassword": "Neues Passwort",
       "confirmPassword": "Bestätige das neue Passwort",
-      "changePasswordButton": "Passwort ändern"
+      "changePasswordButton": "Passwort ändern",
+      "currentPassword": "Current password",
+      "descriptionOwn": "Enter your current password and choose a new one. You will be signed out on all other devices.",
+      "descriptionOther": "Choose a new password for this user. They will be signed out on all devices.",
+      "successOwn": "Your password was changed. Other devices were signed out.",
+      "successOther": "The password was changed and the user was signed out everywhere."
     },
     "organizations": {
       "title": "Deine Organisationen",
@@ -935,7 +942,10 @@
         "deleteUser": "Benutzer löschen",
         "loginAsUser": "Anmeldung als Benutzer",
         "deleteConfirm": "Dadurch wird der Benutzer und alle zugehörigen Daten endgültig gelöscht.",
-        "managePermissions": "Berechtigungen verwalten"
+        "managePermissions": "Berechtigungen verwalten",
+        "allowExternalLink": "Allow SSO/LDAP linking",
+        "cancelExternalLink": "Cancel SSO/LDAP linking",
+        "unlinkExternal": "Unlink SSO/LDAP sign-in"
       }
     },
     "userDialog": {
@@ -1087,6 +1097,14 @@
       "syncLoginRequired": "Bitte melde dich an, um die Einstellungen des Dateimanagers zu synchronisieren",
       "syncEnabled": "Die Einstellungen des Dateimanagers werden jetzt mit deinem Konto synchronisiert",
       "syncDisabled": "Die Einstellungen des Dateimanagers werden nicht mehr synchronisiert",
+      "view": {
+        "title": "View",
+        "description": "How files and folders are shown when you open the file manager."
+      },
+      "behavior": {
+        "title": "Behavior",
+        "description": "What happens when you open, delete and move files."
+      },
       "defaultView": {
         "title": "Standard-Ansichtsmodus",
         "description": "Wähle das Standardlayout beim Öffnen des Dateimanagers.",
@@ -1095,7 +1113,8 @@
         "grid": "Rasteransicht",
         "gridDescription": "Dateien als Icons in einem Rasterlayout mit Miniaturansichten anzeigen",
         "compact": "Kompaktansicht",
-        "compactDescription": "Show only names in dense columns to fit many files on screen"
+        "compactDescription": "Show only names in dense columns to fit many files on screen",
+        "label": "Default view"
       },
       "thumbnails": {
         "title": "Bild-Miniaturansichten",
@@ -1103,7 +1122,10 @@
         "enabled": "Thumbnails anzeigen",
         "enabledDescription": "Anzeige von Bildvorschauen in der Rasteransicht zur schnellen visuellen Identifizierung",
         "disabled": "Vorschaubilder ausblenden",
-        "disabledDescription": "Nur Dateisymbole anzeigen, um Bandbreite zu sparen und die Leistung zu verbessern"
+        "disabledDescription": "Nur Dateisymbole anzeigen, um Bandbreite zu sparen und die Leistung zu verbessern",
+        "label": "Image thumbnails",
+        "show": "Show",
+        "hide": "Hide"
       },
       "hiddenFiles": {
         "title": "Versteckte Dateien",
@@ -1111,7 +1133,10 @@
         "show": "Versteckte Dateien anzeigen",
         "showDescription": "Alle Dateien einschließlich .dotfiles und Systemverzeichnisse anzeigen",
         "hide": "Versteckte Dateien ausblenden",
-        "hideDescription": "Nur reguläre Dateien und Ordner anzeigen"
+        "hideDescription": "Nur reguläre Dateien und Ordner anzeigen",
+        "label": "Hidden files",
+        "showShort": "Show",
+        "hideShort": "Hide"
       },
       "deleteConfirmation": {
         "title": "Bestätigung löschen",
@@ -1119,18 +1144,43 @@
         "enabled": "Bestätige Löschungen",
         "enabledDescription": "Einen Bestätigungsdialog vor dem Löschen von Elementen anzeigen",
         "disabled": "Sofort löschen",
-        "disabledDescription": "Dateien löschen, ohne nach einer Bestätigung zu fragen"
+        "disabledDescription": "Dateien löschen, ohne nach einer Bestätigung zu fragen",
+        "label": "Before deleting",
+        "ask": "Ask for confirmation",
+        "immediately": "Delete immediately"
       },
       "dragDropAction": {
         "title": "Drag & Drop Aktion",
         "description": "Standardaktion beim Ziehen von Dateien an einen neuen Ort.",
         "move": "Verschiebe",
         "copy": "Kopiere",
-        "ask": "Fragen"
+        "ask": "Fragen",
+        "label": "When dropping files"
       },
       "singleClickOpen": {
         "title": "Mit einem Klick öffnen",
-        "description": "Öffne Dateien und Ordner mit einem einzigen Klick, anstatt sie auszuwählen. Wenn diese Option deaktiviert ist, werden sie per Doppelklick geöffnet."
+        "description": "Öffne Dateien und Ordner mit einem einzigen Klick, anstatt sie auszuwählen. Wenn diese Option deaktiviert ist, werden sie per Doppelklick geöffnet.",
+        "single": "Single click",
+        "double": "Double click",
+        "label": "Open items with"
+      },
+      "sharedDrive": {
+        "title": "Shared Drive",
+        "description": "What remote desktops can see of this computer through their shared drive. Changes apply to new connections.",
+        "mode": {
+          "title": "Share",
+          "folder": "One folder",
+          "disk": "Entire disk",
+          "off": "Nothing",
+          "diskWarning": "Remote desktops can read, change and delete every file on this computer."
+        },
+        "folder": {
+          "title": "Shared folder",
+          "default": "Nexterm Shared in your home folder",
+          "choose": "Choose folder",
+          "reset": "Use default"
+        },
+        "folderError": "The shared folder could not be prepared"
       }
     },
     "authentication": {
@@ -1246,6 +1296,17 @@
           "testSuccess": "Verbindungstest erfolgreich",
           "testFailed": "Verbindungstest fehlgeschlagen"
         }
+      },
+      "sessions": {
+        "title": "Sessions",
+        "description": "When signed-in devices, including the mobile and desktop apps, have to sign in again.",
+        "idle": "Sign out after inactivity",
+        "lifetime": "Maximum session length",
+        "days_one": "{{count}} day",
+        "days_other": "{{count}} days",
+        "never": "Never",
+        "loadError": "Failed to load the session settings",
+        "saveError": "Failed to save the session settings"
       }
     },
     "ai": {
@@ -1627,7 +1688,28 @@
       "inheritsAllow": "Vererbung: Erlaubt",
       "inheritsDeny": "Vererbung: Verweigert"
     },
-    "search": "Durchsuche Einstellungen"
+    "search": "Durchsuche Einstellungen",
+    "trustedCertificates": {
+      "title": "Trusted Certificates",
+      "description": "Certificates and host keys you accepted when connecting. Remove one to be asked again the next time.",
+      "personal": "Personal",
+      "system": "System",
+      "kinds": {
+        "ssh": "SSH host key",
+        "tls": "TLS certificate"
+      },
+      "empty": "Nothing trusted yet",
+      "emptyDescription": "Certificates and host keys appear here once you accept them for a connection.",
+      "remove": "Remove",
+      "removeConfirm": "Stop trusting {{endpoint}}? The next connection asks again.",
+      "removeSuccess": "Trusted certificate removed",
+      "removeError": "Failed to remove the trusted certificate",
+      "ignore": {
+        "title": "Ignore certificate warnings",
+        "description": "Connect to your personal servers without checking their certificate or host key. Connections can then be intercepted without you noticing. Organization servers are always checked.",
+        "error": "Failed to save the setting"
+      }
+    }
   },
   "tunnel": {
     "title": "Port-Weiterleitung",
@@ -2330,6 +2412,28 @@
       "protocol": "Standard für",
       "protocolHint": "Die Server in diesem Ordner verwenden die Einstellungen, die du unten festlegst, sofern sie nicht eigene Werte festlegen. Jedes Protokoll hat seine eigenen Standardeinstellungen.",
       "unset": "Aus Ordner entfernen"
+    },
+    "trust": {
+      "certificate": "certificate",
+      "hostKey": "host key",
+      "newTitle": "Trust this {{subject}}?",
+      "newMessage": "This is the first connection to {{endpoint}}. Check the fingerprint before you continue.",
+      "changedTitle": "The {{subject}} has changed",
+      "changedMessage": "{{endpoint}} presents a different {{subject}} than before. Only continue if you expect this.",
+      "fingerprint": "Fingerprint",
+      "previous": "Trusted until now",
+      "presented": "Presented now",
+      "subject": "Issued to",
+      "issuer": "Issued by",
+      "selfSigned": "Self-signed",
+      "validUntil": "Valid until",
+      "blocked": "Only certificate managers of {{organization}} can accept this change.",
+      "accept": "Trust and connect",
+      "cancel": "Cancel",
+      "acceptChanged": "Trust the new one",
+      "disconnect": "Disconnect",
+      "failed": "Your decision could not be saved",
+      "acceptOnly": "Trust certificate"
     }
   },
   "support": {
