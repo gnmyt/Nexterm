@@ -36,8 +36,8 @@ build() {
     if [ -f Makefile ]; then
         CURRENT_PREFIX=$(grep "^prefix = " Makefile | sed 's/prefix = //')
         CURRENT_FREERDP_DIR=$(grep "^FREERDP_PLUGIN_DIR = " src/protocols/rdp/Makefile 2>/dev/null | sed 's/FREERDP_PLUGIN_DIR = //' || echo "")
-        if [ "$CURRENT_PREFIX" != "$DIST_DIR" ] || [ "$CURRENT_FREERDP_DIR" != "$DIST_DIR/lib/freerdp3" ] || \
-                [ configure.ac -nt Makefile ] || [ "$LIBVNC_STAMP" -nt Makefile ]; then
+        if [[ "$CURRENT_PREFIX" != "$DIST_DIR" || "$CURRENT_FREERDP_DIR" != "$DIST_DIR/lib/freerdp3" || \
+                configure.ac -nt Makefile || "$LIBVNC_STAMP" -nt Makefile ]]; then
             echo "[guacd] Configuration mismatch, reconfiguring..."
             make distclean 2>/dev/null || true
             autoreconf -fi && CFLAGS="${CFLAGS:-} -Wno-error=deprecated-declarations" ./configure $CONFIGURE_OPTS

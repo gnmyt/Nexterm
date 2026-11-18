@@ -4,11 +4,11 @@ LIBVNC_LIB="$PROJECT_ROOT/vendor/libvncserver/dist/lib"
 LIBVNC_STAMP="$LIBVNC_LIB/../.nexterm-patches"
 
 ensure_libvnc_built() {
-    local EXPECTED
-    EXPECTED=$(cat "$PROJECT_ROOT/vendor/patches/libvncclient-accept-screen-id-zero.patch" \
+    local expected
+    expected=$(cat "$PROJECT_ROOT/vendor/patches/libvncclient-accept-screen-id-zero.patch" \
         "$PROJECT_ROOT/vendor/patches/libvncclient-extended-clipboard.patch" | cksum)
     if [[ -f "$LIBVNC_LIB/libvncclient.so.1" && -f "$LIBVNC_STAMP" ]] && \
-            [[ "$(cat "$LIBVNC_STAMP")" == "$EXPECTED" ]]; then
+            [[ "$(cat "$LIBVNC_STAMP")" == "$expected" ]]; then
         return 0
     fi
 

@@ -34,7 +34,7 @@ ensure_guacd_built() {
     local NEEDS_BUILD=0
     if [ ! -f "$GUAC_LIB" ]; then
         NEEDS_BUILD=1
-    elif [ "$LIBVNC_STAMP" -nt "$GUAC_LIB" ]; then
+    elif [[ "$LIBVNC_STAMP" -nt "$GUAC_LIB" ]]; then
         NEEDS_BUILD=1
     elif find "$GUACD_SRC/src" "$GUACD_SRC/configure.ac" "$GUACD_SRC/Makefile.am" \
             -type f -newer "$GUAC_LIB" | grep -q .; then
@@ -46,8 +46,8 @@ ensure_guacd_built() {
         cd "$GUACD_SRC"
         CONFIGURE_OPTS="--prefix=$DIST_DIR --with-freerdp-plugin-dir=$DIST_DIR/lib/freerdp3"
 
-        if [ ! -f Makefile ] || [ configure.ac -nt Makefile ] || \
-                [ "$LIBVNC_STAMP" -nt Makefile ]; then
+        if [[ ! -f Makefile || configure.ac -nt Makefile || \
+                "$LIBVNC_STAMP" -nt Makefile ]]; then
             autoreconf -fi && \
                 CFLAGS="${CFLAGS:-} -Wno-error=deprecated-declarations" ./configure $CONFIGURE_OPTS
         fi
