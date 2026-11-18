@@ -5,11 +5,11 @@
   "scripts": {
     "dev": "cargo tauri dev",
     "build": "cargo tauri build",
-    "stack:dev": "yarn --cwd .. dev",
-    "client:build": "yarn --cwd ../client build",
+    "client:dev": "cd ../client && yarn dev",
+    "client:build": "cd ../client && yarn build",
     "tauri": "tauri"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "2.10.1"
+    "@tauri-apps/cli": "^2"
   }
 }
