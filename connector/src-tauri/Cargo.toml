@@ -30,5 +30,5 @@ serde_json = "1"
 url = "2"
 os_info = "3"
 base64 = "0.22"
-reqwest = { version = "0.12", default-features = false, features = ["native-tls", "stream", "http2", "gzip", "charset"] }
+reqwest = { version = "0.13", default-features = false, features = ["native-tls", "stream", "http2", "gzip", "charset"] }
 bytes = "1"
