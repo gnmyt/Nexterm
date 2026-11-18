@@ -2447,9 +2447,13 @@
     "title": "Získat podporu",
     "subtitle": "Potřebujete pomoc nebo chcete přispět?",
     "footer": "Děkujeme, že používáte Nexterm!",
+    "bug": {
+      "title": "Report a Bug",
+      "description": "Opens a bug report with your version filled in."
+    },
     "issues": {
-      "title": "Nahlášení problému",
-      "description": "Našli jste chybu nebo máte požadavek na funkci?"
+      "title": "Browse Issues",
+      "description": "Search existing reports or request a feature."
     },
     "discord": {
       "title": "Připojte se k Discordu",
