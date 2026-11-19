@@ -550,11 +550,11 @@
           "noData": "Нет данных о системе"
         },
         "memory": {
-          "title": "Memory",
-          "summary": "{{used}} of {{total}} ({{percent}}%)",
-          "used": "Used",
-          "cache": "Buffers / Cache",
-          "free": "Free"
+          "title": "Память",
+          "summary": "{{used}} из {{total}} ({{percent}}%)",
+          "used": "Б/у",
+          "cache": "Буферы / Кэш",
+          "free": "Бесплатно"
         },
         "performance": {
           "title": "Метрики производительности",
@@ -2448,12 +2448,12 @@
     "subtitle": "Нужна помощь или хочешь внести свой вклад?",
     "footer": "Спасибо, что используешь Nexterm!",
     "bug": {
-      "title": "Report a Bug",
-      "description": "Opens a bug report with your version filled in."
+      "title": "Сообщить об ошибке",
+      "description": "Откроет заявку об ошибке, в которой уже будет указана твоя версия."
     },
     "issues": {
-      "title": "Browse Issues",
-      "description": "Search existing reports or request a feature."
+      "title": "Просмотреть выпуски",
+      "description": "Поищи готовые отчёты или оставь запрос на добавление новой функции."
     },
     "discord": {
       "title": "Присоединяйся к Discord",
