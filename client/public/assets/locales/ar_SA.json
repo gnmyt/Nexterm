@@ -550,11 +550,11 @@
           "noData": "لا توجد معلومات نظام متاحة"
         },
         "memory": {
-          "title": "Memory",
-          "summary": "{{used}} of {{total}} ({{percent}}%)",
-          "used": "Used",
-          "cache": "Buffers / Cache",
-          "free": "Free"
+          "title": "الذاكرة",
+          "summary": "{{used}} من موقع {{total}} ({{percent}}٪)",
+          "used": "مستعمل",
+          "cache": "الذاكرة المؤقتة / ذاكرة التخزين المؤقت",
+          "free": "مجاني"
         },
         "performance": {
           "title": "مقاييس الأداء",
@@ -2448,12 +2448,12 @@
     "subtitle": "هل تحتاج إلى مساعدة أو ترغب في المساهمة؟",
     "footer": "شكراً لاستخدامك \"نيكستيرم\"!",
     "bug": {
-      "title": "Report a Bug",
-      "description": "Opens a bug report with your version filled in."
+      "title": "الإبلاغ عن خطأ",
+      "description": "يفتح تقريرًا عن الخلل مع إدخال رقم إصدارك تلقائيًّا."
     },
     "issues": {
-      "title": "Browse Issues",
-      "description": "Search existing reports or request a feature."
+      "title": "تصفح الأعداد",
+      "description": "ابحث في التقارير الموجودة أو اطلب إضافة ميزة."
     },
     "discord": {
       "title": "انضم إلى ديسكورد",
