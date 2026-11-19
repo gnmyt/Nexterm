@@ -1702,5 +1702,15 @@
       "android": "Android",
       "ios": "iOS"
     }
+  },
+  "imageMigration": {
+    "title": "Switch to the new Docker image",
+    "subtitle": "This image no longer receives security updates.",
+    "description": "Nexterm has moved to a new Docker image. Swap the image name and recreate the container. Your data volume and ENCRYPTION_KEY stay the same.",
+    "currentImage": "Your current image",
+    "newImage": "New image",
+    "noLongerUpdated": "No longer updated",
+    "remindLater": "Remind me later",
+    "openGuide": "Open upgrade guide"
   }
 }

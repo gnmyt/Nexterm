@@ -21,6 +21,7 @@ import TitleBar from "@/common/components/TitleBar";
 import ConnectionErrorBanner from "@/common/components/ConnectionErrorBanner";
 import { waitForTauri } from "@/common/utils/TauriUtil.js";
 import MobileNav from "@/common/components/MobileNav";
+import ImageMigrationDialog from "@/common/components/ImageMigrationDialog";
 
 const Sidebar = lazy(() => import("@/common/components/Sidebar"));
 
@@ -77,6 +78,7 @@ const AppContent = () => {
                                                             </div>
                                                         </div>
                                                         <MobileNav />
+                                                        <ImageMigrationDialog />
                                                     </div>
                                                 </QuickActionProvider>
                                             </SessionProvider>
