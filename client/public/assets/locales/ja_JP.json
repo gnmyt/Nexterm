@@ -550,11 +550,11 @@
           "noData": "システム情報は利用できない"
         },
         "memory": {
-          "title": "Memory",
-          "summary": "{{used}} of {{total}} ({{percent}}%)",
-          "used": "Used",
-          "cache": "Buffers / Cache",
-          "free": "Free"
+          "title": "メモリ",
+          "summary": "{{used}} {{total}} （{{percent}}％）",
+          "used": "中古",
+          "cache": "バッファ／キャッシュ",
+          "free": "無料"
         },
         "performance": {
           "title": "パフォーマンス指標",
@@ -2448,12 +2448,12 @@
     "subtitle": "助けが必要か、あるいは協力したいか？",
     "footer": "Nextermをご利用いただき、ありがとうございます！",
     "bug": {
-      "title": "Report a Bug",
-      "description": "Opens a bug report with your version filled in."
+      "title": "バグを報告する",
+      "description": "使用しているバージョンが記入されたバグ報告を作成する。"
     },
     "issues": {
-      "title": "Browse Issues",
-      "description": "Search existing reports or request a feature."
+      "title": "バックナンバーを閲覧する",
+      "description": "既存のレポートを検索するか、機能のリクエストを行う。"
     },
     "discord": {
       "title": "Discordに参加する",
