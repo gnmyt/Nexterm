@@ -53,7 +53,7 @@ Nexterm is an open-source server management software that allows you to:
 Nexterm is available as a one-click Docker deployment on Hostinger, up and running within minutes, with full root
 access and a fixed monthly price.
 Want to see how it performs? Our [live demo](https://demo.nexterm.dev) runs on Hostinger as well.
-[Deploy Nexterm on Hostinger »](https://www.hostinger.com/applications/nexterm)
+[Deploy Nexterm on Hostinger »](https://www.hostg.xyz/aff_c?offer_id=48&aff_id=249546&url_id=7166)
 
 ## 💻 Development
 
