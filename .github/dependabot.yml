@@ -8,6 +8,9 @@ updates:
     directory: '/client'
     schedule:
       interval: 'daily'
+    groups:
+      react:
+        patterns: ['react', 'react-dom', '@types/react', '@types/react-dom']
   - package-ecosystem: 'npm'
     directory: '/connector'
     schedule:
@@ -16,6 +19,9 @@ updates:
     directory: '/landing'
     schedule:
       interval: 'weekly'
+    groups:
+      react:
+        patterns: ['react', 'react-dom', '@types/react', '@types/react-dom']
   - package-ecosystem: 'cargo'
     directories:
       - '/cli'
