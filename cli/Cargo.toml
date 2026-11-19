@@ -20,7 +20,7 @@ dirs = "7"
 open = "5"
 anyhow = "1"
 futures-util = "0.3"
-indicatif = "0.17"
+indicatif = "0.18"
 nucleo-matcher = "0.3"
 
 [profile.release]
