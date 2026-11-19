@@ -18,7 +18,25 @@
 #define GUAC_DEMO_BACKGROUND_GREEN (0x1D / 255.0)
 #define GUAC_DEMO_BACKGROUND_BLUE  (0x2C / 255.0)
 
+typedef enum guac_demo_logo_mode {
+    GUAC_DEMO_LOGO_BOUNCING,
+    GUAC_DEMO_LOGO_HELD,
+    GUAC_DEMO_LOGO_FALLING
+} guac_demo_logo_mode;
+
 typedef struct guac_demo_logo_state {
+    guac_demo_logo_mode mode;
+
+    double grab_offset_x;
+
+    double grab_offset_y;
+
+    double direction_x;
+
+    double rest_time;
+
+    double fall_time;
+
     double x;
 
     double y;
@@ -94,6 +112,100 @@ static void guac_demo_logo_advance(guac_demo_logo_state* logo, int width,
     else if (logo->y >= max_y) {
         logo->y = max_y;
         logo->velocity_y = -fabs(logo->velocity_y);
+    }
+}
+
+static int guac_demo_logo_contains(const guac_demo_logo_state* logo, int x,
+        int y) {
+    return x >= logo->x && x < logo->x + logo->width
+        && y >= logo->y && y < logo->y + logo->height;
+}
+
+static double guac_demo_clamp(double value, double min, double max) {
+    if (value > max) value = max;
+    if (value < min) value = min;
+    return value;
+}
+
+static void guac_demo_logo_grab(guac_demo_logo_state* logo, int x, int y) {
+    if (logo->velocity_x != 0)
+        logo->direction_x = logo->velocity_x < 0 ? -1 : 1;
+
+    logo->mode = GUAC_DEMO_LOGO_HELD;
+    logo->grab_offset_x = x - logo->x;
+    logo->grab_offset_y = y - logo->y;
+    logo->velocity_x = 0;
+    logo->velocity_y = 0;
+}
+
+static void guac_demo_logo_hold(guac_demo_logo_state* logo, int width,
+        int height, int mouse_x, int mouse_y, double elapsed) {
+    double x = guac_demo_clamp(mouse_x - logo->grab_offset_x, 0,
+            width - logo->width);
+    double y = guac_demo_clamp(mouse_y - logo->grab_offset_y, 0,
+            height - logo->height);
+
+    logo->velocity_x = guac_demo_clamp(
+            (logo->velocity_x + (x - logo->x) / elapsed) / 2,
+            -GUAC_DEMO_LOGO_MAX_THROW_VELOCITY,
+            GUAC_DEMO_LOGO_MAX_THROW_VELOCITY);
+    logo->velocity_y = guac_demo_clamp(
+            (logo->velocity_y + (y - logo->y) / elapsed) / 2,
+            -GUAC_DEMO_LOGO_MAX_THROW_VELOCITY,
+            GUAC_DEMO_LOGO_MAX_THROW_VELOCITY);
+
+    logo->x = x;
+    logo->y = y;
+}
+
+static void guac_demo_logo_release(guac_demo_logo_state* logo) {
+    logo->mode = GUAC_DEMO_LOGO_FALLING;
+    logo->rest_time = 0;
+    logo->fall_time = 0;
+}
+
+static void guac_demo_logo_fall(guac_demo_logo_state* logo, int width,
+        int height, double elapsed) {
+    double max_x = width - logo->width;
+    double max_y = height - logo->height;
+
+    logo->velocity_y += GUAC_DEMO_LOGO_GRAVITY * elapsed;
+    logo->x += logo->velocity_x * elapsed;
+    logo->y += logo->velocity_y * elapsed;
+    logo->fall_time += elapsed;
+
+    if (logo->x <= 0) {
+        logo->x = 0;
+        logo->velocity_x = fabs(logo->velocity_x) * GUAC_DEMO_LOGO_RESTITUTION;
+    }
+    else if (logo->x >= max_x) {
+        logo->x = max_x;
+        logo->velocity_x = -fabs(logo->velocity_x) * GUAC_DEMO_LOGO_RESTITUTION;
+    }
+
+    if (logo->y <= 0) {
+        logo->y = 0;
+        logo->velocity_y = fabs(logo->velocity_y) * GUAC_DEMO_LOGO_RESTITUTION;
+    }
+    else if (logo->y >= max_y) {
+        logo->y = max_y;
+        logo->velocity_y = -fabs(logo->velocity_y) * GUAC_DEMO_LOGO_RESTITUTION;
+        logo->velocity_x *= GUAC_DEMO_LOGO_FLOOR_FRICTION;
+
+        if (fabs(logo->velocity_y) < GUAC_DEMO_LOGO_REST_VELOCITY) {
+            logo->velocity_y = 0;
+            logo->rest_time += elapsed;
+        }
+    }
+
+    if (fabs(logo->velocity_x) > 1)
+        logo->direction_x = logo->velocity_x < 0 ? -1 : 1;
+
+    if (logo->rest_time >= GUAC_DEMO_LOGO_REST_DURATION
+            || logo->fall_time >= GUAC_DEMO_LOGO_MAX_FALL_DURATION) {
+        logo->mode = GUAC_DEMO_LOGO_BOUNCING;
+        logo->velocity_x = logo->direction_x * GUAC_DEMO_LOGO_VELOCITY_X;
+        logo->velocity_y = -GUAC_DEMO_LOGO_VELOCITY_Y;
     }
 }
 
@@ -181,6 +293,7 @@ void* guac_demo_render_loop_thread(void* data) {
                 "Nexterm logo could not be decoded and will not be drawn.");
 
     guac_demo_logo_state logo = {
+        .direction_x = 1,
         .velocity_x = GUAC_DEMO_LOGO_VELOCITY_X,
         .velocity_y = GUAC_DEMO_LOGO_VELOCITY_Y
     };
@@ -217,10 +330,9 @@ void* guac_demo_render_loop_thread(void* data) {
     guac_timestamp last_sample = guac_timestamp_current();
     guac_timestamp last_hud = 0;
 
-    while (client->state == GUAC_CLIENT_RUNNING) {
-        guac_demo_logo_advance(&logo, width, height,
-                GUAC_DEMO_FRAME_DURATION / 1000000.0);
+    int handled_presses = 0;
 
+    while (client->state == GUAC_CLIENT_RUNNING) {
         frames++;
 
         guac_timestamp now = guac_timestamp_current();
@@ -263,6 +375,29 @@ void* guac_demo_render_loop_thread(void* data) {
                     width, height);
 
         }
+
+        double elapsed = GUAC_DEMO_FRAME_DURATION / 1000000.0;
+        int left_pressed = stats.input.mouse_mask & GUAC_CLIENT_MOUSE_LEFT;
+
+        if (stats.input.press_count != handled_presses) {
+            handled_presses = stats.input.press_count;
+
+            if (left_pressed && guac_demo_logo_contains(&logo,
+                        stats.input.press_x, stats.input.press_y))
+                guac_demo_logo_grab(&logo, stats.input.press_x,
+                        stats.input.press_y);
+        }
+
+        if (logo.mode == GUAC_DEMO_LOGO_HELD && !left_pressed)
+            guac_demo_logo_release(&logo);
+
+        if (logo.mode == GUAC_DEMO_LOGO_HELD)
+            guac_demo_logo_hold(&logo, width, height, stats.input.mouse_x,
+                    stats.input.mouse_y, elapsed);
+        else if (logo.mode == GUAC_DEMO_LOGO_FALLING)
+            guac_demo_logo_fall(&logo, width, height, elapsed);
+        else
+            guac_demo_logo_advance(&logo, width, height, elapsed);
 
         guac_demo_hud_signature(&stats, signature, sizeof(signature));
 
