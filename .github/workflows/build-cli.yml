@@ -39,10 +39,18 @@ jobs:
             os: macos-latest
             target: aarch64-apple-darwin
             artifact_name: nt-macos-arm64
+          - name: macos-x64
+            os: macos-latest
+            target: x86_64-apple-darwin
+            artifact_name: nt-macos-x64
           - name: windows-x64
             os: windows-latest
             target: x86_64-pc-windows-msvc
             artifact_name: nt-windows-x64.exe
+          - name: windows-arm64
+            os: windows-11-arm
+            target: aarch64-pc-windows-msvc
+            artifact_name: nt-windows-arm64.exe
 
     steps:
       - name: Checkout project

@@ -184,21 +184,24 @@ jobs:
           asset_content_type: application/octet-stream
 
   build-linux:
-    name: "Linux (${{ matrix.format }})"
-    runs-on: ubuntu-22.04
+    name: "Linux (${{ matrix.arch }} ${{ matrix.format }})"
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        arch: [x64, arm64]
+        format: [deb, rpm, AppImage]
         include:
+          - arch: x64
+            os: ubuntu-22.04
+          - arch: arm64
+            os: ubuntu-22.04-arm
           - format: deb
             artifact_path: connector/src-tauri/target/release/bundle/deb/*.deb
-            artifact_name: nexterm-connector-linux-x64.deb
           - format: rpm
             artifact_path: connector/src-tauri/target/release/bundle/rpm/*.rpm
-            artifact_name: nexterm-connector-linux-x64.rpm
           - format: AppImage
             artifact_path: connector/src-tauri/target/release/bundle/appimage/*.AppImage
-            artifact_name: nexterm-connector-linux-x64.AppImage
 
     steps:
       - name: Checkout project
@@ -259,5 +262,5 @@ jobs:
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: ${{ steps.find_artifact.outputs.artifact_file }}
-          asset_name: ${{ matrix.artifact_name }}
+          asset_name: nexterm-connector-linux-${{ matrix.arch }}.${{ matrix.format }}
           asset_content_type: application/octet-stream
