@@ -1,12 +1,14 @@
 import Icon from "@mdi/react";
 import { mdiDomain, mdiDomainOff } from "@mdi/js";
 import ServerEntries from "../ServerEntries.jsx";
-import { useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import { patchRequest } from "@/common/utils/RequestUtil.js";
+import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { getFolderState, setFolderState } from "@/common/utils/folderState";
 import { useDrop } from "react-dnd";
 import { useMove } from "../../useMove.js";
 
-const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, connectToPVEServer, setRenameStateId, hibernatedSessions = [] }) => {
+const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, connectToPVEServer, renameState, setRenameStateId, hibernatedSessions = [] }) => {
     const move = useMove();
     const [isOpen, setIsOpen] = useState(() => getFolderState(id, true));
     
@@ -16,6 +18,32 @@ const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, c
         setFolderState(id, newState);
     };
     const orgId = id.split('-')[1];
+
+    const { loadServers } = useContext(ServerContext);
+    const inputRef = useRef();
+    useEffect(() => {
+        if (!renameState) return;
+        inputRef.current?.focus();
+        inputRef.current?.select();
+    }, [renameState]);
+
+    const changeName = async () => {
+        const newName = (inputRef.current?.value || "").trim();
+        try {
+            if (newName && newName !== name) {
+                await patchRequest("organizations/" + orgId, { name: newName });
+                await loadServers();
+            }
+        } catch (error) {
+            console.error("Failed to rename organization", error.message);
+        } finally {
+            setRenameStateId(null);
+        }
+    };
+
+    const handleRenameKey = (e) => {
+        if (e.key === "Enter") inputRef.current?.blur();
+    };
 
     const [{ isOver }, dropRef] = useDrop({
         accept: ["server", "folder"],
@@ -50,11 +78,14 @@ const OrganizationFolder = ({ id, name, entries, nestedLevel, connectToServer, c
 
     return (
         <>
-            <div className={"folder-object" + (isOver ? " folder-is-over" : "")} onClick={toggleFolder} data-id={id}
+            <div className={"folder-object" + (isOver ? " folder-is-over" : "")}
+                 onClick={renameState ? (e) => e.stopPropagation() : toggleFolder} data-id={id}
                  style={{ paddingLeft: `${10 + (nestedLevel * 15)}px` }}
                  ref={dropRef}>
                 <Icon path={isOpen ? mdiDomain : mdiDomainOff} />
-                <p className="truncate-text">{name}</p>
+                {!renameState && <p className="truncate-text">{name}</p>}
+                {renameState && <input type="text" ref={inputRef} defaultValue={name} maxLength={100}
+                                       onBlur={changeName} onKeyDown={handleRenameKey} />}
             </div>
             {isOpen && (
                 <ServerEntries

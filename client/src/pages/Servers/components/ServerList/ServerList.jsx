@@ -92,8 +92,12 @@ const filterEntries = (entries, searchTerm, selectedTags = []) => {
     return rebuild(entries);
 };
 
+const isRenameTarget = (entry, id) => entry.type === "organization"
+    ? entry.id === id
+    : entry.type === "folder" && entry.id === parseInt(id);
+
 const applyRenameState = folderId => entry =>
-    entry.type === "folder" && entry.id === parseInt(folderId)
+    isRenameTarget(entry, folderId)
         ? { ...entry, renameState: true }
         : entry.entries ? { ...entry, entries: entry.entries.map(applyRenameState(folderId)) } : entry;
 
@@ -197,6 +201,9 @@ export const ServerList = ({
         }
         return null;
     };
+
+    const canRenameOrganization = isOrgFolder
+        && servers?.find(entry => entry.type === "organization" && entry.id === contextClickedId)?.canManage;
 
     const contextFolder = (contextClickedType === "folder-object" && contextClickedId && !isOrgFolder)
         ? findFolderById(servers, contextClickedId) : null;
@@ -757,6 +764,14 @@ export const ServerList = ({
                                 icon={mdiFolderPlus}
                                 label={t("servers.contextMenu.createFolder")}
                                 onClick={createFolder}
+                            />
+                        )}
+
+                        {canRenameOrganization && (
+                            <ContextMenuItem
+                                icon={mdiFormTextbox}
+                                label={t("servers.contextMenu.renameOrganization")}
+                                onClick={() => setRenameStateId(contextClickedId)}
                             />
                         )}
 

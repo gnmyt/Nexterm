@@ -58,6 +58,10 @@ module.exports.updateOrganization = async (accountId, organizationId, updates) =
 
     await Organization.update(updates, { where: { id: orgId } });
 
+    if (updates.name !== undefined) {
+        stateBroadcaster.broadcast("ENTRIES", { organizationId: orgId });
+    }
+
     return await Organization.findByPk(orgId);
 };
 

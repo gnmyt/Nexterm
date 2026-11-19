@@ -30,6 +30,7 @@ export const Organizations = () => {
     const [organizations, setOrganizations] = useState(null);
     const [pendingInvitations, setPendingInvitations] = useState([]);
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
+    const [editOrganization, setEditOrganization] = useState(null);
     const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
     const [selectedOrganization, setSelectedOrganization] = useState(null);
     const [expandedOrgId, setExpandedOrgId] = useState(null);
@@ -108,6 +109,17 @@ export const Organizations = () => {
         setInviteDialogOpen(true);
     };
 
+    const handleEditOrg = (org, e) => {
+        e.stopPropagation();
+        setEditOrganization(org);
+        setCreateDialogOpen(true);
+    };
+
+    const handleCreateOrg = () => {
+        setEditOrganization(null);
+        setCreateDialogOpen(true);
+    };
+
     const showConfirmDialog = (action, text) => {
         setConfirmAction(() => action);
         setConfirmText(text);
@@ -153,7 +165,7 @@ export const Organizations = () => {
             <div className="org-header">
                 <SettingsHeading>{t("settings.organizations.title")}</SettingsHeading>
                 {hasPermission(Permission.ORGANIZATIONS_CREATE) && (
-                    <Button text={t("settings.organizations.createOrganization")} icon={mdiPlus} onClick={() => setCreateDialogOpen(true)} />
+                    <Button text={t("settings.organizations.createOrganization")} icon={mdiPlus} onClick={handleCreateOrg} />
                 )}
             </div>
 
@@ -179,6 +191,10 @@ export const Organizations = () => {
                                 <div className="right-section">
                                     {org.permissions?.includes(Permission.ORG_MEMBERS_MANAGE) && (
                                         <Button text={t("settings.organizations.invite")} onClick={(e) => handleInviteMember(org, e)} />
+                                    )}
+                                    {org.permissions?.includes(Permission.ORG_MANAGE) && (
+                                        <Button text={t("settings.organizations.edit")} type="secondary"
+                                                onClick={(e) => handleEditOrg(org, e)} />
                                     )}
                                     {org.permissions?.includes(Permission.ORG_DELETE) && (
                                         <Button text={t("settings.organizations.delete")} type="danger"
@@ -253,7 +269,7 @@ export const Organizations = () => {
             )}
 
             <OrganizationDialog open={createDialogOpen} onClose={() => setCreateDialogOpen(false)}
-                                refreshOrganizations={fetchOrganizations} />
+                                organization={editOrganization} refreshOrganizations={fetchOrganizations} />
 
             {selectedOrganization && (
                 <InviteMemberDialog open={inviteDialogOpen} onClose={() => setInviteDialogOpen(false)}
