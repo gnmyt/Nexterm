@@ -14,7 +14,7 @@ reqwest = { version = "0.13", features = ["json", "native-tls"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 dialoguer = { version = "0.12", features = ["fuzzy-select"] }
-console = "0.15"
+console = "0.16"
 crossterm = "0.29"
 dirs = "7"
 open = "5"
