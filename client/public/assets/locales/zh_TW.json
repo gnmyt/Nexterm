@@ -550,11 +550,11 @@
           "noData": "無系統資訊"
         },
         "memory": {
-          "title": "Memory",
-          "summary": "{{used}} of {{total}} ({{percent}}%)",
-          "used": "Used",
-          "cache": "Buffers / Cache",
-          "free": "Free"
+          "title": "記憶",
+          "summary": "{{used}} 來自 {{total}} ({{percent}}%)",
+          "used": "二手",
+          "cache": "緩衝區／快取",
+          "free": "免費"
         },
         "performance": {
           "title": "績效指標",
@@ -2448,12 +2448,12 @@
     "subtitle": "需要協助或想要貢獻心力？",
     "footer": "感謝您使用 Nexterm！",
     "bug": {
-      "title": "Report a Bug",
-      "description": "Opens a bug report with your version filled in."
+      "title": "回報錯誤",
+      "description": "開啟一份已填入您所使用版本的錯誤回報。"
     },
     "issues": {
-      "title": "Browse Issues",
-      "description": "Search existing reports or request a feature."
+      "title": "瀏覽各期",
+      "description": "搜尋現有報告或提出功能需求。"
     },
     "discord": {
       "title": "加入討論區",
