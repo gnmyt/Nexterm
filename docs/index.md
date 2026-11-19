@@ -10,6 +10,9 @@ hero:
       text: Install
       link: /installation
     - theme: alt
+      text: Live Demo
+      link: https://demo.nexterm.dev
+    - theme: alt
       text: Screenshots
       link: /screenshots
     - theme: alt

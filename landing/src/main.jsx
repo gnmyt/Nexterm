@@ -25,6 +25,7 @@ const router = createBrowserRouter([
 ]);
 
 export const DOCUMENTATION_BASE = "https://docs.nexterm.dev";
+export const DEMO_LINK = "https://demo.nexterm.dev";
 export const GITHUB_LINK = "https://github.com/gnmyt/Nexterm";
 export const DISCORD_LINK = "https://dc.gnmyt.dev";
 

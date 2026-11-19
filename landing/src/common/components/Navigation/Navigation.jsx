@@ -5,7 +5,7 @@ import {faGithub, faDiscord} from "@fortawesome/free-brands-svg-icons";
 import {Link, useLocation} from "react-router-dom";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {useState, useEffect} from "react";
-import {DOCUMENTATION_BASE, GITHUB_LINK, DISCORD_LINK} from "@/main.jsx";
+import {DOCUMENTATION_BASE, DEMO_LINK, GITHUB_LINK, DISCORD_LINK} from "@/main.jsx";
 
 export const Navigation = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -39,6 +39,10 @@ export const Navigation = () => {
                     <Link to="/install" className={isActive("/install") ? "active" : ""}>Install</Link>
                     <Link to="/downloads" className={isActive("/downloads") ? "active" : ""}>Downloads</Link>
                     <Link to="/changelog" className={isActive("/changelog") ? "active" : ""}>Changelog</Link>
+                    <a href={DEMO_LINK} target="_blank" rel="noopener noreferrer" className="external-link">
+                        Demo
+                        <FontAwesomeIcon icon={faArrowUpRightFromSquare}/>
+                    </a>
                     <a href={DOCUMENTATION_BASE} target="_blank" rel="noopener noreferrer" className="external-link">
                         Docs
                         <FontAwesomeIcon icon={faArrowUpRightFromSquare}/>
@@ -72,6 +76,10 @@ export const Navigation = () => {
                         <Link to="/install" className={isActive("/install") ? "active" : ""}>Install</Link>
                         <Link to="/downloads" className={isActive("/downloads") ? "active" : ""}>Downloads</Link>
                         <Link to="/changelog" className={isActive("/changelog") ? "active" : ""}>Changelog</Link>
+                        <a href={DEMO_LINK} target="_blank" rel="noopener noreferrer">
+                            Demo
+                            <FontAwesomeIcon icon={faArrowUpRightFromSquare}/>
+                        </a>
                         <a href={DOCUMENTATION_BASE} target="_blank" rel="noopener noreferrer">
                             Docs
                             <FontAwesomeIcon icon={faArrowUpRightFromSquare}/>

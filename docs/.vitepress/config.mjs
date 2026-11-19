@@ -36,6 +36,7 @@ export default defineConfig({
         nav: [
             { text: "Home", link: "/" },
             { text: "Install", link: "/installation" },
+            { text: "Live Demo", link: "https://demo.nexterm.dev" },
         ],
 
         footer: {

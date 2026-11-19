@@ -1,6 +1,6 @@
 import "./styles.sass";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faArrowRight} from "@fortawesome/free-solid-svg-icons";
+import {faArrowRight, faPlay} from "@fortawesome/free-solid-svg-icons";
 import {faGithub} from "@fortawesome/free-brands-svg-icons";
 import Features from "@/pages/Home/components/Features";
 import FeatureGrid from "@/pages/Home/components/FeatureGrid";
@@ -9,7 +9,7 @@ import Acknowledgments from "@/pages/Home/components/Acknowledgments";
 import Footer from "@/pages/Home/components/Footer";
 import {useNavigate} from "react-router-dom";
 import {useEffect, useRef} from "react";
-import {GITHUB_LINK} from "@/main.jsx";
+import {DEMO_LINK, GITHUB_LINK} from "@/main.jsx";
 
 import ConnectionsImage from "@/common/assets/connections.png";
 
@@ -65,6 +65,10 @@ export const Home = () => {
                         <button className="btn-primary" onClick={() => navigate("/install")}>
                             Get Started
                             <FontAwesomeIcon icon={faArrowRight}/>
+                        </button>
+                        <button className="btn-secondary" onClick={() => window.open(DEMO_LINK, "_blank")}>
+                            <FontAwesomeIcon icon={faPlay}/>
+                            Live Demo
                         </button>
                         <button className="btn-secondary" onClick={() => window.open(GITHUB_LINK, "_blank")}>
                             <FontAwesomeIcon icon={faGithub}/>

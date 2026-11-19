@@ -3,7 +3,7 @@ import "./styles.sass";
 import Logo from "@/common/assets/logo.png";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faGithub, faDiscord} from "@fortawesome/free-brands-svg-icons";
-import {DOCUMENTATION_BASE, GITHUB_LINK, DISCORD_LINK} from "@/main.jsx";
+import {DOCUMENTATION_BASE, DEMO_LINK, GITHUB_LINK, DISCORD_LINK} from "@/main.jsx";
 
 export const Footer = () => {
     return (
@@ -21,6 +21,7 @@ export const Footer = () => {
                     <div className="footer-column">
                         <h4>Product</h4>
                         <Link to="/install">Install</Link>
+                        <a href={DEMO_LINK} target="_blank" rel="noopener noreferrer">Live Demo</a>
                         <a href={DOCUMENTATION_BASE} target="_blank" rel="noopener noreferrer">Documentation</a>
                         <a href={DOCUMENTATION_BASE + "/screenshots"} target="_blank" rel="noopener noreferrer">Screenshots</a>
                     </div>
