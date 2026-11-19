@@ -55,16 +55,6 @@ void guac_demo_clamp_size(int* width, int* height) {
             GUAC_DEMO_MIN_HEIGHT, GUAC_DEMO_MAX_HEIGHT);
 }
 
-static void guac_demo_logo_bounds(guac_rect* rect,
-        const guac_demo_logo_state* logo) {
-    int x = (int) floor(logo->x);
-    int y = (int) floor(logo->y);
-
-    guac_rect_init(rect, x, y,
-            (int) ceil(logo->x + logo->width) - x,
-            (int) ceil(logo->y + logo->height) - y);
-}
-
 static void guac_demo_logo_rescale(guac_demo_logo_state* logo, int width,
         int height) {
     logo->scale = width * GUAC_DEMO_LOGO_SCREEN_RATIO / GUAC_DEMO_LOGO_WIDTH;
@@ -122,56 +112,38 @@ static void guac_demo_draw_background(guac_display_layer* layer) {
     guac_display_layer_close_cairo(layer, context);
 }
 
-static int guac_demo_draw_frame(guac_display_layer* layer,
-        const guac_demo_logo_state* logo, cairo_surface_t* logo_surface,
-        const guac_rect* previous, const guac_demo_stats* stats,
-        int draw_hud) {
-    guac_rect current;
-    guac_demo_logo_bounds(&current, logo);
-
-    guac_rect changed = *previous;
-    guac_rect_extend(&changed, &current);
-
-    guac_rect hud;
-    guac_rect_init(&hud, 0, 0, GUAC_DEMO_HUD_WIDTH, GUAC_DEMO_HUD_HEIGHT);
-
-    if (guac_rect_intersects(&changed, &hud)) {
-        guac_rect_extend(&changed, &hud);
-        draw_hud = 1;
-    }
-    else if (draw_hud)
-        guac_rect_extend(&changed, &hud);
+static void guac_demo_draw_logo(guac_display_layer* layer,
+        const guac_demo_logo_state* logo, cairo_surface_t* logo_surface) {
+    guac_display_layer_resize(layer, (int) ceil(logo->width),
+            (int) ceil(logo->height));
 
     guac_display_layer_cairo_context* context =
         guac_display_layer_open_cairo(layer);
 
-    guac_rect_constrain(&changed, &context->bounds);
-
-    cairo_save(context->cairo);
-
-    cairo_rectangle(context->cairo, changed.left, changed.top,
-            guac_rect_width(&changed), guac_rect_height(&changed));
-    cairo_clip(context->cairo);
-
     cairo_set_operator(context->cairo, CAIRO_OPERATOR_SOURCE);
-    cairo_set_source_rgb(context->cairo, GUAC_DEMO_BACKGROUND_RED,
-            GUAC_DEMO_BACKGROUND_GREEN, GUAC_DEMO_BACKGROUND_BLUE);
+    cairo_set_source_rgba(context->cairo, 0, 0, 0, 0);
     cairo_paint(context->cairo);
 
     cairo_set_operator(context->cairo, CAIRO_OPERATOR_OVER);
-    guac_demo_logo_draw(context->cairo, logo_surface, logo->x, logo->y,
-            logo->scale);
+    guac_demo_logo_draw(context->cairo, logo_surface, 0, 0, logo->scale);
 
-    if (draw_hud)
-        guac_demo_hud_draw(context->cairo, stats);
-
-    cairo_restore(context->cairo);
-
-    guac_rect_extend(&context->dirty, &changed);
+    guac_rect_extend(&context->dirty, &context->bounds);
     context->hint_from = NULL;
 
     guac_display_layer_close_cairo(layer, context);
-    return draw_hud;
+}
+
+static void guac_demo_draw_hud(guac_display_layer* layer,
+        const guac_demo_stats* stats) {
+    guac_display_layer_cairo_context* context =
+        guac_display_layer_open_cairo(layer);
+
+    guac_demo_hud_draw(context->cairo, stats);
+
+    guac_rect_extend(&context->dirty, &context->bounds);
+    context->hint_from = NULL;
+
+    guac_display_layer_close_cairo(layer, context);
 }
 
 void* guac_demo_render_loop_thread(void* data) {
@@ -188,6 +160,19 @@ void* guac_demo_render_loop_thread(void* data) {
 
     guac_display_layer_resize(default_layer, width, height);
     guac_display_layer_set_lossless(default_layer, 1);
+
+    guac_display_layer* logo_layer =
+        guac_display_alloc_layer(demo_client->display, 0);
+    guac_display_layer_set_lossless(logo_layer, 1);
+    guac_display_layer_stack(logo_layer, 1);
+
+    guac_display_layer* hud_layer =
+        guac_display_alloc_layer(demo_client->display, 1);
+    guac_display_layer_set_lossless(hud_layer, 1);
+    guac_display_layer_resize(hud_layer, GUAC_DEMO_HUD_WIDTH,
+            GUAC_DEMO_HUD_HEIGHT);
+    guac_display_layer_stack(hud_layer, 2);
+
     guac_display_set_cursor(demo_client->display, GUAC_DISPLAY_CURSOR_POINTER);
 
     cairo_surface_t* logo_surface = guac_demo_logo_alloc();
@@ -211,6 +196,10 @@ void* guac_demo_render_loop_thread(void* data) {
     };
 
     guac_demo_draw_background(default_layer);
+    guac_demo_draw_logo(logo_layer, &logo, logo_surface);
+    guac_display_layer_move(logo_layer, (int) floor(logo.x),
+            (int) floor(logo.y));
+    guac_demo_draw_hud(hud_layer, &stats);
     guac_display_end_frame(demo_client->display);
 
     demo_client->render_thread =
@@ -229,9 +218,6 @@ void* guac_demo_render_loop_thread(void* data) {
     guac_timestamp last_hud = 0;
 
     while (client->state == GUAC_CLIENT_RUNNING) {
-        guac_rect previous;
-        guac_demo_logo_bounds(&previous, &logo);
-
         guac_demo_logo_advance(&logo, width, height,
                 GUAC_DEMO_FRAME_DURATION / 1000000.0);
 
@@ -269,7 +255,7 @@ void* guac_demo_render_loop_thread(void* data) {
             stats.height = height;
 
             guac_demo_draw_background(default_layer);
-            guac_demo_logo_bounds(&previous, &logo);
+            guac_demo_draw_logo(logo_layer, &logo, logo_surface);
             previous_signature[0] = '\0';
             last_hud = 0;
 
@@ -280,11 +266,12 @@ void* guac_demo_render_loop_thread(void* data) {
 
         guac_demo_hud_signature(&stats, signature, sizeof(signature));
 
-        int hud_stale = strcmp(signature, previous_signature) != 0
-                && now - last_hud >= GUAC_DEMO_HUD_MIN_INTERVAL;
+        guac_display_layer_move(logo_layer, (int) floor(logo.x),
+                (int) floor(logo.y));
 
-        if (guac_demo_draw_frame(default_layer, &logo, logo_surface, &previous,
-                    &stats, hud_stale)) {
+        if (strcmp(signature, previous_signature) != 0
+                && now - last_hud >= GUAC_DEMO_HUD_MIN_INTERVAL) {
+            guac_demo_draw_hud(hud_layer, &stats);
             snprintf(previous_signature, sizeof(previous_signature), "%s",
                     signature);
             last_hud = now;
