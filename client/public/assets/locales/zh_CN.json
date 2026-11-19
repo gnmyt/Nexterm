@@ -851,6 +851,7 @@
       "noOrganizations": "您还没有任何组织。",
       "noOrganizationsDescription": "创建一个组织开始团队协作。",
       "invite": "邀请",
+      "edit": "Edit",
       "delete": "删除",
       "leave": "离开",
       "members": "成员",
@@ -898,6 +899,7 @@
       "leaveConfirmation": "确定要离开此组织吗？",
       "dialog": {
         "title": "创建组织",
+        "editTitle": "Edit Organization",
         "fields": {
           "name": "名称",
           "namePlaceholder": "组织名称",
@@ -906,12 +908,15 @@
         },
         "actions": {
           "cancel": "取消",
-          "create": "创建"
+          "create": "创建",
+          "save": "Save"
         },
         "messages": {
           "nameRequired": "组织名称为必填项",
           "createSuccess": "组织创建成功",
-          "createFailed": "创建组织失败"
+          "createFailed": "创建组织失败",
+          "updateSuccess": "Organization updated successfully",
+          "updateFailed": "Failed to update organization"
         }
       },
       "sessionSettings": {
@@ -1774,6 +1779,7 @@
       "createFolder": "创建文件夹",
       "deleteFolder": "删除文件夹",
       "renameFolder": "重命名文件夹",
+      "renameOrganization": "Rename Organization",
       "folderSettings": "文件夹设置",
       "new": "新建",
       "sshServer": "SSH 服务器",
