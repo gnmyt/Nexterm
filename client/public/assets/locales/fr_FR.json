@@ -851,6 +851,7 @@
       "noOrganizations": "Vous n'avez pas encore d'organisation.",
       "noOrganizationsDescription": "Créez en un pour commencer à collaborer avec votre équipe.",
       "invite": "Invitation",
+      "edit": "Edit",
       "delete": "Effacer",
       "leave": "Quitter",
       "members": "Membres",
@@ -898,6 +899,7 @@
       "leaveConfirmation": "Êtes-vous sûr de vouloir quitter cette organisation ?",
       "dialog": {
         "title": "Créer une organisation",
+        "editTitle": "Edit Organization",
         "fields": {
           "name": "Nom",
           "namePlaceholder": "Nom de l'organisation",
@@ -906,12 +908,15 @@
         },
         "actions": {
           "cancel": "Annuler",
-          "create": "Créer"
+          "create": "Créer",
+          "save": "Save"
         },
         "messages": {
           "nameRequired": "Le nom de l'organisation est obligatoire",
           "createSuccess": "Organisation créée avec succès",
-          "createFailed": "Échec de la création d'une organisation"
+          "createFailed": "Échec de la création d'une organisation",
+          "updateSuccess": "Organization updated successfully",
+          "updateFailed": "Failed to update organization"
         }
       },
       "sessionSettings": {
@@ -1774,6 +1779,7 @@
       "createFolder": "Créer un dossier",
       "deleteFolder": "Supprimer le dossier",
       "renameFolder": "Renommer un dossier",
+      "renameOrganization": "Rename Organization",
       "folderSettings": "Paramètres du dossier",
       "new": "Nouveau",
       "sshServer": "Serveur SSH",
