@@ -550,11 +550,11 @@
           "noData": "No hay información disponible sobre el sistema"
         },
         "memory": {
-          "title": "Memory",
-          "summary": "{{used}} of {{total}} ({{percent}}%)",
-          "used": "Used",
-          "cache": "Buffers / Cache",
-          "free": "Free"
+          "title": "Memoria",
+          "summary": "{{used}} de {{total}} ({{percent}}%)",
+          "used": "De segunda mano",
+          "cache": "Memorias intermedia / Caché",
+          "free": "Gratis"
         },
         "performance": {
           "title": "Métricas de rendimiento",
@@ -2448,12 +2448,12 @@
     "subtitle": "¿Necesitas ayuda o quieres contribuir?",
     "footer": "¡Gracias por utilizar Nexterm!",
     "bug": {
-      "title": "Report a Bug",
-      "description": "Opens a bug report with your version filled in."
+      "title": "Informar de un error",
+      "description": "Abre un informe de error con tu versión ya indicada."
     },
     "issues": {
-      "title": "Browse Issues",
-      "description": "Search existing reports or request a feature."
+      "title": "Echa un vistazo a los números",
+      "description": "Busca entre los informes disponibles o solicita una función."
     },
     "discord": {
       "title": "Únete a Discord",
