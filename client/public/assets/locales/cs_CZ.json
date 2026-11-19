@@ -550,11 +550,11 @@
           "noData": "Žádné informace o systému nejsou k dispozici"
         },
         "memory": {
-          "title": "Memory",
-          "summary": "{{used}} of {{total}} ({{percent}}%)",
-          "used": "Used",
-          "cache": "Buffers / Cache",
-          "free": "Free"
+          "title": "Paměť",
+          "summary": "{{used}} z {{total}} ({{percent}}%)",
+          "used": "Použité",
+          "cache": "Vyrovnávací paměti / Cache",
+          "free": "Zdarma"
         },
         "performance": {
           "title": "Výkonnostní metriky",
@@ -2448,12 +2448,12 @@
     "subtitle": "Potřebujete pomoc nebo chcete přispět?",
     "footer": "Děkujeme, že používáte Nexterm!",
     "bug": {
-      "title": "Report a Bug",
-      "description": "Opens a bug report with your version filled in."
+      "title": "Nahlásit chybu",
+      "description": "Otevře hlášení o chybě s předvyplněnou informací o vaší verzi."
     },
     "issues": {
-      "title": "Browse Issues",
-      "description": "Search existing reports or request a feature."
+      "title": "Procházet čísla",
+      "description": "Prohledejte stávající zprávy nebo požádejte o přidání nové funkce."
     },
     "discord": {
       "title": "Připojte se k Discordu",
