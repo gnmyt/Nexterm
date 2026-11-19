@@ -851,6 +851,7 @@
       "noOrganizations": "ليس لديك أي مؤسسات بعد.",
       "noOrganizationsDescription": "أنشئ واحدة لبدء التعاون مع فريقك.",
       "invite": "دعوة",
+      "edit": "Edit",
       "delete": "حذف",
       "leave": "مغادرة",
       "members": "الأعضاء",
@@ -898,6 +899,7 @@
       "leaveConfirmation": "هل أنت متأكد من رغبتك في مغادرة هذه المؤسسة؟",
       "dialog": {
         "title": "إنشاء مؤسسة",
+        "editTitle": "Edit Organization",
         "fields": {
           "name": "الاسم",
           "namePlaceholder": "اسم المؤسسة",
@@ -906,12 +908,15 @@
         },
         "actions": {
           "cancel": "إلغاء",
-          "create": "إنشاء"
+          "create": "إنشاء",
+          "save": "Save"
         },
         "messages": {
           "nameRequired": "اسم المؤسسة مطلوب",
           "createSuccess": "تم إنشاء المؤسسة بنجاح",
-          "createFailed": "فشل في إنشاء المؤسسة"
+          "createFailed": "فشل في إنشاء المؤسسة",
+          "updateSuccess": "Organization updated successfully",
+          "updateFailed": "Failed to update organization"
         }
       },
       "sessionSettings": {
@@ -1774,6 +1779,7 @@
       "createFolder": "إنشاء مجلد",
       "deleteFolder": "حذف المجلد",
       "renameFolder": "إعادة تسمية المجلد",
+      "renameOrganization": "Rename Organization",
       "folderSettings": "إعدادات المجلد",
       "new": "جديد",
       "sshServer": "خادم SSH",
