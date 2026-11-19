@@ -851,6 +851,7 @@
       "noOrganizations": "您還沒有任何組織。",
       "noOrganizationsDescription": "建立一個，開始與您的團隊合作。",
       "invite": "邀請",
+      "edit": "Edit",
       "delete": "刪除",
       "leave": "離開",
       "members": "會員",
@@ -898,6 +899,7 @@
       "leaveConfirmation": "您確定要離開這個組織嗎？",
       "dialog": {
         "title": "建立組織",
+        "editTitle": "Edit Organization",
         "fields": {
           "name": "名稱",
           "namePlaceholder": "組織名稱",
@@ -906,12 +908,15 @@
         },
         "actions": {
           "cancel": "取消",
-          "create": "建立"
+          "create": "建立",
+          "save": "Save"
         },
         "messages": {
           "nameRequired": "必須填寫組織名稱",
           "createSuccess": "成功建立組織",
-          "createFailed": "建立組織失敗"
+          "createFailed": "建立組織失敗",
+          "updateSuccess": "Organization updated successfully",
+          "updateFailed": "Failed to update organization"
         }
       },
       "sessionSettings": {
@@ -1774,6 +1779,7 @@
       "createFolder": "建立資料夾",
       "deleteFolder": "刪除資料夾",
       "renameFolder": "重新命名資料夾",
+      "renameOrganization": "Rename Organization",
       "folderSettings": "資料夾設定",
       "new": "新款",
       "sshServer": "SSH 伺服器",
