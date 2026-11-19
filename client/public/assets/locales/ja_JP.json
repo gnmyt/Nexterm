@@ -851,6 +851,7 @@
       "noOrganizations": "まだ所属している団体はない。",
       "noOrganizationsDescription": "チームとの共同作業を始めるには、1つ作成する。",
       "invite": "招待する",
+      "edit": "Edit",
       "delete": "削除",
       "leave": "退室",
       "members": "メンバー",
@@ -898,6 +899,7 @@
       "leaveConfirmation": "本当にこの組織を辞めたいのか？",
       "dialog": {
         "title": "組織を作成する",
+        "editTitle": "Edit Organization",
         "fields": {
           "name": "名前",
           "namePlaceholder": "組織名",
@@ -906,12 +908,15 @@
         },
         "actions": {
           "cancel": "キャンセル",
-          "create": "作成する"
+          "create": "作成する",
+          "save": "Save"
         },
         "messages": {
           "nameRequired": "組織名の入力は必須だ",
           "createSuccess": "組織の作成に成功した",
-          "createFailed": "組織の作成に失敗した"
+          "createFailed": "組織の作成に失敗した",
+          "updateSuccess": "Organization updated successfully",
+          "updateFailed": "Failed to update organization"
         }
       },
       "sessionSettings": {
@@ -1774,6 +1779,7 @@
       "createFolder": "フォルダを作成する",
       "deleteFolder": "フォルダを削除する",
       "renameFolder": "フォルダの名前を変更する",
+      "renameOrganization": "Rename Organization",
       "folderSettings": "フォルダの設定",
       "new": "新着",
       "sshServer": "SSHサーバー",
