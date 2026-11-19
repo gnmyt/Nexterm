@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://demo.nexterm.dev"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/public/assets/readme/demo-dark.png"><img alt="Live Demo" src="docs/public/assets/readme/demo-light.png" height="40"></picture></a><a href="https://docs.nexterm.dev"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/public/assets/readme/docs-dark.png"><img alt="Documentation" src="docs/public/assets/readme/docs-light.png" height="40"></picture></a><a href="https://nexterm.dev/install"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/public/assets/readme/install-dark.png"><img alt="Install" src="docs/public/assets/readme/install-light.png" height="40"></picture></a>
+  <a href="https://demo.nexterm.dev"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/public/assets/readme/demo-dark.png"><img alt="Live Demo, sponsored by Hostinger" src="docs/public/assets/readme/demo-light.png" height="48"></picture></a><a href="https://docs.nexterm.dev"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/public/assets/readme/docs-dark.png"><img alt="Documentation" src="docs/public/assets/readme/docs-light.png" height="48"></picture></a><a href="https://nexterm.dev/install"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/public/assets/readme/install-dark.png"><img alt="Install" src="docs/public/assets/readme/install-light.png" height="48"></picture></a>
 </p>
 
 ## 🤔 What is Nexterm?
