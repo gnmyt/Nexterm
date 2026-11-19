@@ -851,6 +851,7 @@
       "noOrganizations": "У вас пока нет организаций.",
       "noOrganizationsDescription": "Создайте одну, чтобы начать совместную работу с командой.",
       "invite": "Пригласить",
+      "edit": "Edit",
       "delete": "Удалить",
       "leave": "Покинуть",
       "members": "Участники",
@@ -898,6 +899,7 @@
       "leaveConfirmation": "Вы уверены, что хотите покинуть эту организацию?",
       "dialog": {
         "title": "Создать организацию",
+        "editTitle": "Edit Organization",
         "fields": {
           "name": "Название",
           "namePlaceholder": "Название организации",
@@ -906,12 +908,15 @@
         },
         "actions": {
           "cancel": "Отмена",
-          "create": "Создать"
+          "create": "Создать",
+          "save": "Save"
         },
         "messages": {
           "nameRequired": "Название организации обязательно",
           "createSuccess": "Организация успешно создана",
-          "createFailed": "Не удалось создать организацию"
+          "createFailed": "Не удалось создать организацию",
+          "updateSuccess": "Organization updated successfully",
+          "updateFailed": "Failed to update organization"
         }
       },
       "sessionSettings": {
@@ -1774,6 +1779,7 @@
       "createFolder": "Создать папку",
       "deleteFolder": "Удалить папку",
       "renameFolder": "Переименовать папку",
+      "renameOrganization": "Rename Organization",
       "folderSettings": "Настройки папки",
       "new": "Новый",
       "sshServer": "SSH-сервер",
