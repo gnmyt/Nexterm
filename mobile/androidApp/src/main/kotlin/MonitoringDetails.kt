@@ -33,7 +33,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -62,7 +61,6 @@ import java.time.format.DateTimeFormatter
 
 private enum class DetailTab(val label: String) { OVERVIEW("Overview"), STORAGE("Storage"), NETWORK("Network"), PROCESSES("Processes"), NODES("Nodes") }
 
-private val Mono = FontFamily.Monospace
 private val TimeFormat = DateTimeFormatter.ofPattern("HH:mm").withZone(ZoneId.systemDefault())
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,7 +79,7 @@ fun MonitoringDetails(ctrl: MonitoringController, server: MonitoringServer, onBa
 
     AppScreen(
         server.name, server.address, onBack = onBack,
-        actions = { StatusChip(server.state.label, stateColor(server.state), Modifier.padding(end = 12.dp)) },
+        actions = { StatusPill(server.state.label, stateColor(server.state), Modifier.padding(end = 12.dp)) },
         header = {
             PrimaryTabRow(tabs.indexOf(tab)) {
                 tabs.forEach { item -> Tab(item == tab, { tab = item }, text = { Text(item.label, maxLines = 1) }) }
@@ -110,9 +108,7 @@ fun MonitoringDetails(ctrl: MonitoringController, server: MonitoringServer, onBa
 
 @Composable
 private fun Panel(modifier: Modifier = Modifier, spacing: Int = 12, content: @Composable ColumnScope.() -> Unit) =
-    Card(modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)) {
-        Column(Modifier.padding(16.dp), Arrangement.spacedBy(spacing.dp), content = content)
-    }
+    HairlineCard(modifier.fillMaxWidth()) { Column(Modifier.padding(16.dp), Arrangement.spacedBy(spacing.dp), content = content) }
 
 @Composable
 private fun Heading(title: String, count: Int? = null, trailing: @Composable () -> Unit = {}) =
@@ -138,8 +134,8 @@ private fun FactFlow(facts: List<InfoRow>, large: Boolean = false) = FlowRow(
         Column(if (large) Modifier.weight(1f) else Modifier) {
             Text(fact.label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(
-                fact.value, style = if (large) MaterialTheme.typography.titleLarge else MaterialTheme.typography.titleSmall,
-                color = if (fact.alert) WarningColor else Color.Unspecified, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                fact.value, style = if (large) MaterialTheme.typography.titleLarge else MaterialTheme.typography.titleSmall, fontFamily = if (large) Mono else null,
+                color = if (fact.alert) nxc.warning else Color.Unspecified, maxLines = 1, overflow = TextOverflow.Ellipsis,
             )
             fact.detail?.let { Muted(it) }
         }
@@ -149,7 +145,7 @@ private fun FactFlow(facts: List<InfoRow>, large: Boolean = false) = FlowRow(
 @Composable
 private fun InfoList(rows: List<InfoRow>) = Column {
     rows.forEachIndexed { i, row ->
-        if (i > 0) HorizontalDivider()
+        if (i > 0) HorizontalDivider(color = nxc.border)
         Row(Modifier.fillMaxWidth().padding(vertical = 10.dp), Arrangement.spacedBy(16.dp)) {
             Text(row.label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(row.value, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, textAlign = androidx.compose.ui.text.style.TextAlign.End)
@@ -179,7 +175,7 @@ private fun LazyListScope.overview(server: MonitoringServer, details: Monitoring
 private fun memoryColor(shade: Int, percent: Double) = when (shade) {
     0 -> usageColor(percent)
     1 -> usageColor(percent).copy(alpha = 0.36f)
-    else -> MaterialTheme.colorScheme.surfaceContainerHighest
+    else -> nxc.fill
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -188,7 +184,7 @@ private fun Memory(memory: MemoryOverview) = Panel {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
         Text("Memory", style = MaterialTheme.typography.titleSmall)
         Muted(memory.usedText, Modifier.weight(1f))
-        Text(Formatters.wholePercent(memory.percent), style = MaterialTheme.typography.titleSmall)
+        Text(Formatters.wholePercent(memory.percent), style = MaterialTheme.typography.titleSmall, fontFamily = Mono)
     }
     Row(Modifier.fillMaxWidth().height(8.dp).clip(CircleShape)) {
         memory.segments.filter { it.weight > 0 }.forEach {
@@ -210,7 +206,7 @@ private fun Memory(memory: MemoryOverview) = Panel {
 private fun ChartPanel(series: ChartSeries) = Panel {
     Row(verticalAlignment = Alignment.Bottom) {
         Text(series.title, Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
-        series.latest?.let { Text(it, style = MaterialTheme.typography.titleMedium) }
+        series.latest?.let { Text(it, style = MaterialTheme.typography.titleMedium, fontFamily = Mono) }
     }
     if (series.points.size < 2) Box(Modifier.fillMaxWidth().height(140.dp), Alignment.Center) { Muted("No data available for the selected time range") }
     else LineChart(series, Modifier.fillMaxWidth().height(160.dp))
@@ -258,7 +254,7 @@ private fun LazyListScope.nodes(nodes: List<PveNode>) {
         Panel {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(node.name, Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
-                StatusChip(if (node.isOnline) "Online" else "Offline", if (node.isOnline) SuccessColor else MaterialTheme.colorScheme.error)
+                StatusPill(if (node.isOnline) "Online" else "Offline", if (node.isOnline) nxc.success else MaterialTheme.colorScheme.error)
             }
             if (node.isOnline) {
                 node.usage.forEach { row ->
@@ -266,12 +262,12 @@ private fun LazyListScope.nodes(nodes: List<PveNode>) {
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                             Text(row.label, style = MaterialTheme.typography.titleSmall)
                             row.detail?.let { Muted(it, Modifier.weight(1f)) } ?: Spacer(Modifier.weight(1f))
-                            Text(Formatters.wholePercent(row.percent), style = MaterialTheme.typography.titleSmall)
+                            Text(Formatters.wholePercent(row.percent), style = MaterialTheme.typography.titleSmall, fontFamily = Mono)
                         }
                         Meter(row.percent)
                     }
                 }
-                HorizontalDivider()
+                HorizontalDivider(color = nxc.border)
                 FactFlow(node.info)
             } else Muted("This node is currently offline")
         }
@@ -282,9 +278,9 @@ private fun LazyListScope.storage(storage: StorageOverview?) {
     if (storage == null) return item { StateMessage(Icons.Outlined.Storage, "No disk usage data available", null) }
     storage.failing?.let { message ->
         item {
-            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
-                Row(Modifier.padding(16.dp), Arrangement.spacedBy(12.dp)) {
-                    Icon(Icons.Outlined.WarningAmber, null)
+            Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.errorContainer, contentColor = MaterialTheme.colorScheme.onErrorContainer) {
+                Row(Modifier.fillMaxWidth().padding(16.dp), Arrangement.spacedBy(12.dp)) {
+                    Icon(Icons.Outlined.WarningAmber, null, tint = nxc.error)
                     Column { Text("Disk failure predicted", style = MaterialTheme.typography.titleSmall); Text(message, style = MaterialTheme.typography.bodySmall) }
                 }
             }
@@ -294,7 +290,7 @@ private fun LazyListScope.storage(storage: StorageOverview?) {
         item {
             Panel {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Text(Formatters.wholePercent(percent), style = MaterialTheme.typography.displaySmall)
+                    Text(Formatters.wholePercent(percent), style = MaterialTheme.typography.displaySmall, fontFamily = Mono)
                     Column { Text(storage.usedText, style = MaterialTheme.typography.titleSmall); Muted(storage.freeText) }
                 }
                 Meter(percent, height = 8.dp)
@@ -303,7 +299,7 @@ private fun LazyListScope.storage(storage: StorageOverview?) {
     }
     item { Heading("Filesystems", storage.filesystems.size) }
     if (storage.filesystems.isEmpty()) item { Panel { Muted("No mounted partitions") } }
-    else item { Panel(spacing = 0) { storage.filesystems.forEachIndexed { i, row -> if (i > 0) HorizontalDivider(Modifier.padding(vertical = 14.dp)); Filesystem(row) } } }
+    else item { Panel(spacing = 0) { storage.filesystems.forEachIndexed { i, row -> if (i > 0) HorizontalDivider(Modifier.padding(vertical = 14.dp), color = nxc.border); Filesystem(row) } } }
     item { Heading("Disks", storage.disks.size) }
     items(storage.disks, key = { it.name }) { disk -> Disk(disk) }
 }
@@ -315,7 +311,7 @@ private fun Filesystem(row: FilesystemRow) = Column(verticalArrangement = Arrang
         Text(row.mountPoint, style = MaterialTheme.typography.titleSmall, fontFamily = Mono)
         row.tags.forEach { TagLabel(it) }
         Spacer(Modifier.weight(1f))
-        Text(Formatters.wholePercent(row.percent), style = MaterialTheme.typography.titleSmall)
+        Text(Formatters.wholePercent(row.percent), style = MaterialTheme.typography.titleSmall, fontFamily = Mono)
     }
     Meter(row.percent)
     Row { Muted(row.usedText, Modifier.weight(1f)); Muted(row.freeText) }
@@ -334,15 +330,15 @@ private fun segmentColor(shade: Int) = when (shade) {
     0 -> MaterialTheme.colorScheme.primary
     1 -> MaterialTheme.colorScheme.primary.copy(alpha = 0.62f)
     2 -> MaterialTheme.colorScheme.primary.copy(alpha = 0.36f)
-    else -> MaterialTheme.colorScheme.surfaceContainerHighest
+    else -> nxc.fill
 }
 
 @Composable
 private fun healthColor(status: HealthStatus) = when (status) {
-    HealthStatus.PASSED -> SuccessColor
-    HealthStatus.WARNING -> WarningColor
-    HealthStatus.FAILED -> MaterialTheme.colorScheme.error
-    HealthStatus.DENIED -> MaterialTheme.colorScheme.outline
+    HealthStatus.PASSED -> nxc.success
+    HealthStatus.WARNING -> nxc.warning
+    HealthStatus.FAILED -> nxc.error
+    HealthStatus.DENIED -> nxc.subtext
 }
 
 @Composable
@@ -351,11 +347,11 @@ private fun Disk(disk: DiskRow) = Panel {
         Text(disk.name, style = MaterialTheme.typography.titleSmall, fontFamily = Mono)
         disk.kind?.let { TagLabel(it) }
         Spacer(Modifier.weight(1f))
-        Text(disk.sizeText, style = MaterialTheme.typography.titleSmall)
+        Text(disk.sizeText, style = MaterialTheme.typography.titleSmall, fontFamily = Mono)
     }
     if (disk.model != null || disk.health != null) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Muted(disk.model.orEmpty(), Modifier.weight(1f))
-        disk.health?.let { StatusChip(it.label, healthColor(it)) }
+        disk.health?.let { StatusPill(it.label, healthColor(it)) }
     }
     Row(Modifier.fillMaxWidth().height(12.dp), Arrangement.spacedBy(2.dp)) {
         disk.segments.forEach { Box(Modifier.weight(it.weight.toFloat().coerceAtLeast(0.0001f)).widthIn(min = 6.dp).fillMaxHeight().background(segmentColor(it.shade), RoundedCornerShape(3.dp))) }
@@ -371,7 +367,7 @@ private fun Disk(disk: DiskRow) = Panel {
         }
     }
     if (disk.facts.isNotEmpty()) {
-        HorizontalDivider()
+        HorizontalDivider(color = nxc.border)
         FactFlow(disk.facts)
     }
 }
@@ -388,18 +384,18 @@ private fun LazyListScope.network(network: NetworkOverview?, showVirtual: Boolea
                                 Icon(icon, null, Modifier.size(14.dp), MaterialTheme.colorScheme.onSurfaceVariant)
                                 Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
-                            Text(value, style = MaterialTheme.typography.headlineSmall, maxLines = 1)
+                            Text(value, style = MaterialTheme.typography.headlineSmall, fontFamily = Mono, maxLines = 1)
                         }
                     }
                 }
-                HorizontalDivider()
+                HorizontalDivider(color = nxc.border)
                 FactFlow(summary.facts)
             }
         }
     }
     if (network.interfaces.isNotEmpty()) {
         item { Heading("Interfaces", network.interfaces.size) }
-        item { Panel(spacing = 0) { network.interfaces.forEachIndexed { i, row -> if (i > 0) HorizontalDivider(Modifier.padding(vertical = 14.dp)); Interface(row) } } }
+        item { Panel(spacing = 0) { network.interfaces.forEachIndexed { i, row -> if (i > 0) HorizontalDivider(Modifier.padding(vertical = 14.dp), color = nxc.border); Interface(row) } } }
     }
     if (network.virtualInterfaces.isNotEmpty()) {
         item {
@@ -408,7 +404,7 @@ private fun LazyListScope.network(network: NetworkOverview?, showVirtual: Boolea
                 Heading("Virtual interfaces", network.virtualInterfaces.size) { Icon(Icons.Outlined.ExpandMore, if (showVirtual) "Collapse" else "Expand", Modifier.rotate(rotation)) }
             }
         }
-        if (showVirtual) item { Panel(spacing = 0) { network.virtualInterfaces.forEachIndexed { i, row -> if (i > 0) HorizontalDivider(Modifier.padding(vertical = 10.dp)); CompactInterface(row) } } }
+        if (showVirtual) item { Panel(spacing = 0) { network.virtualInterfaces.forEachIndexed { i, row -> if (i > 0) HorizontalDivider(Modifier.padding(vertical = 10.dp), color = nxc.border); CompactInterface(row) } } }
     }
 }
 
@@ -417,7 +413,7 @@ private fun Rate(download: Boolean, value: String, total: String? = null, modifi
     Row(modifier, Arrangement.spacedBy(4.dp), Alignment.CenterVertically) {
         Icon(if (download) Icons.Outlined.ArrowDownward else Icons.Outlined.ArrowUpward, if (download) "Download" else "Upload", Modifier.size(14.dp), MaterialTheme.colorScheme.onSurfaceVariant)
         Column {
-            Text(value, style = MaterialTheme.typography.bodyMedium, maxLines = 1)
+            Text(value, style = MaterialTheme.typography.bodyMedium, fontFamily = Mono, maxLines = 1)
             total?.let { Muted(it) }
         }
     }
@@ -432,20 +428,20 @@ private fun Interface(row: InterfaceRow) = Column(verticalArrangement = Arrangem
         if (row.isDefault) TagLabel("Default route", accent = true)
         row.kind?.let { TagLabel(it) }
         Spacer(Modifier.weight(1f))
-        row.stateLabel?.let { StatusChip(it, if (row.isUp) SuccessColor else MaterialTheme.colorScheme.outline) }
+        row.stateLabel?.let { StatusPill(it, if (row.isUp) nxc.success else nxc.subtext) }
     }
     if (row.addresses.isNotEmpty()) FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         row.addresses.forEach { address ->
             val cs = MaterialTheme.colorScheme
             Row(
-                Modifier.clip(RoundedCornerShape(6.dp)).background(if (address.muted) cs.surfaceContainerHighest else cs.primaryContainer)
+                Modifier.clip(RoundedCornerShape(6.dp)).background(if (address.muted) nxc.fill else nxc.accentFill)
                     .clickable {
                         context.getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText("address", address.value))
                         toaster.show("Copied ${address.value}")
                     }.padding(horizontal = 8.dp, vertical = 4.dp),
                 Arrangement.spacedBy(6.dp), Alignment.CenterVertically,
             ) {
-                val color = if (address.muted) cs.onSurfaceVariant else cs.onPrimaryContainer
+                val color = if (address.muted) cs.onSurfaceVariant else cs.primary
                 Text(address.text, Modifier.weight(1f, fill = false), color, style = MaterialTheme.typography.labelMedium, fontFamily = Mono, maxLines = 1, overflow = TextOverflow.MiddleEllipsis)
                 Icon(Icons.Outlined.ContentCopy, "Copy", Modifier.size(12.dp), color)
             }
@@ -456,12 +452,12 @@ private fun Interface(row: InterfaceRow) = Column(verticalArrangement = Arrangem
         Rate(false, row.upload, row.uploadTotal, Modifier.weight(1f))
     }
     if (row.meta.isNotEmpty()) Muted(row.meta.joinToString(" · "))
-    row.problems.forEach { Text(it.value, style = MaterialTheme.typography.bodySmall, color = if (it.alert) WarningColor else MaterialTheme.colorScheme.onSurfaceVariant) }
+    row.problems.forEach { Text(it.value, style = MaterialTheme.typography.bodySmall, color = if (it.alert) nxc.warning else MaterialTheme.colorScheme.onSurfaceVariant) }
 }
 
 @Composable
 private fun CompactInterface(row: InterfaceRow) = Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-    Box(Modifier.size(8.dp).background(if (row.isUp) SuccessColor else MaterialTheme.colorScheme.outlineVariant, CircleShape))
+    Box(Modifier.size(8.dp).background(if (row.isUp) nxc.success else nxc.subtext, CircleShape))
     Column(Modifier.weight(1f)) {
         Text(row.name, style = MaterialTheme.typography.bodyMedium, fontFamily = Mono, maxLines = 1, overflow = TextOverflow.Ellipsis)
         row.primaryAddress?.let { Muted(it, mono = true) }
@@ -496,14 +492,14 @@ private fun LazyListScope.processes(latest: MonitoringSnapshot, query: String, o
         Panel(spacing = 0) {
             ProcessRow { Muted("Command"); Muted("CPU"); Muted("Memory") }
             processes.forEach { process ->
-                HorizontalDivider(Modifier.padding(vertical = 10.dp))
+                HorizontalDivider(Modifier.padding(vertical = 10.dp), color = nxc.border)
                 ProcessRow {
                     Column {
                         Text(process.command, style = MaterialTheme.typography.bodySmall, fontFamily = Mono, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         Muted(process.meta)
                     }
-                    Text(process.cpuText, style = MaterialTheme.typography.bodyMedium, color = if (sort == ProcessSort.CPU) MaterialTheme.colorScheme.primary else Color.Unspecified)
-                    Text(process.memText, style = MaterialTheme.typography.bodyMedium, color = if (sort == ProcessSort.MEMORY) MaterialTheme.colorScheme.primary else Color.Unspecified)
+                    Text(process.cpuText, style = MaterialTheme.typography.bodyMedium, fontFamily = Mono, color = if (sort == ProcessSort.CPU) MaterialTheme.colorScheme.primary else Color.Unspecified)
+                    Text(process.memText, style = MaterialTheme.typography.bodyMedium, fontFamily = Mono, color = if (sort == ProcessSort.MEMORY) MaterialTheme.colorScheme.primary else Color.Unspecified)
                 }
             }
         }

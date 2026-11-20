@@ -10,10 +10,12 @@ enum class ThemeMode(val storageValue: String) {
     }
 }
 
+class AccentOption(val argb: Long, val name: String)
+
 class ThemeSettings(settings: Settings) {
     private val mode = Pref(settings, "themeMode", ThemeMode.parse(settings.getStringOrNull("themeMode"))) { k, v -> putString(k, v.storageValue) }
     private val accent = Pref(settings, "accentColor", settings.getLongOrNull("accentColor") ?: FALLBACK_SEED_COLOR) { k, v -> putLong(k, v) }
-    private val dynamic = settings.bool("useDynamicColor", true)
+    private val dynamic = settings.bool("useDynamicColor", false)
 
     val themeMode = mode.flow
     val accentColor = accent.flow
@@ -24,10 +26,11 @@ class ThemeSettings(settings: Settings) {
     fun setUseDynamicColor(value: Boolean) = dynamic.set(value)
 
     companion object {
-        const val FALLBACK_SEED_COLOR = 0xFF673AB7L
-        val ACCENT_COLOR_OPTIONS: List<Long> = listOf(
-            0xFF673AB7L, 0xFF2196F3L, 0xFF009688L, 0xFF4CAF50L, 0xFFFFC107L,
-            0xFFFF9800L, 0xFFF44336L, 0xFFE91E63L, 0xFF3F51B5L, 0xFF00BCD4L,
+        const val FALLBACK_SEED_COLOR = 0xFF314BD3L
+        val ACCENTS: List<AccentOption> = listOf(
+            AccentOption(0xFF314BD3L, "Nexterm Blue"), AccentOption(0xFF7C3AEDL, "Purple"), AccentOption(0xFFDB2777L, "Pink"),
+            AccentOption(0xFFDC2626L, "Red"), AccentOption(0xFFEA580CL, "Orange"), AccentOption(0xFF16A34AL, "Green"),
+            AccentOption(0xFF0D9488L, "Teal"), AccentOption(0xFF0891B2L, "Cyan"),
         )
     }
 }

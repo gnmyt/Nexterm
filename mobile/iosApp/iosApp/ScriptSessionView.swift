@@ -115,7 +115,7 @@ struct ScriptSessionView: View {
             } label: {
                 HStack(spacing: 12) {
                     if script.isFailed {
-                        Image(systemName: "xmark.octagon.fill").foregroundStyle(.red)
+                        Image(systemName: "xmark.octagon.fill").foregroundStyle(NX.error)
                     } else if script.isCompleted {
                         Image(systemName: "checkmark.circle.fill").foregroundStyle(accent)
                     } else {
@@ -133,7 +133,8 @@ struct ScriptSessionView: View {
                 if script.fraction >= 0 { ProgressView(value: script.fraction) } else { ProgressView().progressViewStyle(.linear) }
             }
         }
-        .background(.bar)
+        .background(NX.surface)
+        .hairline(.bottom)
     }
 
     private func symbol(_ status: ScriptStepStatus) -> String {
@@ -149,8 +150,8 @@ struct ScriptSessionView: View {
     private func color(_ status: ScriptStepStatus) -> Color {
         switch status {
         case .done: accent
-        case .running: .teal
-        case .failed: .red
+        case .running: NX.warning
+        case .failed: NX.error
         default: .secondary
         }
     }

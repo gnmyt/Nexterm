@@ -4,15 +4,15 @@ import NextermKit
 
 func usageColor(_ percent: Double) -> Color {
     let level = Formatters.shared.usageLevel(percent: percent)
-    return level == UsageLevel.critical ? .red : level == UsageLevel.warning ? .orange : accent
+    return level == UsageLevel.critical ? NX.error : level == UsageLevel.warning ? NX.warning : accent
 }
 
 func stateColor(_ state: MonitoringState) -> Color {
     switch state {
-    case .online: .green
-    case .offline: .red
-    case .error: .orange
-    default: .secondary
+    case .online: NX.success
+    case .offline: NX.error
+    case .error: NX.warning
+    default: NX.subtext
     }
 }
 
@@ -65,11 +65,12 @@ struct MonitoringView: View {
                         }
                         .buttonStyle(.plain)
                         .accessibilityAddTraits(selected ? .isSelected : [])
-                        .listRowBackground(selected ? RoundedRectangle(cornerRadius: 16, style: .continuous).fill(Color(.systemFill)) : nil)
+                        .listRowBackground(selected ? accentSoft : NX.surface)
                     }
                 }
             }
             .listSectionSpacing(12)
+            .brandedList()
             .overlay {
                 if loading.value && servers.value.isEmpty {
                     ProgressView()
@@ -105,20 +106,6 @@ struct MonitoringView: View {
     }
 }
 
-struct IconTile: View {
-    let symbol: String
-    let color: Color
-    var size: CGFloat = 36
-
-    var body: some View {
-        Image(systemName: symbol)
-            .font(.system(size: size * 0.45, weight: .medium))
-            .foregroundStyle(color)
-            .frame(width: size, height: size)
-            .background(color.opacity(0.14), in: RoundedRectangle(cornerRadius: size * 0.28, style: .continuous))
-    }
-}
-
 struct IssueLabel: View {
     let server: MonitoringServer
 
@@ -140,10 +127,10 @@ private struct MonitoringRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 12) {
-                IconTile(symbol: sfSymbol(IconKeys.shared.monitoringServer(server: server)), color: server.isOnline ? (server.isPve ? .teal : accent) : .secondary)
+                ServerTile(symbol: sfSymbol(IconKeys.shared.monitoringServer(server: server)), color: server.isPve ? NX.proxmox : accentFill, offline: !server.isOnline, size: 36)
                 VStack(alignment: .leading, spacing: 1) {
                     Text(server.name).font(.headline).lineLimit(1)
-                    Text(server.address).font(.subheadline).foregroundStyle(.secondary).lineLimit(1)
+                    Text(server.address).mono(.footnote).foregroundStyle(NX.subtext).lineLimit(1)
                 }
                 Spacer(minLength: 0)
                 Circle().fill(stateColor(server.state)).frame(width: 9, height: 9).accessibilityLabel(server.state.label)

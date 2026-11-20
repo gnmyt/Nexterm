@@ -29,36 +29,47 @@ private struct DeviceSetupForm: View {
         let s = state.value
         NavigationStack {
             Form {
+              Group {
                 if !adding {
-                    VStack(spacing: 8) {
-                        Image("Logo").resizable().scaledToFit().frame(width: 72, height: 72).accessibilityHidden(true)
-                        Text("Nexterm").font(.largeTitle.bold())
+                    VStack(spacing: 14) {
+                        NextermLogo(size: 84)
+                        Text("Nexterm").font(.system(size: 34, weight: .heavy)).tracking(-0.5)
+                        Text("Your servers, in your pocket.").font(.subheadline).foregroundStyle(NX.subtext)
                     }
                     .frame(maxWidth: .infinity)
+                    .padding(.top, 28)
+                    .padding(.bottom, 8)
                     .listRowBackground(Color.clear)
                 }
                 if s.step == DeviceSetupStep.serverUrl {
                     Section {
+                        Button { scanning = true } label: { Label("Scan QR Code", systemImage: "qrcode.viewfinder") }
+                            .buttonStyle(SoftButtonStyle())
+                            .disabled(s.isLoading)
+                            .listRowInsets(EdgeInsets())
+                            .listRowBackground(Color.clear)
+                    } footer: {
+                        Text("Open “Link Device” in the Nexterm web interface and scan the code shown there.")
+                    }
+                    Section {
                         TextField("Server URL", text: $url, prompt: Text("nexterm.example.com"))
+                            .mono(.body)
                             .keyboardType(.URL)
                             .textContentType(.URL)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
                             .submitLabel(.go)
                             .onSubmit(connect)
+                    } header: {
+                        Text("Or enter the address")
                     } footer: {
-                        Text(s.error ?? "Enter the URL of your Nexterm server to connect.").foregroundStyle(s.error == nil ? .secondary : Color.red)
-                    }
-                    Section {
-                        Button("Scan QR Code", systemImage: "qrcode.viewfinder") { scanning = true }
-                            .disabled(s.isLoading)
-                    } footer: {
-                        Button("Try the demo") { Task { try? await flow.startDemo() } }
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            .disabled(s.isLoading)
-                            .frame(maxWidth: .infinity)
-                            .padding(.top, 24)
+                        VStack(spacing: 24) {
+                            if let error = s.error { Text(error).foregroundStyle(NX.error).frame(maxWidth: .infinity, alignment: .leading) }
+                            Button("Try the demo") { Task { try? await flow.startDemo() } }
+                                .font(.footnote.weight(.medium))
+                                .disabled(s.isLoading)
+                                .frame(maxWidth: .infinity)
+                        }
                     }
                 } else if s.step == DeviceSetupStep.authChoice {
                     Section("Choose how to authenticate with the server") {
@@ -73,7 +84,7 @@ private struct DeviceSetupForm: View {
                 } else if s.step == DeviceSetupStep.code {
                     Section {
                         Text(s.deviceCode ?? "----")
-                            .font(.largeTitle.monospaced().bold())
+                            .font(.system(size: 40, weight: .bold, design: .monospaced)).tracking(6)
                             .foregroundStyle(.tint)
                             .textSelection(.enabled)
                             .frame(maxWidth: .infinity)
@@ -93,12 +104,15 @@ private struct DeviceSetupForm: View {
                     Section { } footer: { waiting("Connecting to server…") }
                 }
                 if let error = s.error, s.step != DeviceSetupStep.serverUrl {
-                    Section { Label(error, systemImage: "exclamationmark.triangle").foregroundStyle(.red) }
+                    Section { Label(error, systemImage: "exclamationmark.triangle").foregroundStyle(NX.error) }
                 }
+              }
+              .listRowBackground(NX.surface)
             }
             .frame(maxWidth: 640)
             .frame(maxWidth: .infinity)
-            .background { Color(.systemGroupedBackground).ignoresSafeArea() }
+            .scrollContentBackground(.hidden)
+            .background(NX.background.ignoresSafeArea())
             .navigationTitle(adding ? "Add Server" : "")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

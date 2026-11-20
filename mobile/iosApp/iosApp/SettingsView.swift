@@ -16,17 +16,22 @@ struct SettingsView: View {
     var body: some View {
         NavigationSplitView {
             Form {
+              Group {
                 Section {
-                    Label {
-                        Text(app.account.value?.displayName ?? "")
-                        Text(app.account.value?.displayUrl ?? "")
-                    } icon: {
-                        Image(systemName: "person.crop.circle.fill").font(.largeTitle).foregroundStyle(.tint)
+                    HStack(spacing: 14) {
+                        NextermLogo(size: 30)
+                            .frame(width: 52, height: 52)
+                            .background(accentSoft, in: RoundedRectangle(cornerRadius: 15, style: .continuous))
+                            .overlay { RoundedRectangle(cornerRadius: 15, style: .continuous).strokeBorder(NX.border) }
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(app.account.value?.displayName ?? "").font(.headline)
+                            Text(app.account.value?.displayUrl ?? "").mono(.caption).foregroundStyle(NX.subtext).lineLimit(1)
+                        }
                     }
-                    NavigationLink { AccountsView() } label: { Label("Connections", systemImage: "server.rack") }
-                        .badge(accounts.value.count)
-                    NavigationLink { LoginSessionsView() } label: { Label("Sessions", systemImage: "desktopcomputer") }
-                    NavigationLink { AuthorizeLoginView() } label: { Label("Authorize Web Login", systemImage: "qrcode.viewfinder") }
+                    .padding(.vertical, 4)
+                    NavigationLink { AccountsView() } label: { Row(title: "Nexterm Servers", subtitle: "\(accounts.value.count) connected", icon: "network") }
+                    NavigationLink { LoginSessionsView() } label: { Row(title: "Signed-In Devices", icon: "laptopcomputer.and.iphone") }
+                    NavigationLink { AuthorizeLoginView() } label: { Row(title: "Authorize Web Login", icon: "qrcode.viewfinder") }
                 }
                 Section("Appearance") {
                     Picker("Theme", selection: app.themeMode.binding { nx.themeSettings.setThemeMode(mode: $0) }) {
@@ -34,13 +39,27 @@ struct SettingsView: View {
                         Text("Light").tag(ThemeMode.light)
                         Text("Dark").tag(ThemeMode.dark)
                     }
-                    Picker("Accent Color", selection: app.accent.binding { nx.themeSettings.setAccentColor(argb: $0) }) {
-                        ForEach(Array(zip(ThemeSettings.companion.ACCENT_COLOR_OPTIONS, accentNames)), id: \.1) { c, name in
-                            Label { Text(name) } icon: { Image(systemName: "circle.fill").foregroundStyle(Color(argb: c.int64Value)) }
-                                .tag(c.int64Value)
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Accent")
+                        HStack(spacing: 0) {
+                            ForEach(ThemeSettings.companion.ACCENTS, id: \.argb) { option in
+                                let selected = option.argb == app.accent.value
+                                Button { nx.themeSettings.setAccentColor(argb: option.argb) } label: {
+                                    Circle().fill(Color(argb: option.argb))
+                                        .overlay { if selected { Image(systemName: "checkmark").font(.caption2.weight(.heavy)).foregroundStyle(.white) } }
+                                        .padding(4)
+                                        .overlay { Circle().strokeBorder(selected ? Color(argb: option.argb) : .clear, lineWidth: 2) }
+                                        .aspectRatio(1, contentMode: .fit)
+                                        .frame(maxWidth: 34)
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel(option.name)
+                                .accessibilityAddTraits(selected ? .isSelected : [])
+                            }
                         }
                     }
-                    .pickerStyle(.navigationLink)
+                    .padding(.vertical, 4)
                 }
                 Section("Terminal") {
                     Stepper(value: fontSize.binding { ts.setFontSize(size: $0) }, in: 8...24) {
@@ -64,18 +83,21 @@ struct SettingsView: View {
                 }
                 Section {
                     Button("Log Out", role: .destructive) { confirmLogout = true }
+                } footer: {
+                    Text("Nexterm \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")").frame(maxWidth: .infinity).padding(.top, 8)
                 }
+              }
+              .brandedRows()
             }
+            .brandedList()
             .navigationTitle("Settings")
             .confirmationDialog("Are you sure you want to log out?", isPresented: $confirmLogout, titleVisibility: .visible) {
                 Button("Log Out", role: .destructive) { Task { try? await nx.accounts.logout() } }
             }
         } detail: {
-            ContentUnavailableView("Settings", systemImage: "gear")
+            ZStack { NX.background.ignoresSafeArea(); NextermLogo(size: 72).opacity(0.5) }
         }
     }
-
-    private let accentNames = ["Purple", "Blue", "Teal", "Green", "Amber", "Orange", "Red", "Pink", "Indigo", "Cyan"]
 }
 
 private struct ToolbarSettingsView: View {
@@ -99,7 +121,9 @@ private struct ToolbarSettingsView: View {
             } footer: {
                 Text("ESC and TAB are always shown. Toggle and drag to reorder.")
             }
+            .brandedRows()
         }
+        .brandedList()
         .environment(\.editMode, .constant(.active))
         .navigationTitle("Keyboard Toolbar")
     }
@@ -119,6 +143,7 @@ private struct AccountsView: View {
                 .badge(active ? Text("Active") : nil)
         }
         .tint(.primary)
+        .brandedRows()
         .swipeActions {
             Button("Remove", systemImage: "trash", role: .destructive) { removing = a }
             Button("Rename", systemImage: "pencil") { label = a.label; renaming = a }
@@ -132,13 +157,14 @@ private struct AccountsView: View {
 
     var body: some View {
         List(accounts.value, id: \.id, rowContent: row)
+        .brandedList()
         .overlay {
             if accounts.value.isEmpty {
                 ContentUnavailableView("No connections", systemImage: "server.rack", description: Text("Add a server to get started"))
             }
         }
-        .navigationTitle("Connections")
-        .toolbar { Button("Add Server", systemImage: "plus") { adding = true } }
+        .navigationTitle("Nexterm Servers")
+        .toolbar { Button("Add Nexterm Server", systemImage: "plus") { adding = true } }
         .sheet(isPresented: $adding) { DeviceSetupView(adding: true) }
         .alert("Rename Server", isPresented: isSet($renaming), presenting: renaming) { a in
             TextField("Label", text: $label)
@@ -163,6 +189,7 @@ private struct LoginSessionsView: View {
                 subtitle: "\(s.ip ?? "Unknown IP") · \(Formatters.shared.relativeTime(epochMillis: s.lastActivity))",
                 icon: sfSymbol(IconKeys.shared.userAgent(ua: s.userAgent)))
                 .badge(s.current?.boolValue == true ? Text("This Device") : nil)
+                .brandedRows()
             .swipeActions {
                 if s.current?.boolValue != true { Button("Revoke", systemImage: "xmark.circle", role: .destructive) { revoking = s } }
             }
@@ -172,9 +199,10 @@ private struct LoginSessionsView: View {
                 ContentUnavailableView("No other sessions", systemImage: "desktopcomputer", description: Text("Only this device is active"))
             }
         }
+        .brandedList()
         .task { await load() }
         .refreshable { await load() }
-        .navigationTitle("Active Sessions")
+        .navigationTitle("Signed-In Devices")
         .confirmationDialog("Are you sure you want to end this session?", isPresented: isSet($revoking),
                             titleVisibility: .visible, presenting: revoking) { s in
             Button("Revoke Session", role: .destructive) {
@@ -193,7 +221,7 @@ private struct LoginSessionsView: View {
     }
 }
 
-private struct AuthorizeLoginView: View {
+struct AuthorizeLoginView: View {
     @State private var payload: AuthorizePayload?
     @State private var scanning = true
     @State private var failure: String?
@@ -202,12 +230,13 @@ private struct AuthorizeLoginView: View {
 
     var body: some View {
         Form {
+          Group {
             if let p = payload {
                 Section("Web Login Request") {
                     LabeledContent("Device Code", value: p.code)
                     LabeledContent("Server", value: p.server)
                 }
-                if let failure { Label(failure, systemImage: "exclamationmark.triangle").foregroundStyle(.red) }
+                if let failure { Label(failure, systemImage: "exclamationmark.triangle").foregroundStyle(NX.error) }
                 Section {
                     Button { approve(p) } label: { if busy { ProgressView() } else { Text("Approve") } }.disabled(busy)
                     Button("Cancel", role: .cancel) { dismiss() }
@@ -215,7 +244,10 @@ private struct AuthorizeLoginView: View {
             } else {
                 Button("Scan QR Code", systemImage: "qrcode.viewfinder") { scanning = true }
             }
+          }
+          .brandedRows()
         }
+        .brandedList()
         .navigationTitle("Authorize Login")
         .sheet(isPresented: $scanning) {
             QRScannerSheet(title: "Scan QR Code", hint: "Point your camera at the QR code on the login page") { raw in

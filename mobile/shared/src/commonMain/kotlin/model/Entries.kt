@@ -51,8 +51,14 @@ data class Server(
     val isCredentialless: Boolean get() = protocolLower == "telnet" || protocolLower == "demo"
     val isShell: Boolean get() = isServer && protocolLower == "ssh"
     val displayIp: String? get() = ip.takeIf { it.isNotEmpty() && it != "N/A" }
-    val subtitle: String?
-        get() = if (isPve && status != null) displayIp?.let { "$status · $it" } ?: status else displayIp
+    val protocolLabel: String
+        get() = when (type) {
+            "pve-lxc" -> "LXC"
+            "pve-qemu" -> "VM"
+            "pve-shell" -> "Shell"
+            else -> protocolLower?.uppercase() ?: "SSH"
+        }
+    val detail: String get() = listOfNotNull(protocolLabel, status?.takeIf { isPve }, displayIp).joinToString(" · ")
 }
 
 private val FILE_PROTOCOLS = setOf("sftp", "ftp", "ftps")

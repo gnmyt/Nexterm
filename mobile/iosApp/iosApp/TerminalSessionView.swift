@@ -19,69 +19,82 @@ struct TerminalSessionView: View {
     }
 
     var body: some View {
+        let ready = received.value || error.value != nil
         TerminalSurface(controller: terminal.controller, onTap: { if !session.isViewOnly { keyboard = true } })
             .background { if !session.isViewOnly { KeyCapture(active: $keyboard, controller: terminal.controller) } }
-            .background(.black, ignoresSafeAreaEdges: [])
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                if let message = session.viewOnlyMessage { ViewOnlyBanner(text: message) }
-            }
+            .background(NX.terminal, ignoresSafeAreaEdges: [])
             .overlay {
-                SessionStateOverlay(state: state.value, ready: received.value || error.value != nil) {
-                    nx.sessions.reconnect(sessionId: session.sessionId)
+                SessionStateOverlay(session: session, state: state.value, ready: ready, message: error.value) { terminal.clearError() }
+            }
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                if let message = session.viewOnlyMessage {
+                    ViewOnlyBanner(text: message).frame(maxWidth: .infinity, alignment: .leading)
+                } else if ready && state.value != ConnectionState.disconnected {
+                    KeyBar(controller: terminal.controller, keyboard: $keyboard)
                 }
             }
-            .errorAlert(error.value) { terminal.clearError() }
-            .toolbar {
-                if !session.isViewOnly {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button(keyboard ? "Hide Keyboard" : "Show Keyboard", systemImage: keyboard ? "keyboard.chevron.compact.down" : "keyboard") {
-                            keyboard.toggle()
-                        }
-                    }
-                }
-            }
+            .background(NX.terminal.ignoresSafeArea())
+            .errorAlert(state.value == ConnectionState.disconnected ? nil : error.value) { terminal.clearError() }
     }
 }
 
 private struct KeyBar: View {
     let controller: TerminalController
-    let hide: () -> Void
+    @Binding var keyboard: Bool
     @State private var ctrl: FlowState<Bool>
     @State private var alt: FlowState<Bool>
 
-    init(controller: TerminalController, hide: @escaping () -> Void) {
+    init(controller: TerminalController, keyboard: Binding<Bool>) {
         self.controller = controller
-        self.hide = hide
+        _keyboard = keyboard
         _ctrl = State(initialValue: FlowState(controller.ctrlActive, or: false))
         _alt = State(initialValue: FlowState(controller.altActive, or: false))
     }
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 6) {
-                ForEach(nx.terminalSettings.toolbarKeys(), id: \.self) { key in
-                    if key.isToggle {
-                        Toggle(key.label, isOn: Binding(get: { key == ToolbarKey.ctrl ? ctrl.value : alt.value },
-                                                        set: { _ in controller.press(key: key) }))
-                            .toggleStyle(.button)
-                    } else {
-                        Button(key.label) { controller.press(key: key) }
+        HStack(spacing: 0) {
+            Button(keyboard ? "Hide Keyboard" : "Show Keyboard", systemImage: keyboard ? "keyboard.chevron.compact.down" : "keyboard") { keyboard.toggle() }
+                .buttonStyle(KeyCapStyle(active: keyboard))
+                .padding(.leading, 8).padding(.trailing, 6)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    ForEach(nx.terminalSettings.toolbarKeys(), id: \.self) { key in
+                        if key.isToggle {
+                            Button(key.label) { controller.press(key: key) }
+                                .buttonStyle(KeyCapStyle(active: key == ToolbarKey.ctrl ? ctrl.value : alt.value))
+                        } else {
+                            Button(key.label) { controller.press(key: key) }
+                                .buttonStyle(KeyCapStyle())
+                                .buttonRepeatBehavior(key.isCompact ? .enabled : .disabled)
+                        }
                     }
                 }
-                Divider()
-                Button("Copy", systemImage: "doc.on.doc") {
-                    if let text = controller.doCopySelection() { UIPasteboard.general.string = text }
-                }
+                .padding(.horizontal, 2)
+            }
+            .mask(LinearGradient(stops: [.init(color: .clear, location: 0), .init(color: .black, location: 0.03), .init(color: .black, location: 0.97), .init(color: .clear, location: 1)],
+                                 startPoint: .leading, endPoint: .trailing))
+            Menu {
                 Button("Paste", systemImage: "doc.on.clipboard") {
                     if let text = UIPasteboard.general.string { controller.paste(text: text) }
                 }
-                Button("Hide Keyboard", systemImage: "keyboard.chevron.compact.down", action: hide)
+                Button("Copy Selection", systemImage: "doc.on.doc") {
+                    if let text = controller.doCopySelection() { UIPasteboard.general.string = text }
+                }
+            } label: {
+                Label("Clipboard", systemImage: "doc.on.clipboard")
+            } primaryAction: {
+                if let text = controller.doCopySelection(), !text.isEmpty { UIPasteboard.general.string = text }
+                else if let text = UIPasteboard.general.string { controller.paste(text: text) }
             }
-            .labelStyle(.iconOnly)
-            .buttonStyle(.bordered)
-            .font(.callout.monospaced().weight(.medium))
-            .padding(.horizontal, 8)
+            .buttonStyle(KeyCapStyle())
+            .padding(.leading, 6).padding(.trailing, 8)
         }
+        .labelStyle(.iconOnly)
+        .sensoryFeedback(.selection, trigger: ctrl.value)
+        .sensoryFeedback(.selection, trigger: alt.value)
+        .padding(.vertical, 7)
+        .background(NX.surface.ignoresSafeArea(edges: .bottom))
+        .hairline(.top)
     }
 }
 
@@ -92,7 +105,7 @@ private struct KeyCapture: UIViewRepresentable {
     func makeUIView(context: Context) -> KeyInputView {
         let view = KeyInputView()
         view.onResign = { active = false }
-        view.attach(controller: controller, bar: KeyBar(controller: controller) { active = false })
+        view.attach(controller: controller)
         return view
     }
 
@@ -107,7 +120,6 @@ private struct KeyCapture: UIViewRepresentable {
 
 final class KeyInputView: UIView, UIKeyInput {
     private var controller: TerminalController?
-    private var accessory: UIView?
     var onResign: () -> Void = {}
 
     var autocorrectionType = UITextAutocorrectionType.no
@@ -119,28 +131,8 @@ final class KeyInputView: UIView, UIKeyInput {
     var inlinePredictionType = UITextInlinePredictionType.no
     var keyboardType = UIKeyboardType.asciiCapable
 
-    func attach(controller: TerminalController, bar: some View) {
-        self.controller = controller
-        let host = UIHostingController(rootView: bar.tint(accent))
-        host.safeAreaRegions = []
-        host.view.backgroundColor = .clear
-        host.view.translatesAutoresizingMaskIntoConstraints = false
-        let input = UIInputView(frame: CGRect(x: 0, y: 0, width: 0, height: 52), inputViewStyle: .keyboard)
-        let material = UIVisualEffectView(effect: UIBlurEffect(style: .systemChromeMaterial))
-        material.frame = input.bounds
-        material.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        input.addSubview(material)
-        input.addSubview(host.view)
-        NSLayoutConstraint.activate([
-            host.view.leadingAnchor.constraint(equalTo: input.leadingAnchor),
-            host.view.trailingAnchor.constraint(equalTo: input.trailingAnchor),
-            host.view.topAnchor.constraint(equalTo: input.topAnchor),
-            host.view.bottomAnchor.constraint(equalTo: input.bottomAnchor),
-        ])
-        accessory = input
-    }
+    func attach(controller: TerminalController) { self.controller = controller }
 
-    override var inputAccessoryView: UIView? { accessory }
     override var canBecomeFirstResponder: Bool { true }
     var hasText: Bool { true }
 

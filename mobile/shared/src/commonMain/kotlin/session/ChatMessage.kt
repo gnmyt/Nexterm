@@ -11,7 +11,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlin.math.abs
 
-enum class ChatRole { USER, ASSISTANT, SYSTEM, TOOL }
+enum class ChatRole { USER, ASSISTANT, SYSTEM, NOTE, TOOL }
 
 enum class ToolStatus { RUNNING, AWAITING_CONFIRM, AWAITING_ANSWER, DONE, DENIED, ABORTED, ERROR }
 
@@ -148,6 +148,8 @@ object AITools {
         "desktop_resize" to AIToolInfo("Resize desktop", "monitor"),
         "desktop_clipboard_set" to AIToolInfo("Set clipboard", "clipboard-text-outline"),
         "desktop_clipboard_get" to AIToolInfo("Read clipboard", "clipboard-text-outline"),
+        "transfer_create" to AIToolInfo("Transfer files", "file-move-outline"),
+        "transfer_status" to AIToolInfo("Check transfer", "information-outline"),
         "batch" to AIToolInfo("Run several actions", "format-list-bulleted"),
         ASK_USER to AIToolInfo("Question", "help-circle-outline"),
     )

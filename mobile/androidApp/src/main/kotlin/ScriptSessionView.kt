@@ -43,7 +43,7 @@ private fun ScriptProgress(run: ScriptRun) {
     val state by run.state.watch()
     var expanded by remember { mutableStateOf(false) }
     val cs = MaterialTheme.colorScheme
-    Surface(color = cs.surfaceContainer) {
+    Surface(color = cs.surface) {
         Column {
             ListItem(
                 headlineContent = { Text(state.name) },
@@ -51,7 +51,7 @@ private fun ScriptProgress(run: ScriptRun) {
                 leadingContent = {
                     when {
                         state.isFailed -> Icon(Icons.Outlined.ErrorOutline, null, tint = cs.error)
-                        state.isCompleted -> Icon(Icons.Outlined.CheckCircle, null, tint = cs.primary)
+                        state.isCompleted -> Icon(Icons.Outlined.CheckCircle, null, tint = nxc.success)
                         else -> CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp)
                     }
                 },
@@ -67,11 +67,11 @@ private fun ScriptProgress(run: ScriptRun) {
                 Column(Modifier.heightIn(max = 240.dp).verticalScroll(rememberScrollState()).padding(bottom = 8.dp)) {
                     state.steps.forEach { step ->
                         val (icon, tint) = when (step.status) {
-                            ScriptStepStatus.DONE -> Icons.Outlined.CheckCircle to cs.primary
-                            ScriptStepStatus.RUNNING -> Icons.Outlined.PlayCircle to cs.tertiary
+                            ScriptStepStatus.DONE -> Icons.Outlined.CheckCircle to nxc.success
+                            ScriptStepStatus.RUNNING -> Icons.Outlined.PlayCircle to cs.primary
                             ScriptStepStatus.FAILED -> Icons.Outlined.Cancel to cs.error
-                            ScriptStepStatus.SKIPPED -> Icons.Outlined.RemoveCircleOutline to cs.outline
-                            ScriptStepStatus.PENDING -> Icons.Outlined.RadioButtonUnchecked to cs.outline
+                            ScriptStepStatus.SKIPPED -> Icons.Outlined.RemoveCircleOutline to cs.onSurfaceVariant
+                            ScriptStepStatus.PENDING -> Icons.Outlined.RadioButtonUnchecked to cs.onSurfaceVariant
                         }
                         ListItem(
                             headlineContent = { Text(step.title.ifEmpty { "Step ${step.index + 1}" }, style = MaterialTheme.typography.bodyMedium) },
@@ -106,7 +106,7 @@ private fun ScriptDialogs(run: ScriptRun, dialog: ScriptDialog?) {
             LazyColumn(Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (dialog.rows.isEmpty()) item { StateMessage(Icons.Outlined.TableRows, "No rows", null) }
                 items(dialog.rows, key = { it.index }) { row ->
-                    OutlinedCard(Modifier.fillMaxWidth()) {
+                    HairlineCard(Modifier.fillMaxWidth()) {
                         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             row.cells.forEach { cell ->
                                 Row {
@@ -136,7 +136,7 @@ private fun ResultHeader(title: String, copyText: String, onClose: () -> Unit) {
             IconButton(onClose) { Icon(Icons.Outlined.Close, "Close") }
         }
     }
-    HorizontalDivider()
+    HorizontalDivider(color = nxc.border)
 }
 
 @Composable

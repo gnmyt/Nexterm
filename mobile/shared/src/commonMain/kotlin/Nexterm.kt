@@ -6,8 +6,8 @@ import dev.gnm.nexterm.session.AIChatSession
 import dev.gnm.nexterm.api.ApiClient
 import dev.gnm.nexterm.api.AppInfo
 import dev.gnm.nexterm.api.DeviceSetupFlow
-import dev.gnm.nexterm.session.AppSession
 import dev.gnm.nexterm.session.SessionManager
+import dev.gnm.nexterm.state.FavoritesStore
 import dev.gnm.nexterm.state.FolderStateStore
 import dev.gnm.nexterm.state.SftpSettings
 import dev.gnm.nexterm.state.TerminalSettings
@@ -36,7 +36,7 @@ class Nexterm private constructor(appVersion: String) {
     private val api = accounts.api
     val snippets = SnippetManager(api)
     val scripts = ScriptManager(api)
-    val ai = AIManager(api)
+    val ai = AIManager(api, settings)
     private val ids = ClientIds(settings)
     val stream = StateStream(api, ids, scope) { account -> accounts.removeAccount(account.id) }
 
@@ -44,12 +44,17 @@ class Nexterm private constructor(appVersion: String) {
     val terminalSettings = TerminalSettings(settings)
     val sftpSettings = SftpSettings(settings)
     val folderState = FolderStateStore(settings)
+    val favorites = FavoritesStore(settings)
+
+    val assistant = AIChatSession(AIAssistantChannel(api, { accounts.activeAccount.value?.token }, scope), scope, ai.approvalMode, ai::saveApprovalMode)
 
     val sessions = SessionManager(api, ids, accounts, sftpSettings, terminalSettings, stream, scripts, scope)
 
     init {
         scope.launch {
             accounts.activeAccount.distinctUntilChanged { a, b -> a?.id == b?.id }.collect { account ->
+                assistant.reset()
+                favorites.use(account?.id)
                 if (account != null) {
                     sessions.disconnectAll()
                     stream.start(account)
@@ -70,18 +75,14 @@ class Nexterm private constructor(appVersion: String) {
 
     fun newDeviceSetupFlow(): DeviceSetupFlow = DeviceSetupFlow(api, accounts, childScope(), 5_000)
 
-    fun newServerList(): ServerListController = ServerListController(api, folderState, stream, sessions, scripts, childScope())
+    fun newServerList(): ServerListController = ServerListController(api, folderState, stream, sessions, scripts, favorites, childScope())
 
     fun newMonitoring(): MonitoringController = MonitoringController(api, childScope(), 60_000)
 
-    fun newAIChat(session: AppSession): AIChatSession {
-        val chatScope = childScope()
-        val channel = AIAssistantChannel(api.forBaseUrl(session.account.baseUrl), session.account.token, session.sessionId, chatScope)
-        return AIChatSession(channel, chatScope, session.server.name).also { it.start() }
-    }
-
     fun onResume() {
-        if (accounts.isAuthenticated.value) scope.launch { sessions.restoreSessions() }
+        if (!accounts.isAuthenticated.value) return
+        scope.launch { sessions.restoreSessions() }
+        if (!ai.isAvailable.value) scope.launch { ai.loadSettings() }
     }
 
     fun close() {

@@ -1,7 +1,14 @@
 package dev.gnm.nexterm.app
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.automirrored.outlined.Logout
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -69,13 +76,13 @@ private fun SettingsList(page: SettingsPage?, onPage: (SettingsPage) -> Unit) {
             account?.let { a ->
                 SettingsGroup {
                     ListItem(
-                        headlineContent = { Text(a.displayName, style = MaterialTheme.typography.titleMedium) }, supportingContent = { Text(a.displayUrl) },
-                        leadingContent = { LeadingTile(Icons.Outlined.Person) },
-                        trailingContent = { FilledTonalButton({ confirmLogout = true }) { Text("Logout") } },
-                        colors = transparentListItem,
+                        headlineContent = { Text(a.displayName, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                        supportingContent = { Text(a.displayUrl, style = MonoStyle, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                        leadingContent = { LogoTile() }, colors = transparentListItem,
                     )
                 }
             }
+            SectionHeader("Account")
             SettingsGroup {
                 NavTile(Icons.Outlined.Lan, "Connections", "${accounts.size} server(s)", page == SettingsPage.Accounts) { onPage(SettingsPage.Accounts) }
                 GroupDivider()
@@ -92,8 +99,7 @@ private fun SettingsList(page: SettingsPage?, onPage: (SettingsPage) -> Unit) {
             SettingsGroup { AppearanceSection(nx.themeSettings) }
             SectionHeader("Terminal")
             SettingsGroup { TerminalSection(nx.terminalSettings) }
-            SectionHeader("Keyboard Toolbar")
-            SettingsGroup { KeyboardToolbarSection(nx.terminalSettings) }
+            SettingsGroup(Modifier.padding(top = 8.dp)) { KeyboardToolbarSection(nx.terminalSettings) }
             SectionHeader("File Browser")
             SettingsGroup {
                 SwitchTile(Icons.Outlined.VisibilityOff, "Show Hidden Files", "Show files starting with .", sftp.showHiddenFiles.watch().value, sftp::setShowHiddenFiles)
@@ -102,9 +108,15 @@ private fun SettingsList(page: SettingsPage?, onPage: (SettingsPage) -> Unit) {
                 GroupDivider()
                 SwitchTile(Icons.Outlined.DriveFolderUpload, "Sort Folders First", null, sftp.sortFoldersFirst.watch().value, sftp::setSortFoldersFirst)
             }
+            if (account != null) SettingsGroup(Modifier.padding(top = 20.dp)) {
+                ListItem(
+                    headlineContent = { Text("Log Out", color = MaterialTheme.colorScheme.error) }, leadingContent = { LeadingTile(Icons.AutoMirrored.Outlined.Logout, nxc.error) },
+                    colors = transparentListItem, modifier = Modifier.clickable { confirmLogout = true },
+                )
+            }
         }
     }
-    if (confirmLogout) ConfirmDialog("Logout", "Are you sure you want to logout?", "Logout", onDismiss = { confirmLogout = false }) {
+    if (confirmLogout) ConfirmDialog("Log Out", "Are you sure you want to log out of ${account?.label ?: "this server"}?", "Log Out", destructive = true, onDismiss = { confirmLogout = false }) {
         scope.launch { nx.accounts.logout() }
     }
 }
@@ -117,7 +129,7 @@ private fun AppearanceSection(ts: ThemeSettings) {
     ListItem(
         headlineContent = { Text("Theme") }, leadingContent = { LeadingTile(Icons.Outlined.Contrast) }, colors = transparentListItem,
         trailingContent = {
-            SingleChoiceSegmentedButtonRow {
+            SingleChoiceSegmentedButtonRow(Modifier.width(168.dp)) {
                 listOf(ThemeMode.SYSTEM to Icons.Outlined.BrightnessAuto, ThemeMode.LIGHT to Icons.Outlined.LightMode, ThemeMode.DARK to Icons.Outlined.DarkMode)
                     .forEachIndexed { i, (m, icon) ->
                         SegmentedButton(mode == m, { ts.setThemeMode(m) }, SegmentedButtonDefaults.itemShape(i, 3), icon = {}) { Icon(icon, m.name, Modifier.size(18.dp)) }
@@ -125,23 +137,27 @@ private fun AppearanceSection(ts: ThemeSettings) {
             }
         },
     )
+    if (!dynamic || !supportsDynamicColor) {
+        GroupDivider()
+        ListItem(
+            headlineContent = { Text("Accent Color") }, leadingContent = { LeadingTile(Icons.Outlined.FormatColorFill) }, colors = transparentListItem,
+            trailingContent = { Text(ThemeSettings.ACCENTS.firstOrNull { it.argb == accent }?.name ?: "Custom") },
+        )
+        FlowRow(Modifier.padding(start = 68.dp, end = 16.dp, bottom = 14.dp), Arrangement.spacedBy(10.dp), Arrangement.spacedBy(10.dp)) {
+            ThemeSettings.ACCENTS.forEach { option ->
+                val selected = option.argb == accent
+                Box(
+                    Modifier.size(40.dp).clip(CircleShape).background(Color(option.argb))
+                        .selectable(selected, role = Role.RadioButton) { ts.setAccentColor(option.argb) }.semantics { contentDescription = option.name },
+                    Alignment.Center,
+                ) { if (selected) Icon(Icons.Outlined.Check, null, Modifier.size(20.dp), Color.White) }
+            }
+        }
+    }
     if (supportsDynamicColor) {
         GroupDivider()
-        SwitchTile(Icons.Outlined.Palette, "Dynamic Color", "Use system accent color", dynamic, ts::setUseDynamicColor)
+        SwitchTile(Icons.Outlined.Palette, "Dynamic Color", "Use your wallpaper colors instead of the Nexterm theme", dynamic, ts::setUseDynamicColor)
     }
-    if (!dynamic || !supportsDynamicColor) GroupDivider()
-    if (!dynamic || !supportsDynamicColor) ListItem(
-        headlineContent = { Text("Accent Color") }, leadingContent = { LeadingTile(Icons.Outlined.FormatColorFill) }, colors = transparentListItem,
-        supportingContent = {
-            FlowRow(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                ThemeSettings.ACCENT_COLOR_OPTIONS.forEach { argb ->
-                    FilledIconButton({ ts.setAccentColor(argb) }, colors = IconButtonDefaults.filledIconButtonColors(Color(argb), Color.White)) {
-                        if (argb == accent) Icon(Icons.Outlined.Check, "Selected")
-                    }
-                }
-            }
-        },
-    )
 }
 
 @Composable
@@ -151,7 +167,7 @@ private fun TerminalSection(ts: TerminalSettings) {
     val cursor by ts.cursorStyle.watch()
     ListItem(
         colors = transparentListItem,
-        headlineContent = { Row { Text("Font Size", Modifier.weight(1f)); Text("${fontSize.toInt()} pt", style = MaterialTheme.typography.labelLarge) } },
+        headlineContent = { Row { Text("Font Size", Modifier.weight(1f)); Text("${fontSize.toInt()} pt", style = MaterialTheme.typography.labelLarge, fontFamily = Mono) } },
         leadingContent = { LeadingTile(Icons.Outlined.FormatSize) },
         supportingContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -169,11 +185,11 @@ private fun TerminalSection(ts: TerminalSettings) {
             val sel = t.id == themeId
             OutlinedCard(
                 { ts.setTheme(t.id) }, Modifier.size(80.dp, 64.dp), colors = CardDefaults.outlinedCardColors(Color(t.background)),
-                border = BorderStroke(if (sel) 2.5.dp else 1.dp, if (sel) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant),
+                border = BorderStroke(if (sel) 2.dp else 1.dp, if (sel) MaterialTheme.colorScheme.primary else nxc.border),
             ) {
                 Column(Modifier.fillMaxSize().padding(6.dp), Arrangement.Center, Alignment.CenterHorizontally) {
                     Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) { (1..4).forEach { Badge(Modifier.size(10.dp), Color(t.palette.getOrElse(it) { t.foreground })) } }
-                    Text(t.name, Modifier.padding(top = 4.dp), Color(t.foreground), style = MaterialTheme.typography.labelSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(t.name, Modifier.padding(top = 4.dp), Color(t.foreground), style = MaterialTheme.typography.labelSmall, fontFamily = Mono, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
             }
         }
@@ -216,7 +232,7 @@ private fun KeyboardToolbarSection(ts: TerminalSettings) {
 @Composable
 private fun NavTile(icon: ImageVector, title: String, subtitle: String, selected: Boolean, onClick: () -> Unit) = ListItem(
     headlineContent = { Text(title) }, supportingContent = { Text(subtitle) }, leadingContent = { LeadingTile(icon) },
-    trailingContent = { Icon(Icons.Outlined.ChevronRight, null, tint = MaterialTheme.colorScheme.outline) },
+    trailingContent = { Icon(Icons.Outlined.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
     colors = if (selected) ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.secondaryContainer) else transparentListItem,
     modifier = Modifier.clickable(onClick = onClick),
 )
@@ -245,7 +261,7 @@ fun AccountsScreen(onBack: (() -> Unit)?, onAdd: () -> Unit) {
                     colors = transparentListItem,
                     headlineContent = { Text(a.label, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     supportingContent = { Text(a.subtitle, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                    overlineContent = if (isActive) { { Text("Active") } } else null,
+                    overlineContent = if (isActive) { { Text("Active", color = nxc.success) } } else null,
                     leadingContent = { RadioButton(isActive, null) },
                     trailingContent = {
                         Box {
@@ -288,7 +304,7 @@ fun LoginSessionsScreen(onBack: (() -> Unit)?) {
                         colors = transparentListItem,
                         overlineContent = if (s.current == true) { { Text("This Device") } } else null,
                         headlineContent = { Text(UserAgents.deviceLabel(s.userAgent)) },
-                        supportingContent = { Text("${s.ip ?: "Unknown IP"} · ${Formatters.relativeTime(s.lastActivity)}") },
+                        supportingContent = { Text("${s.ip ?: "Unknown IP"} · ${Formatters.relativeTime(s.lastActivity)}", style = MonoStyle) },
                         leadingContent = { LeadingTile(iconFor(IconKeys.userAgent(s.userAgent))) },
                         trailingContent = { if (s.current != true) IconButton({ revoke = s }) { Icon(Icons.Outlined.Delete, "Revoke", tint = MaterialTheme.colorScheme.error) } },
                     ) }
@@ -325,7 +341,7 @@ fun AuthorizeScreen(payload: AuthorizePayload, onBack: (() -> Unit)?, onDone: ()
                 listOf(Triple(Icons.Outlined.Key, "Device Code", payload.code), Triple(Icons.Outlined.Language, "Server", payload.server)).forEachIndexed { i, (icon, label, value) ->
                     if (i > 0) GroupDivider()
                     ListItem(
-                        headlineContent = { Text(value, maxLines = 1, overflow = TextOverflow.Ellipsis) }, overlineContent = { Text(label) },
+                        headlineContent = { Text(value, fontFamily = Mono, maxLines = 1, overflow = TextOverflow.Ellipsis) }, overlineContent = { Text(label) },
                         leadingContent = { LeadingTile(icon) }, colors = transparentListItem,
                     )
                 }

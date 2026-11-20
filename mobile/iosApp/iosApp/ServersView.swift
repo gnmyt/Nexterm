@@ -16,63 +16,80 @@ struct ServersView: View {
     @State private var loading = FlowState(app.servers.isLoading, or: true)
     @State private var error = FlowState(app.servers.error, or: nil as String?)
     @State private var entries = FlowState(app.servers.filtered, or: [Entry]())
-    @State private var tags = FlowState(app.servers.allTags, or: [Tag]())
+    @State private var tags = FlowState(app.servers.allTags, or: [NextermKit.Tag]())
     @State private var selectedTags = FlowState(app.servers.selectedTags) { Set(($0 as? NSSet)?.compactMap { ($0 as? NSNumber)?.int32Value } ?? []) }
     @State private var expanded = FlowState(app.servers.expandedIds, or: Set<String>())
+    @State private var filtering = FlowState(app.servers.isFiltering, or: false)
     @State private var total = FlowState(app.servers.totalServers, or: Int32(0))
     @State private var recent = FlowState(app.servers.recent, or: [Server]())
+    @State private var favorites = FlowState(app.servers.favorites, or: [Server]())
+    @State private var favoriteIds = FlowState(app.servers.favoriteIds, or: [String]())
     @State private var paused = FlowState(nx.sessions.hibernated, or: [HibernatedSession]())
     @State private var revision = FlowState(app.servers.menuRevision, or: Int32(0))
+    @State private var accounts = FlowState(nx.accounts.accounts, or: [ServerAccount]())
+    @State private var online = FlowState(nx.stream.isConnected, or: true)
     @State private var scriptTarget: ScriptTarget?
     @State private var search = ""
     @State private var pending: ConnectRequest?
     @State private var reason = ""
     @State private var quick: QuickTarget?
     @State private var connecting = false
+    @State private var adding = false
+    @State private var authorizing = false
     @State private var columns = NavigationSplitViewVisibility.all
     @Environment(\.horizontalSizeClass) private var sizeClass
 
     var body: some View {
         NavigationSplitView(columnVisibility: Binding(get: { app.fullscreen.value ? .detailOnly : columns }, set: { if !app.fullscreen.value { columns = $0 } }),
                             preferredCompactColumn: .constant(.sidebar)) {
-            let pausedIds = Set(paused.value.compactMap { $0.server.id })
+            let context = RowContext(paused: Set(paused.value.compactMap { $0.server.id }), favorites: Set(favoriteIds.value),
+                                     expanded: expanded.value, expandAll: filtering.value, act: act)
             let _ = revision.value
             List {
+                if !tags.value.isEmpty {
+                    filters
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                }
+                if !favorites.value.isEmpty && !entries.value.isEmpty {
+                    Section("Favourites") {
+                        ForEach(keyed(favorites.value, in: "favourite")) { ServerNode(server: $0.value, context: context) }
+                    }
+                    .listRowBackground(rowBackground)
+                }
                 if !recent.value.isEmpty && !entries.value.isEmpty {
                     Section("Recent") {
-                        ForEach(recent.value, id: \.self) { ServerNode(server: $0, paused: pausedIds.contains($0.id ?? ""), act: act) }
+                        ForEach(keyed(recent.value, in: "recent")) { ServerNode(server: $0.value, context: context) }
                     }
+                    .listRowBackground(rowBackground)
                 }
                 Section {
-                    ForEach(entries.value, id: \.self) { EntryNode(entry: $0, expanded: expanded.value, paused: pausedIds, act: act) }
+                    ForEach(keyed(entries.value, in: "tree")) { EntryNode(entry: $0.value, path: $0.id, context: context) }
                 } header: {
-                    if total.value > 0 { Text(list.onlineSummary()) }
+                    if total.value > 0 {
+                        HStack(spacing: 6) {
+                            Text(filtering.value ? "Results" : "All Servers")
+                            Spacer()
+                            Text(online.value ? list.onlineSummary() : "Reconnecting…").textCase(nil)
+                        }
+                    }
                 }
+                .listRowBackground(rowBackground)
             }
+            .listSectionSpacing(.compact)
+            .brandedList()
             .overlay { overlay }
-            .navigationTitle("Servers")
-            .searchable(text: $search, prompt: "Search servers")
+            .navigationTitle(sizeClass == .compact ? "Servers" : "")
+            .searchable(text: $search, prompt: "Name, address or tag")
             .onChange(of: search) { _, text in list.setSearchText(text: text) }
             .refreshable {
                 do { try await list.refresh() } catch { app.show("Failed to refresh: \(error.localizedDescription)") }
             }
             .task(id: app.account.value?.id) { try? await list.load() }
             .toolbar {
-                if connecting { ToolbarItem(placement: .topBarLeading) { ProgressView() } }
-                if !tags.value.isEmpty {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Menu("Filter by Tag", systemImage: selectedTags.value.isEmpty
-                             ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill") {
-                            ForEach(tags.value, id: \.id) { tag in
-                                Toggle(tag.name, isOn: Binding(get: { selectedTags.value.contains(tag.id) }, set: { _ in list.toggleTag(id: tag.id) }))
-                            }
-                            if !selectedTags.value.isEmpty {
-                                Divider()
-                                Button("Clear Filter", systemImage: "xmark") { list.clearTags() }
-                            }
-                        }
-                    }
-                }
+                ToolbarItem(placement: .topBarLeading) { accountMenu }
+                if connecting { ToolbarItem(placement: .topBarTrailing) { ProgressView() } }
             }
             .alert("Connection Reason Required", isPresented: isSet($pending), presenting: pending) { p in
                 TextField("Reason", text: $reason)
@@ -94,9 +111,50 @@ struct ServersView: View {
                     ScriptPickerSheet(server: t.server) { start(list.scriptRequest(server: t.server, identityId: t.identityId, script: $0)) }
                 }
             }
+            .sheet(isPresented: $adding) { DeviceSetupView(adding: true) }
+            .sheet(isPresented: $authorizing) { NavigationStack { AuthorizeLoginView() } }
             .disabled(connecting)
         } detail: {
             if sizeClass != .compact { ActiveSessionView() }
+        }
+    }
+
+    private var rowBackground: Color? { sizeClass == .compact ? NX.surface : nil }
+
+    private var accountMenu: some View {
+        Menu {
+            Picker("Nexterm Server", selection: Binding(get: { app.account.value?.id ?? "" }, set: { nx.accounts.switchAccount(id: $0) })) {
+                ForEach(accounts.value, id: \.id) { a in
+                    Label { Text(a.label); Text(a.subtitle) } icon: { Image(systemName: "network") }.tag(a.id)
+                }
+            }
+            Section {
+                Button("Add Nexterm Server", systemImage: "plus") { adding = true }
+                Button("Authorize Web Login", systemImage: "qrcode.viewfinder") { authorizing = true }
+            }
+        } label: {
+            HStack(spacing: 7) {
+                NextermLogo(size: 20)
+                Text(app.account.value?.label ?? "Nexterm").font(.subheadline.weight(.semibold)).foregroundStyle(.primary).lineLimit(1)
+                Image(systemName: "chevron.up.chevron.down").font(.caption2.weight(.bold)).foregroundStyle(NX.subtext)
+            }
+            .padding(.horizontal, 4)
+            .frame(maxWidth: 200)
+        }
+        .accessibilityLabel("Nexterm server: \(app.account.value?.label ?? "")")
+    }
+
+    private var filters: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(tags.value, id: \.id) { tag in
+                    Chip(label: tag.name, dot: tagColor(tag), selected: selectedTags.value.contains(tag.id)) {
+                        list.toggleTag(id: tag.id)
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 2)
         }
     }
 
@@ -112,10 +170,20 @@ struct ServersView: View {
                 Button("Retry") { Task { try? await list.load() } }.buttonStyle(.borderedProminent)
             }
         } else if entries.value.isEmpty {
-            if search.isEmpty {
-                ContentUnavailableView(list.emptyTitle(), systemImage: "server.rack", description: Text(list.emptySubtitle()))
-            } else {
+            if !search.isEmpty {
                 ContentUnavailableView.search(text: search)
+            } else if filtering.value {
+                ContentUnavailableView {
+                    Label("No Matching Servers", systemImage: "line.3.horizontal.decrease.circle")
+                } actions: {
+                    Button("Clear Filters") { list.clearTags() }
+                }
+            } else {
+                VStack(spacing: 14) {
+                    NextermLogo(size: 64)
+                    Text(list.emptyTitle()).font(.title3.weight(.bold))
+                    Text(list.emptySubtitle()).foregroundStyle(NX.subtext)
+                }
             }
         }
     }
@@ -135,10 +203,10 @@ struct ServersView: View {
             Task {
                 do {
                     let result = try await list.execute(intent: e.intent)
-                    if let message = result.message { app.show(message) }
-                    if result.openedSession && sizeClass == .compact { app.tab = .sessions }
+                    if let message = result.message { app.show(message, error: false) }
+                    if result.openedSession { app.sessionOpen = true }
                 } catch {
-                    app.show(error.localizedDescription)
+                    app.show(error.localizedDescription, error: true)
                 }
                 connecting = false
             }
@@ -159,7 +227,7 @@ struct ServersView: View {
         Task {
             do {
                 _ = try await nx.sessions.createSession(request: r, connectionReason: reason)
-                if sizeClass == .compact { app.tab = .sessions }
+                app.sessionOpen = true
             } catch {
                 app.show("Failed to connect: \(error.localizedDescription)")
             }
@@ -168,54 +236,85 @@ struct ServersView: View {
     }
 }
 
+private struct RowContext {
+    let paused: Set<String>
+    let favorites: Set<String>
+    let expanded: Set<String>
+    let expandAll: Bool
+    let act: (ServerIntent) -> Void
+}
+
+private struct Keyed<Value>: Identifiable {
+    let id: String
+    let value: Value
+}
+
+private func keyed<E: Entry>(_ entries: [E], in scope: String) -> [Keyed<E>] {
+    entries.map { Keyed(id: "\(scope)/\($0.type):\($0.id ?? $0.name)", value: $0) }
+}
+
 private struct EntryNode: View {
     let entry: Entry
-    let expanded: Set<String>
-    let paused: Set<String>
-    let act: (ServerIntent) -> Void
+    let path: String
+    let context: RowContext
 
     var body: some View {
         if let folder = entry as? ServerFolder {
-            let row = ServerListRow.FolderRow(folder: folder, depth: 0, isExpanded: expanded.contains(folder.id ?? ""))
-            DisclosureGroup(isExpanded: Binding(get: { row.isExpanded }, set: { _ in app.servers.toggleFolder(folderId: folder.id) })) {
-                ForEach((folder.allServers as [Entry]) + (folder.allFolders as [Entry]), id: \.self) {
-                    EntryNode(entry: $0, expanded: expanded, paused: paused, act: act)
+            let open = context.expandAll || context.expanded.contains(folder.id ?? "")
+            let row = ServerListRow.FolderRow(folder: folder, depth: 0, isExpanded: open)
+            DisclosureGroup(isExpanded: Binding(get: { open }, set: { _ in if !context.expandAll { app.servers.toggleFolder(folderId: folder.id) } })) {
+                ForEach(keyed((folder.allServers as [Entry]) + (folder.allFolders as [Entry]), in: path)) {
+                    EntryNode(entry: $0.value, path: $0.id, context: context)
                 }
             } label: {
-                Row(title: folder.name, subtitle: row.subtitle, icon: sfSymbol(row.iconKey), color: roleColor(row.colorRole.name))
+                HStack(spacing: 12) {
+                    IconTile(symbol: sfSymbol(row.iconKey), color: roleColor(row.colorRole.name))
+                    Text(folder.name).font(.body.weight(.semibold)).lineLimit(1)
+                    Spacer(minLength: 0)
+                    Text("\(folder.serverCount)").font(.footnote.weight(.medium)).monospacedDigit().foregroundStyle(NX.subtext)
+                }
             }
         } else if let server = entry as? Server {
-            ServerNode(server: server, paused: paused.contains(server.id ?? ""), act: act)
+            ServerNode(server: server, context: context)
         }
     }
 }
 
 private struct ServerNode: View {
     let server: Server
-    let paused: Bool
-    let act: (ServerIntent) -> Void
+    let context: RowContext
 
     var body: some View {
-        let row = ServerListRow.ServerRow(server: server, depth: 0)
-        Button { act(app.servers.primaryIntent(server: server)) } label: {
-            HStack {
-                Row(title: server.name, subtitle: server.subtitle, icon: sfSymbol(row.iconKey), color: roleColor(row.colorRole.name))
-                if paused {
-                    Spacer()
-                    Image(systemName: "moon.zzz").foregroundStyle(.secondary).accessibilityLabel("Hibernated session")
+        let id = server.id ?? ""
+        let favorite = context.favorites.contains(id)
+        Button { context.act(app.servers.primaryIntent(server: server)) } label: {
+            HStack(spacing: 12) {
+                ServerTile(server: server)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(server.name).font(.body.weight(.semibold)).lineLimit(1)
+                    Text(server.detail).mono(.caption).foregroundStyle(NX.subtext).lineLimit(1)
                 }
+                Spacer(minLength: 4)
+                if context.paused.contains(id) {
+                    Image(systemName: "moon.zzz.fill").font(.footnote).foregroundStyle(accent).accessibilityLabel("Hibernated session")
+                }
+                if favorite { Image(systemName: "star.fill").font(.caption2).foregroundStyle(NX.amber).accessibilityLabel("Favourite") }
+                if !server.tags.isEmpty { TagDots(tags: server.tags) }
             }
-            .badge(server.tags.isEmpty ? nil : Text(server.tags.map(\.name).joined(separator: ", ")))
+            .contentShape(Rectangle())
         }
-        .tint(server.isStopped ? .secondary : .primary)
+        .buttonStyle(.plain)
+        .opacity(server.isStopped ? 0.7 : 1)
         .swipeActions(edge: .trailing) {
             if ConnectionRules.shared.supportsSftp(server: server) {
-                Button("File Browser", systemImage: "folder") { act(ServerIntent.Connect(server: server, type: .sftp, identityId: nil)) }.tint(.accentColor)
+                Button("File Browser", systemImage: "folder") { context.act(ServerIntent.Connect(server: server, type: .sftp, identityId: nil)) }.tint(accentFill)
             }
         }
         .swipeActions(edge: .leading) {
+            Button(favorite ? "Unfavourite" : "Favourite", systemImage: favorite ? "star.slash" : "star") { app.servers.toggleFavorite(server: server) }
+                .tint(NX.amber)
             if server.canWakeOnLan {
-                Button("Wake-On-LAN", systemImage: "power") { act(ServerIntent.Wake(server: server)) }.tint(.green)
+                Button("Wake-On-LAN", systemImage: "power") { context.act(ServerIntent.Wake(server: server)) }.tint(NX.success)
             }
         }
         .contextMenu {
@@ -223,14 +322,18 @@ private struct ServerNode: View {
                 if item.hasOptions {
                     Menu {
                         ForEach(Array(item.options.enumerated()), id: \.offset) { _, option in
-                            Button(option.label) { act(option.intent) }
+                            Button(option.label) { context.act(option.intent) }
                         }
                     } label: {
                         Label(item.label, systemImage: sfSymbol(item.action.iconKey))
                     }
                 } else {
-                    Button(item.label, systemImage: sfSymbol(item.action.iconKey), role: item.action.isDestructive ? .destructive : nil) { act(item.intent) }
+                    Button(item.label, systemImage: sfSymbol(item.action.iconKey), role: item.action.isDestructive ? .destructive : nil) { context.act(item.intent) }
                 }
+            }
+            Divider()
+            Button(favorite ? "Remove from Favourites" : "Add to Favourites", systemImage: favorite ? "star.slash" : "star") {
+                app.servers.toggleFavorite(server: server)
             }
         }
     }

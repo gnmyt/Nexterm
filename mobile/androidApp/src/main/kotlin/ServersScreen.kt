@@ -3,7 +3,14 @@ package dev.gnm.nexterm.app
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.lazy.itemsIndexed
+import dev.gnm.nexterm.api.AuthorizePayload
+import dev.gnm.nexterm.api.QrPayloads
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,12 +35,11 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import dev.gnm.nexterm.model.Server
-import dev.gnm.nexterm.model.Tag
 import dev.gnm.nexterm.api.ConnectRequest
 import dev.gnm.nexterm.api.ConnectStep
 import dev.gnm.nexterm.api.ConnectionRules
@@ -47,8 +53,6 @@ import dev.gnm.nexterm.api.DirectIdentity
 import dev.gnm.nexterm.api.ValidationException
 import dev.gnm.nexterm.session.ConnectionType
 import dev.gnm.nexterm.state.ServerListController
-import dev.gnm.nexterm.util.ColorRole
-import dev.gnm.nexterm.util.IconKeys
 import dev.gnm.nexterm.util.ServerListRow
 import kotlinx.coroutines.launch
 
@@ -61,21 +65,27 @@ private sealed interface ServerSheet {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ServersScreen(ctrl: ServerListController, onSwitchToSessions: () -> Unit, onConnected: () -> Unit = onSwitchToSessions) {
+fun ServersScreen(ctrl: ServerListController, openAddServer: () -> Unit, onAuthorize: (AuthorizePayload) -> Unit, onConnected: () -> Unit) {
     val rows by ctrl.rows.watch()
     val recent by ctrl.recent.watch()
+    val favorites by ctrl.favorites.watch()
+    val favoriteIds by ctrl.favoriteIds.watch()
     val loading by ctrl.isLoading.watch()
     val error by ctrl.error.watch()
     val total by ctrl.totalServers.watch()
-    val sessions by nx.sessions.sessions.watch()
     val paused by nx.sessions.hibernated.watch()
+    val account by nx.accounts.activeAccount.watch()
+    val accounts by nx.accounts.accounts.watch()
     ctrl.menuRevision.watch().value
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     val toaster = LocalToaster.current
+    val cs = MaterialTheme.colorScheme
     var sheet by remember { mutableStateOf<ServerSheet?>(null) }
     var askReason by remember { mutableStateOf<ConnectRequest?>(null) }
     var refreshing by remember { mutableStateOf(false) }
     var busy by remember { mutableStateOf(false) }
+    var accountMenu by remember { mutableStateOf(false) }
 
     fun create(r: ConnectRequest, reason: String?) = scope.launch {
         busy = true
@@ -116,20 +126,44 @@ fun ServersScreen(ctrl: ServerListController, onSwitchToSessions: () -> Unit, on
     }
     val pausedIds = paused.map { it.server.id }.toSet()
     val listState = rememberLazyListState()
-    val hasRecent = recent.isNotEmpty() && rows.isNotEmpty()
-    LaunchedEffect(hasRecent) {
-        if (hasRecent && listState.firstVisibleItemIndex == recent.size + 2 && listState.firstVisibleItemScrollOffset == 0) listState.scrollToItem(0)
+    val pinned = rows.isNotEmpty() && (favorites.isNotEmpty() || recent.isNotEmpty())
+    val lead = if (!pinned) 0 else 1 + (if (favorites.isEmpty()) 0 else favorites.size + 1) + (if (recent.isEmpty()) 0 else recent.size + 1)
+    LaunchedEffect(lead) {
+        if (lead > 0 && listState.firstVisibleItemIndex <= lead) listState.scrollToItem(0)
     }
 
     AppScreen(
-        "Servers", subtitle = if (!loading && error == null && total > 0) ctrl.onlineSummary() else null,
-        actions = {
-            if (sessions.isNotEmpty()) IconButton(onSwitchToSessions) {
-                BadgedBox({ Badge { Text("${sessions.size}") } }) { Icon(Icons.Outlined.DynamicFeed, "Sessions") }
+        account?.label ?: "Servers", subtitle = if (!loading && error == null && total > 0) ctrl.onlineSummary() else null,
+        titleContent = {
+            Row(Modifier.clip(RoundedCornerShape(8.dp)).clickable(onClickLabel = "Switch account") { accountMenu = true }, verticalAlignment = Alignment.CenterVertically) {
+                Text(account?.label ?: "Servers", Modifier.weight(1f, fill = false), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Icon(Icons.Outlined.ArrowDropDown, null)
+            }
+        },
+        anchor = {
+            Box {
+                DropdownMenu(accountMenu, { accountMenu = false }, offset = DpOffset(16.dp, 0.dp)) {
+                    accounts.forEach { a ->
+                        DropdownMenuItem(
+                            { Column { Text(a.label, maxLines = 1, overflow = TextOverflow.Ellipsis); Text(a.subtitle, style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant, maxLines = 1) } },
+                            { accountMenu = false; if (a.id != account?.id) nx.accounts.switchAccount(a.id) },
+                            leadingIcon = { if (a.id == account?.id) Icon(Icons.Outlined.Check, "Active", tint = cs.primary) else Spacer(Modifier.size(24.dp)) },
+                        )
+                    }
+                    HorizontalDivider(color = nxc.border)
+                    DropdownMenuItem({ Text("Add server") }, { accountMenu = false; openAddServer() }, leadingIcon = { Icon(Icons.Outlined.Add, null) })
+                    DropdownMenuItem({ Text("Authorize web login") }, {
+                        accountMenu = false
+                        scope.launch {
+                            val raw = scanQrCode(context) ?: return@launch
+                            QrPayloads.parseAuthorize(raw)?.let(onAuthorize) ?: toaster.show("Invalid QR code")
+                        }
+                    }, leadingIcon = { Icon(Icons.Outlined.QrCodeScanner, null) })
+                }
             }
         },
         header = {
-            SearchAndTags(ctrl)
+            SearchAndFilters(ctrl)
             if (busy) LinearProgressIndicator(Modifier.fillMaxWidth()) else Spacer(Modifier.height(4.dp))
         },
     ) { padding ->
@@ -141,17 +175,23 @@ fun ServersScreen(ctrl: ServerListController, onSwitchToSessions: () -> Unit, on
             else -> PullToRefreshBox(refreshing, refresh, Modifier.padding(padding).fillMaxSize()) {
                 LazyColumn(Modifier.fillMaxSize(), listState, contentPadding = PaddingValues(bottom = 16.dp)) {
                     if (rows.isEmpty()) item { StateMessage(Icons.Outlined.CloudOff, ctrl.emptyTitle(), ctrl.emptySubtitle()) }
-                    if (hasRecent) {
-                        item(key = "recent-header") { SectionHeader("Recent") }
-                        items(recent, key = { "recent:${it.id}" }) { server ->
-                            ServerItem(ServerListRow.ServerRow(server, 0), server.id in pausedIds, { act(ctrl.primaryIntent(server)) }, { sheet = ServerSheet.Menu(server) }, ::act)
+                    val section = { title: String, prefix: String, servers: List<Server> ->
+                        item(key = "$prefix-header") { SectionHeader(title) }
+                        itemsIndexed(servers, key = { _, s -> "$prefix:${s.id}" }) { i, server ->
+                            ServerItem(ServerListRow.ServerRow(server, 0), i == 0, i == servers.lastIndex, server.id in pausedIds, server.id in favoriteIds,
+                                { act(ctrl.primaryIntent(server)) }, { sheet = ServerSheet.Menu(server) }, ::act)
                         }
+                    }
+                    if (pinned) {
+                        if (favorites.isNotEmpty()) section("Favourites", "favorite", favorites)
+                        if (recent.isNotEmpty()) section("Recent", "recent", recent)
                         item(key = "all-header") { SectionHeader("All Servers") }
                     }
-                    items(rows, key = { it.key }) { row ->
+                    itemsIndexed(rows, key = { _, row -> row.key }) { i, row ->
                         when (row) {
-                            is ServerListRow.FolderRow -> FolderItem(row) { ctrl.toggleFolder(row.folder.id) }
-                            is ServerListRow.ServerRow -> ServerItem(row, row.server.id in pausedIds, { act(ctrl.primaryIntent(row.server)) }, { sheet = ServerSheet.Menu(row.server) }, ::act)
+                            is ServerListRow.FolderRow -> FolderItem(row, i == 0, i == rows.lastIndex) { ctrl.toggleFolder(row.folder.id) }
+                            is ServerListRow.ServerRow -> ServerItem(row, i == 0, i == rows.lastIndex, row.server.id in pausedIds, row.server.id in favoriteIds,
+                                { act(ctrl.primaryIntent(row.server)) }, { sheet = ServerSheet.Menu(row.server) }, ::act)
                         }
                     }
                 }
@@ -161,9 +201,17 @@ fun ServersScreen(ctrl: ServerListController, onSwitchToSessions: () -> Unit, on
 
     when (val s = sheet) {
         is ServerSheet.Menu -> ModalBottomSheet({ sheet = null }) {
-            SheetHeader(iconFor(IconKeys.server(s.server)), s.server.name, s.server.subtitle)
-            HorizontalDivider()
+            val favorite = s.server.id in favoriteIds
+            ListItem(
+                headlineContent = { Text(s.server.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                supportingContent = { Text(s.server.detail, style = MonoStyle, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                leadingContent = { ServerTile(s.server) }, colors = transparentListItem,
+            )
+            HorizontalDivider(color = nxc.border)
             Column(Modifier.verticalScroll(rememberScrollState())) {
+                SheetItem(if (favorite) Icons.Outlined.Star else Icons.Outlined.StarOutline, if (favorite) "Remove from Favourites" else "Add to Favourites") {
+                    sheet = null; ctrl.toggleFavorite(s.server)
+                }
                 ctrl.menu(s.server).forEach { item ->
                     ListItem(
                         headlineContent = { Text(item.label, color = if (item.action.isDestructive) MaterialTheme.colorScheme.error else Color.Unspecified) },
@@ -184,7 +232,7 @@ fun ServersScreen(ctrl: ServerListController, onSwitchToSessions: () -> Unit, on
                 leadingContent = { IconButton({ sheet = ServerSheet.Menu(s.server) }) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Back") } },
                 colors = transparentListItem,
             )
-            HorizontalDivider()
+            HorizontalDivider(color = nxc.border)
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 s.item.options.forEach { option ->
                     SheetItem(optionIcon(s.item), option.label) { sheet = null; act(option.intent) }
@@ -233,8 +281,8 @@ private fun ScriptPickerSheet(ctrl: ServerListController, server: Server, onDism
                     ListItem(
                         headlineContent = { Text(script.name) },
                         supportingContent = script.description?.let { { Text(it, maxLines = 2, overflow = TextOverflow.Ellipsis) } },
-                        leadingContent = { Icon(iconFor("script-text-outline"), null) },
-                        trailingContent = if (script.isFromSource) { { Icon(Icons.Outlined.CloudDownload, "From a source", Modifier.size(18.dp), MaterialTheme.colorScheme.outline) } } else null,
+                        leadingContent = { LeadingTile(iconFor("script-text-outline")) },
+                        trailingContent = if (script.isFromSource) { { Icon(Icons.Outlined.CloudDownload, "From a source", Modifier.size(18.dp), MaterialTheme.colorScheme.onSurfaceVariant) } } else null,
                         colors = transparentListItem, modifier = Modifier.clickable { onRun(script) },
                     )
                 }
@@ -245,7 +293,7 @@ private fun ScriptPickerSheet(ctrl: ServerListController, server: Server, onDism
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchAndTags(ctrl: ServerListController) {
+private fun SearchAndFilters(ctrl: ServerListController) {
     val search by ctrl.searchText.watch()
     val tags by ctrl.allTags.watch()
     val selected by ctrl.selectedTags.watch()
@@ -258,77 +306,96 @@ private fun SearchAndTags(ctrl: ServerListController) {
             )
         },
         expanded = false, onExpandedChange = {}, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).focusOnTapOnly(), windowInsets = WindowInsets(0),
+        colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
     ) {}
     if (tags.isNotEmpty()) LazyRow(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         if (selected.isNotEmpty()) item {
             InputChip(true, ctrl::clearTags, { Text("Clear") }, trailingIcon = { Icon(Icons.Outlined.Close, "Clear tags", Modifier.size(InputChipDefaults.IconSize)) })
         }
         items(tags, key = { it.id }) { tag ->
-            FilterChip(tag.id in selected, { ctrl.toggleTag(tag.id) }, { Text(tag.name) }, leadingIcon = { Badge(containerColor = tagColor(tag)) })
+            FilterChip(tag.id in selected, { ctrl.toggleTag(tag.id) }, { Text(tag.name) }, leadingIcon = { Box(Modifier.size(8.dp).background(tagColor(tag), CircleShape)) })
         }
     }
 }
 
-@Composable
-private fun tagColor(tag: Tag) = tag.colorArgb?.let { Color(it) } ?: MaterialTheme.colorScheme.primary
+private fun Modifier.entryRow(depth: Int) = heightIn(min = 56.dp).padding(start = (14 + depth * 16).dp, end = 14.dp, top = 8.dp, bottom = 8.dp)
 
 @Composable
-private fun FolderItem(row: ServerListRow.FolderRow, onToggle: () -> Unit) {
+private fun FolderItem(row: ServerListRow.FolderRow, first: Boolean, last: Boolean, onToggle: () -> Unit) {
     val rotation by animateFloatAsState(if (row.isExpanded) 180f else 0f, label = "chevron")
-    ListItem(
-        headlineContent = { Text(row.folder.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-        supportingContent = row.subtitle?.let { { Text(it) } },
-        leadingContent = { Icon(iconFor(row.iconKey), null, tint = roleColor(row.colorRole)) },
-        trailingContent = { if (row.folder.hasEntries) Icon(Icons.Outlined.ExpandMore, null, Modifier.rotate(rotation)) },
-        modifier = Modifier.clickable(row.folder.hasEntries, onClick = onToggle).padding(start = (row.depth * 16).dp),
-    )
+    Row(
+        Modifier.groupRow(first, last, MaterialTheme.colorScheme.surfaceContainer).clickable(row.folder.hasEntries, onClick = onToggle)
+            .entryRow(row.depth),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        LeadingTile(iconFor(row.iconKey), roleColor(row.colorRole), 32.dp)
+        Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+            Text(row.folder.name, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            row.subtitle?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        }
+        if (row.folder.hasEntries) Icon(Icons.Outlined.ExpandMore, if (row.isExpanded) "Collapse" else "Expand", Modifier.rotate(rotation), MaterialTheme.colorScheme.onSurfaceVariant)
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ServerItem(row: ServerListRow.ServerRow, hasPaused: Boolean, onClick: () -> Unit, onLongClick: () -> Unit, onAction: (ServerIntent) -> Unit) {
+private fun ServerItem(
+    row: ServerListRow.ServerRow, first: Boolean, last: Boolean, hasPaused: Boolean, favorite: Boolean,
+    onClick: () -> Unit, onLongClick: () -> Unit, onAction: (ServerIntent) -> Unit,
+) {
     val server = row.server
+    val cs = MaterialTheme.colorScheme
     val endAction = remember(server) { ServerIntent.Connect(server, ConnectionType.SFTP, null).takeIf { ConnectionRules.supportsSftp(server) } }
     val startAction = remember(server) { ServerIntent.Wake(server).takeIf { server.canWakeOnLan } }
-    val state = rememberSwipeToDismissBoxState()
-    LaunchedEffect(state.currentValue) {
-        when (state.currentValue) {
+    val fire by rememberUpdatedState { value: SwipeToDismissBoxValue ->
+        when (value) {
             SwipeToDismissBoxValue.EndToStart -> endAction?.let(onAction)
             SwipeToDismissBoxValue.StartToEnd -> startAction?.let(onAction)
-            SwipeToDismissBoxValue.Settled -> return@LaunchedEffect
+            SwipeToDismissBoxValue.Settled -> Unit
         }
-        state.reset()
+    }
+    val state = rememberSwipeToDismissBoxState()
+    val rowScope = rememberCoroutineScope()
+    LaunchedEffect(state.currentValue) {
+        val value = state.currentValue
+        if (value == SwipeToDismissBoxValue.Settled) return@LaunchedEffect
+        rowScope.launch { state.snapTo(SwipeToDismissBoxValue.Settled) }
+        fire(value)
     }
     SwipeToDismissBox(
-        state, enableDismissFromStartToEnd = startAction != null, enableDismissFromEndToStart = endAction != null,
+        state, modifier = Modifier.groupRow(first, last, cs.surfaceContainer),
+        enableDismissFromStartToEnd = startAction != null, enableDismissFromEndToStart = endAction != null,
         backgroundContent = {
             val toStart = state.dismissDirection == SwipeToDismissBoxValue.EndToStart
             val (label, icon) = if (toStart) "File Browser" to Icons.Outlined.FolderOpen else "Wake-On-LAN" to Icons.Outlined.Power
-            if (state.dismissDirection != SwipeToDismissBoxValue.Settled) ListItem(
-                headlineContent = { Text(label, Modifier.fillMaxWidth(), textAlign = if (toStart) TextAlign.End else TextAlign.Start) },
-                leadingContent = if (toStart) null else { { Icon(icon, null) } },
-                trailingContent = if (toStart) { { Icon(icon, null) } } else null,
-                colors = with(MaterialTheme.colorScheme) {
-                    val (bg, fg) = if (toStart) primaryContainer to onPrimaryContainer else tertiaryContainer to onTertiaryContainer
-                    ListItemDefaults.colors(containerColor = bg, headlineColor = fg, leadingIconColor = fg, trailingIconColor = fg)
-                },
-                modifier = Modifier.fillMaxSize(),
-            )
+            val tint = if (toStart) cs.primary else nxc.warning
+            if (state.dismissDirection != SwipeToDismissBoxValue.Settled) Row(
+                Modifier.fillMaxSize().background(tint.copy(alpha = 0.18f)).padding(horizontal = 20.dp),
+                Arrangement.spacedBy(10.dp, if (toStart) Alignment.End else Alignment.Start), Alignment.CenterVertically,
+            ) {
+                if (!toStart) Icon(icon, null, tint = tint)
+                Text(label, color = tint, style = MaterialTheme.typography.labelLarge)
+                if (toStart) Icon(icon, null, tint = tint)
+            }
         },
     ) {
-        ListItem(
-            headlineContent = { Text(server.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-            supportingContent = server.subtitle?.let { { Text(it, maxLines = 1, overflow = TextOverflow.Ellipsis) } },
-            leadingContent = { Icon(iconFor(row.iconKey), null, tint = roleColor(row.colorRole)) },
-            trailingContent = {
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
-                    if (hasPaused) Icon(Icons.Outlined.Bedtime, "Hibernated session", Modifier.size(16.dp), MaterialTheme.colorScheme.tertiary)
-                    row.tagDots.forEach { Badge(containerColor = tagColor(it)) }
-                }
-            },
-            colors = ListItemDefaults.colors(headlineColor = if (row.colorRole == ColorRole.OUTLINE) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurface),
-            modifier = Modifier.combinedClickable(onLongClick = onLongClick, onClick = onClick).padding(start = (row.depth * 16).dp),
-        )
+        Row(
+            Modifier.background(cs.surfaceContainer).combinedClickable(onLongClick = onLongClick, onLongClickLabel = "More actions", onClick = onClick)
+                .entryRow(row.depth),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            ServerTile(server)
+            Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+                Text(server.name, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                    color = if (server.isStopped) cs.onSurfaceVariant else cs.onSurface)
+                Text(server.detail, style = MonoStyle, color = cs.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+                if (hasPaused) Icon(Icons.Outlined.Bedtime, "Hibernated session", Modifier.size(16.dp), cs.onSurfaceVariant)
+                if (favorite) Icon(Icons.Outlined.Star, "Favourite", Modifier.size(16.dp), nxc.warning)
+                TagDots(row.tagDots)
+            }
+        }
     }
 }
 

@@ -20,6 +20,7 @@ struct MonitoringDetailView: View {
 
     var body: some View {
         List {
+          Group {
             if !server.isOnline { Section { IssueLabel(server: server).padding(.vertical, 2) } }
             if let details = details.value, let latest = details.latest {
                 switch tab {
@@ -31,8 +32,11 @@ struct MonitoringDetailView: View {
                     OverviewTab(server: server, details: details, latest: latest, range: range.binding { r in Task { try? await ctrl.setTimeRange(range: r) } })
                 }
             }
+          }
+          .brandedRows()
         }
         .listStyle(.insetGrouped)
+        .brandedList()
         .id(tab)
         .overlay {
             if details.value?.latest == nil {
@@ -54,7 +58,7 @@ struct MonitoringDetailView: View {
                 .pickerStyle(.segmented)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
-                .background(.bar)
+                .background(NX.background)
         }
         .refreshable { try? await ctrl.refreshDetails() }
         .navigationTitle(server.name)
@@ -122,7 +126,7 @@ private struct FactGrid: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(fact.label).font(.caption).foregroundStyle(.secondary)
                     Text(fact.value).font(large ? .title2.weight(.semibold) : .subheadline.weight(.semibold)).monospacedDigit()
-                        .foregroundStyle(fact.alert ? Color.orange : Color.primary).lineLimit(1).minimumScaleFactor(0.7)
+                        .foregroundStyle(fact.alert ? NX.warning : Color.primary).lineLimit(1).minimumScaleFactor(0.7)
                     if let detail = fact.detail { Text(detail).font(.caption2).foregroundStyle(.secondary) }
                 }
             }
@@ -251,7 +255,7 @@ private struct NodesTab: View {
                 HStack {
                     Text(node.name).font(.headline)
                     Spacer()
-                    StatusBadge(label: node.isOnline ? "Online" : "Offline", color: node.isOnline ? .green : .red)
+                    StatusBadge(label: node.isOnline ? "Online" : "Offline", color: node.isOnline ? NX.success : NX.error)
                 }
                 if node.isOnline {
                     ForEach(node.usage, id: \.label) { row in
@@ -288,7 +292,7 @@ private struct StorageTab: View {
                             Text(failing).font(.footnote).foregroundStyle(.secondary)
                         }
                     } icon: {
-                        Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.red)
+                        Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(NX.error)
                     }
                 }
             }
@@ -363,9 +367,9 @@ private func segmentColor(_ shade: Int32) -> Color {
 
 private func healthColor(_ status: HealthStatus) -> Color {
     switch status {
-    case .passed: .green
-    case .warning: .orange
-    case .failed: .red
+    case .passed: NX.success
+    case .warning: NX.warning
+    case .failed: NX.error
     default: .secondary
     }
 }
@@ -416,7 +420,7 @@ private struct DiskItem: View {
         }
         .padding(.vertical, 4)
         ForEach(disk.facts, id: \.label) { fact in
-            LabeledContent(fact.label) { Text(fact.value).foregroundStyle(fact.alert ? Color.orange : Color.secondary) }
+            LabeledContent(fact.label) { Text(fact.value).foregroundStyle(fact.alert ? NX.warning : Color.secondary) }
         }
     }
 }
@@ -497,7 +501,7 @@ private struct InterfaceItem: View {
                 if row.isDefault { TagLabel(text: "Default route", tint: accent) }
                 if let kind = row.kind { TagLabel(text: kind) }
                 Spacer(minLength: 0)
-                if let state = row.stateLabel { StatusBadge(label: state, color: row.isUp ? .green : .secondary) }
+                if let state = row.stateLabel { StatusBadge(label: state, color: row.isUp ? NX.success : NX.subtext) }
             }
             if !row.addresses.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -525,7 +529,7 @@ private struct InterfaceItem: View {
                 RateLabel(symbol: "arrow.up", value: row.upload, total: row.uploadTotal).frame(maxWidth: .infinity, alignment: .leading)
             }
             if !row.meta.isEmpty { Text(row.meta.joined(separator: " · ")).font(.caption).foregroundStyle(.secondary).monospacedDigit() }
-            ForEach(row.problems, id: \.label) { Text($0.value).font(.caption).foregroundStyle($0.alert ? Color.orange : Color.secondary) }
+            ForEach(row.problems, id: \.label) { Text($0.value).font(.caption).foregroundStyle($0.alert ? NX.warning : Color.secondary) }
         }
         .padding(.vertical, 4)
     }
@@ -536,7 +540,7 @@ private struct CompactInterfaceItem: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            Circle().fill(row.isUp ? Color.green : Color(.systemFill)).frame(width: 8, height: 8)
+            Circle().fill(row.isUp ? NX.success : Color(.systemFill)).frame(width: 8, height: 8)
             VStack(alignment: .leading, spacing: 1) {
                 Text(row.name).font(.subheadline.monospaced()).lineLimit(1)
                 if let address = row.primaryAddress { Text(address).font(.caption.monospaced()).foregroundStyle(.secondary).lineLimit(1) }

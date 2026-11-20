@@ -80,6 +80,11 @@ internal class ReconnectingSocket(
                 if (closed) break
                 val reason = close
                 val code = reason?.code?.toInt()
+                if (code == TRUST_CLOSE_CODE && reason?.message == TRUST_CLOSE_REASON) {
+                    onDown(null)
+                    _state.value = ConnectionState.DISCONNECTED
+                    break
+                }
                 if (reason != null && code != null && code >= 4000) {
                     onDown(reason.message.ifEmpty { "Connection closed ($code)" })
                     _state.value = ConnectionState.DISCONNECTED
@@ -119,5 +124,10 @@ internal class ReconnectingSocket(
         job?.cancel()
         queue.close()
         _state.value = ConnectionState.CLOSED
+    }
+
+    private companion object {
+        const val TRUST_CLOSE_CODE = 4020
+        const val TRUST_CLOSE_REASON = "Certificate verification required"
     }
 }

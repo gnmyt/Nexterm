@@ -67,7 +67,7 @@ class AppSession internal constructor(
 
     val supportsSnippets: Boolean get() = type == ConnectionType.TERMINAL && !isViewOnly
     val supportsAI: Boolean get() = type == ConnectionType.TERMINAL && !isViewOnly && !isJoined
-    val hasToolMenu: Boolean get() = guacamole != null
+    val typeLabel: String get() = if (isViewOnly) "${type.label} · View only" else type.label
 
     val actions: List<SessionAction>
         get() = buildList {

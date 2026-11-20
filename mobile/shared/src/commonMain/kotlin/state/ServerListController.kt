@@ -54,6 +54,7 @@ class ServerListController internal constructor(
     private val stream: StateStream,
     private val sessions: SessionManager,
     private val scripts: ScriptManager,
+    private val favoritesStore: FavoritesStore,
     private val scope: CoroutineScope,
 ) {
     private val _entries = MutableStateFlow<List<Entry>>(emptyList())
@@ -76,13 +77,24 @@ class ServerListController internal constructor(
     val filtered: StateFlow<List<Entry>> = combine(_entries, _query, _selectedTags) { e, q, t -> ServerFilter.filter(e, q, t) }
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
     val expandedIds: StateFlow<Set<String>> = folderState.expandedIds
-    val rows: StateFlow<List<ServerListRow>> = combine(filtered, expandedIds) { f, e -> ServerFilter.flatten(f, e) }
+
+    val isFiltering: StateFlow<Boolean> = combine(_query, _selectedTags) { q, t -> q.isNotEmpty() || t.isNotEmpty() }
+        .stateIn(scope, SharingStarted.Eagerly, false)
+    val rows: StateFlow<List<ServerListRow>> = combine(filtered, expandedIds, isFiltering) { f, e, all -> ServerFilter.flatten(f, e, all) }
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
     val totalServers: StateFlow<Int> = _entries.map(ServerFilter::countServers).stateIn(scope, SharingStarted.Eagerly, 0)
+    val allServers: StateFlow<List<Server>> = _entries.map(ServerFilter::allServers).stateIn(scope, SharingStarted.Eagerly, emptyList())
 
-    val recent: StateFlow<List<Server>> = combine(_entries, _recentIds, _query, _selectedTags) { e, ids, q, t ->
-        if (q.isNotEmpty() || t.isNotEmpty()) emptyList() else ids.mapNotNull { id -> findServer(e, id) }
+    val recent: StateFlow<List<Server>> = combine(_entries, _recentIds, isFiltering) { e, ids, filtering ->
+        if (filtering) emptyList() else ids.mapNotNull { id -> findServer(e, id) }
     }.stateIn(scope, SharingStarted.Eagerly, emptyList())
+
+    val favoriteIds: StateFlow<List<String>> = favoritesStore.ids
+    val favorites: StateFlow<List<Server>> = combine(allServers, favoritesStore.ids, isFiltering) { all, ids, filtering ->
+        if (filtering) emptyList() else ids.mapNotNull { id -> all.firstOrNull { it.id == id } }
+    }.stateIn(scope, SharingStarted.Eagerly, emptyList())
+
+    fun toggleFavorite(server: Server) = favoritesStore.toggle(server.id)
 
     val menuRevision: StateFlow<Int> = combine(sessions.hibernated, stream.liveSessions, _identities, scripts.scripts) { _, _, _, _ -> ++revisionCounter }
         .stateIn(scope, SharingStarted.Eagerly, 0)
@@ -163,7 +175,7 @@ class ServerListController internal constructor(
         _selectedTags.value = emptySet()
     }
 
-    fun isExpanded(folderId: String?): Boolean = folderId != null && folderId in expandedIds.value
+    fun isExpanded(folderId: String?): Boolean = isFiltering.value || folderId != null && folderId in expandedIds.value
 
     fun toggleFolder(folderId: String?) = folderState.toggle(folderId)
 

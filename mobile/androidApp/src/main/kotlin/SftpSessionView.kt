@@ -2,12 +2,11 @@ package dev.gnm.nexterm.app
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -17,6 +16,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -92,47 +92,37 @@ fun SftpSessionView(session: AppSession) {
         }
     }
 
-    Scaffold(
-        topBar = {
-            if (selected.isEmpty()) TopAppBar(
-                { Text(session.server.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                navigationIcon = { Icon(Icons.Outlined.FolderOpen, null, Modifier.padding(horizontal = 12.dp), cs.primary) },
-                actions = { if (connected) IconButton(browser::refresh) { Icon(Icons.Outlined.Refresh, "Refresh") } },
-            ) else TopAppBar(
-                { Text("${selected.size} selected") },
-                navigationIcon = { IconButton(browser::clearSelection) { Icon(Icons.Outlined.Close, "Cancel") } },
-                actions = {
-                    IconButton({ download(browser.selectedEntries(), share = true); browser.clearSelection() }) { Icon(Icons.Outlined.Download, "Download") }
-                    IconButton({ dialog = SftpDialog.Rename(browser.selectedEntries().first()) }, enabled = selected.size == 1) { Icon(Icons.Outlined.Edit, "Rename") }
-                    IconButton({ delete(browser.selectedEntries()) }) { Icon(Icons.Outlined.Delete, "Delete", tint = cs.error) }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(cs.secondaryContainer),
-            )
-        },
-        floatingActionButton = { if (selected.isEmpty() && connected) FloatingActionButton({ dialog = SftpDialog.Add }) { Icon(Icons.Outlined.Add, "Add") } },
-    ) { padding ->
-        Column(Modifier.padding(padding).fillMaxSize()) {
-            PathBar(browser)
-            error?.let { ErrorBanner(it, browser::clearError) }
+    Box(Modifier.fillMaxSize().background(cs.background).navigationBarsPadding()) {
+        Column(Modifier.fillMaxSize()) {
+            if (selected.isEmpty()) PathBar(browser, connected) else Row(Modifier.fillMaxWidth().height(48.dp).background(cs.secondaryContainer), verticalAlignment = Alignment.CenterVertically) {
+                IconButton(browser::clearSelection) { Icon(Icons.Outlined.Close, "Cancel") }
+                Text("${selected.size} selected", Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
+                IconButton({ download(browser.selectedEntries(), share = true); browser.clearSelection() }) { Icon(Icons.Outlined.Download, "Download") }
+                IconButton({ dialog = SftpDialog.Rename(browser.selectedEntries().first()) }, enabled = selected.size == 1) { Icon(Icons.Outlined.Edit, "Rename") }
+                IconButton({ delete(browser.selectedEntries()) }) { Icon(Icons.Outlined.Delete, "Delete", tint = cs.error) }
+            }
+            HorizontalDivider(color = nxc.border)
+            if (connection != ConnectionState.DISCONNECTED) error?.let { ErrorBanner(it, browser::clearError) }
             transfer?.let { t ->
                 if (t.fraction >= 0) LinearProgressIndicator({ t.fraction.toFloat() }, Modifier.fillMaxWidth()) else LinearProgressIndicator(Modifier.fillMaxWidth())
             }
             Box(Modifier.weight(1f)) {
                 when {
-                    !connected && loading -> ConnectionLoader(true, cs.surface)
+                    !connected && loading -> ConnectionLoader(true)
                     loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
                     entries.isEmpty() -> StateMessage(Icons.Outlined.FolderOpen, "Empty directory", null)
                     else -> PullToRefreshBox(false, browser::refresh) {
-                        LazyColumn(Modifier.fillMaxSize()) {
-                            items(entries, key = { it.name }) { e ->
-                                EntryRow(e, selected.isNotEmpty(), e.name in selected, { browser.tap(e) }, { browser.longPress(e) }) { dialog = SftpDialog.Actions(e) }
+                        LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(top = 12.dp, bottom = 88.dp)) {
+                            itemsIndexed(entries, key = { _, e -> e.name }) { i, e ->
+                                EntryRow(e, i == 0, i == entries.lastIndex, selected.isNotEmpty(), e.name in selected, { browser.tap(e) }, { browser.longPress(e) }) { dialog = SftpDialog.Actions(e) }
                             }
                         }
                     }
                 }
-                if (connection == ConnectionState.DISCONNECTED) DisconnectedOverlay { nx.sessions.reconnect(session.sessionId) }
+                if (connection == ConnectionState.DISCONNECTED) ConnectionFailed(session.sessionId, error, browser::clearError)
             }
         }
+        if (selected.isEmpty() && connected && connection != ConnectionState.DISCONNECTED) FloatingActionButton({ dialog = SftpDialog.Add }, Modifier.align(Alignment.BottomEnd).padding(16.dp)) { Icon(Icons.Outlined.Add, "Add") }
     }
 
     val dismiss = { dialog = null }
@@ -159,37 +149,35 @@ fun SftpSessionView(session: AppSession) {
 }
 
 @Composable
-private fun PathBar(browser: SftpBrowser) {
+private fun PathBar(browser: SftpBrowser, connected: Boolean) {
     val crumbs by browser.breadcrumbs.watch()
     val canBack by browser.canGoBack.watch()
     val canUp by browser.canGoUp.watch()
-    Surface(color = MaterialTheme.colorScheme.surfaceContainer) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(browser::goBack, enabled = canBack) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Back") }
-            IconButton(browser::goUp, enabled = canUp) { Icon(Icons.Outlined.ArrowUpward, "Up") }
-            LazyRow(Modifier.weight(1f), reverseLayout = true, verticalAlignment = Alignment.CenterVertically) {
-                itemsIndexed(crumbs.reversed()) { i, c ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        if (i < crumbs.lastIndex) Icon(Icons.Outlined.ChevronRight, null, Modifier.size(16.dp), MaterialTheme.colorScheme.outline)
-                        TextButton({ browser.navigateTo(c.path) }, enabled = !c.isCurrent, contentPadding = PaddingValues(horizontal = 4.dp),
-                            colors = ButtonDefaults.textButtonColors(disabledContentColor = MaterialTheme.colorScheme.primary)) { Text(c.label) }
-                    }
+    Row(Modifier.height(48.dp), verticalAlignment = Alignment.CenterVertically) {
+        IconButton(browser::goBack, enabled = canBack) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Back") }
+        IconButton(browser::goUp, enabled = canUp) { Icon(Icons.Outlined.ArrowUpward, "Up") }
+        LazyRow(Modifier.weight(1f), reverseLayout = true, verticalAlignment = Alignment.CenterVertically) {
+            itemsIndexed(crumbs.reversed()) { i, c ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (i < crumbs.lastIndex) Icon(Icons.Outlined.ChevronRight, null, Modifier.size(16.dp), MaterialTheme.colorScheme.outline)
+                    TextButton({ browser.navigateTo(c.path) }, enabled = !c.isCurrent, contentPadding = PaddingValues(horizontal = 4.dp),
+                        colors = ButtonDefaults.textButtonColors(disabledContentColor = MaterialTheme.colorScheme.primary)) { Text(c.label, fontFamily = Mono) }
                 }
             }
         }
+        if (connected) IconButton(browser::refresh) { Icon(Icons.Outlined.Refresh, "Refresh") }
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun EntryRow(e: SftpEntry, selectionMode: Boolean, isSelected: Boolean, onClick: () -> Unit, onLongClick: () -> Unit, onMore: () -> Unit) = ListItem(
+private fun EntryRow(e: SftpEntry, first: Boolean, last: Boolean, selectionMode: Boolean, isSelected: Boolean, onClick: () -> Unit, onLongClick: () -> Unit, onMore: () -> Unit) = ListItem(
     headlineContent = { Text(e.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-    supportingContent = { Text(e.subtitle) },
+    supportingContent = { Text(e.subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant) },
     leadingContent = {
-        if (selectionMode) Checkbox(isSelected, null)
-        else Icon(iconFor(IconKeys.file(e)), null, tint = roleColor(IconKeys.fileColor(e)))
+        if (selectionMode) Box(Modifier.size(36.dp), Alignment.Center) { Checkbox(isSelected, null) }
+        else LeadingTile(iconFor(IconKeys.file(e)), roleColor(IconKeys.fileColor(e)))
     },
     trailingContent = { if (!selectionMode) IconButton(onMore) { Icon(Icons.Outlined.MoreVert, "Actions") } },
-    colors = if (isSelected) ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.secondaryContainer) else ListItemDefaults.colors(),
-    modifier = Modifier.combinedClickable(onLongClick = onLongClick, onClick = onClick),
+    colors = ListItemDefaults.colors(containerColor = if (isSelected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent),
+    modifier = Modifier.groupRow(first, last, MaterialTheme.colorScheme.surfaceContainer).combinedClickable(onLongClick = onLongClick, onClick = onClick),
 )

@@ -8,6 +8,7 @@ import dev.gnm.nexterm.guacamole.GuacamoleSession
 import dev.gnm.nexterm.model.LiveSession
 import dev.gnm.nexterm.model.Server
 import dev.gnm.nexterm.model.ServerAccount
+import dev.gnm.nexterm.model.TrustChallenge
 import dev.gnm.nexterm.model.parseTimestamp
 import dev.gnm.nexterm.state.AccountManager
 import dev.gnm.nexterm.state.ClientIds
@@ -52,6 +53,7 @@ internal class RemoteSession(
     val origin: String? = null,
     val lastActivity: String? = null,
     val connectionGeneration: Int = 0,
+    val trustChallenge: TrustChallenge? = null,
 ) {
     @Serializable
     class Configuration(
@@ -85,10 +87,13 @@ class SessionManager internal constructor(
     val activeSession: StateFlow<AppSession?> = combine(_sessions, _activeSessionId) { list, id -> list.firstOrNull { it.sessionId == id } }
         .stateIn(scope, SharingStarted.Eagerly, null)
 
+    private val closing = mutableSetOf<String>()
+    private val _trustChallenges = MutableStateFlow<Map<String, TrustChallenge>>(emptyMap())
+
+    val trustChallenges: StateFlow<Map<String, TrustChallenge>> = _trustChallenges.asStateFlow()
+
     private val _fullscreen = MutableStateFlow(false)
     val fullscreen: StateFlow<Boolean> = _fullscreen.asStateFlow()
-
-    val hasActiveSessions: Boolean get() = _sessions.value.isNotEmpty()
 
     init {
         scope.launch { stream.connections.filterNotNull().collect { safe(Unit) { sync(it) } } }
@@ -124,6 +129,7 @@ class SessionManager internal constructor(
             "scriptId" to origin.scriptId,
             "startPath" to startPath,
             "directIdentity" to origin.directIdentity?.toJson(),
+            "trustPrompt" to true,
         )
         val r = clientFor(account).post("/connections", body)
         val json = r.json().asObject()
@@ -220,6 +226,7 @@ class SessionManager internal constructor(
             "scriptId" to origin.scriptId,
             "directIdentity" to origin.directIdentity?.toJson(),
             "connectionGeneration" to session.generation,
+            "trustPrompt" to true,
         )
         val r = clientFor(session.account).post("/connections/${session.sessionId}/reconnect", body)
         when {
@@ -236,7 +243,26 @@ class SessionManager internal constructor(
         }
     }
 
+    @Throws(Exception::class)
+    suspend fun answerTrust(sessionId: String, challenge: TrustChallenge, accept: Boolean) {
+        val session = getSession(sessionId) ?: return
+        val r = try {
+            clientFor(session.account).post("/connections/$sessionId/trust", jsonOf("fingerprint" to challenge.fingerprint, "accept" to accept))
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Throwable) {
+            throw NextermException("Your decision could not be saved", cause = e)
+        }
+        if (!r.isOk) throw NextermException(r.json().asObject()?.str("error") ?: "Your decision could not be saved", r.status)
+        _trustChallenges.update { it - sessionId }
+        if (accept) session.reconnect() else lock.withLock {
+            closing += sessionId
+            drop(sessionId)
+        }
+    }
+
     private fun recover(sessionId: String) {
+        if (sessionId in _trustChallenges.value) return
         val session = getSession(sessionId) ?: return
         if (Formatters.nowMillis() - session.lastRecovery < RECOVERY_INTERVAL_MS) return
         scope.launch { safe(Unit) { reconnect(session) } }
@@ -257,12 +283,17 @@ class SessionManager internal constructor(
         val servers = remote.map { it.entryId }.toSet().mapNotNull { id -> serverFor(id, account)?.let { id to it } }.toMap()
         lock.withLock {
             if (accounts.activeAccount.value?.id != account.id) return
+            closing.retainAll(remote.map { it.sessionId }.toSet())
+            val pending = remote.filter { !it.isHibernated && it.sessionId !in closing }.mapNotNull { s -> s.trustChallenge?.let { s.sessionId to it } }.toMap()
+            val answered = _trustChallenges.value.keys - pending.keys
+            _trustChallenges.value = pending
+            answered.forEach { id -> if (remote.any { it.sessionId == id && !it.isHibernated }) getSession(id)?.reconnect() }
             _hibernated.value = remote.filter { it.isHibernated }.mapNotNull { s ->
                 val server = servers[s.entryId] ?: return@mapNotNull null
                 HibernatedSession(s.sessionId, server, resolveType(s, server), s.configuration?.identityId?.toIntOrNull(), parseTimestamp(s.lastActivity))
             }.sortedByDescending { it.lastActivity ?: 0 }
             remote.filter { it.isHibernated }.forEach { s -> if (getSession(s.sessionId) != null) drop(s.sessionId) }
-            val restored = remote.filter { !it.isHibernated && getSession(it.sessionId) == null }.mapNotNull { s ->
+            val restored = remote.filter { !it.isHibernated && it.sessionId !in closing && getSession(it.sessionId) == null }.mapNotNull { s ->
                 val server = servers[s.entryId] ?: return@mapNotNull null
                 val config = s.configuration
                 val origin = SessionOrigin(config?.identityId?.toIntOrNull(), null, config?.connectionReason, config?.type, config?.scriptId)
@@ -304,8 +335,13 @@ class SessionManager internal constructor(
     @Throws(CancellationException::class)
     suspend fun closeSession(sessionId: String) {
         val session = getSession(sessionId) ?: return
-        lock.withLock { drop(sessionId) }
-        if (!session.isJoined) safe(Unit) { clientFor(session.account).delete("/connections/$sessionId") }
+        lock.withLock {
+            if (!session.isJoined) closing += sessionId
+            drop(sessionId)
+        }
+        if (session.isJoined) return
+        val deleted = safe(false) { clientFor(session.account).delete("/connections/$sessionId").status.let { it in 200..299 || it == 404 } }
+        if (!deleted) lock.withLock { closing -= sessionId }
     }
 
     fun reconnect(sessionId: String) {
@@ -320,6 +356,8 @@ class SessionManager internal constructor(
         serverCache.clear()
         _sessions.value = emptyList()
         _hibernated.value = emptyList()
+        _trustChallenges.value = emptyMap()
+        closing.clear()
         _activeSessionId.value = null
         _fullscreen.value = false
     }

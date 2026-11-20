@@ -38,14 +38,27 @@ object ServerFilter {
 
     private fun matches(s: Server, q: String, tags: Set<Int>): Boolean {
         val tagOk = tags.isEmpty() || s.tags.any { it.id in tags }
-        return tagOk && (q.isEmpty() || s.name.lowercase().contains(q) || s.ip.lowercase().contains(q))
+        val textOk = q.isEmpty() || s.name.lowercase().contains(q) || s.ip.lowercase().contains(q) ||
+            s.protocolLabel.lowercase() == q || s.tags.any { it.name.lowercase().contains(q) }
+        return tagOk && textOk
     }
 
     private fun filterFolder(folder: ServerFolder, q: String, tags: Set<Int>): ServerFolder? {
-        val servers = folder.allServers.filter { matches(it, q, tags) }
-        val folders = folder.allFolders.mapNotNull { filterFolder(it, q, tags) }
-        return if (folder.name.lowercase().contains(q) || servers.isNotEmpty() || folders.isNotEmpty())
-            folder.copy(entries = servers + folders) else null
+        val nameHit = q.isNotEmpty() && folder.name.lowercase().contains(q)
+        val servers = folder.allServers.filter { matches(it, if (nameHit) "" else q, tags) }
+        val folders = folder.allFolders.mapNotNull { filterFolder(it, if (nameHit) "" else q, tags) }
+        return if (servers.isNotEmpty() || folders.isNotEmpty()) folder.copy(entries = servers + folders) else null
+    }
+
+    fun allServers(entries: List<Entry>): List<Server> = entries.flatMap {
+        when (it) {
+            is Server -> listOf(it)
+            is ServerFolder -> allServers(it.entries)
+        }
+    }
+
+    fun assistantCandidates(servers: List<Server>, query: String): List<Server> = query.trim().let { q ->
+        servers.filter { it.entryId != null && (it.name.contains(q, true) || it.ip.contains(q, true)) }
     }
 
     fun collectTags(entries: List<Entry>): List<Tag> {
@@ -77,13 +90,13 @@ object ServerFilter {
         }
     }
 
-    fun flatten(entries: List<Entry>, expandedIds: Set<String>): List<ServerListRow> {
+    fun flatten(entries: List<Entry>, expandedIds: Set<String>, expandAll: Boolean = false): List<ServerListRow> {
         val rows = mutableListOf<ServerListRow>()
         fun add(e: Entry, depth: Int) {
             when (e) {
                 is Server -> rows += ServerListRow.ServerRow(e, depth)
                 is ServerFolder -> {
-                    val open = e.id != null && e.id in expandedIds
+                    val open = expandAll || e.id != null && e.id in expandedIds
                     rows += ServerListRow.FolderRow(e, depth, open)
                     if (open) {
                         e.allServers.forEach { add(it, depth + 1) }

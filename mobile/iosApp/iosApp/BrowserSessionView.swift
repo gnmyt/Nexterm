@@ -42,7 +42,8 @@ struct BrowserSessionView: View {
                     .padding(.vertical, 8)
                     if page.isLoading { ProgressView().progressViewStyle(.linear) }
                 }
-                .background(.bar)
+                .background(NX.surface)
+                .hairline(.bottom)
             }
             .onChange(of: page.address, initial: true) { _, uri in if !editing { address = uri } }
             .onChange(of: editing) { _, now in if !now { address = state.value.address } }

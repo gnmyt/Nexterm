@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
+import androidx.compose.ui.platform.Clipboard
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -22,6 +23,8 @@ suspend fun scanQrCode(context: Context): String? = suspendCancellableCoroutine 
         .addOnFailureListener { cont.resume(null) }
         .addOnCanceledListener { cont.resume(null) }
 }
+
+suspend fun Clipboard.text(): String? = getClipEntry()?.clipData?.takeIf { it.itemCount > 0 }?.getItemAt(0)?.text?.toString()
 
 fun Context.openUrl(url: String) = runCatching { startActivity(Intent(Intent.ACTION_VIEW, url.toUri())) }.isSuccess
 

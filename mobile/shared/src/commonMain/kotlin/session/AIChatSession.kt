@@ -1,5 +1,7 @@
 package dev.gnm.nexterm.session
 
+import dev.gnm.nexterm.model.Server
+import dev.gnm.nexterm.util.arr
 import dev.gnm.nexterm.util.asObject
 import dev.gnm.nexterm.util.str
 import kotlinx.coroutines.CoroutineScope
@@ -16,34 +18,83 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
+enum class ApprovalMode(val wire: String, val label: String, val detail: String, val iconKey: String) {
+    ASK("ask", "Ask First", "Confirm every action that changes something", "help-circle-outline"),
+    ALLOW("allow", "Allow All", "Run actions without asking", "play"),
+    READONLY("readonly", "Read-Only", "Never change anything on your servers", "lock-outline");
+
+    companion object {
+        fun parse(value: String?): ApprovalMode = entries.firstOrNull { it.wire == value } ?: ASK
+    }
+}
+
 data class AIChatState(
     val messages: List<ChatMessage>,
     val isRunning: Boolean,
     val isReady: Boolean,
     val connectionError: String?,
-    internal val retryAttempts: Int,
-    internal val nextId: Int,
+    val allowedServers: List<Server> = emptyList(),
+    val activeEntryId: Int? = null,
+    val approvalMode: ApprovalMode = ApprovalMode.ASK,
+    val canContinue: Boolean = false,
+    val agentSessionCount: Int = 0,
+    val isUnavailable: Boolean = false,
+    internal val retryAttempts: Int = 0,
+    internal val nextId: Int = 0,
 ) {
-    val inputHint: String get() = if (!isReady) "Connecting..." else "Message the assistant..."
+    val inputHint: String
+        get() = when {
+            isUnavailable -> "Assistant unavailable"
+            !isReady -> "Connecting..."
+            allowedServers.isEmpty() -> "Ask anything..."
+            else -> "Ask about ${scopeLabel}..."
+        }
     val isEmpty: Boolean get() = messages.isEmpty() && connectionError == null
+    val isReconnecting: Boolean get() = connectionError == AIChatSession.RECONNECTING
+    val scopeLabel: String
+        get() = when (allowedServers.size) {
+            0 -> "No servers"
+            1 -> allowedServers[0].name
+            else -> "${allowedServers.size} servers"
+        }
+    val agentSessionsLabel: String?
+        get() = agentSessionCount.takeIf { it > 0 }?.let { "$it assistant session${if (it == 1) "" else "s"} open" }
+    val pendingApproval: ChatMessage? get() = messages.firstOrNull { it.isAwaitingConfirmation }
+    val suggestions: List<String>
+        get() = if (allowedServers.isEmpty()) listOf("Which of my servers are offline?", "Summarise the health of my servers", "Which server has the least free disk space?")
+        else listOf("Check disk usage", "Why is the load high?", "Show failed services", "Are there pending updates?")
+
+    fun isAllowed(server: Server): Boolean = allowedServers.any { it.entryId == server.entryId }
 }
 
 class AIChatSession internal constructor(
     private val channel: AIAssistantChannel,
     private val scope: CoroutineScope,
-    val serverName: String?,
+    initialMode: ApprovalMode,
+    private val saveMode: (ApprovalMode) -> Unit,
 ) {
-    private val _state = MutableStateFlow(AIChatState(emptyList(), false, false, null, 0, 0))
+    private val _state = MutableStateFlow(AIChatState(emptyList(), false, false, null, approvalMode = initialMode))
     private var retryJob: Job? = null
-    private var closed = false
+    private var started = false
+    private var restarting = false
 
     val state: StateFlow<AIChatState> = _state.asStateFlow()
 
-    internal fun start() = connect()
+    fun activate() {
+        if (started) return
+        started = true
+        connect()
+    }
 
     private fun connect() {
-        if (closed) return
+        if (!started) return
         channel.connect(::handleEvent, ::handleClosed)
+    }
+
+    fun retry() {
+        _state.update { it.copy(connectionError = null, isUnavailable = false, retryAttempts = 0) }
+        started = true
+        connect()
     }
 
     fun canSend(input: String): Boolean = input.trim().isNotEmpty() && _state.value.isReady && !_state.value.isRunning
@@ -52,13 +103,52 @@ class AIChatSession internal constructor(
         val content = input.trim()
         if (!canSend(content)) return false
         channel.sendPrompt(content)
-        _state.update { it.add(ChatRole.USER, text = content).copy(isRunning = true) }
+        _state.update { it.add(ChatRole.USER, text = content).copy(isRunning = true, canContinue = false) }
         return true
     }
 
     fun stop() {
         channel.abort()
         _state.update { it.endStreaming().abortRunningTools().copy(isRunning = false) }
+    }
+
+    fun continueRun() {
+        if (!_state.value.isReady || _state.value.isRunning) return
+        channel.continueTurn()
+        _state.update { it.copy(isRunning = true, canContinue = false) }
+    }
+
+    private fun allow(server: Server) {
+        if (server.entryId == null) return
+        _state.update { it.copy(allowedServers = it.allowedServers + server) }
+        pushConfig()
+    }
+
+    fun revoke(server: Server) {
+        _state.update { s ->
+            s.copy(allowedServers = s.allowedServers.filterNot { it.entryId == server.entryId }, activeEntryId = s.activeEntryId.takeIf { it != server.entryId })
+        }
+        pushConfig()
+    }
+
+    fun toggle(server: Server) = if (_state.value.isAllowed(server)) revoke(server) else allow(server)
+
+    fun focus(server: Server?) {
+        _state.update { s ->
+            s.copy(allowedServers = if (server?.entryId == null || s.isAllowed(server)) s.allowedServers else s.allowedServers + server, activeEntryId = server?.entryId)
+        }
+        pushConfig()
+    }
+
+    fun setApprovalMode(mode: ApprovalMode) {
+        saveMode(mode)
+        _state.update { it.copy(approvalMode = mode) }
+        pushConfig()
+    }
+
+    private fun pushConfig() {
+        val s = _state.value
+        if (s.isReady) channel.sendConfig(s.allowedServers.mapNotNull { it.entryId }, s.activeEntryId, s.approvalMode.wire)
     }
 
     fun confirm(callId: String, allow: Boolean) {
@@ -76,17 +166,41 @@ class AIChatSession internal constructor(
         _state.update { it.patchTool(callId, ToolStatus.DONE, jsonOf("answer" to value), null) }
     }
 
-    fun close() {
-        closed = true
+    fun newChat() {
         retryJob?.cancel()
+        val wasReady = _state.value.isReady
+        _state.update { AIChatState(emptyList(), false, false, null, it.allowedServers, it.activeEntryId, it.approvalMode) }
+        if (!started) return
+        if (wasReady) {
+            restarting = true
+            channel.closeConversation()
+        } else {
+            channel.renewConversation()
+            connect()
+        }
+    }
+
+    internal fun reset() {
+        retryJob?.cancel()
+        started = false
+        restarting = false
         channel.dispose()
+        channel.renewConversation()
+        _state.update { AIChatState(emptyList(), false, false, null, approvalMode = it.approvalMode) }
     }
 
     internal fun handleEvent(msg: JsonObject) {
         val callId = msg.str("callId")
+        val type = msg.str("type")
         _state.update { s ->
-            when (msg.str("type")) {
-                "ready" -> s.copy(isReady = true, retryAttempts = 0, connectionError = null)
+            when (type) {
+                "ready" -> s.copy(isReady = true, retryAttempts = 0, connectionError = null, isUnavailable = false, agentSessionCount = msg.arr("sessions")?.size ?: 0)
+                "config" -> {
+                    val ids = msg.arr("allowedEntryIds")?.mapNotNull { (it as? JsonPrimitive)?.content?.toIntOrNull() }
+                    val kept = if (ids == null) s.allowedServers else s.allowedServers.filter { it.entryId in ids }
+                    s.copy(allowedServers = kept, activeEntryId = s.activeEntryId.takeIf { id -> kept.any { it.entryId == id } },
+                        approvalMode = msg.str("approvalMode")?.let(ApprovalMode::parse) ?: s.approvalMode)
+                }
                 "text-delta" -> s.appendAssistant(msg.str("delta") ?: "")
                 "tool-call" -> s.endStreaming().upsertTool(callId, msg, ToolStatus.RUNNING)
                 "confirm-request" -> s.upsertTool(callId, msg, ToolStatus.AWAITING_CONFIRM)
@@ -97,27 +211,37 @@ class AIChatSession internal constructor(
                     s.patchTool(callId, if (denied) ToolStatus.DENIED else ToolStatus.DONE, result, null)
                 }
                 "tool-error" -> s.patchTool(callId, ToolStatus.ERROR, null, msg.str("error"))
-                "done" -> s.endStreaming().copy(isRunning = false)
+                "step-limit" -> s.copy(canContinue = true).add(ChatRole.NOTE, text = "The assistant paused after many steps.")
+                "compacted" -> s.add(ChatRole.NOTE, text = "Earlier messages were summarised to save space.")
+                "done" -> s.endStreaming().copy(isRunning = false, agentSessionCount = msg.arr("sessions")?.size ?: s.agentSessionCount)
                 "aborted" -> s.endStreaming().abortRunningTools().copy(isRunning = false)
-                "error" -> s.endStreaming().copy(isRunning = false).add(ChatRole.SYSTEM, text = msg.str("message") ?: "Something went wrong.")
+                "error" -> s.endStreaming().abortRunningTools().copy(isRunning = false, canContinue = true)
+                    .add(ChatRole.SYSTEM, text = msg.str("message") ?: "Something went wrong.")
                 else -> s
             }
         }
+        if (type == "ready") pushConfig()
     }
 
     internal fun handleClosed(code: Int?, reason: String?) {
-        if (closed) return
+        if (!started) return
+        if (restarting) {
+            restarting = false
+            channel.renewConversation()
+            connect()
+            return
+        }
         var retryDelay: Long? = null
         _state.update { cur ->
             retryDelay = null
             val s = cur.endStreaming().abortRunningTools().copy(isReady = false, isRunning = false)
             when {
-                code != null && code >= 4000 -> s.copy(connectionError = reason?.takeIf { it.isNotEmpty() } ?: LOST)
+                code != null && code >= 4000 -> s.copy(connectionError = reason?.takeIf { it.isNotEmpty() } ?: LOST, isUnavailable = code == NOT_CONFIGURED)
                 code == 1000 || code == 1005 -> s
                 s.retryAttempts + 1 <= MAX_RETRIES -> {
                     val attempts = s.retryAttempts + 1
                     retryDelay = (1000L * (1 shl attempts)).coerceIn(0, 10_000)
-                    s.copy(retryAttempts = attempts, connectionError = "Connection lost. Reconnecting...")
+                    s.copy(retryAttempts = attempts, connectionError = RECONNECTING)
                 }
                 else -> s.copy(retryAttempts = s.retryAttempts + 1, connectionError = LOST)
             }
@@ -133,7 +257,9 @@ class AIChatSession internal constructor(
 
     internal companion object {
         const val MAX_RETRIES = 5
+        const val NOT_CONFIGURED = 4020
         const val LOST = "Connection to the assistant was lost."
+        const val RECONNECTING = "Connection lost. Reconnecting..."
     }
 }
 

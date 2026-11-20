@@ -21,20 +21,26 @@ import kotlin.random.Random
 
 internal class AIAssistantChannel(
     private val api: ApiClient,
-    private val token: String,
-    private val sessionId: String,
+    private val token: () -> String?,
     private val scope: CoroutineScope,
 ) {
     private var job: Job? = null
     private var outgoing = Channel<String>(Channel.UNLIMITED)
     private var closedByUs = false
-    private val conversationId = "m-" + (1..16).joinToString("") { Random.nextInt(36).toString(36) }
+    private var conversationId = newConversationId()
+
+    private fun newConversationId() = "m-" + (1..16).joinToString("") { Random.nextInt(36).toString(36) }
+
+    fun renewConversation() {
+        conversationId = newConversationId()
+    }
 
     fun connect(onEvent: (JsonObject) -> Unit, onClosed: (Int?, String?) -> Unit) {
         job?.cancel()
         outgoing.close()
+        closedByUs = false
         val out = Channel<String>(Channel.UNLIMITED).also { outgoing = it }
-        val url = api.webSocketUrl("/ws/ai", mapOf("sessionToken" to token, "sessionId" to sessionId, "conversationId" to conversationId))
+        val url = api.webSocketUrl("/ws/ai", mapOf("sessionToken" to (token() ?: ""), "conversationId" to conversationId))
         job = scope.launch {
             var code: Int? = null
             var reason: String? = null
@@ -72,6 +78,10 @@ internal class AIAssistantChannel(
     fun confirm(callId: String, allow: Boolean) = send(jsonOf("type" to "confirm", "callId" to callId, "allow" to allow))
     fun answer(callId: String, answer: JsonElement) = send(jsonOf("type" to "answer", "callId" to callId, "answer" to answer))
     fun abort() = send(jsonOf("type" to "abort"))
+    fun continueTurn() = send(jsonOf("type" to "continue"))
+    fun closeConversation() = send(jsonOf("type" to "close"))
+    fun sendConfig(allowedEntryIds: List<Int>, activeEntryId: Int?, approvalMode: String) =
+        send(jsonOf("type" to "config", "allowedEntryIds" to allowedEntryIds, "activeEntryId" to activeEntryId, "approvalMode" to approvalMode))
 
     fun dispose() {
         closedByUs = true

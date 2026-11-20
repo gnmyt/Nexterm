@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
@@ -26,6 +25,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -39,22 +39,19 @@ import dev.gnm.nexterm.util.IconKeys
 import dev.gnm.nexterm.util.UsageLevel
 import kotlinx.coroutines.launch
 
-val SuccessColor = Color(0xFF4CAF50)
-val WarningColor = Color(0xFFFF9800)
-
 @Composable
 fun usageColor(percent: Double) = when (Formatters.usageLevel(percent)) {
-    UsageLevel.CRITICAL -> MaterialTheme.colorScheme.error
-    UsageLevel.WARNING -> WarningColor
+    UsageLevel.CRITICAL -> nxc.error
+    UsageLevel.WARNING -> nxc.warning
     UsageLevel.NORMAL -> MaterialTheme.colorScheme.primary
 }
 
 @Composable
 fun stateColor(state: MonitoringState) = when (state) {
-    MonitoringState.ONLINE -> SuccessColor
-    MonitoringState.OFFLINE -> MaterialTheme.colorScheme.error
-    MonitoringState.ERROR -> WarningColor
-    MonitoringState.PENDING, MonitoringState.UNKNOWN -> MaterialTheme.colorScheme.outline
+    MonitoringState.ONLINE -> nxc.success
+    MonitoringState.OFFLINE -> nxc.error
+    MonitoringState.ERROR -> nxc.warning
+    MonitoringState.PENDING, MonitoringState.UNKNOWN -> nxc.subtext
 }
 
 fun stateIcon(state: MonitoringState): ImageVector = when (state) {
@@ -123,6 +120,7 @@ private fun Filters(ctrl: MonitoringController, servers: List<MonitoringServer>)
             )
         },
         expanded = false, onExpandedChange = {}, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).focusOnTapOnly(), windowInsets = WindowInsets(0),
+        colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
     ) {}
     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         items(MonitoringFilter.entries) { item -> FilterChip(item == filter, { ctrl.setFilter(item) }, { Text(remember(servers, item) { ctrl.filterLabel(item) }) }) }
@@ -132,22 +130,22 @@ private fun Filters(ctrl: MonitoringController, servers: List<MonitoringServer>)
 @Composable
 private fun ServerCard(server: MonitoringServer, selected: Boolean, onClick: () -> Unit) {
     val cs = MaterialTheme.colorScheme
-    Card(onClick, colors = CardDefaults.cardColors(containerColor = if (selected) cs.secondaryContainer else cs.surfaceContainer)) {
+    HairlineCard(onClick = onClick, selected = selected) {
         Column(Modifier.padding(16.dp), Arrangement.spacedBy(14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                IconTile(iconFor(IconKeys.monitoringServer(server)), if (server.isOnline) cs.primary else cs.outline)
+                LeadingTile(iconFor(IconKeys.monitoringServer(server)), if (!server.isOnline) cs.onSurfaceVariant else if (server.isPve) nxc.proxmox else cs.primary)
                 Column(Modifier.weight(1f)) {
-                    Text(server.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(server.address, style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(server.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(server.address, style = MonoStyle, color = cs.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
-                Box(Modifier.size(10.dp).background(stateColor(server.state), CircleShape))
+                StatusPill(server.state.label, stateColor(server.state))
             }
             if (server.isOnline) {
                 Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
                     UsageMetric("CPU", server.cpuUsage, server.cpuHistory, Modifier.weight(1f))
                     UsageMetric("Memory", server.memoryUsage, server.memoryHistory, Modifier.weight(1f))
                 }
-                HorizontalDivider()
+                HorizontalDivider(color = nxc.border)
                 FactRow(server.facts)
             } else IssueBlock(server)
         }
@@ -155,14 +153,10 @@ private fun ServerCard(server: MonitoringServer, selected: Boolean, onClick: () 
 }
 
 @Composable
-fun IconTile(icon: ImageVector, tint: Color, size: Dp = 40.dp) =
-    Box(Modifier.size(size).background(tint.copy(alpha = 0.14f), RoundedCornerShape(12.dp)), Alignment.Center) { Icon(icon, null, Modifier.size(size * 0.55f), tint) }
-
-@Composable
 private fun UsageMetric(label: String, value: Double?, history: List<Double>, modifier: Modifier) = Column(modifier, Arrangement.spacedBy(6.dp)) {
     Row(verticalAlignment = Alignment.Bottom) {
         Text(label, Modifier.weight(1f), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(Formatters.wholePercent(value), style = MaterialTheme.typography.titleLarge)
+        Text(Formatters.wholePercent(value), style = MaterialTheme.typography.titleLarge, fontFamily = Mono)
     }
     Sparkline(history, usageColor(value ?: 0.0), Modifier.fillMaxWidth().height(36.dp))
 }
@@ -195,34 +189,22 @@ fun FactRow(facts: List<InfoRow>) = Row(horizontalArrangement = Arrangement.spac
 
 @Composable
 fun IssueBlock(server: MonitoringServer) = Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-    IconTile(stateIcon(server.state), stateColor(server.state), 36.dp)
+    LeadingTile(stateIcon(server.state), stateColor(server.state))
     Column(Modifier.weight(1f), Arrangement.spacedBy(2.dp)) {
         Text(server.state.title, style = MaterialTheme.typography.titleSmall)
         Text(server.issueMessage, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 3, overflow = TextOverflow.Ellipsis)
-        server.issueMeta?.let { Text(it, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline) }
+        server.issueMeta?.let { Text(it, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
     }
 }
 
 @Composable
-fun StatusChip(label: String, color: Color, modifier: Modifier = Modifier) = Row(
-    modifier.clip(RoundedCornerShape(8.dp)).background(color.copy(alpha = 0.16f)).padding(horizontal = 8.dp, vertical = 4.dp),
-    Arrangement.spacedBy(6.dp), Alignment.CenterVertically,
-) {
-    Box(Modifier.size(6.dp).background(color, CircleShape))
-    Text(label, style = MaterialTheme.typography.labelMedium, color = color, maxLines = 1)
-}
-
-@Composable
-fun TagLabel(text: String, accent: Boolean = false) {
-    val cs = MaterialTheme.colorScheme
-    Text(
-        text, Modifier.clip(RoundedCornerShape(6.dp)).background(if (accent) cs.primaryContainer else cs.surfaceContainerHighest).padding(horizontal = 6.dp, vertical = 2.dp),
-        if (accent) cs.onPrimaryContainer else cs.onSurfaceVariant, style = MaterialTheme.typography.labelSmall, maxLines = 1,
-    )
-}
+fun TagLabel(text: String, accent: Boolean = false) = Text(
+    text, Modifier.clip(RoundedCornerShape(6.dp)).background(if (accent) nxc.accentFill else nxc.fill).padding(horizontal = 6.dp, vertical = 2.dp),
+    if (accent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.labelSmall, maxLines = 1,
+)
 
 @Composable
 fun Meter(percent: Double, modifier: Modifier = Modifier, height: Dp = 6.dp, color: Color = usageColor(percent)) = LinearProgressIndicator(
     { Formatters.fraction(percent).toFloat() }, modifier.fillMaxWidth().height(height), color = color,
-    trackColor = MaterialTheme.colorScheme.surfaceContainerHighest, strokeCap = StrokeCap.Round, gapSize = 0.dp, drawStopIndicator = {},
+    trackColor = nxc.fill, strokeCap = StrokeCap.Round, gapSize = 0.dp, drawStopIndicator = {},
 )

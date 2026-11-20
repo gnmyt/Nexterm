@@ -17,12 +17,12 @@ struct GuacamoleSessionView: View {
             Color.black
             if let vp = viewport.value { GuacamoleDisplay(viewport: vp, viewOnly: session.isViewOnly).id(ObjectIdentifier(vp)) }
         }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
+        .overlay(alignment: .bottomLeading) {
             if let message = session.viewOnlyMessage { ViewOnlyBanner(text: message) }
         }
         .overlay {
             if state.value == ConnectionState.disconnected {
-                SessionStateOverlay(state: state.value, ready: false) { nx.sessions.reconnect(sessionId: session.sessionId) }
+                SessionStateOverlay(session: session, state: state.value, ready: false)
             }
         }
     }
@@ -58,21 +58,50 @@ private struct GuacamoleDisplay: View {
         ZStack {
             GuacCanvas(viewport: viewport)
             if !viewOnly { keyInput }
-            if !hasFrame.value && error.value == nil { ProgressView("Connecting…").controlSize(.large).tint(.white).foregroundStyle(.white) }
+            if !hasFrame.value && error.value == nil { ConnectionLoader() }
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if hasFrame.value { bar }
         }
         .errorAlert(error.value.map { "Error: \($0)" }) { viewport.state.client.clearError() }
-        .toolbar {
-            ToolbarItemGroup(placement: .topBarTrailing) {
-                if viewOnly {
-                    Button("Fit to Screen", systemImage: "arrow.up.left.and.arrow.down.right") { viewport.fit() }
-                } else {
-                    Button(typing ? "Hide Keyboard" : "Show Keyboard", systemImage: typing ? "keyboard.chevron.compact.down" : "keyboard") {
-                        typing.toggle()
+    }
+
+    private var bar: some View {
+        HStack(spacing: 0) {
+            if !viewOnly {
+                Button(typing ? "Hide Keyboard" : "Show Keyboard", systemImage: typing ? "keyboard.chevron.compact.down" : "keyboard") { typing.toggle() }
+                    .buttonStyle(KeyCapStyle(active: typing))
+                    .padding(.leading, 8).padding(.trailing, 6)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        Button(mouse == .direct ? "Touch Input" : "Mouse Input", systemImage: mouse == .direct ? "hand.tap" : "cursorarrow") {
+                            mouse = mouse == .direct ? .virtualMouse : .direct
+                            viewport.mouseMode = mouse
+                        }
+                        .buttonStyle(KeyCapStyle(active: mouse == .virtualMouse))
+                        Button("CTRL") { kb.toggleCtrl() }.buttonStyle(KeyCapStyle(active: ctrl.value))
+                        Button("ALT") { kb.toggleAlt() }.buttonStyle(KeyCapStyle(active: alt.value))
+                        Button("SHIFT") { kb.toggleShift() }.buttonStyle(KeyCapStyle(active: shift.value))
+                        ForEach(GuacKeysym.shared.toolbar, id: \.label) { k in
+                            Button(k.label.uppercased()) { kb.sendKeyPress(keysym: k.keysym) }
+                                .buttonStyle(KeyCapStyle())
+                                .buttonRepeatBehavior(.enabled)
+                        }
+                        Button("CTRL+ALT+DEL") { kb.sendCtrlAltDel() }.buttonStyle(KeyCapStyle())
                     }
-                    tools
+                    .padding(.horizontal, 2)
                 }
+            } else {
+                Spacer()
             }
+            Button("Fit to Screen", systemImage: "arrow.up.left.and.arrow.down.right") { viewport.fit() }
+                .buttonStyle(KeyCapStyle())
+                .padding(.leading, 6).padding(.trailing, 8)
         }
+        .labelStyle(.iconOnly)
+        .padding(.vertical, 7)
+        .background(NX.surface.ignoresSafeArea(edges: .bottom))
+        .hairline(.top)
     }
 
     private var keyInput: some View {
@@ -90,27 +119,6 @@ private struct GuacamoleDisplay: View {
                 text = ""
                 typing = true
             }
-    }
-
-    private var tools: some View {
-        Menu("Tools", systemImage: "ellipsis.circle") {
-            Picker("Input", selection: Binding(get: { mouse }, set: { mouse = $0; viewport.mouseMode = $0 })) {
-                Label("Touch", systemImage: "hand.tap").tag(GuacMouseMode.direct)
-                Label("Mouse", systemImage: "cursorarrow").tag(GuacMouseMode.virtualMouse)
-            }
-            Button("Fit to Screen", systemImage: "arrow.up.left.and.arrow.down.right") { viewport.fit() }
-            Button("Ctrl+Alt+Del", systemImage: "command") { kb.sendCtrlAltDel() }
-            Section("Modifiers") {
-                Toggle("Ctrl", isOn: Binding(get: { ctrl.value }, set: { _ in kb.toggleCtrl() }))
-                Toggle("Alt", isOn: Binding(get: { alt.value }, set: { _ in kb.toggleAlt() }))
-                Toggle("Shift", isOn: Binding(get: { shift.value }, set: { _ in kb.toggleShift() }))
-            }
-            Menu("Keys", systemImage: "keyboard") {
-                ForEach(GuacKeysym.shared.toolbar, id: \.label) { k in
-                    Button(k.label) { kb.sendKeyPress(keysym: k.keysym) }
-                }
-            }
-        }
     }
 }
 

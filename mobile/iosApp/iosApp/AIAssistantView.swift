@@ -4,66 +4,184 @@ import AVFoundation
 import Textual
 import NextermKit
 
-struct AIAssistantSheet: View {
-    let session: AppSession
-
+struct AssistantTab: View {
     var body: some View {
-        Scoped(make: { nx.doNewAIChat(session: session) }, close: { $0.close() }) { AIChatView(chat: $0) }
+        NavigationStack { AssistantView() }
     }
 }
 
-private struct AIChatView: View {
-    let chat: AIChatSession
-    @State private var state: FlowState<AIChatState>
+private struct AssistantView: View {
+    private let chat = nx.assistant
+    @State private var state = FlowState(nx.assistant.state) { $0 as! AIChatState }
     @State private var input = ""
     @State private var speech = SpeechInput()
-    @Environment(\.dismiss) private var dismiss
-
-    init(chat: AIChatSession) {
-        self.chat = chat
-        _state = State(initialValue: FlowState(chat.state) { $0 as! AIChatState })
-    }
+    @State private var picking = false
+    @FocusState private var composing: Bool
 
     var body: some View {
         let s = state.value
-        NavigationStack {
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 12) {
-                    if let e = s.connectionError { Label(e, systemImage: "wifi.exclamationmark").foregroundStyle(.red) }
-                    ForEach(s.messages, id: \.id) { MessageView(message: $0, chat: chat) }
-                    if s.isRunning { HStack(spacing: 8) { ProgressView(); Text("Thinking…") }.foregroundStyle(.secondary) }
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 12) {
+                ForEach(s.messages, id: \.id) { MessageView(message: $0, chat: chat, pinned: $0.id == s.pendingApproval?.id) }
+                if s.isRunning && s.pendingApproval == nil {
+                    HStack(spacing: 8) { ProgressView().controlSize(.small); Text("Working…") }.font(.subheadline).foregroundStyle(NX.subtext)
                 }
-                .padding()
-            }
-            .defaultScrollAnchor(.bottom)
-            .overlay {
-                if s.isEmpty {
-                    ContentUnavailableView("Ask the Assistant", systemImage: "sparkles", description: Text(
-                        "It can run commands and read or edit files on \(chat.serverName ?? "this server") directly over the connection."))
+                if s.canContinue && !s.isRunning {
+                    Button("Continue", systemImage: "arrow.forward.circle") { chat.continueRun() }
+                        .buttonStyle(.bordered).buttonBorderShape(.capsule)
+                }
+                if let e = s.connectionError, !s.isUnavailable {
+                    HStack {
+                        Label(e, systemImage: "wifi.exclamationmark").font(.footnote).foregroundStyle(NX.error)
+                        Spacer()
+                        if !s.isReconnecting { Button("Retry") { chat.retry() }.font(.footnote.weight(.semibold)) }
+                    }
+                    .padding(12).card(radius: 14)
                 }
             }
-            .safeAreaInset(edge: .bottom) { composer(s) }
-            .navigationTitle("AI Assistant")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
+            .padding(16)
+            .frame(maxWidth: 760)
+            .frame(maxWidth: .infinity)
         }
-        .presentationDragIndicator(.visible)
+        .defaultScrollAnchor(.bottom)
+        .scrollDismissesKeyboard(.interactively)
+        .background(NX.background.ignoresSafeArea())
+        .overlay {
+            if s.isUnavailable { unavailable(s) } else if s.messages.isEmpty && !composing { welcome(s) }
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if !s.isUnavailable {
+                VStack(spacing: 8) {
+                    if let pending = s.pendingApproval, let callId = pending.callId { approval(pending, callId) }
+                    scope(s)
+                    composer(s)
+                }
+                .padding(.top, 8)
+                .padding(.bottom, 8)
+                .frame(maxWidth: 760)
+                .frame(maxWidth: .infinity)
+                .background(.bar)
+            }
+        }
+        .navigationTitle("Assistant")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                Menu {
+                    Picker("Permissions", selection: Binding(get: { s.approvalMode }, set: { chat.setApprovalMode(mode: $0) })) {
+                        ForEach(ApprovalMode.entries, id: \.self) { mode in
+                            Label { Text(mode.label); Text(mode.detail) } icon: { Image(systemName: modeSymbol(mode)) }.tag(mode)
+                        }
+                    }
+                } label: {
+                    Label("Permissions: \(s.approvalMode.label)", systemImage: modeSymbol(s.approvalMode))
+                }
+                Button("New Chat", systemImage: "square.and.pencil") {
+                    input = ""
+                    chat.doNewChat()
+                }
+                .disabled(s.messages.isEmpty)
+            }
+        }
+        .sheet(isPresented: $picking) { ServerPickerSheet(chat: chat, state: state) }
+        .task { chat.activate() }
         .onDisappear { speech.stop() }
+    }
+
+    private func modeSymbol(_ mode: ApprovalMode) -> String {
+        mode == ApprovalMode.allow ? "bolt.shield" : mode == ApprovalMode.readonly ? "lock.shield" : "checkmark.shield"
+    }
+
+    private func welcome(_ s: AIChatState) -> some View {
+        VStack(spacing: 18) {
+            NextermLogo(size: 64)
+            VStack(spacing: 6) {
+                Text("What should we look at?").font(.title2.weight(.bold))
+                Text(s.allowedServers.isEmpty
+                     ? "Add the servers the assistant may work on. It can run commands and read or edit files there, and asks before changing anything."
+                     : "Working on \(s.scopeLabel). It asks before changing anything.")
+                    .font(.subheadline).foregroundStyle(NX.subtext).multilineTextAlignment(.center)
+            }
+            VStack(spacing: 8) {
+                ForEach(s.suggestions, id: \.self) { text in
+                    Button {
+                        if !chat.send(input: text) { input = text }
+                    } label: {
+                        HStack {
+                            Text(text).font(.subheadline.weight(.medium))
+                            Spacer()
+                            Image(systemName: "arrow.up.right").font(.caption.weight(.bold)).foregroundStyle(NX.subtext)
+                        }
+                        .padding(.horizontal, 14).frame(height: 46)
+                        .card(radius: 14)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .padding(.horizontal, 24)
+        .frame(maxWidth: 480)
+    }
+
+    private func unavailable(_ s: AIChatState) -> some View {
+        ContentUnavailableView {
+            Label("Assistant Unavailable", systemImage: "sparkles")
+        } description: {
+            Text(s.connectionError ?? "The assistant is not configured on this server.")
+        } actions: {
+            Button("Try Again") { chat.retry() }.buttonStyle(.bordered)
+        }
+    }
+
+    private func approval(_ m: ChatMessage, _ callId: String) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label("\(m.toolLabel) needs your approval", systemImage: "hand.raised.fill").font(.subheadline.weight(.semibold)).foregroundStyle(NX.warning)
+            if !m.summary.isEmpty {
+                Text(m.summary).mono(.footnote).lineLimit(6).textSelection(.enabled)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(10).background(NX.fill, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            }
+            HStack(spacing: 10) {
+                Button("Deny") { chat.confirm(callId: callId, allow: false) }.buttonStyle(SoftButtonStyle(color: NX.error))
+                Button("Allow") { chat.confirm(callId: callId, allow: true) }.buttonStyle(SoftButtonStyle())
+            }
+        }
+        .padding(14)
+        .card(radius: 18, fill: NX.surfaceHigh)
+        .padding(.horizontal, 12)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+    }
+
+    private func scope(_ s: AIChatState) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                Chip(label: s.allowedServers.isEmpty ? "Add Servers" : "Servers", symbol: "plus") { picking = true }
+                ForEach(s.allowedServers, id: \.id) { server in
+                    Chip(label: server.name, symbol: sfSymbol(IconKeys.shared.server(server: server)),
+                         selected: server.entryId == s.activeEntryId, onRemove: { chat.revoke(server: server) }) {
+                        chat.focus(server: server.entryId == s.activeEntryId ? nil : server)
+                    }
+                }
+                if let label = s.agentSessionsLabel { Text(label).font(.caption).foregroundStyle(NX.subtext) }
+            }
+            .padding(.horizontal, 12)
+        }
     }
 
     private func composer(_ s: AIChatState) -> some View {
         HStack(alignment: .bottom, spacing: 4) {
             TextField(speech.listening ? "Listening…" : s.inputHint, text: $input, axis: .vertical)
                 .lineLimit(1...5)
-                .padding(.vertical, 8)
+                .focused($composing)
+                .padding(.vertical, 10)
             Group {
                 if s.isRunning {
-                    Button("Stop", systemImage: "stop.circle.fill") { chat.stop() }.foregroundStyle(.red)
+                    Button("Stop", systemImage: "stop.circle.fill") { chat.stop() }.foregroundStyle(NX.error)
                 } else if input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     Button(speech.listening ? "Stop Dictation" : "Dictate", systemImage: speech.listening ? "mic.fill" : "mic") {
                         speech.toggle { input = $0 }
                     }
-                    .foregroundStyle(speech.listening ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+                    .foregroundStyle(speech.listening ? AnyShapeStyle(.tint) : AnyShapeStyle(NX.subtext))
                     .symbolEffect(.pulse, isActive: speech.listening)
                 } else {
                     Button("Send", systemImage: "arrow.up.circle.fill") {
@@ -75,37 +193,80 @@ private struct AIChatView: View {
             }
             .labelStyle(.iconOnly)
             .font(.title2)
-            .frame(minWidth: 36, minHeight: 36)
+            .frame(minWidth: 38, minHeight: 40)
         }
-        .padding(.leading, 14)
-        .padding(.trailing, 2)
-        .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 20))
-        .overlay { RoundedRectangle(cornerRadius: 20).strokeBorder(.separator) }
+        .padding(.leading, 16)
+        .padding(.trailing, 4)
+        .card(radius: 22)
         .disabled(!s.isReady)
-        .padding(.horizontal)
-        .padding(.vertical, 8)
-        .background(.bar)
+        .padding(.horizontal, 12)
+    }
+}
+
+private struct ServerPickerSheet: View {
+    let chat: AIChatSession
+    let state: FlowState<AIChatState>
+    @State private var servers = FlowState(app.servers.allServers, or: [Server]())
+    @State private var query = ""
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        let shown = ServerFilter.shared.assistantCandidates(servers: servers.value, query: query)
+        NavigationStack {
+            List(shown, id: \.id) { server in
+                let on = state.value.isAllowed(server: server)
+                Button { chat.toggle(server: server) } label: {
+                    HStack(spacing: 12) {
+                        ServerTile(server: server)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(server.name).font(.body.weight(.medium)).lineLimit(1)
+                            Text(server.detail).mono(.caption).foregroundStyle(NX.subtext).lineLimit(1)
+                        }
+                        Spacer(minLength: 0)
+                        Image(systemName: on ? "checkmark.circle.fill" : "circle").font(.title3).foregroundStyle(on ? accent : NX.subtext.opacity(0.5))
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .brandedRows()
+            }
+            .brandedList()
+            .overlay { if shown.isEmpty { ContentUnavailableView.search(text: query) } }
+            .searchable(text: $query, prompt: "Search servers")
+            .task { if servers.value.isEmpty { try? await app.servers.load() } }
+            .navigationTitle("Assistant Can Use")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
+        }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
     }
 }
 
 private struct MessageView: View {
     let message: ChatMessage
     let chat: AIChatSession
+    let pinned: Bool
 
     var body: some View {
         let m = message
         if m.role == ChatRole.user {
             Text(m.text).textSelection(.enabled)
-                .padding(12)
-                .background(.tint.opacity(0.15), in: .rect(cornerRadius: 16))
+                .padding(.horizontal, 14).padding(.vertical, 10)
+                .background(accentSoft, in: .rect(cornerRadius: 18, style: .continuous))
+                .overlay { RoundedRectangle(cornerRadius: 18, style: .continuous).strokeBorder(NX.border) }
                 .frame(maxWidth: .infinity, alignment: .trailing)
-                .padding(.leading, 40)
+                .padding(.leading, 48)
         } else if m.role == ChatRole.assistant {
             StructuredText(markdown: m.text).textual.textSelection(.enabled)
         } else if m.role == ChatRole.system {
-            Label(m.text, systemImage: "exclamationmark.triangle").foregroundStyle(.red)
+            Label(m.text, systemImage: "exclamationmark.triangle.fill").font(.footnote).foregroundStyle(NX.error)
+                .padding(12).frame(maxWidth: .infinity, alignment: .leading)
+                .background(NX.error.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        } else if m.role == ChatRole.note {
+            Text(m.text).font(.caption).foregroundStyle(NX.subtext).frame(maxWidth: .infinity)
         } else {
-            ToolCard(message: m, chat: chat)
+            ToolCard(message: m, chat: chat, pinned: pinned)
         }
     }
 }
@@ -113,48 +274,80 @@ private struct MessageView: View {
 private struct ToolCard: View {
     let message: ChatMessage
     let chat: AIChatSession
+    let pinned: Bool
+    @State private var expanded = false
+
+    private var outputs: [String] { [message.stdout, message.stderr, message.fileContent].compactMap { $0 } }
+    private var hasDetail: Bool { !outputs.isEmpty || !message.directoryEntries.isEmpty }
 
     var body: some View {
         let m = message
-        GroupBox {
-            VStack(alignment: .leading, spacing: 8) {
-                if m.isQuestion { QuestionBody(message: m, chat: chat) }
-                if !m.summary.isEmpty { Text(m.summary).font(.caption.monospaced()).foregroundStyle(.secondary).textSelection(.enabled) }
-                ForEach([m.stdout, m.stderr, m.fileContent].compactMap { $0 }, id: \.self) { output in
-                    ScrollView(.horizontal) { Text(output).font(.caption2.monospaced()).textSelection(.enabled) }
-                        .frame(maxHeight: 200)
+        VStack(alignment: .leading, spacing: 10) {
+            Button { withAnimation(.snappy) { expanded.toggle() } } label: {
+                HStack(spacing: 10) {
+                    IconTile(symbol: sfSymbol(m.toolIconKey), color: statusColor, size: 28)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(m.toolLabel).font(.subheadline.weight(.semibold))
+                        if !m.summary.isEmpty { Text(m.summary).mono(.caption).foregroundStyle(NX.subtext).lineLimit(expanded ? nil : 1) }
+                    }
+                    Spacer(minLength: 0)
+                    status
+                    if hasDetail { Image(systemName: "chevron.right").font(.caption2.weight(.bold)).foregroundStyle(NX.subtext).rotationEffect(.degrees(expanded ? 90 : 0)) }
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .allowsHitTesting(hasDetail || m.summary.count >= 40)
+            if m.isQuestion { QuestionBody(message: m, chat: chat) }
+            if expanded {
+                ForEach(outputs, id: \.self) { output in
+                    ScrollView([.horizontal, .vertical]) { Text(output).mono(.caption2).textSelection(.enabled).padding(10) }
+                        .frame(maxWidth: .infinity, maxHeight: 220, alignment: .topLeading)
+                        .background(NX.terminal, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                        .foregroundStyle(Color(hex: 0xF2F4F8))
                 }
                 if !m.directoryEntries.isEmpty {
-                    Text(m.directoryEntries.map(\.displayName).joined(separator: "\n")).font(.caption2.monospaced())
-                }
-                ForEach(Array(m.images.enumerated()), id: \.offset) { _, img in
-                    if let data = Data(base64Encoded: img.data, options: .ignoreUnknownCharacters), let image = UIImage(data: data) {
-                        Image(uiImage: image).resizable().scaledToFit()
-                    }
-                }
-                if let note = m.note {
-                    Text(note).font(.caption).foregroundStyle(m.status == ToolStatus.error ? .red : .secondary)
-                }
-                if m.isAwaitingConfirmation, let callId = m.callId {
-                    Text("Allow this action?").font(.footnote)
-                    HStack {
-                        Button("Deny", role: .cancel) { chat.confirm(callId: callId, allow: false) }.buttonStyle(.bordered)
-                        Button("Allow") { chat.confirm(callId: callId, allow: true) }.buttonStyle(.borderedProminent)
-                    }
-                    .controlSize(.regular)
+                    Text(m.directoryEntries.map(\.displayName).joined(separator: "\n")).mono(.caption2)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        } label: {
-            HStack {
-                Label(m.toolLabel, systemImage: sfSymbol(m.toolIconKey))
-                Spacer()
-                if let code = m.exitCode?.int32Value {
-                    Text("exit \(code)").font(.caption.bold()).foregroundStyle(m.isFailed ? .red : .green)
-                } else if m.status == ToolStatus.running {
-                    ProgressView().controlSize(.small)
+            ForEach(Array(m.images.enumerated()), id: \.offset) { _, img in
+                if let data = Data(base64Encoded: img.data, options: .ignoreUnknownCharacters), let image = UIImage(data: data) {
+                    Image(uiImage: image).resizable().scaledToFit().clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
             }
+            if let note = m.note {
+                Text(note).font(.caption).foregroundStyle(m.status == ToolStatus.error ? NX.error : NX.subtext)
+            }
+            if m.isAwaitingConfirmation && !pinned, let callId = m.callId {
+                HStack {
+                    Button("Deny", role: .cancel) { chat.confirm(callId: callId, allow: false) }.buttonStyle(.bordered)
+                    Button("Allow") { chat.confirm(callId: callId, allow: true) }.buttonStyle(.borderedProminent)
+                }
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .card(radius: 16)
+    }
+
+    private var statusColor: Color {
+        let m = message
+        if m.status == ToolStatus.error || m.isFailed { return NX.error }
+        if m.status == ToolStatus.denied || m.status == ToolStatus.aborted { return NX.subtext }
+        if m.isAwaitingConfirmation || m.isAwaitingAnswer { return NX.warning }
+        return accent
+    }
+
+    @ViewBuilder private var status: some View {
+        let m = message
+        if let code = m.exitCode?.int32Value {
+            Text("exit \(code)").mono(.caption2).fontWeight(.bold).foregroundStyle(m.isFailed ? NX.error : NX.success)
+        } else if m.status == ToolStatus.running {
+            ProgressView().controlSize(.small)
+        } else if m.isAwaitingConfirmation {
+            Text("Waiting").font(.caption2.weight(.semibold)).foregroundStyle(NX.warning)
+        } else if m.status == ToolStatus.done && !m.isQuestion {
+            Image(systemName: "checkmark").font(.caption.weight(.bold)).foregroundStyle(NX.success)
         }
     }
 }
@@ -202,7 +395,7 @@ private struct QuestionBody: View {
                     }
                 }
             }
-            if let a = m.answer { Text(a).font(.callout).foregroundStyle(.tint) }
+            if let a = m.answer { Text(a).font(.callout.weight(.medium)).foregroundStyle(.tint) }
         }
     }
 
@@ -246,8 +439,9 @@ private struct QuestionBody: View {
             self.request = request
             task = recognizer.recognitionTask(with: request) { [weak self] result, error in
                 DispatchQueue.main.async {
+                    guard let self, self.listening else { return }
                     if let result { onText(result.bestTranscription.formattedString) }
-                    if error != nil || result?.isFinal == true { self?.stop() }
+                    if error != nil || result?.isFinal == true { self.stop() }
                 }
             }
         } catch {

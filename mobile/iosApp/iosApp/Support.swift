@@ -38,26 +38,35 @@ struct Scoped<T: AnyObject, Content: View>: View {
     }
 }
 
-enum AppTab: Hashable { case servers, sessions, monitoring, settings }
+enum AppTab: Hashable { case servers, monitoring, assistant, settings }
 
 @Observable final class AppModel {
     var tab = AppTab.servers
-    var message: String?
+    var toast: Toast?
+    var sessionOpen = false
     @ObservationIgnored let authenticated = FlowState(nx.accounts.isAuthenticated, or: false)
     @ObservationIgnored let account = FlowState(nx.accounts.activeAccount, or: nil as ServerAccount?)
     @ObservationIgnored let sessions = FlowState(nx.sessions.sessions, or: [AppSession]())
     @ObservationIgnored let active = FlowState(nx.sessions.activeSession, or: nil as AppSession?)
     @ObservationIgnored let fullscreen = FlowState(nx.sessions.fullscreen, or: false)
+    @ObservationIgnored let trust = FlowState(nx.sessions.trustChallenges, or: [String: TrustChallenge]())
     @ObservationIgnored let aiAvailable = FlowState(nx.ai.isAvailable, or: false)
     @ObservationIgnored let themeMode = FlowState(nx.themeSettings.themeMode, or: ThemeMode.system)
-    @ObservationIgnored let accent = FlowState(nx.themeSettings.accentColor) { ($0 as? NSNumber)?.int64Value ?? 0xFF673AB7 }
+    @ObservationIgnored let accent = FlowState(nx.themeSettings.accentColor) { ($0 as? NSNumber)?.int64Value ?? 0xFF314BD3 }
     @ObservationIgnored let servers = nx.doNewServerList()
     @ObservationIgnored let monitoring = nx.doNewMonitoring()
 
-    func show(_ message: String) { self.message = message }
+    var colorScheme: ColorScheme? { themeMode.value == ThemeMode.light ? .light : themeMode.value == ThemeMode.dark ? .dark : nil }
+
+    func show(_ message: String, error: Bool? = nil) {
+        let lower = message.lowercased()
+        toast = Toast(text: message, isError: error ?? ["fail", "error", "offline", "not ", "lost", "denied"].contains { lower.contains($0) })
+    }
 }
 
-var accent: Color { Color(argb: app.accent.value) }
+func closeSession(_ id: String) {
+    Task { try? await nx.sessions.closeSession(sessionId: id) }
+}
 
 func isSet<T>(_ b: Binding<T?>) -> Binding<Bool> {
     Binding(get: { b.wrappedValue != nil }, set: { if !$0 { b.wrappedValue = nil } })
@@ -73,13 +82,13 @@ extension Color {
 func roleColor(_ role: String) -> Color {
     switch role {
     case "PRIMARY": accent
-    case "TERTIARY": .teal
-    case "PINK": .pink
-    case "PURPLE": .purple
-    case "ORANGE": .orange
-    case "AMBER": .yellow
-    case "RED": .red
-    default: .secondary
+    case "TERTIARY": NX.proxmox
+    case "PINK": Color(hex: 0xDB2777)
+    case "PURPLE": Color(hex: 0xA78BFA)
+    case "ORANGE": NX.warning
+    case "AMBER": NX.amber
+    case "RED": NX.error
+    default: NX.subtext
     }
 }
 
@@ -107,6 +116,20 @@ private let symbols: [String: String] = [
 
 func sfSymbol(_ key: String) -> String { symbols[key] ?? "server.rack" }
 
+struct IconTile: View {
+    let symbol: String
+    let color: Color
+    var size: CGFloat = 32
+
+    var body: some View {
+        Image(systemName: symbol)
+            .font(.system(size: size * 0.47, weight: .semibold))
+            .foregroundStyle(color)
+            .frame(width: size, height: size)
+            .background(color.opacity(0.16), in: RoundedRectangle(cornerRadius: size * 0.28, style: .continuous))
+    }
+}
+
 struct Row: View {
     let title: String
     var subtitle: String?
@@ -118,42 +141,104 @@ struct Row: View {
             Text(title)
             if let subtitle { Text(subtitle) }
         } icon: {
-            Image(systemName: icon).foregroundStyle(color)
+            IconTile(symbol: icon, color: color, size: 30)
         }
     }
 }
 
 struct ViewOnlyBanner: View {
     let text: String
+    @State private var expanded = false
 
     var body: some View {
-        Label(text, systemImage: "eye")
-            .font(.footnote)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
-            .background(.regularMaterial)
+        Button { withAnimation(.snappy) { expanded.toggle() } } label: {
+            Label(expanded ? text : "View only", systemImage: "eye.fill")
+                .font(.footnote.weight(.medium))
+                .multilineTextAlignment(.leading)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .card(radius: 16, fill: NX.surfaceHigh)
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, 16)
+        .padding(.bottom, 8)
+        .accessibilityLabel(text)
     }
 }
 
 struct SessionStateOverlay: View {
+    let session: AppSession
     let state: ConnectionState
     let ready: Bool
-    let reconnect: () -> Void
+    var message: String?
+    var beforeReconnect: () -> Void = {}
 
     var body: some View {
         if state == ConnectionState.disconnected {
-            ContentUnavailableView {
-                Label("Disconnected", systemImage: "bolt.horizontal.circle")
-            } description: {
-                Text("The connection to the server was lost.")
-            } actions: {
-                Button("Reconnect", action: reconnect).buttonStyle(.borderedProminent)
+            ZStack(alignment: .top) {
+                NX.background.ignoresSafeArea()
+                Rectangle().fill(NX.error).frame(height: 2)
+                VStack(spacing: 24) {
+                    LinkGlyph(symbol: "exclamationmark.circle.fill", color: NX.error, size: 26)
+                    VStack(spacing: 8) {
+                        Text("Connection failed").font(.title2.weight(.semibold))
+                        Text(message ?? "The connection to \(session.server.name) was lost.")
+                            .font(.subheadline).foregroundStyle(NX.subtext).multilineTextAlignment(.center)
+                    }
+                    HStack(spacing: 12) {
+                        Button("Close", systemImage: "xmark") { closeSession(session.sessionId) }.buttonStyle(.bordered)
+                        Button("Reconnect", systemImage: "arrow.clockwise") {
+                            beforeReconnect()
+                            nx.sessions.reconnect(sessionId: session.sessionId)
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
+                    .controlSize(.large)
+                }
+                .padding(32)
+                .frame(maxWidth: 460)
+                .frame(maxHeight: .infinity)
             }
-            .background(.background)
         } else if !ready {
-            ProgressView("Connecting…").controlSize(.large)
+            ConnectionLoader()
         }
+    }
+}
+
+struct ConnectionLoader: View {
+    @State private var start = Date()
+
+    private static let keys: [(time: Double, width: Double)] = [(0, 0), (0.4, 0.22), (1.2, 0.32), (2.4, 0.45), (4, 0.55), (5.6, 0.65), (6.8, 0.75), (8, 0.85)]
+
+    private static func progress(_ t: Double) -> Double {
+        guard let next = keys.firstIndex(where: { $0.time >= t }), next > 0 else { return t <= 0 ? 0 : 0.85 }
+        let (a, b) = (keys[next - 1], keys[next])
+        return a.width + (b.width - a.width) * (t - a.time) / (b.time - a.time)
+    }
+
+    var body: some View {
+        TimelineView(.animation) { context in
+            let t = context.date.timeIntervalSince(start)
+            ZStack(alignment: .topLeading) {
+                NX.background.ignoresSafeArea()
+                GeometryReader { geo in
+                    Rectangle().fill(accentFill).frame(width: geo.size.width * Self.progress(t), height: 2)
+                }
+                HStack(spacing: 32) {
+                    Image(systemName: "laptopcomputer").font(.system(size: 34)).foregroundStyle(NX.subtext)
+                    HStack(spacing: 12) {
+                        ForEach(0..<3, id: \.self) { i in
+                            let phase = 0.5 - 0.5 * cos(2 * .pi * max(0, t - Double(i) * 0.3) / 1.5)
+                            Circle().fill(accentFill).frame(width: 6, height: 6).opacity(phase).offset(x: -4 + 8 * phase)
+                        }
+                    }
+                    Image(systemName: "server.rack").font(.system(size: 34)).foregroundStyle(NX.subtext)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+        .accessibilityElement()
+        .accessibilityLabel("Connecting")
     }
 }
 
