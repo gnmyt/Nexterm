@@ -1,4 +1,7 @@
 const { Router } = require("express");
+const { route } = require("../utils/route");
+const { objectList } = require("../validations/common");
+const { createApiKeyValidation } = require("../validations/apiKey");
 const { authenticate } = require("../middlewares/auth");
 const { sendError } = require("../utils/error");
 const { createApiKey, listApiKeys, deleteApiKey } = require("../controllers/apiKey");
@@ -10,51 +13,30 @@ const blockApiKeyAuth = (req, res, next) => {
     next();
 };
 
-/**
- * GET /accounts/api-keys
- * @summary List API Keys
- * @description Lists the API keys belonging to the authenticated account. The secret token is never returned after creation.
- * @tags Account
- * @produces application/json
- * @security BearerAuth
- * @return {array} 200 - List of API keys
- */
-app.get("/", authenticate, blockApiKeyAuth, async (req, res) => {
+app.get("/", authenticate, blockApiKeyAuth, route({
+    summary: "List API keys",
+    description: "Lists the API keys belonging to the authenticated account. The secret token is never returned after creation.",
+    returns: objectList,
+}), async (req, res) => {
     res.json(await listApiKeys(req.user.id));
 });
 
-/**
- * POST /accounts/api-keys
- * @summary Create API Key
- * @description Creates a new API key for the authenticated account. The plaintext token is only returned once in this response.
- * @tags Account
- * @produces application/json
- * @security BearerAuth
- * @param {object} request.body.required - API key configuration (name, optional expiresAt)
- * @return {object} 200 - The created API key including the one-time token
- */
-app.post("/", authenticate, blockApiKeyAuth, async (req, res) => {
-    const result = await createApiKey(req.user.id, {
-        name: req.body?.name,
-        expiresAt: req.body?.expiresAt || null,
-    });
+app.post("/", authenticate, blockApiKeyAuth, route({
+    summary: "Create API key",
+    description: "Creates a new API key for the authenticated account. The plaintext token is only returned once in this response.",
+    body: createApiKeyValidation,
+}), async (req, res) => {
+    const result = await createApiKey(req.user.id, { name: req.body.name, expiresAt: req.body.expiresAt || null });
 
     if (result?.code) return res.status(result.code).json({ message: result.message });
 
     res.json(result);
 });
 
-/**
- * DELETE /accounts/api-keys/{id}
- * @summary Delete API Key
- * @description Revokes (deletes) an API key belonging to the authenticated account.
- * @tags Account
- * @produces application/json
- * @security BearerAuth
- * @param {number} id.path.required - API key ID
- * @return {object} 200 - Deletion confirmation
- */
-app.delete("/:id", authenticate, blockApiKeyAuth, async (req, res) => {
+app.delete("/:id", authenticate, blockApiKeyAuth, route({
+    summary: "Delete API key",
+    description: "Revokes (deletes) an API key belonging to the authenticated account.",
+}), async (req, res) => {
     const id = parseInt(req.params.id, 10);
     if (Number.isNaN(id)) return res.status(400).json({ message: "Invalid API key ID" });
 

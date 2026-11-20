@@ -85,7 +85,7 @@ module.exports.getServerMonitoring = async (accountId, entryId, timeRange = "1h"
     }
 };
 
-const DEFAULT_MONITORING = { timestamp: null, cpuUsage: null, memoryUsage: null, memoryTotal: null, disk: [], uptime: null, loadAverage: [], processes: null, processList: [], osInfo: {}, network: [], errorMessage: "No monitoring data available" };
+const DEFAULT_MONITORING = { timestamp: null, cpuUsage: null, memoryUsage: null, memoryTotal: null, memory: null, disk: [], uptime: null, loadAverage: [], processes: null, processList: [], osInfo: {}, network: [], errorMessage: "No monitoring data available" };
 
 const HISTORY_POINTS = 30;
 

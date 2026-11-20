@@ -1,7 +1,8 @@
 const Session = require("../models/Session");
+const { findActiveSession } = require("../utils/loginSession");
 const Account = require("../models/Account");
 const stateBroadcaster = require("../lib/StateBroadcaster");
-const { findActiveSession, touchSession } = require("../utils/sessionActivity");
+const { touchSession } = require("../utils/sessionActivity");
 const { isGuestExpired } = require("../utils/demoMode");
 
 module.exports = async (ws, req) => {

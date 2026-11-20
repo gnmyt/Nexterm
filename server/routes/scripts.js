@@ -1,4 +1,7 @@
 const { Router } = require("express");
+const Joi = require("joi");
+const { route } = require("../utils/route");
+const { objectList } = require("../validations/common");
 const {
     listScripts,
     getScript,
@@ -10,25 +13,21 @@ const {
     listAllSourceScripts,
     repositionScript,
 } = require("../controllers/script");
-const { validateSchema } = require("../utils/schema");
 const { scriptCreationValidation, scriptEditValidation, scriptRepositionValidation } = require("../validations/script");
 const OrganizationMember = require("../models/OrganizationMember");
 const { hasOrganizationAccess } = require("../utils/permission");
 
 const app = Router();
 
-/**
- * GET /scripts
- * @summary Get Scripts
- * @description Retrieves available scripts for the authenticated user. Supports searching by name or description when search parameter is provided.
- * @tags Scripts
- * @produces application/json
- * @security BearerAuth
- * @param {string} search.query - Search term to filter scripts by name or description
- * @param {string} organizationId.query - Optional: Filter scripts by organization ID
- * @return {array} 200 - List of scripts available to the user
- */
-app.get("/", async (req, res) => {
+app.get("/", route({
+    summary: "Get scripts",
+    description: "Retrieves available scripts for the authenticated user. Supports searching by name or description when search parameter is provided.",
+    query: Joi.object({
+        search: Joi.string().allow("").description("Search term to filter scripts by name or description"),
+        organizationId: Joi.string().allow("").description("Optional: Filter scripts by organization ID"),
+    }),
+    returns: objectList,
+}), async (req, res) => {
     try {
         const organizationId = req.query.organizationId ? parseInt(req.query.organizationId) : null;
         
@@ -46,16 +45,11 @@ app.get("/", async (req, res) => {
     }
 });
 
-/**
- * GET /scripts/all
- * @summary List All Accessible Scripts
- * @description Retrieves all scripts accessible to the user (personal + organization scripts)
- * @tags Scripts
- * @produces application/json
- * @security BearerAuth
- * @return {array} 200 - List of all accessible scripts
- */
-app.get("/all", async (req, res) => {
+app.get("/all", route({
+    summary: "List all accessible scripts",
+    description: "Retrieves all scripts accessible to the user (personal + organization scripts)",
+    returns: objectList,
+}), async (req, res) => {
     try {
         const memberships = await OrganizationMember.findAll({
             where: { accountId: req.user.id, status: "active" },
@@ -68,16 +62,11 @@ app.get("/all", async (req, res) => {
     }
 });
 
-/**
- * GET /scripts/sources
- * @summary List All Source Scripts
- * @description Retrieves all scripts from external sources
- * @tags Scripts
- * @produces application/json
- * @security BearerAuth
- * @return {array} 200 - List of all source scripts
- */
-app.get("/sources", async (req, res) => {
+app.get("/sources", route({
+    summary: "List all source scripts",
+    description: "Retrieves all scripts from external sources",
+    returns: objectList,
+}), async (req, res) => {
     try {
         res.json(await listAllSourceScripts());
     } catch (error) {
@@ -85,19 +74,13 @@ app.get("/sources", async (req, res) => {
     }
 });
 
-/**
- * GET /scripts/{scriptId}
- * @summary Get Script Details
- * @description Retrieves detailed information about a specific script including its content, parameters, and metadata.
- * @tags Scripts
- * @produces application/json
- * @security BearerAuth
- * @param {string} scriptId.path.required - The unique identifier of the script
- * @param {string} organizationId.query - Optional: Organization ID if accessing organization script
- * @return {object} 200 - Script details
- * @return {object} 404 - Script not found
- */
-app.get("/:scriptId", async (req, res) => {
+app.get("/:scriptId", route({
+    summary: "Get script details",
+    description: "Retrieves detailed information about a specific script including its content, parameters, and metadata.",
+    query: Joi.object({
+        organizationId: Joi.string().allow("").description("Optional: Organization ID if accessing organization script"),
+    }),
+}), async (req, res) => {
     try {
         const organizationId = req.query.organizationId ? parseInt(req.query.organizationId) : null;
         
@@ -118,20 +101,12 @@ app.get("/:scriptId", async (req, res) => {
     }
 });
 
-/**
- * POST /scripts
- * @summary Create Custom Script
- * @description Creates a new custom script that can be executed on servers. Users can define their own automation scripts with custom parameters.
- * @tags Scripts
- * @produces application/json
- * @security BearerAuth
- * @param {Script} request.body.required - Script configuration including name, content, description, and parameters
- * @return {object} 201 - Script successfully created
- * @return {object} 409 - Script with this name already exists
- */
-app.post("/", async (req, res) => {
-    if (validateSchema(res, scriptCreationValidation, req.body)) return;
-
+app.post("/", route({
+    summary: "Create custom script",
+    status: 201,
+    description: "Creates a new custom script that can be executed on servers. Users can define their own automation scripts with custom parameters.",
+    body: scriptCreationValidation,
+}), async (req, res) => {
     try {
         if (req.body.organizationId && !(await hasOrganizationAccess(req.user.id, req.body.organizationId))) {
             return res.status(403).json({ code: 403, message: "Access denied to this organization" });
@@ -144,22 +119,14 @@ app.post("/", async (req, res) => {
     }
 });
 
-/**
- * PUT /scripts/{scriptId}
- * @summary Update Custom Script
- * @description Updates an existing custom script's content, parameters, or other properties. Only the script creator can modify custom scripts.
- * @tags Scripts
- * @produces application/json
- * @security BearerAuth
- * @param {string} scriptId.path.required - The unique identifier of the script to update
- * @param {string} organizationId.query - Optional: Organization ID if updating organization script
- * @param {Script} request.body.required - Updated script configuration
- * @return {object} 200 - Script successfully updated
- * @return {object} 404 - Script not found or unauthorized
- */
-app.put("/:scriptId", async (req, res) => {
-    if (validateSchema(res, scriptEditValidation, req.body)) return;
-
+app.put("/:scriptId", route({
+    summary: "Update custom script",
+    description: "Updates an existing custom script's content, parameters, or other properties. Only the script creator can modify custom scripts.",
+    query: Joi.object({
+        organizationId: Joi.string().allow("").description("Optional: Organization ID if updating organization script"),
+    }),
+    body: scriptEditValidation,
+}), async (req, res) => {
     try {
         const organizationId = req.query.organizationId ? parseInt(req.query.organizationId) : null;
         
@@ -177,19 +144,13 @@ app.put("/:scriptId", async (req, res) => {
     }
 });
 
-/**
- * DELETE /scripts/{scriptId}
- * @summary Delete Custom Script
- * @description Permanently removes a custom script from the user's library. Only the script creator can delete custom scripts.
- * @tags Scripts
- * @produces application/json
- * @security BearerAuth
- * @param {string} scriptId.path.required - The unique identifier of the script to delete
- * @param {string} organizationId.query - Optional: Organization ID if deleting organization script
- * @return {object} 200 - Script successfully deleted
- * @return {object} 404 - Script not found or unauthorized
- */
-app.delete("/:scriptId", async (req, res) => {
+app.delete("/:scriptId", route({
+    summary: "Delete custom script",
+    description: "Permanently removes a custom script from the user's library. Only the script creator can delete custom scripts.",
+    query: Joi.object({
+        organizationId: Joi.string().allow("").description("Optional: Organization ID if deleting organization script"),
+    }),
+}), async (req, res) => {
     try {
         const organizationId = req.query.organizationId ? parseInt(req.query.organizationId) : null;
         
@@ -207,23 +168,14 @@ app.delete("/:scriptId", async (req, res) => {
     }
 });
 
-/**
- * PATCH /scripts/{scriptId}/reposition
- * @summary Reposition Script
- * @description Moves a script to a new position relative to another script.
- * @tags Scripts
- * @produces application/json
- * @security BearerAuth
- * @param {string} scriptId.path.required - The unique identifier of the script to reposition
- * @param {string} organizationId.query - Optional: Organization ID if repositioning organization script
- * @param {object} request.body.required - Reposition parameters (targetId, placement)
- * @return {object} 200 - Script successfully repositioned
- * @return {object} 400 - Cannot move script in that direction
- * @return {object} 404 - Script not found
- */
-app.patch("/:scriptId/reposition", async (req, res) => {
-    if (validateSchema(res, scriptRepositionValidation, req.body)) return;
-
+app.patch("/:scriptId/reposition", route({
+    summary: "Reposition script",
+    description: "Moves a script to a new position relative to another script.",
+    query: Joi.object({
+        organizationId: Joi.string().allow("").description("Optional: Organization ID if repositioning organization script"),
+    }),
+    body: scriptRepositionValidation,
+}), async (req, res) => {
     try {
         const organizationId = req.query.organizationId ? parseInt(req.query.organizationId) : null;
         

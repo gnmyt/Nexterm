@@ -285,182 +285,194 @@ static int LFR_guac_display_layer_should_use_webp(guac_display_layer* layer,
 
 }
 
-void* guac_display_worker_thread(void* data) {
+void guac_display_worker_begin_operation(guac_display* display) {
+
+    /* Notify any watchers of render_state that a frame is now in progress */
+    guac_flag_set_and_lock(&display->render_state, GUAC_DISPLAY_RENDER_STATE_FRAME_IN_PROGRESS);
+    guac_flag_clear(&display->render_state, GUAC_DISPLAY_RENDER_STATE_FRAME_NOT_IN_PROGRESS);
+    guac_flag_unlock(&display->render_state);
+
+    /* NOTE: Any thread that locks the operation queue can know that there
+     * are no pending operations in progress if the queue is empty and
+     * there are no active workers */
+    display->active_workers++;
+    guac_fifo_unlock(&display->ops);
+
+}
+
+int guac_display_worker_finish_operation(guac_display* display,
+        guac_display_plan_operation op) {
 
     int framerate;
     int has_outstanding_frames = 0;
 
-    guac_display* display = (guac_display*) data;
     guac_client* client = display->client;
     guac_socket* socket = client->socket;
+
+    guac_rwlock_acquire_read_lock(&display->last_frame.lock);
+    guac_display_layer* display_layer = op.layer;
+    switch (op.type) {
+
+        case GUAC_DISPLAY_PLAN_OPERATION_IMG:
+
+            framerate = INT_MAX;
+            if (op.current_frame > op.last_frame)
+                framerate = 1000 / (op.current_frame - op.last_frame);
+
+            guac_rect* dirty = &op.dest;
+
+            /* TODO: Determine whether to use PNG/WebP/JPEG purely
+             * based on whether lossless encoding is required, the
+             * expected time until another frame is received (time
+             * since last frame), and estimated encoding times. The
+             * time allowed per update should be divided up
+             * proportionately based on the dirty_size of the update. */
+
+            /* TODO: Stream PNG/WebP/JPEG using progressive encoding such
+             * that a frame that is currently being encoded can be
+             * preempted by the next frame, with the connected client then
+             * simply receiving a lower-quality intermediate frame. If
+             * necessary, progressive encoding can be achieved by manually
+             * dividing images into multiple reduced-resolution stages,
+             * such that each image streamed is actually only one quarter
+             * the size of the original image. Compositing via Guacamole
+             * protocol instructions can reassemble those stages. */
+
+            cairo_surface_t* rect = LFR_guac_display_layer_cairo_rect(display_layer, dirty);
+            const guac_layer* layer = display_layer->layer;
+
+            /* Clear relevant rect of destination layer if necessary to
+             * ensure fresh data is not drawn on top of old data for layers
+             * with alpha transparency */
+            guac_display_layer_clear_non_opaque(display_layer, dirty);
+
+            /* Prefer WebP when reasonable */
+            if (LFR_guac_display_layer_should_use_webp(display_layer, dirty, framerate))
+                guac_client_stream_webp(client, socket, GUAC_COMP_OVER, layer,
+                        dirty->left, dirty->top, rect,
+                        guac_display_suggest_quality(client),
+                        display_layer->last_frame.lossless ? 1 : 0);
+
+            /* If not WebP, JPEG is the next best (lossy) choice */
+            else if (display_layer->opaque && LFR_guac_display_layer_should_use_jpeg(display_layer, dirty, framerate))
+                guac_client_stream_jpeg(client, socket, GUAC_COMP_OVER, layer,
+                        dirty->left, dirty->top, rect,
+                        guac_display_suggest_quality(client));
+
+            /* Use PNG if no lossy formats are appropriate */
+            else
+                guac_client_stream_png(client, socket, GUAC_COMP_OVER,
+                        layer, dirty->left, dirty->top, rect);
+
+            cairo_surface_destroy(rect);
+            break;
+
+        case GUAC_DISPLAY_PLAN_OPERATION_COPY:
+        case GUAC_DISPLAY_PLAN_OPERATION_RECT:
+            guac_client_log(client, GUAC_LOG_DEBUG, "Operation type %i "
+                    "should NOT be present in the set of operations given "
+                    "to guac_display worker thread. All operations except "
+                    "IMG and NOP are handled during the initial, "
+                    "single-threaded flush step. This is likely a bug.",
+                    op.type);
+            break;
+
+        case GUAC_DISPLAY_PLAN_OPERATION_NOP:
+            /* Do nothing */
+            break;
+
+    }
+
+    guac_fifo_lock(&display->ops);
+
+    /* If we're the only active worker and there are no further operations
+     * pending, we've reached the end of the frame, and this is the worker
+     * that will be sending that boundary to connected users */
+    if (!(display->ops.state.value & GUAC_FIFO_STATE_NONEMPTY) && display->active_workers == 1) {
+
+        /* Update the mouse cursor if it's been changed since the
+         * last frame */
+        guac_display_layer* cursor = display->cursor_buffer;
+        if (!guac_rect_is_empty(&cursor->last_frame.dirty)) {
+            guac_protocol_send_cursor(client->socket,
+                    display->last_frame.cursor_hotspot_x,
+                    display->last_frame.cursor_hotspot_y,
+                    cursor->layer, 0, 0,
+                    cursor->last_frame.width,
+                    cursor->last_frame.height);
+        }
+
+        /* Allow connected clients to move forward with rendering */
+        guac_client_end_multiple_frames(client, display->last_frame.frames);
+
+        /* While connected clients moves forward with rendering,
+         * commit any changed contents to client-side backing buffer */
+        guac_display_layer* current = display->last_frame.layers;
+        while (current != NULL) {
+
+            /* Save a copy of the changed region if the layer has
+             * been modified since the last frame */
+            guac_rect* dirty = &current->last_frame.dirty;
+            if (!guac_rect_is_empty(dirty)) {
+
+                int x = dirty->left;
+                int y = dirty->top;
+                int width = guac_rect_width(dirty);
+                int height = guac_rect_height(dirty);
+
+                /* Ensure destination region is cleared out first if the alpha channel need be considered,
+                 * as GUAC_COMP_OVER is significantly faster than GUAC_COMP_SRC on the browser side */
+                if (!current->opaque) {
+                    guac_protocol_send_rect(client->socket, current->last_frame_buffer, x, y, width, height);
+                    guac_protocol_send_cfill(client->socket, GUAC_COMP_RATOP, current->last_frame_buffer,
+                            0x00, 0x00, 0x00, 0x00);
+                }
+
+                guac_protocol_send_copy(client->socket,
+                        current->layer, x, y, width, height,
+                        GUAC_COMP_OVER, current->last_frame_buffer, x, y);
+
+            }
+
+            current = current->last_frame.next;
+
+        }
+
+        /* This is now absolutely everything for the current frame,
+         * and it's safe to flush any outstanding data */
+        guac_socket_flush(client->socket);
+
+        /* Notify any watchers of render_state that a frame is no longer in progress */
+        guac_flag_set_and_lock(&display->render_state, GUAC_DISPLAY_RENDER_STATE_FRAME_NOT_IN_PROGRESS);
+        guac_flag_clear(&display->render_state, GUAC_DISPLAY_RENDER_STATE_FRAME_IN_PROGRESS);
+        guac_flag_unlock(&display->render_state);
+
+        has_outstanding_frames = display->frame_deferred;
+
+    }
+
+    display->active_workers--;
+    guac_fifo_unlock(&display->ops);
+
+    guac_rwlock_release_lock(&display->last_frame.lock);
+
+    return has_outstanding_frames;
+
+}
+
+void* guac_display_worker_thread(void* data) {
+
+    guac_display* display = (guac_display*) data;
 
     guac_display_plan_operation op;
     while (guac_fifo_dequeue_and_lock(&display->ops, &op)) {
 
-        /* Notify any watchers of render_state that a frame is now in progress */
-        guac_flag_set_and_lock(&display->render_state, GUAC_DISPLAY_RENDER_STATE_FRAME_IN_PROGRESS);
-        guac_flag_clear(&display->render_state, GUAC_DISPLAY_RENDER_STATE_FRAME_NOT_IN_PROGRESS);
-        guac_flag_unlock(&display->render_state);
-
-        /* NOTE: Any thread that locks the operation queue can know that there
-         * are no pending operations in progress if the queue is empty and
-         * there are no active workers */
-        display->active_workers++;
-        guac_fifo_unlock(&display->ops);
-
-        guac_rwlock_acquire_read_lock(&display->last_frame.lock);
-        guac_display_layer* display_layer = op.layer;
-        switch (op.type) {
-
-            case GUAC_DISPLAY_PLAN_OPERATION_IMG:
-
-                framerate = INT_MAX;
-                if (op.current_frame > op.last_frame)
-                    framerate = 1000 / (op.current_frame - op.last_frame);
-
-                guac_rect* dirty = &op.dest;
-
-                /* TODO: Determine whether to use PNG/WebP/JPEG purely
-                 * based on whether lossless encoding is required, the
-                 * expected time until another frame is received (time
-                 * since last frame), and estimated encoding times. The
-                 * time allowed per update should be divided up
-                 * proportionately based on the dirty_size of the update. */
-
-                /* TODO: Stream PNG/WebP/JPEG using progressive encoding such
-                 * that a frame that is currently being encoded can be
-                 * preempted by the next frame, with the connected client then
-                 * simply receiving a lower-quality intermediate frame. If
-                 * necessary, progressive encoding can be achieved by manually
-                 * dividing images into multiple reduced-resolution stages,
-                 * such that each image streamed is actually only one quarter
-                 * the size of the original image. Compositing via Guacamole
-                 * protocol instructions can reassemble those stages. */
-
-                cairo_surface_t* rect = LFR_guac_display_layer_cairo_rect(display_layer, dirty);
-                const guac_layer* layer = display_layer->layer;
-
-                /* Clear relevant rect of destination layer if necessary to
-                 * ensure fresh data is not drawn on top of old data for layers
-                 * with alpha transparency */
-                guac_display_layer_clear_non_opaque(display_layer, dirty);
-
-                /* Prefer WebP when reasonable */
-                if (LFR_guac_display_layer_should_use_webp(display_layer, dirty, framerate))
-                    guac_client_stream_webp(client, socket, GUAC_COMP_OVER, layer,
-                            dirty->left, dirty->top, rect,
-                            guac_display_suggest_quality(client),
-                            display_layer->last_frame.lossless ? 1 : 0);
-
-                /* If not WebP, JPEG is the next best (lossy) choice */
-                else if (display_layer->opaque && LFR_guac_display_layer_should_use_jpeg(display_layer, dirty, framerate))
-                    guac_client_stream_jpeg(client, socket, GUAC_COMP_OVER, layer,
-                            dirty->left, dirty->top, rect,
-                            guac_display_suggest_quality(client));
-
-                /* Use PNG if no lossy formats are appropriate */
-                else
-                    guac_client_stream_png(client, socket, GUAC_COMP_OVER,
-                            layer, dirty->left, dirty->top, rect);
-
-                cairo_surface_destroy(rect);
-                break;
-
-            case GUAC_DISPLAY_PLAN_OPERATION_COPY:
-            case GUAC_DISPLAY_PLAN_OPERATION_RECT:
-                guac_client_log(client, GUAC_LOG_DEBUG, "Operation type %i "
-                        "should NOT be present in the set of operations given "
-                        "to guac_display worker thread. All operations except "
-                        "IMG and NOP are handled during the initial, "
-                        "single-threaded flush step. This is likely a bug.",
-                        op.type);
-                break;
-
-            case GUAC_DISPLAY_PLAN_OPERATION_NOP:
-                /* Do nothing */
-                break;
-
-        }
-
-        guac_fifo_lock(&display->ops);
-
-        /* If we're the only active worker and there are no further operations
-         * pending, we've reached the end of the frame, and this is the worker
-         * that will be sending that boundary to connected users */
-        if (!(display->ops.state.value & GUAC_FIFO_STATE_NONEMPTY) && display->active_workers == 1) {
-
-            /* Update the mouse cursor if it's been changed since the
-             * last frame */
-            guac_display_layer* cursor = display->cursor_buffer;
-            if (!guac_rect_is_empty(&cursor->last_frame.dirty)) {
-                guac_protocol_send_cursor(client->socket,
-                        display->last_frame.cursor_hotspot_x,
-                        display->last_frame.cursor_hotspot_y,
-                        cursor->layer, 0, 0,
-                        cursor->last_frame.width,
-                        cursor->last_frame.height);
-            }
-
-            /* Allow connected clients to move forward with rendering */
-            guac_client_end_multiple_frames(client, display->last_frame.frames);
-
-            /* While connected clients moves forward with rendering,
-             * commit any changed contents to client-side backing buffer */
-            guac_display_layer* current = display->last_frame.layers;
-            while (current != NULL) {
-
-                /* Save a copy of the changed region if the layer has
-                 * been modified since the last frame */
-                guac_rect* dirty = &current->last_frame.dirty;
-                if (!guac_rect_is_empty(dirty)) {
-
-                    int x = dirty->left;
-                    int y = dirty->top;
-                    int width = guac_rect_width(dirty);
-                    int height = guac_rect_height(dirty);
-
-                    /* Ensure destination region is cleared out first if the alpha channel need be considered,
-                     * as GUAC_COMP_OVER is significantly faster than GUAC_COMP_SRC on the browser side */
-                    if (!current->opaque) {
-                        guac_protocol_send_rect(client->socket, current->last_frame_buffer, x, y, width, height);
-                        guac_protocol_send_cfill(client->socket, GUAC_COMP_RATOP, current->last_frame_buffer,
-                                0x00, 0x00, 0x00, 0x00);
-                    }
-
-                    guac_protocol_send_copy(client->socket,
-                            current->layer, x, y, width, height,
-                            GUAC_COMP_OVER, current->last_frame_buffer, x, y);
-
-                }
-
-                current = current->last_frame.next;
-
-            }
-
-            /* This is now absolutely everything for the current frame,
-             * and it's safe to flush any outstanding data */
-            guac_socket_flush(client->socket);
-
-            /* Notify any watchers of render_state that a frame is no longer in progress */
-            guac_flag_set_and_lock(&display->render_state, GUAC_DISPLAY_RENDER_STATE_FRAME_NOT_IN_PROGRESS);
-            guac_flag_clear(&display->render_state, GUAC_DISPLAY_RENDER_STATE_FRAME_IN_PROGRESS);
-            guac_flag_unlock(&display->render_state);
-
-            has_outstanding_frames = display->frame_deferred;
-
-        }
-
-        display->active_workers--;
-        guac_fifo_unlock(&display->ops);
-
-        guac_rwlock_release_lock(&display->last_frame.lock);
+        guac_display_worker_begin_operation(display);
 
         /* Trigger additional flush if frames were completed while we were
          * still processing the previous frame */
-        if (has_outstanding_frames) {
+        if (guac_display_worker_finish_operation(display, op))
             guac_display_end_multiple_frames(display, 0);
-            has_outstanding_frames = 0;
-        }
 
     }
 

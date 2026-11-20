@@ -9,6 +9,7 @@ import Icon from "@mdi/react";
 import { mdiPencil, mdiPlus, mdiTrashCan, mdiLock, mdiServer } from "@mdi/js";
 import ProviderDialog from "./components/ProviderDialog";
 import LDAPProviderDialog from "./components/LDAPProviderDialog";
+import SessionLimits from "./components/SessionLimits";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { SettingsHeading } from "@/common/components/SettingsDialog/SettingsHeading.jsx";
@@ -198,6 +199,8 @@ export const Authentication = () => {
                     </div>
                 ))}
             </div>
+
+            <SessionLimits />
 
             <ProviderDialog open={createDialogOpen} provider={editProvider}
                 onClose={() => {

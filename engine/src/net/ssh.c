@@ -224,8 +224,11 @@ static void* ssh_session_thread(void* arg) {
         goto cleanup;
     }
 
+    nexterm_trust_t trust;
+    nexterm_trust_from_session(session, &trust);
+
     if (nexterm_ssh_setup_with_jumphosts(session->host, session->port,
-            jump_hosts, jump_count, &ssh_sock, &ssh_session, &jump_chain) != 0) {
+            jump_hosts, jump_count, &trust, &ssh_sock, &ssh_session, &jump_chain) != 0) {
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "Failed to connect to SSH host", NULL);
         goto cleanup;
@@ -375,8 +378,11 @@ static void* tunnel_session_thread(void* arg) {
         return NULL;
     }
 
+    nexterm_trust_t trust;
+    nexterm_trust_from_session(session, &trust);
+
     if (nexterm_ssh_setup_with_jumphosts(session->host, session->port,
-            jump_hosts, jump_count, &ssh_sock, &ssh_session, &jump_chain) != 0) {
+            jump_hosts, jump_count, &trust, &ssh_sock, &ssh_session, &jump_chain) != 0) {
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "Failed to connect to SSH host", NULL);
         goto cleanup;
@@ -461,6 +467,8 @@ typedef struct {
     char* password;
     char* private_key;
     char* passphrase;
+    char* trust_mode;
+    char* trust_pins;
     char* command;
     jump_host_t jump_hosts[MAX_JUMP_HOSTS];
     int jump_count;
@@ -471,6 +479,8 @@ static void exec_cmd_free(exec_cmd_args_t* args) {
     free(args->password);
     free(args->private_key);
     free(args->passphrase);
+    free(args->trust_mode);
+    free(args->trust_pins);
     free(args->command);
     for (int i = 0; i < args->jump_count; i++) {
         free(args->jump_hosts[i].password);
@@ -487,8 +497,11 @@ static void* exec_command_thread(void* arg) {
     LIBSSH2_CHANNEL* channel = NULL;
     jump_chain_t jump_chain = {0};
 
+    nexterm_trust_t trust;
+    nexterm_trust_from_values(args->trust_mode, args->trust_pins, false, &trust);
+
     if (nexterm_ssh_setup_with_jumphosts(args->host, args->port,
-            args->jump_hosts, args->jump_count, &ssh_sock, &ssh, &jump_chain) != 0) {
+            args->jump_hosts, args->jump_count, &trust, &ssh_sock, &ssh, &jump_chain) != 0) {
         nexterm_cp_send_exec_result(args->cp, args->request_id, false,
                                     NULL, NULL, -1, "Failed to connect to SSH host");
         exec_cmd_free(args);
@@ -565,10 +578,12 @@ int nexterm_ssh_exec_command(nexterm_control_plane_t* cp,
     args->password = strdup(creds->password ? creds->password : "");
     args->private_key = strdup(creds->private_key ? creds->private_key : "");
     args->passphrase = strdup(creds->passphrase ? creds->passphrase : "");
+    args->trust_mode = strdup(creds->trust_mode ? creds->trust_mode : "");
+    args->trust_pins = strdup(creds->trust_pins ? creds->trust_pins : "");
     args->command = strdup(command ? command : "");
 
     if (!args->username || !args->password || !args->private_key ||
-        !args->passphrase || !args->command) {
+        !args->passphrase || !args->trust_mode || !args->trust_pins || !args->command) {
         exec_cmd_free(args);
         return -1;
     }
@@ -602,6 +617,8 @@ typedef struct {
     char* password;
     char* private_key;
     char* passphrase;
+    char* trust_mode;
+    char* trust_pins;
     char** ids;
     char** commands;
     int command_count;
@@ -614,6 +631,8 @@ static void exec_batch_free(exec_batch_args_t* args) {
     free(args->password);
     free(args->private_key);
     free(args->passphrase);
+    free(args->trust_mode);
+    free(args->trust_pins);
     if (args->ids) {
         for (int i = 0; i < args->command_count; i++) free(args->ids[i]);
         free(args->ids);
@@ -682,8 +701,11 @@ static void* exec_batch_thread(void* arg) {
     LIBSSH2_SESSION* ssh = NULL;
     jump_chain_t jump_chain = {0};
 
+    nexterm_trust_t trust;
+    nexterm_trust_from_values(a->trust_mode, a->trust_pins, false, &trust);
+
     if (nexterm_ssh_setup_with_jumphosts(a->host, a->port,
-            a->jump_hosts, a->jump_count, &ssh_sock, &ssh, &jump_chain) != 0) {
+            a->jump_hosts, a->jump_count, &trust, &ssh_sock, &ssh, &jump_chain) != 0) {
         nexterm_cp_send_exec_batch_result(a->cp, a->request_id, false,
                                           "Failed to connect to SSH host", NULL, 0);
         exec_batch_free(a);
@@ -760,12 +782,14 @@ int nexterm_ssh_exec_batch(nexterm_control_plane_t* cp,
     args->password = strdup(creds->password ? creds->password : "");
     args->private_key = strdup(creds->private_key ? creds->private_key : "");
     args->passphrase = strdup(creds->passphrase ? creds->passphrase : "");
+    args->trust_mode = strdup(creds->trust_mode ? creds->trust_mode : "");
+    args->trust_pins = strdup(creds->trust_pins ? creds->trust_pins : "");
 
     args->command_count = command_count;
     args->ids = calloc(command_count, sizeof(char*));
     args->commands = calloc(command_count, sizeof(char*));
     if (!args->username || !args->password || !args->private_key ||
-        !args->passphrase || !args->ids || !args->commands) {
+        !args->passphrase || !args->trust_mode || !args->trust_pins || !args->ids || !args->commands) {
         exec_batch_free(args);
         nexterm_cp_send_exec_batch_result(cp, request_id, false, "Out of memory", NULL, 0);
         return -1;

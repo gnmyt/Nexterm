@@ -7,7 +7,8 @@ const { Op } = require("sequelize");
 const { getIdentityCredentials } = require("../controllers/identity");
 const { getMonitoringSettingsInternal } = require("../controllers/monitoring");
 const controlPlane = require("../lib/controlPlane/ControlPlaneServer");
-const { buildSSHParams, resolveJumpHosts } = require("../lib/ConnectionService");
+const { buildSSHParams, resolveJumpHosts, resolveTrust } = require("../lib/ConnectionService");
+const hostTrust = require("./hostTrust");
 const { buildWindowsMonitoringCommand, isWindowsProbeResult, isPowerShellProbeResult, parseWindowsMonitoringOutput } = require("./windowsMonitoring");
 const { getEffectiveEntryConfig, getEntryIdentityIds } = require("./folderInheritance");
 const { parseCPUUsage } = require("./cpuUsage");
@@ -110,7 +111,15 @@ const collectServerData = async (entry, identity, credentials) => {
         }
 
         const commands = Object.entries(COMMANDS).map(([id, command]) => ({ id, command }));
-        const batch = await controlPlane.execCommandBatch(host, port, params, commands, jumpHosts);
+        const trust = await resolveTrust(entry, hostTrust.KIND.SSH, host, port, jumpHosts);
+        const batch = await controlPlane.execCommandBatch(host, port, { ...params, ...trust.params }, commands, jumpHosts);
+        if (batch.untrustedPeer) {
+            return {
+                status: "error",
+                timestamp: new Date(),
+                errorMessage: hostTrust.unattendedMessage(batch.untrustedPeer),
+            };
+        }
         if (!batch.success) {
             throw new Error(batch.errorMessage || "Failed to connect to SSH host");
         }
@@ -122,7 +131,11 @@ const collectServerData = async (entry, identity, credentials) => {
 
         const meminfo = parseMeminfo(out.memory);
         const fallback = parseMemoryUsage(out.memoryFallback);
-        const memory = { total: meminfo.total ?? fallback.total ?? null, usage: meminfo.usage ?? fallback.usage ?? null };
+        const memory = {
+            total: meminfo.total ?? fallback.total ?? null,
+            usage: meminfo.usage ?? fallback.usage ?? null,
+            breakdown: meminfo.breakdown ?? null,
+        };
         const osInfo = parseOSInfo(out.osRelease, out.kernel, out.arch, out.hostname);
         if (!osInfo.name && out.windowsOS) {
             const [name, version] = out.windowsOS.split("|");
@@ -138,6 +151,7 @@ const collectServerData = async (entry, identity, credentials) => {
             cpuUsage: parseCPUUsage(out.cpu),
             memoryUsage: memory.usage,
             memoryTotal: memory.total,
+            memory: memory.breakdown,
             disk: parseDiskUsage(out.lsblk, out.df, out.dfInodes, out.smart),
             uptime: parseUptime(out.uptime),
             loadAverage: parseLoadAverage(out.loadAverage),
@@ -170,19 +184,22 @@ const detectServerOS = async (entry) => {
         const host = entry.config?.ip;
         if (!host) return null;
 
+        const port = entry.config?.port || 22;
+        const jumpHosts = await resolveJumpHosts(entry, null, {
+            sharedOnly: true,
+            organizationId: entry.organizationId,
+            ownerAccountId: entry.accountId,
+        });
+        const trust = await resolveTrust(entry, hostTrust.KIND.SSH, host, port, jumpHosts);
         const batch = await controlPlane.execCommandBatch(
             host,
-            entry.config?.port || 22,
-            buildSSHParams(identity, credentials),
+            port,
+            { ...buildSSHParams(identity, credentials), ...trust.params },
             [
                 { id: "linuxOS", command: "cat /etc/os-release" },
                 { id: "windowsOS", command: WINDOWS_OS_COMMAND },
             ],
-            await resolveJumpHosts(entry, null, {
-                sharedOnly: true,
-                organizationId: entry.organizationId,
-                ownerAccountId: entry.accountId,
-            }),
+            jumpHosts,
             entry.config?.engineId,
         );
         if (!batch.success) return null;
@@ -231,6 +248,7 @@ const saveMonitoringData = async (entryId, data) => {
             updatedAt: new Date(),
             status: data.status,
             memoryTotal: data.memoryTotal,
+            memory: data.memory,
             disk: data.disk,
             network: data.network,
             processList: data.processList,

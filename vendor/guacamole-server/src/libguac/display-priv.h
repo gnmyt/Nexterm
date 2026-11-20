@@ -861,4 +861,9 @@ void PFW_guac_display_layer_resize(guac_display_layer* layer,
  */
 void* guac_display_worker_thread(void* data);
 
+void guac_display_worker_begin_operation(guac_display* display);
+
+int guac_display_worker_finish_operation(guac_display* display,
+        guac_display_plan_operation op);
+
 #endif

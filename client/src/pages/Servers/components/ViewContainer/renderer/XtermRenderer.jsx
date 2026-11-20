@@ -922,7 +922,7 @@ const XtermRenderer = ({ session, disconnectFromServer, reconnectSession, reconn
 
     return (
         <div className="xterm-container" onMouseDownCapture={handleMouseDown} onContextMenuCapture={handleContextMenu}>
-            <ConnectionLoader onReady={(loader) => { connectionLoaderRef.current = loader; }} />
+            <ConnectionLoader sessionId={session.id} onReady={(loader) => { connectionLoaderRef.current = loader; }} />
             {connectionError && (
                 <ConnectionError message={connectionError} onClose={() => disconnectFromServer(session.id)}
                                  onReconnect={() => (reconnectNow || reconnectSession)?.(session.id)}

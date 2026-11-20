@@ -301,7 +301,13 @@ void guac_display_end_mouse_frame(guac_display* display) {
 
 }
 
-void guac_display_end_multiple_frames(guac_display* display, int frames) {
+static int guac_display_flush_pending_frame(guac_display* display, int frames) {
+
+    int complete_inline = 0;
+
+    guac_display_plan_operation inline_op = {
+        .type = GUAC_DISPLAY_PLAN_OPERATION_NOP
+    };
 
     guac_display_plan* plan = NULL;
 
@@ -383,8 +389,25 @@ void guac_display_end_multiple_frames(guac_display* display, int frames) {
     /* Awaken worker threads to perform the rest of the tasks required for the
      * frame (if any such tasks remain) */
     if (plan != NULL) {
+
+        guac_display_plan_operation* lone_image = NULL;
+        int image_count = 0;
+
+        for (int i = 0; i < plan->length; i++) {
+            if (plan->ops[i].type == GUAC_DISPLAY_PLAN_OPERATION_IMG) {
+                lone_image = &plan->ops[i];
+                image_count++;
+            }
+        }
+
+        if (image_count == 1) {
+            inline_op = *lone_image;
+            lone_image->type = GUAC_DISPLAY_PLAN_OPERATION_NOP;
+        }
+
         guac_display_plan_apply(plan);
         guac_display_plan_free(plan);
+
     }
 
     /* Not all frames are graphical, and not all frames result in operations
@@ -393,14 +416,34 @@ void guac_display_end_multiple_frames(guac_display* display, int frames) {
      * then we must still send at least one operation to awaken the workers,
      * flush any layer changes, and mark the end of the frame with a "sync",
      * even though there is no display plan to optimize.  */
-    if (frame_nonempty) {
-        guac_display_plan_operation end_frame_op = {
-            .type = GUAC_DISPLAY_PLAN_OPERATION_NOP
-        };
-        guac_fifo_enqueue(&display->ops, &end_frame_op);
+    if (frame_nonempty || inline_op.type != GUAC_DISPLAY_PLAN_OPERATION_NOP) {
+
+        guac_fifo_lock(&display->ops);
+        if (!(display->ops.state.value & GUAC_FIFO_STATE_NONEMPTY)
+                && !display->active_workers) {
+            guac_display_worker_begin_operation(display);
+            complete_inline = 1;
+        }
+        else {
+            guac_fifo_unlock(&display->ops);
+            guac_fifo_enqueue(&display->ops, &inline_op);
+        }
+
     }
 
 finished_with_pending_frame_lock:
     guac_rwlock_release_lock(&display->pending_frame.lock);
+
+    if (complete_inline)
+        return guac_display_worker_finish_operation(display, inline_op);
+
+    return 0;
+
+}
+
+void guac_display_end_multiple_frames(guac_display* display, int frames) {
+
+    while (guac_display_flush_pending_frame(display, frames))
+        frames = 0;
 
 }

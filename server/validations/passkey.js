@@ -19,3 +19,7 @@ module.exports.passkeyAuthOptionsValidation = Joi.object({
     username: Joi.string().min(3).max(15).alphanum(),
     origin: Joi.string().uri().required(),
 });
+
+module.exports.passkeyRegistrationOptionsValidation = Joi.object({
+    origin: Joi.string().uri().required(),
+});

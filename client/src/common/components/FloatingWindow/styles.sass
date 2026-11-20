@@ -19,8 +19,16 @@
     box-shadow: colors.$shadow-xl
 
   &.maximized
+    top: var(--title-bar-height)
+    left: 0
+    width: 100vw
+    height: calc(100vh - var(--title-bar-height))
     border-radius: 0
     animation: none
+
+    body.session-fullscreen &
+      top: 0
+      height: 100vh
 
   &__header
     display: flex

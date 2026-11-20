@@ -2,6 +2,7 @@ const { Op } = require("sequelize");
 const Session = require("../models/Session");
 const Account = require("../models/Account");
 const { getSessionRetentionCutoff, teardownLoginSession } = require("../utils/sessionCleanup");
+const { IMPERSONATION_LIFETIME_MS } = require("../utils/loginSession");
 
 module.exports.listSessions = async (accountId, currentSessionId) => {
     const cutoff = getSessionRetentionCutoff();
@@ -18,7 +19,9 @@ module.exports.createSession = async (accountId, userAgent) => {
     if (account === null)
         return { code: 102, message: "The provided account does not exist" };
 
-    const session = await Session.create({ accountId, ip: "Admin", userAgent });
+    const session = await Session.create({
+        accountId, ip: "Admin", userAgent, expiresAt: new Date(Date.now() + IMPERSONATION_LIFETIME_MS),
+    });
 
     return { token: session.token };
 }

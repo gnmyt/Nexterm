@@ -12,6 +12,7 @@ import FileRenderer from "@/pages/Servers/components/ViewContainer/renderer/File
 import ScriptRenderer from "@/pages/Servers/components/ViewContainer/renderer/ScriptRenderer";
 import NotesRenderer from "@/pages/Servers/components/ViewContainer/renderer/NotesRenderer";
 import PendingSession from "./PendingSession";
+import TrustPrompt from "@/pages/Servers/components/ViewContainer/renderer/components/TrustPrompt";
 import { useTauriWindow } from "@/common/hooks/useTauriWindow.js";
 import { useBodyClass } from "@/common/hooks/useBodyClass.js";
 
@@ -102,6 +103,8 @@ export const ViewContainer = ({
     const showDropZones = dragItemType === "TAB" || dragItemType === "server";
 
     const activeControls = sessionControls[activeSessionId] || null;
+
+    const getSessionElement = useCallback((sessionId) => sessionRefs.current[sessionId] || null, []);
 
     const registerTerminalRef = useCallback((sessionId, refs) => {
         refs ? terminalRefs.current[sessionId] = refs : delete terminalRefs.current[sessionId];
@@ -361,6 +364,12 @@ export const ViewContainer = ({
             return <NotesRenderer key={rendererKey} session={session} />;
         }
 
+        if (session.trustChallenge) {
+            return <TrustPrompt key={`${rendererKey}-trust-${session.trustChallenge.fingerprint}`} session={session}
+                                challenge={session.trustChallenge}
+                                onClose={() => disconnectFromServer(session.id, { force: true })} />;
+        }
+
         if (session.scriptId) {
             return <ScriptRenderer
                 key={rendererKey}
@@ -490,7 +499,7 @@ export const ViewContainer = ({
                     sessionProgress={sessionProgress} sessionPageInfo={sessionPageInfo}
                     fullscreenEnabled={fullscreenMode}
                     onFullscreenToggle={toggleFullscreenMode}
-                    openNotes={openNotes}
+                    openNotes={openNotes} getSessionElement={getSessionElement}
                     hibernateSession={hibernateSession} duplicateSession={duplicateSession} />
     );
 

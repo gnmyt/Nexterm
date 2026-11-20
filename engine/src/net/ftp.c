@@ -8,6 +8,7 @@
 #include "io.h"
 #include "log.h"
 #include "thumbnail.h"
+#include "trust.h"
 
 extern nexterm_session_manager_t g_session_manager;
 
@@ -47,6 +48,8 @@ typedef struct {
     ftp_tls_mode_t tls;
     int mlsd_state;
     char errbuf[CURL_ERROR_SIZE];
+    nexterm_trust_t trust;
+    nexterm_tls_trust_t tls_trust;
 } ftp_conn_t;
 
 typedef struct {
@@ -168,10 +171,8 @@ static void ftp_setup_common(ftp_conn_t* c, CURL* curl) {
     if (c->tls == FTP_TLS_EXPLICIT)
         curl_easy_setopt(curl, CURLOPT_USE_SSL, (long)CURLUSESSL_ALL);
 
-    if (c->tls != FTP_TLS_NONE) {
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-    }
+    if (c->tls != FTP_TLS_NONE)
+        nexterm_trust_apply_curl(curl, &c->tls_trust);
 }
 
 static const char* ftp_strerror(long response) {
@@ -1432,6 +1433,11 @@ static void* ftp_session_thread(void* arg) {
              session->host, session->port ? session->port : 21);
     snprintf(conn.userpwd, sizeof(conn.userpwd), "%s:%s", username,
              password ? password : "");
+
+    nexterm_trust_from_session(session, &conn.trust);
+    conn.tls_trust.trust = &conn.trust;
+    conn.tls_trust.host = session->host;
+    conn.tls_trust.port = session->port ? session->port : 21;
 
     LOG_INFO("FTP session %s: connecting to %s:%u as %s (%s)",
              session->session_id, session->host, session->port, username,

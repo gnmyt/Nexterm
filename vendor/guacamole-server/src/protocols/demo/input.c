@@ -93,6 +93,14 @@ int guac_demo_user_mouse_handler(guac_user* user, int x, int y, int mask) {
                 demo_client->render_thread, user, x, y, mask);
 
     pthread_mutex_lock(&demo_client->state_lock);
+
+    if ((mask & GUAC_CLIENT_MOUSE_LEFT)
+            && !(demo_client->input.mouse_mask & GUAC_CLIENT_MOUSE_LEFT)) {
+        demo_client->input.press_count++;
+        demo_client->input.press_x = x;
+        demo_client->input.press_y = y;
+    }
+
     demo_client->input.mouse_x = x;
     demo_client->input.mouse_y = y;
     demo_client->input.mouse_mask = mask;

@@ -13,6 +13,7 @@ process.env.LOG_LEVEL = "error";
 
 const db = require("../utils/database");
 const Session = require("../models/Session");
+const { hashSessionToken } = require("../models/Session");
 const DeviceCode = require("../models/DeviceCode");
 const {
     MS_PER_DAY,
@@ -27,7 +28,8 @@ const {
     isRunning,
 } = require("../utils/sessionCleanup");
 const { cleanupExpiredCodes, CODE_EXPIRY_MS, CODE_RETENTION_MS } = require("../utils/deviceCodeCleanup");
-const { findActiveSession } = require("../utils/sessionActivity");
+const SessionSettings = require("../models/SessionSettings");
+const { findActiveSession } = require("../utils/loginSession");
 const SessionManager = require("../lib/SessionManager");
 const { listSessions } = require("../controllers/session");
 const { createCode, authorizeCode, pollToken, checkLinkStatus } = require("../controllers/deviceCode");
@@ -60,6 +62,7 @@ test.before(async () => {
     assert.equal(db.getDialect(), "sqlite");
 
     await Session.sync({ force: true });
+    await SessionSettings.sync({ force: true });
     await DeviceCode.sync({ force: true });
 });
 
@@ -131,8 +134,9 @@ test("removes inactive sessions across multiple cleanup batches", async () => {
     const now = Date.now();
     const staleActivity = new Date(now - 31 * MS_PER_DAY);
 
-    await Session.bulkCreate(Array.from({ length: 501 }, () => ({
+    await Session.bulkCreate(Array.from({ length: 501 }, (_, index) => ({
         accountId: 1,
+        tokenHash: hashSessionToken(`${now}-${index}`),
         ip: "127.0.0.1",
         userAgent: "test",
         lastActivity: staleActivity,
@@ -268,7 +272,7 @@ test("device code authorization still hands the session token to the polling cli
     const poll = await pollToken({ token: deviceCode.token });
     assert.equal(poll.status, "authorized");
 
-    const session = await Session.findOne({ where: { token: poll.token } });
+    const session = await Session.findOne({ where: { tokenHash: hashSessionToken(poll.token) } });
     assert.ok(session);
     assert.equal(session.accountId, 1);
 
@@ -331,7 +335,7 @@ test("device link status reports claimed after a successful redemption", async (
     const poll = await pollToken({ token: deviceCode.token });
     assert.equal(poll.status, "authorized");
 
-    const session = await Session.findOne({ where: { token: poll.token } });
+    const session = await Session.findOne({ where: { tokenHash: hashSessionToken(poll.token) } });
     const codeRow = await DeviceCode.findOne({ where: { token: deviceCode.token } });
     assert.equal(codeRow.sessionId, null);
     assert.ok(codeRow.redeemedAt);

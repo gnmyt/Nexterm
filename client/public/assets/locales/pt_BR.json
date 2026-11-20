@@ -48,9 +48,7 @@
     },
     "confirmDialog": {
       "title": "Você tem certeza?",
-      "defaultText": "Essa ação não pode ser desfeita.",
-      "unsavedChangesTitle": "Alterações Não Salvas",
-      "unsavedChangesText": "Você tem alterações não salvas. Tem certeza de que deseja fechar?"
+      "defaultText": "Essa ação não pode ser desfeita."
     },
     "loginDialog": {
       "title": "Nexterm",
@@ -63,7 +61,31 @@
       "backToLogin": "Voltar para o login",
       "authenticating": "Autenticando...",
       "noAccount": "Ainda não tem uma conta?",
-      "haveAccount": "Já tem uma conta?"
+      "haveAccount": "Já tem uma conta?",
+      "welcome": "Bem-vindo de volta",
+      "subtitle": "Faça login para continuar no Nexterm.",
+      "registrationSubtitle": "Crie sua conta para começar.",
+      "firstTimeSubtitle": "Crie a primeira conta de administrador para essa instância.",
+      "twoFactorTitle": "Autenticação de dois fatores",
+      "twoFactorDescription": "Digite o código do seu aplicativo de autenticação.",
+      "qrTitle": "Faça login pelo aplicativo",
+      "demo": {
+        "title": "Experimenta o Nexterm",
+        "subtitle": "Experimente uma instância ao vivo com servidores simulados, sem precisar de conta.",
+        "start": "Inicie a demonstração",
+        "orSignIn": "ou faça login na sua conta",
+        "failed": "Não foi possível iniciar uma sessão de demonstração"
+      }
+    },
+    "demo": {
+      "timeLeft": "Demo · {{time}} à esquerda",
+      "end": "Fim da demonstração",
+      "endConfirmText": "Quer encerrar sua sessão de demonstração? Tudo o que você criou será removido.",
+      "minutes_one": "{{count}} min inform",
+      "minutes_other": "{{count}} min inform",
+      "hours_one": "{{count}} hora",
+      "hours_other": "{{count}} horas",
+      "hoursMinutes": "{{hours}}h {{minutes}}m"
     },
     "deviceLink": {
       "title": "Vincular Dispositivo",
@@ -157,8 +179,6 @@
     "quickAction": {
       "placeholder": "Pesquisar servidores, snippets ou navegar...",
       "noResults": "Nenhum resultado encontrado",
-      "navigation": "Navegação",
-      "settings": "Configurações",
       "navigate": "Navegar",
       "select": "Selecionar",
       "close": "Fechar",
@@ -186,11 +206,11 @@
       "connection": {
         "title": "Falha na conexão",
         "close": "Fechar a guia",
-        "reconnect": "Reconnect",
-        "reconnectNow": "Reconnect",
-        "reconnecting": "Reconnecting…",
-        "reconnectingIn": "Reconnecting in {{seconds}}s",
-        "reconnectAttempt": "attempt {{count}} of {{max}}",
+        "reconnect": "Reconectar",
+        "reconnectNow": "Reconectar",
+        "reconnecting": "Reconectando…",
+        "reconnectingIn": "Reconectando em {{seconds}}s",
+        "reconnectAttempt": "tente {{count}} de {{max}}",
         "hostUnreachable": "O host remoto não pode ser acessado",
         "refused": "Conexão recusada pelo host remoto",
         "timeout": "O tempo de conexão expirou",
@@ -200,8 +220,12 @@
         "closedUnexpectedly": "Conexão fechada inesperadamente",
         "error": "Ocorreu um erro de conexão",
         "scriptClosedUnexpectedly": "Conexão de script fechada inesperadamente",
-        "scriptError": "Ocorreu um erro de conexão de script"
-      }
+        "scriptError": "Ocorreu um erro de conexão de script",
+        "rdpSessionConflict": "A sessão foi desconectada pelo servidor porque outra conexão foi aberta.",
+        "rdpSessionTimeout": "A sessão RDP foi desconectada porque atingiu o limite de tempo da sessão.",
+        "rdpSessionClosed": "A sessão RDP foi encerrada pelo servidor remoto ou por um administrador."
+      },
+      "accountLinkRequired": "Já existe uma conta com esse nome de usuário. Pede a um administrador para permitir que ela seja vinculada ao seu login."
     },
     "messages": {
       "invitationAccepted": "Convite aceito",
@@ -211,6 +235,11 @@
       "organizationDeleteError": "Falha ao excluir a organização",
       "leftOrganization": "Você deixou a organização",
       "leaveOrganizationError": "Falha ao deixar a organização"
+    },
+    "unsavedChanges": {
+      "title": "Alterações não salvas",
+      "text": "Joga fora ou continua editando e salva quando terminar.",
+      "keepEditing": "Continue editando"
     }
   },
   "audit": {
@@ -437,25 +466,35 @@
     "page": {
       "title": "Monitoramento de Servidor",
       "subtitle": "Estatísticas de servidores em tempo real e monitoramento de saúde.",
-      "searchPlaceholder": "Pesquisar servidores..."
+      "searchPlaceholder": "Pesquisar servidores...",
+      "filters": {
+        "all": "Todos ({{count}})",
+        "online": "Online ({{count}})",
+        "issues": "Edições ({{count}})"
+      }
     },
     "errors": {
-      "loadFailed": "Falha ao carregar os dados de monitoramento"
+      "loadFailed": "Falha ao carregar os dados de monitoramento",
+      "loadFailedDescription": "Não foi possível recuperar os dados de monitoramento. Verifique sua conexão e tente novamente.",
+      "retry": "Tentar de novo"
     },
     "grid": {
-      "loading": "Carregando dados de monitoramento...",
       "noServers": {
         "title": "Nenhum Servidor Encontrado",
         "subtitle": "Não há servidores SSH disponíveis para monitoramento.\nAdicione alguns servidores para começar a monitorá-los."
       },
+      "noResults": {
+        "title": "Não há servidores correspondentes",
+        "subtitle": "Nenhum servidor monitorado corresponde à sua busca."
+      },
       "metrics": {
-        "cpuUsage": "Uso de CPU",
-        "memoryUsage": "Uso de Memória",
         "loadAverage": "Média de Carga",
         "processes": "Processos",
         "uptime": "Tempo de atividade",
         "nodes": "Nós",
-        "vms": "VMs/contêineres"
+        "vms": "VMs/contêineres",
+        "cpu": "CPU",
+        "memory": "Memória"
       },
       "status": {
         "serverOffline": "Servidor Offline",
@@ -465,7 +504,16 @@
         "errorMessage": "Não foi possível estabelecer conexão com o servidor.",
         "unknownMessage": "O status do servidor não pôde ser determinado.",
         "lastSeen": "Visto pela última vez: {{time}}",
-        "noRecentActivity": "Nenhuma atividade recente"
+        "noRecentActivity": "Nenhuma atividade recente",
+        "waitingForData": "Aguardando os dados",
+        "pendingMessage": "Os dados de monitoramento vão aparecer depois do próximo ciclo de monitoramento.",
+        "labels": {
+          "online": "Online",
+          "offline": "Offline",
+          "error": "Erro",
+          "pending": "Em espera",
+          "unknown": "Desconhecido"
+        }
       },
       "uptime": {
         "unknown": "Desconhecido",
@@ -484,7 +532,6 @@
       },
       "tabs": {
         "overview": "Visão Geral",
-        "charts": "Gráficos",
         "storage": "Armazenamento",
         "network": "Rede",
         "processes": "Processos",
@@ -502,14 +549,20 @@
           "unknown": "Desconhecido",
           "noData": "Nenhuma informação do sistema disponível"
         },
+        "memory": {
+          "title": "Memory",
+          "summary": "{{used}} of {{total}} ({{percent}}%)",
+          "used": "Used",
+          "cache": "Buffers / Cache",
+          "free": "Free"
+        },
         "performance": {
           "title": "Métricas de Desempenho",
-          "cpuUsage": "Uso de CPU",
-          "memoryUsage": "Uso de Memória",
           "loadAverage": "Média de Carga",
           "processes": "Processos Ativos",
           "total": "Total: {{value}}",
-          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}"
+          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}",
+          "memory": "Memória"
         },
         "uptime": {
           "format": {
@@ -527,33 +580,67 @@
       },
       "storage": {
         "title": "Uso de Disco",
-        "used": "Usado: {{value}}",
-        "available": "Disponível: {{value}}",
-        "total": "Total: {{value}}",
-        "type": "Tipo: {{value}}",
         "noData": "Nenhum dado de uso de disco disponível",
-        "noPartitions": "Nenhuma partição montada"
+        "noPartitions": "Nenhuma partição montada",
+        "usedOf": "{{used}} do site {{total}} usado",
+        "free": "{{value}} grátis",
+        "filesystems": "Sistemas de arquivos",
+        "disks": "Discos",
+        "on": "{{volume}} em {{partition}}",
+        "swap": "Trocar",
+        "unmounted": "Não montado",
+        "unallocated": "Não alocado",
+        "inodes": "Inodes",
+        "inodesDetail": "{{used}} de {{total}}",
+        "health": {
+          "passed": "Saudável",
+          "warning": "Aviso",
+          "failed": "Falha",
+          "denied": "O SMART precisa de acesso root",
+          "temperature": "Temperatura",
+          "powerOn": "Tempo de inicialização",
+          "wear": "Desgaste",
+          "reallocated": "Setores realocados",
+          "pending": "Setores pendentes",
+          "mediaErrors": "Erros de mídia",
+          "years": "{{value}} anos",
+          "days": "{{value}} dias",
+          "hours": "{{value}} horas",
+          "failedTitle": "Previsão de falha no disco",
+          "failedMessage": "{{disks}} Não passou na autoavaliação SMART. Faça backup dos dados e troque o disco."
+        }
       },
       "network": {
-        "title": "Interfaces de Rede",
-        "rxBytes": "Bytes RX",
-        "txBytes": "Bytes TX",
-        "mac": "Endereço MAC",
         "speed": "Velocidade",
-        "noData": "Nenhum dado de interface de rede disponível"
+        "noData": "Nenhum dado de interface de rede disponível",
+        "download": "Baixar",
+        "upload": "Fazer upload",
+        "interface": "Interface",
+        "address": "Endereço",
+        "gateway": "Gateway",
+        "interfaces": "Interfaces",
+        "virtual": "Interfaces virtuais",
+        "defaultRoute": "Rota padrão",
+        "up": "Para cima",
+        "down": "Para baixo",
+        "errors": "{{count}} erros",
+        "dropped": "{{count}} deixou cair",
+        "copy": "Copiar {{address}}",
+        "total": "{{value}} total"
       },
       "processes": {
-        "title": "Processos em Execução",
         "searchPlaceholder": "Pesquisar processos...",
         "showing": "Mostrando {{count}} de {{total}} processos",
         "noData": "Nenhum dado de processo disponível. Os dados do processo aparecerão após o próximo ciclo de monitoramento.",
-        "noResults": "Nenhum processo corresponde aos seus critérios de pesquisa."
+        "noResults": "Nenhum processo corresponde aos seus critérios de pesquisa.",
+        "columns": {
+          "command": "Comando",
+          "cpu": "CPU",
+          "mem": "Memória"
+        }
       },
       "pve": {
         "clusterInfo": "Informações do Cluster",
-        "resources": "Uso de Recursos",
-        "virtualMachines": "Máquinas Virtuais",
-        "totalNodes": "Total de Nodes",
         "onlineNodes": "Nodes Online",
         "totalCPU": "Total de CPU",
         "totalMemory": "Total de Memória",
@@ -593,10 +680,15 @@
       "monitoring": "Monitoramento",
       "backup": "Armazenamento",
       "engines": "Motores",
-      "permissions": "Funções e permissões"
+      "permissions": "Funções e permissões",
+      "trustedCertificates": "Certificados confiáveis"
     },
     "account": {
       "title": "Conta",
+      "demo": {
+        "title": "Segurança",
+        "description": "Senha, autenticação de dois fatores, chaves de acesso, chaves de API e fotos de perfil não podem ser alteradas enquanto você estiver navegando como convidado."
+      },
       "avatar": {
         "label": "Foto",
         "upload": "Alterar foto do perfil",
@@ -689,6 +781,7 @@
       "sessionSyncAcrossDevicesDesc": "As sessões estarão disponíveis em todos os dispositivos e serão sincronizadas.",
       "sessionSyncSameBrowserDesc": "As sessões serão sincronizadas para a sessão do usuário atual.",
       "sessionSyncSameTabDesc": "As sessões serão sincronizadas dentro da aba do seu navegador.",
+      "showAgentSessionsDesc": "Mostrar as sessões abertas pelo assistente de IA ou pelos agentes do MCP como abas somente para visualização",
       "twoFactorDialog": {
         "title": "Habilitar 2FA",
         "description": "Escaneie o código com seu aplicativo autenticador ou insira <span class=\"totp-code\">{{secret}}</span> manualmente.",
@@ -741,14 +834,25 @@
         "neverUsed": "Nunca usei",
         "expires": "Vence em {{date}}",
         "delete": "Excluir"
-      }
+      },
+      "remoteDesktop": "Área de Trabalho Remota",
+      "remoteDesktopDescription": "Escala de exibição padrão para sessões de área de trabalho remota. As conexões podem substituir essa configuração, e a escala escolhida durante uma sessão fica salva nesse dispositivo.",
+      "remoteDesktopScale": "Escala de exibição",
+      "remoteDesktopScaleAuto": "Automático (adaptar ao dispositivo)",
+      "remoteDesktopSyncEnabled": "As configurações da área de trabalho remota agora vão ser sincronizadas entre os dispositivos",
+      "remoteDesktopSyncDisabled": "As configurações da área de trabalho remota agora são salvas apenas neste dispositivo"
     },
     "passwordChange": {
       "title": "Alterar a senha",
       "description": "Uma senha forte contém caracteres especiais, números e letras em maiúsculas e minúsculas.",
       "newPassword": "Nova senha",
       "confirmPassword": "Confirmar nova senha",
-      "changePasswordButton": "Alterar a senha"
+      "changePasswordButton": "Alterar a senha",
+      "currentPassword": "Senha atual",
+      "descriptionOwn": "Digite sua senha atual e escolha uma nova. Você será desconectado de todos os outros dispositivos.",
+      "descriptionOther": "Escolha uma nova senha para esse usuário. Ele vai ser desconectado de todos os dispositivos.",
+      "successOwn": "Sua senha foi alterada. A sessão em outros dispositivos foi encerrada.",
+      "successOther": "A senha foi alterada e o usuário foi desconectado de todos os lugares."
     },
     "organizations": {
       "title": "Suas Organizações",
@@ -787,8 +891,8 @@
         "folderManagementDescription": "Criação de registros, modificação e exclusão de pastas",
         "scriptExecutionLabel": "Execução de scripts",
         "scriptExecutionDescription": "Registrar a execução de scripts e tarefas de automação",
-        "aiOperationsLabel": "Operações de IA",
-        "aiOperationsDescription": "Registrar os comandos e as alterações nos arquivos feitas pelo assistente de IA",
+        "agentOperationsLabel": "Operações de Agentes de IA",
+        "agentOperationsDescription": "Registrar comandos, entradas, capturas de tela e alterações em arquivos realizadas pelo assistente de IA e pelos agentes conectados por meio do servidor MCP",
         "actions": {
           "save": "Salvar configurações"
         },
@@ -854,7 +958,10 @@
         "deleteUser": "Excluir usuário",
         "loginAsUser": "Autenticar como usuário",
         "deleteConfirm": "Isso excluirá permanentemente o usuário e todos os dados associados.",
-        "managePermissions": "Gerenciar permissões"
+        "managePermissions": "Gerenciar permissões",
+        "allowExternalLink": "Permitir integração com SSO/LDAP",
+        "cancelExternalLink": "Cancelar a ligação com SSO/LDAP",
+        "unlinkExternal": "Desvincular o login via SSO/LDAP"
       }
     },
     "userDialog": {
@@ -917,11 +1024,11 @@
         },
         "copy": {
           "title": "Copiar",
-          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+          "description": "Copie o texto destacado no terminal para o teclado. É necessário que o modo “Mouse” ou “Teclado” esteja ativado nas configurações do Terminal."
         },
         "paste": {
-          "title": "Paste",
-          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
+          "title": "Colar",
+          "description": "Cola o texto da área de transferência no terminal. É preciso ter o modo “Smart Ctrl+C”, “Mouse” ou “Teclado” ativado nas configurações do Terminal."
         },
         "fullscreen": {
           "title": "Tela Cheia",
@@ -936,7 +1043,7 @@
         "pressKeys": "Pressione as teclas...",
         "save": "Salvar",
         "cancel": "Cancelar",
-        "disabled": "Disabled",
+        "disabled": "Desativado",
         "reset": "Redefinir"
       },
       "messages": {
@@ -972,19 +1079,19 @@
       "input": {
         "title": "Entrada",
         "description": "Controle como os atalhos de teclado funcionam dentro do terminal.",
-        "copyPasteBehavior": "Copy/Paste Behavior",
-        "copyPasteBehaviorNone": "None",
-        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
-        "copyPasteBehaviorSmart": "Smart Ctrl+C",
-        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
-        "copyPasteBehaviorKeyboard": "Keyboard",
-        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
+        "copyPasteBehavior": "Comportamento de copiar/colar",
+        "copyPasteBehaviorNone": "Nenhum",
+        "copyPasteBehaviorNoneHint": "Apenas “Copiar” e “Colar” no menu de contexto.",
+        "copyPasteBehaviorSmart": "Ctrl+C inteligente",
+        "copyPasteBehaviorSmartHint": "Copie de forma inteligente quando o texto estiver destacado; caso contrário, envie o comando Ctrl+C puro para o terminal.",
+        "copyPasteBehaviorKeyboard": "Teclado",
+        "copyPasteBehaviorKeyboardHint": "Usa os mapas de teclas que você definiu para copiar e colar",
         "copyPasteBehaviorMouse": "Mouse",
-        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
-        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
-        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
+        "copyPasteBehaviorMouseHint": "Selecione para copiar, clique com o botão direito para colar. Use Ctrl + clique com o botão direito para acessar o menu de contexto.",
+        "copyPasteBehaviorMouseKeyboard": "Mouse/Teclado",
+        "copyPasteBehaviorMouseKeyboardHint": "Ativa os modos de mouse e teclado.",
         "passwordPromptDetection": "Detecção de digitação de senha",
-        "autoReconnect": "Auto-reconnect",
+        "autoReconnect": "Reconexão automática",
         "enabled": "Ativado",
         "disabled": "Desativado",
         "syncEnabled": "As configurações de entrada agora vão ser sincronizadas com a sua conta",
@@ -1006,13 +1113,24 @@
       "syncLoginRequired": "Faça login para sincronizar as configurações do gerenciador de arquivos.",
       "syncEnabled": "As configurações do gerenciador de arquivos agora serão sincronizadas com sua conta.",
       "syncDisabled": "As configurações do gerenciador de arquivos não serão mais sincronizadas com sua conta.",
+      "view": {
+        "title": "Ver",
+        "description": "Como os arquivos e pastas aparecem quando você abre o gerenciador de arquivos."
+      },
+      "behavior": {
+        "title": "Comportamento",
+        "description": "O que acontece quando você abre, exclui e move arquivos."
+      },
       "defaultView": {
         "title": "Modo de Exibição Padrão",
         "description": "Escolha o layout padrão ao abrir o gerenciador de arquivos.",
         "list": "Modo de Lista",
         "listDescription": "Mostrar arquivos em uma lista detalhada com colunas de tamanho e data",
         "grid": "Modo de Grade",
-        "gridDescription": "Mostrar arquivos como ícones em um layout de grade com miniaturas"
+        "gridDescription": "Mostrar arquivos como ícones em um layout de grade com miniaturas",
+        "compact": "Visualização compacta",
+        "compactDescription": "Mostrar só os nomes em colunas compactas pra caberem muitos arquivos na tela",
+        "label": "Visualização padrão"
       },
       "thumbnails": {
         "title": "Miniaturas de Imagem",
@@ -1020,7 +1138,10 @@
         "enabled": "Mostrar Miniaturas",
         "enabledDescription": "Mostrar pré-visualizações de imagens no modo de grade para identificação visual rápida",
         "disabled": "Ocultar Miniaturas",
-        "disabledDescription": "Mostrar apenas ícones de arquivos para economizar largura de banda e melhorar o desempenho"
+        "disabledDescription": "Mostrar apenas ícones de arquivos para economizar largura de banda e melhorar o desempenho",
+        "label": "Miniaturas de imagens",
+        "show": "Mostrar",
+        "hide": "Ocultar"
       },
       "hiddenFiles": {
         "title": "Arquivos Ocultos",
@@ -1028,7 +1149,10 @@
         "show": "Mostrar Arquivos Ocultos",
         "showDescription": "Mostrar todos os arquivos, incluindo .dotfiles e diretórios do sistema",
         "hide": "Ocultar Arquivos Ocultos",
-        "hideDescription": "Mostrar apenas arquivos e pastas regulares"
+        "hideDescription": "Mostrar apenas arquivos e pastas regulares",
+        "label": "Arquivos ocultos",
+        "showShort": "Mostrar",
+        "hideShort": "Ocultar"
       },
       "deleteConfirmation": {
         "title": "Confirmação de Exclusão",
@@ -1036,14 +1160,43 @@
         "enabled": "Confirmar Exclusões",
         "enabledDescription": "Mostrar uma caixa de diálogo de confirmação antes de excluir itens",
         "disabled": "Excluir Imediatamente",
-        "disabledDescription": "Excluir arquivos sem pedir confirmação"
+        "disabledDescription": "Excluir arquivos sem pedir confirmação",
+        "label": "Antes de excluir",
+        "ask": "Pede uma confirmação",
+        "immediately": "Apague agora mesmo"
       },
       "dragDropAction": {
         "title": "Ação de Arrastar e Soltar",
         "description": "Ação padrão ao arrastar arquivos para um novo local.",
         "move": "Mover",
         "copy": "Copiar",
-        "ask": "Perguntar"
+        "ask": "Perguntar",
+        "label": "Ao soltar arquivos"
+      },
+      "singleClickOpen": {
+        "title": "Abrir com um único clique",
+        "description": "Abra arquivos e pastas com um único clique, em vez de selecioná-los. Quando essa opção estiver desativada, o clique duplo abre o arquivo ou a pasta.",
+        "single": "Um clique",
+        "double": "Clique duas vezes",
+        "label": "Itens pendentes com"
+      },
+      "sharedDrive": {
+        "title": "Unidade compartilhada",
+        "description": "O que os desktops remotos podem ver deste computador por meio da unidade compartilhada. As alterações valem para novas conexões.",
+        "mode": {
+          "title": "Compartilhar",
+          "folder": "Uma pasta",
+          "disk": "Disco inteiro",
+          "off": "Nada",
+          "diskWarning": "Os desktops remotos podem ler, alterar e excluir todos os arquivos deste computador."
+        },
+        "folder": {
+          "title": "Pasta compartilhada",
+          "default": "Nexterm compartilhado na sua pasta pessoal",
+          "choose": "Escolha uma pasta",
+          "reset": "Usar o padrão"
+        },
+        "folderError": "Não foi possível preparar a pasta compartilhada"
       }
     },
     "authentication": {
@@ -1077,6 +1230,8 @@
           "clientSecretPlaceholderEdit": "Deixe em branco para manter o atual",
           "redirectUri": "URI de Redirecionamento",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback",
+          "endSessionEndpoint": "Endpoint de encerramento da sessão (opcional)",
+          "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
           "scope": "Escopo",
           "scopePlaceholder": "openid profile email",
           "usernameAttribute": "Atributo de Nome de Usuário",
@@ -1096,6 +1251,21 @@
         },
         "messages": {
           "saveFailed": "Falha ao salvar o provedor"
+        },
+        "groupSync": {
+          "title": "Sincronização em grupo",
+          "hint": "Adicione usuários automaticamente às organizações e controle o acesso com base nas reivindicações de grupo do seu provedor de identidade.",
+          "groupsAttribute": "Grupos afirmam",
+          "groupsAttributePlaceholder": "grupos",
+          "requiredGroup": "Grupo obrigatório",
+          "requiredGroupPlaceholder": "nexterm-users",
+          "requiredGroupHint": "Se estiver definido, só os usuários cujo campo “claims” dos grupos contenha esse valor poderão fazer login.",
+          "mappings": "Mapeamentos da organização",
+          "mappingsHint": "Associe o valor de uma reivindicação de grupo a uma organização. A afiliação fica sincronizada a cada login.",
+          "mappingValuePlaceholder": "Valor do grupo",
+          "roleMember": "Membro",
+          "roleOwner": "Proprietário",
+          "addMapping": "Adicionar mapeamento"
         }
       },
       "ldapDialog": {
@@ -1142,11 +1312,22 @@
           "testSuccess": "Teste de conexão bem-sucedido",
           "testFailed": "Teste de conexão falhou"
         }
+      },
+      "sessions": {
+        "title": "Sessões",
+        "description": "Quando os dispositivos que já estão conectados, incluindo os aplicativos para celular e para computador, precisam fazer login de novo.",
+        "idle": "Sair após um tempo sem atividade",
+        "lifetime": "Duração máxima da sessão",
+        "days_one": "{{count}} dia",
+        "days_other": "{{count}} dias",
+        "never": "Nunca",
+        "loadError": "Não foi possível carregar as configurações da sessão",
+        "saveError": "Não foi possível salvar as configurações da sessão"
       }
     },
     "ai": {
       "title": "Configuração de Assistente de IA",
-      "description": "Configure o assistente de IA que pode executar comandos e gerenciar arquivos diretamente nas suas sessões de servidor.",
+      "description": "Configure o provedor de IA usado pelo assistente, que pode operar seus servidores por meio de suas próprias sessões.",
       "loading": "Carregando configurações de IA...",
       "enable": {
         "title": "Ativar o Assistente de IA",
@@ -1159,10 +1340,6 @@
       "model": {
         "title": "Modelo",
         "description": "Escolha o modelo de IA que o assistente deve usar"
-      },
-      "requireConfirmation": {
-        "title": "Confirme antes de cada ação",
-        "description": "Exigir que os usuários aprovem cada comando e alteração de arquivo que o assistente queira fazer"
       },
       "apiKey": {
         "title": "Chave de API",
@@ -1265,10 +1442,12 @@
     },
     "identities": {
       "title": "Chaves e Credenciais SSH",
-      "description": "Gerencie suas chaves SSH e credenciais de login para conexões de servidor.",
+      "description": "Identidades que você pode vincular a qualquer servidor. As específicas de cada servidor ficam nas configurações desse servidor.",
       "createIdentity": "Criar Identidade",
       "personal": "Pessoal",
       "noUsername": "Sem nome de usuário",
+      "notInUse": "Não está em uso",
+      "notInUseHint": "Não está vinculado a nenhum servidor ou pasta",
       "sshKey": "Chave SSH",
       "password": "Senha",
       "editIdentity": "Editar identidade",
@@ -1336,6 +1515,7 @@
         "success": "Sincronizada",
         "error": "Erro",
         "pending": "Pendente",
+        "syncing": "Sincronização",
         "disabled": "Desabilitada"
       },
       "dialog": {
@@ -1523,6 +1703,28 @@
       "deleteConfirm": "Isso vai excluir definitivamente a função “{{name}}” e retirá-la de todos os membros.",
       "inheritsAllow": "Herdança: Permitida",
       "inheritsDeny": "Herdança: Negada"
+    },
+    "search": "Configurações de pesquisa",
+    "trustedCertificates": {
+      "title": "Certificados confiáveis",
+      "description": "Certificados e chaves do servidor que você aceitou ao se conectar. Remova um deles para que a pergunta seja feita novamente na próxima vez.",
+      "personal": "Pessoal",
+      "system": "Sistema",
+      "kinds": {
+        "ssh": "Chave de host SSH",
+        "tls": "Certificado TLS"
+      },
+      "empty": "Ainda não confiei em nada",
+      "emptyDescription": "Os certificados e as chaves do servidor aparecem aqui assim que você os aceitar para uma conexão.",
+      "remove": "Remover",
+      "removeConfirm": "Vai deixar de confiar no {{endpoint}}? A próxima conexão vai perguntar isso de novo.",
+      "removeSuccess": "Certificado confiável removido",
+      "removeError": "Não foi possível remover o certificado confiável",
+      "ignore": {
+        "title": "Ignorar avisos sobre certificados",
+        "description": "Conecte-se aos seus servidores pessoais sem verificar o certificado ou a chave do host deles. Assim, as conexões podem ser interceptadas sem que você perceba. Os servidores da organização são sempre verificados.",
+        "error": "Não foi possível salvar a configuração"
+      }
     }
   },
   "tunnel": {
@@ -1581,6 +1783,7 @@
       "createFolder": "Criar Pasta",
       "deleteFolder": "Excluir Pasta",
       "renameFolder": "Renomear Pasta",
+      "folderSettings": "Configurações da pasta",
       "new": "Novo",
       "sshServer": "Servidor SSH",
       "telnetServer": "Servidor Telnet",
@@ -1601,7 +1804,7 @@
       "connect": "Conectar",
       "quickConnect": "Conexão Rápida",
       "openSFTP": "Abrir SFTP",
-      "openBrowser": "Open Browser",
+      "openBrowser": "Abrir o navegador",
       "forwardPort": "Tunelar Porta",
       "runScript": "Executar Script",
       "openNotes": "Notas abertas",
@@ -1638,17 +1841,20 @@
         "duplicate": "Duplicar",
         "openNotes": "Notas abertas",
         "hibernateSession": "Hibernar",
-        "reconnect": "Reconnect",
+        "reconnect": "Reconectar",
         "closeSession": "Desconectar",
-        "splitRight": "Split Right",
-        "splitDown": "Split Down",
-        "sendShortcut": "Send Shortcut…",
+        "splitRight": "Divisão à direita",
+        "splitDown": "Dividir para baixo",
+        "sendShortcut": "Enviar atalho…",
         "zoom": "Zoom ({{zoom}}%)",
-        "zoomReset": "Reset Zoom"
+        "zoomReset": "Redefinir zoom",
+        "displayScale": "Escala de exibição ({{scale}}%)",
+        "displayScaleAuto": "Automático ({{scale}}%)",
+        "displayScaleReset": "Usar o padrão"
       },
-      "enableSplitView": "Enable Split View",
-      "disableSplitView": "Disable Split View",
-      "sessionMenu": "Session Menu"
+      "enableSplitView": "Ativar a Visualização Dividida",
+      "disableSplitView": "Desativar a Visualização Dividida",
+      "sessionMenu": "Menu da sessão"
     },
     "wol": {
       "successDescription": "Pacote mágico enviado para {{name}}",
@@ -1658,20 +1864,15 @@
       "fillRequiredFields": "Por favor, preencha todos os campos obrigatórios",
       "serverCreated": "Servidor criado com sucesso",
       "serverUpdated": "Servidor atualizado com sucesso",
+      "folderUpdated": "A pasta foi atualizada com sucesso",
       "createFailed": "Falha ao criar o servidor",
       "updateFailed": "Falha ao atualizar o servidor",
-      "createIdentityFailed": "Falha ao criar a identidade",
-      "updateIdentityFailed": "Falha ao atualizar a identidade"
+      "identitiesRemovedOnMove": "Algumas identidades foram removidas porque não estão disponíveis no destino."
     },
     "dialog": {
       "addServer": "Adicionar Servidor",
       "addProtocolServer": "Adicionar Servidor {{protocol}}",
       "editServer": "Editar Servidor",
-      "tabs": {
-        "details": "Detalhes",
-        "identities": "Identidades",
-        "settings": "Configurações"
-      },
       "actions": {
         "save": "Salvar",
         "create": "Criar"
@@ -1717,7 +1918,6 @@
           "description": "Permitir acordar este servidor remotamente usando seu endereço MAC"
         },
         "rdpSecurity": {
-          "title": "Segurança",
           "description": "Método de autenticação usado para se conectar ao computador Windows remoto. Use o NLA em ambientes onde o NTLM está desativado (por exemplo, no grupo “Usuários Protegidos”).",
           "method": "Método de segurança"
         },
@@ -1727,9 +1927,12 @@
         },
         "display": {
           "title": "Configurações de Exibição",
-          "description": "Configure a profundidade de cor e o comportamento de redimensionamento para a exibição remota",
+          "description": "Configure a profundidade de cor, o comportamento ao redimensionar e o escalonamento da tela remota",
           "colorDepth": "Profundidade de Cor",
-          "resizeMethod": "Método de Redimensionamento"
+          "resizeMethod": "Método de Redimensionamento",
+          "displayScale": "Escala de exibição",
+          "displayScaleAuto": "Automático (corresponder a este dispositivo)",
+          "displayScaleAccount": "Inadimplência da conta"
         },
         "performance": {
           "title": "Configurações de Desempenho",
@@ -1757,14 +1960,9 @@
           "backspace": "Backspace",
           "delete": "Excluir",
           "functionKeys": "Teclas de Função"
-        },
-        "noSettings": "Não há configurações adicionais disponíveis para esse tipo de entrada."
+        }
       },
       "identities": {
-        "organizationIdentities": "Identidades Organizacionais",
-        "personalIdentities": "Identidades Pessoais",
-        "orgDescription": "Compartilhado com todos os membros da organização. Todos podem usar essas identidades.",
-        "personalDescription": "Só visível para você. Outros membros da organização não conseguem ver essas identidades.",
         "identityName": "Nome da Identidade",
         "username": "Nome de Usuário",
         "authentication": "Autenticação",
@@ -1775,16 +1973,29 @@
         "both": "Chave+Senha",
         "sshPrivateKey": "Chave Privada SSH",
         "passphrase": "Senha (opcional)",
-        "new": "Nova",
+        "add": "Adicionar identidade",
+        "linkGlobal": "Identidade global da Link · {{count}}",
+        "empty": "Ainda não tem identidades.",
         "removeIdentity": "Remover identidade",
         "unlinkIdentity": "Desvincular identidade",
         "moveToOrg": "Mover para a organização",
-        "selectOrganization": "Selecionar Organização",
-        "availableToLink": "Disponível para Vinculação",
         "noUsername": "Sem nome de usuário",
-        "noOrgIdentities": "Sem identidades organizacionais. Crie uma para compartilhar com todos os membros.",
-        "noPersonalIdentities": "Sem identidades pessoais. Crie uma para uso privado."
-      }
+        "globalToggle": "Uso em outros servidores",
+        "globalInUse": "Essa identidade é usada pelos servidores do {{count}} . Primeiro, desvincule-a das outras.",
+        "shareToggle": "Compartilhar com a organização",
+        "inheritedHint": "Herdado das configurações da pasta.",
+        "onlyMe": "Só eu",
+        "onlyMeHint": "Só você pode ver e usar essa identidade."
+      },
+      "sections": {
+        "general": "Geral",
+        "connection": "Conexão",
+        "identities": "Identidades",
+        "options": "Opções",
+        "credentials": "Credenciais"
+      },
+      "useInherited": "Usar o valor herdado",
+      "reset": "Redefinir"
     },
     "proxmoxDialog": {
       "title": {
@@ -1792,9 +2003,6 @@
         "edit": "Editar Proxmox VE"
       },
       "fields": {
-        "name": "Nome",
-        "serverIp": "IP do Servidor",
-        "port": "Porta",
         "username": "Nome de Usuário",
         "password": "Senha",
         "nodeName": "Nome do Node (Opcional)",
@@ -1803,8 +2011,6 @@
       "monitoringDescription": "Coletar métricas de CPU, memória e armazenamento em todo o cluster",
       "placeholders": {
         "name": "Nome",
-        "serverIp": "IP do Servidor",
-        "port": "Porta",
         "username": "Nome de usuário (ex. root@pam)",
         "password": "Senha",
         "specificNode": "Nome específico do node"
@@ -1818,7 +2024,8 @@
         "updated": "Integração Proxmox atualizada com sucesso",
         "createFailed": "Falha ao criar integração Proxmox",
         "updateFailed": "Falha ao atualizar integração Proxmox"
-      }
+      },
+      "credentialsDescription": "Usuário do Proxmox com acesso à API, por exemplo, root@pam ou um usuário dedicado à API."
     },
     "connectionReasonDialog": {
       "title": "Motivo da Conexão é obrigatório",
@@ -1972,10 +2179,17 @@
         "uploadFolder": "Pasta de upload",
         "search": "Pesquisar arquivos",
         "closeSearch": "Fechar pesquisa",
-        "refresh": "Atualizar"
+        "refresh": "Atualizar",
+        "back": "Voltar",
+        "forward": "Avançar",
+        "up": "Diretório pai",
+        "home": "Diretório pessoal",
+        "switchToCompact": "Mudar para a visualização compacta"
       },
       "item": {
-        "link": "link"
+        "link": "link",
+        "expand": "Expandir pasta",
+        "collapse": "Recolher pasta"
       },
       "search": {
         "placeholder": "Filtrar os arquivos desta pasta...",
@@ -1991,23 +2205,56 @@
         "dropFilesHint": "Solte os arquivos aqui para enviá-los"
       },
       "toast": {
-        "downloaded": "Baixado {{name}}",
-        "downloadingItems": "Baixando {{count}} item(s)...",
-        "uploaded": "Enviado {{name}}",
-        "uploadedItems": "Arquivos enviados em {{count}}",
         "uploadFailed": "Falha no envio: {{message}}",
-        "uploadFailedItems": "{{count}} Não foi possível enviar os arquivos: {{message}}",
         "connectionLost": "Conexão SFTP perdida. Por favor, reconecte-se.",
         "error": "Ocorreu um erro"
+      },
+      "transfers": {
+        "title": "Transferências",
+        "activeCount": "{{count}} ativo",
+        "allDone": "Pronto!",
+        "clearFinished": "Concluído",
+        "queued": "Na fila",
+        "cancelling": "Cancelando...",
+        "completed": "Concluído",
+        "savedTo": "Salvo em {{path}}",
+        "cancelled": "Cancelado",
+        "failed": "Falha: {{message}}",
+        "dismiss": "Ignorar"
+      },
+      "status": {
+        "folders_one": "{{count}} pasta",
+        "folders_other": "{{count}} pastas",
+        "files_one": "{{count}} arquivo",
+        "files_other": "{{count}} arquivos",
+        "hidden_one": "{{count}} oculto",
+        "hidden_other": "{{count}} oculto",
+        "selected": "{{count}} selecionado",
+        "showHidden": "Mostrar arquivos ocultos",
+        "hideHidden": "Ocultar arquivos ocultos"
+      },
+      "conflict": {
+        "title_one": "O item já existe",
+        "title_other": "{{count}} esses itens já existem",
+        "upload_one": "Já existe um arquivo com esse nome no destino. O que você quer fazer?",
+        "upload_other": "Esses arquivos já existem no destino. O que você quer fazer com eles?",
+        "move_one": "Já existe um item com esse nome no destino. Se você movê-lo, ele será substituído.",
+        "move_other": "Esses itens já existem no destino. Se você os mover, eles serão substituídos.",
+        "copy_one": "Já existe um item com esse nome no destino. A cópia vai substituí-lo.",
+        "copy_other": "Esses itens já existem no destino. A cópia vai substituí-los.",
+        "more": "+ {{count}} mais",
+        "skip": "Pular",
+        "rename": "Guarda os dois",
+        "overwrite": "Substituir"
       }
     },
     "browser": {
-      "back": "Back",
-      "forward": "Forward",
-      "reload": "Reload",
-      "stop": "Stop",
-      "address": "Address",
-      "addressPlaceholder": "Enter an address"
+      "back": "Voltar",
+      "forward": "Avançar",
+      "reload": "Atualizar",
+      "stop": "Pára",
+      "address": "Endereço",
+      "addressPlaceholder": "Digite um endereço"
     },
     "remoteDesktop": {
       "dropOverlay": "Arraste os arquivos para fazer o upload para o servidor remoto",
@@ -2019,13 +2266,34 @@
         "downloaded": "Baixei “{{name}}” de um servidor remoto"
       }
     },
+    "automatedSession": {
+      "viewOnlyAi": "O assistente de IA está funcionando nesta sessão. Você pode assistir, mas não digitar.",
+      "viewOnlyMcp": "Um agente externo (MCP) está trabalhando nesta sessão. Você pode assistir, mas não digitar."
+    },
     "aiAssistant": {
       "title": "Assistente de IA",
       "open": "Assistente de IA",
-      "empty": "Pede pro assistente dar uma olhada nesse servidor ou trocá-lo. Ele pode executar comandos e ler ou editar arquivos diretamente pela conexão.",
+      "empty": "Pede pro assistente dar uma olhada ou trocar seus servidores. Ele abre suas próprias sessões nos servidores que você adicionar aqui embaixo, executa comandos, edita arquivos e pode até mesmo controlar desktops remotos.",
+      "addServer": "Adicionar servidor",
+      "removeServer": "Remover servidor",
+      "searchServers": "Pesquisar servidores...",
+      "noMatches": "Não há servidores correspondentes",
+      "current": "atual",
+      "openSessions": "{{count}} sessão(ões) aberta(s)",
+      "approval": {
+        "ask": "Pergunta antes de agir",
+        "askDescription": "Comandos, entradas e alterações em arquivos aguardam sua aprovação",
+        "allow": "Permitir tudo",
+        "allowDescription": "Executa chamadas de ferramentas sem perguntar",
+        "readonly": "Somente leitura",
+        "readonlyDescription": "Só verifica os servidores; qualquer coisa que altere esses servidores é bloqueada"
+      },
       "placeholder": "Manda uma mensagem pro assistente...",
       "connecting": "Conectando...",
       "send": "Enviar",
+      "copyMessage": "Copiar mensagem",
+      "copied": "Copiado",
+      "editMessage": "Editar mensagem",
       "stop": "Pára",
       "connectionError": "A conexão com o assistente foi perdida.",
       "reconnecting": "Conexão perdida. Reconectando...",
@@ -2038,19 +2306,65 @@
       "continuePrompt": "O assistente fez uma pausa depois de subir uma longa escadaria. Continuamos?",
       "continue": "Continua",
       "compacted": "As mensagens anteriores foram resumidas para deixar o contexto mais claro.",
+      "retryPrompt": "A última etapa deu errado. Quer tentar de novo a partir de onde parou?",
+      "retry": "Tentar de novo",
+      "questionOther": "Ou digite outra resposta...",
+      "questionAnswer": "Digite sua resposta...",
+      "questionSend": "Resposta",
+      "questionPickOne": "Escolhe uma opção ou digita uma resposta",
+      "questionPickMany": "Escolha as opções que se aplicam",
+      "exitCode": "sair {{code}}",
+      "truncated": "[truncado]",
+      "toolSummary": {
+        "recursive": "{{path}} (recursivo)",
+        "doubleClick": "{{target}} ×2"
+      },
       "tools": {
-        "runCommand": "Executar comando",
-        "readFile": "Ler arquivo",
-        "writeFile": "Gravar arquivo",
-        "editFile": "Editar arquivo",
-        "listDirectory": "Lista de diretórios",
-        "statPath": "Verificar caminho",
-        "makeDirectory": "Criar diretório",
-        "deleteFile": "Apagar arquivo",
-        "removeDirectory": "Excluir diretório",
-        "movePath": "Mover",
-        "changePermissions": "Alterar permissões",
-        "findDirectories": "Encontrar diretórios"
+        "list_entries": "Servidores de lista",
+        "get_entry": "Verificar o servidor",
+        "list_folders": "Listar pastas",
+        "list_organizations": "Listar organizações",
+        "list_identities": "Lista de identidades",
+        "list_snippets": "Trechos da lista",
+        "list_scripts": "Listar scripts",
+        "list_tags": "Lista de tags",
+        "list_users": "Listar usuários",
+        "get_permissions": "Verifique as permissões",
+        "get_monitoring": "Monitoramento de leitura",
+        "list_sessions": "Listar sessões",
+        "open_session": "Sessão aberta",
+        "get_session": "Inspecionar sessão",
+        "close_session": "Fechar sessão",
+        "close_all_sessions": "Fechar todas as sessões",
+        "terminal_run": "Executar comando",
+        "terminal_send": "Enviar dados",
+        "terminal_read": "Ler terminal",
+        "terminal_resize": "Redimensionar o terminal",
+        "run_command": "Executar comando",
+        "exec_command": "Executar comando",
+        "file_list": "Lista de diretórios",
+        "file_stat": "Verificar caminho",
+        "file_read": "Ler arquivo",
+        "file_write": "Gravar arquivo",
+        "file_edit": "Editar arquivo",
+        "file_mkdir": "Criar diretório",
+        "file_delete": "Excluir",
+        "file_move": "Mover",
+        "file_chmod": "Alterar permissões",
+        "file_search_dirs": "Encontrar diretórios",
+        "desktop_screenshot": "Captura de tela",
+        "desktop_info": "Verificar a área de trabalho",
+        "desktop_click": "Clique",
+        "desktop_mouse_move": "Mova o mouse",
+        "desktop_drag": "Arrastar",
+        "desktop_scroll": "Rolar a tela",
+        "desktop_type": "Digite o texto",
+        "desktop_key": "Aperta as teclas",
+        "desktop_resize": "Redimensionar a área de trabalho",
+        "desktop_clipboard_set": "Definir a área de transferência",
+        "desktop_clipboard_get": "Ler a área de transferência",
+        "batch": "Execute várias ações",
+        "ask_user": "Pergunta"
       }
     },
     "commandSuggestion": {
@@ -2073,7 +2387,7 @@
       "holdModifier": "Aguarda {{key}}",
       "zoomIn": "Ampliar",
       "zoomOut": "Amenizar o zoom",
-      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
+      "zoomReset": "Redefinir zoom (arraste com o botão do meio do mouse para deslocar a imagem)"
     },
     "monitors": {
       "title": "Monitor {{number}}",
@@ -2106,6 +2420,36 @@
     "liveSessions": {
       "activeOn": "Sessões ao vivo: {{users}}",
       "unknownUser": "Usuário desconhecido"
+    },
+    "folderSettings": {
+      "name": "Nome da pasta",
+      "nameRequired": "É preciso colocar um nome na pasta",
+      "loadFailed": "Não foi possível carregar as configurações da pasta",
+      "protocol": "Valores padrão para",
+      "protocolHint": "Os servidores nesta pasta usam o que você definir abaixo, a menos que definam seus próprios valores. Cada protocolo tem seus próprios valores padrão.",
+      "unset": "Remover da pasta"
+    },
+    "trust": {
+      "certificate": "certificado",
+      "hostKey": "chave do host",
+      "newTitle": "Dá pra confiar nesse site {{subject}}?",
+      "newMessage": "Esta é a primeira conexão com {{endpoint}}. Verifique a impressão digital antes de continuar.",
+      "changedTitle": "O site {{subject}} mudou",
+      "changedMessage": "{{endpoint}} apresenta um {{subject}} diferente do anterior. Só continue se você já estiver ciente disso.",
+      "fingerprint": "Impressão digital",
+      "previous": "Confiável até agora",
+      "presented": "Apresentado agora",
+      "subject": "Emitido para",
+      "issuer": "Emitido por",
+      "selfSigned": "Autoassinado",
+      "validUntil": "Válido até",
+      "blocked": "Só os administradores de certificados do site {{organization}} podem aceitar essa alteração.",
+      "accept": "Confie e conecte-se",
+      "cancel": "Cancelar",
+      "acceptChanged": "Confia no novo",
+      "disconnect": "Desconectar",
+      "failed": "Não foi possível salvar sua decisão",
+      "acceptOnly": "Certificado de confiança"
     }
   },
   "support": {
@@ -2120,6 +2464,10 @@
       "title": "Entrar no Discord",
       "description": "Converse com a comunidade e obtenha ajuda."
     },
+    "docs": {
+      "title": "Ver a documentação",
+      "description": "Dá uma olhada na documentação e aprende a usar o Nexterm."
+    },
     "github": {
       "title": "Ver no GitHub",
       "description": "Navegue pelo código-fonte e contribua."
@@ -2133,7 +2481,11 @@
     "connectDevice": "Conectar Dispositivo",
     "recentConnections": "Conexões Recentes",
     "getStarted": "Começar",
-    "getStartedHint": "Adicione um servidor na barra lateral para começar a gerenciar sua infraestrutura."
+    "getStartedHint": "Adicione um servidor na barra lateral para começar a gerenciar sua infraestrutura.",
+    "hibernated": "Hibernou",
+    "demo": {
+      "explore": "Comece a explorar"
+    }
   },
   "downloadApps": {
     "title": "Baixar Apps",
@@ -2144,6 +2496,10 @@
       "linux": "Linux",
       "android": "Android",
       "ios": "iOS"
-    }
+    },
+    "recommended": "Recomendado",
+    "versionUnavailable": "Não foi possível determinar a versão do servidor, então os downloads diretos não estão disponíveis. Você ainda pode conferir as versões no GitHub.",
+    "sourceHint": "Os downloads são disponibilizados nas versões do GitHub.",
+    "allReleases": "Todos os comunicados"
   }
 }

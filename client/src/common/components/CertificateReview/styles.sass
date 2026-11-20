@@ -1,0 +1,105 @@
+@use "@/common/styles/colors"
+@use "@/common/styles/fonts"
+
+.certificate-review
+  display: flex
+  flex-direction: column
+  gap: 1rem
+  width: 100%
+  max-width: 36rem
+
+.certificate-review__text
+  display: flex
+  flex-direction: column
+  gap: 0.55rem
+
+  h2
+    margin: 0
+    color: colors.$white
+
+  p
+    margin: 0
+    color: colors.$subtext
+    line-height: 1.5
+    word-break: break-word
+
+.certificate-review__card
+  display: flex
+  flex-direction: column
+  gap: 0.9rem
+  padding: 1rem 1.1rem
+  background: colors.$lighter-background
+  border: 1px solid colors.$border
+  border-radius: 0.75rem
+  min-width: 0
+  text-align: left
+
+.certificate-review__fingerprint
+  display: flex
+  flex-direction: column
+  gap: 0.35rem
+
+  &--previous .certificate-review__value
+    color: colors.$subtext
+    text-decoration: line-through
+    text-decoration-color: colors.$gray
+
+  &--changed .certificate-review__value
+    color: colors.$error
+
+.certificate-review__label
+  font-size: 0.8rem
+  font-weight: 600
+  color: colors.$subtext
+
+.certificate-review__value
+  font-family: fonts.$mono
+  font-size: 0.85rem
+  line-height: 1.5
+  color: colors.$white
+  word-break: break-all
+  user-select: text
+
+.certificate-review__facts
+  display: grid
+  grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr))
+  gap: 0.75rem
+  margin: 0
+  padding-top: 0.9rem
+  border-top: 1px solid colors.$border
+
+.certificate-review__fact
+  display: flex
+  flex-direction: column
+  gap: 0.2rem
+  min-width: 0
+
+  dt
+    font-size: 0.8rem
+    font-weight: 600
+    color: colors.$subtext
+
+  dd
+    margin: 0
+    font-size: 0.9rem
+    color: colors.$white
+    word-break: break-word
+
+.certificate-review__hint
+  margin: 0
+  font-size: 0.85rem
+  color: colors.$subtext
+  line-height: 1.5
+
+  &--error
+    color: colors.$error
+
+.certificate-review__actions
+  display: flex
+  flex-wrap: wrap
+  justify-content: flex-end
+  gap: 0.75rem
+
+.certificate-review-dialog
+  width: 32rem
+  max-width: 100%

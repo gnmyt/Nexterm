@@ -48,9 +48,7 @@
     },
     "confirmDialog": {
       "title": "Jste si jisti?",
-      "defaultText": "Tuto akci nelze vrátit zpět.",
-      "unsavedChangesTitle": "Neuložené změny",
-      "unsavedChangesText": "Máte neuložené změny. Opravdu chcete zavřít?"
+      "defaultText": "Tuto akci nelze vrátit zpět."
     },
     "loginDialog": {
       "title": "Nexterm",
@@ -63,7 +61,31 @@
       "backToLogin": "Zpět na přihlášení",
       "authenticating": "Probíhá ověření...",
       "noAccount": "Ještě nemáte účet?",
-      "haveAccount": "Už máte účet?"
+      "haveAccount": "Už máte účet?",
+      "welcome": "Vítejte zpět",
+      "subtitle": "Přihlaste se, abyste mohli pokračovat na Nexterm.",
+      "registrationSubtitle": "Vytvořte si účet a můžete začít.",
+      "firstTimeSubtitle": "Vytvořte první účet správce pro tuto instanci.",
+      "twoFactorTitle": "Dvoufaktorové ověření",
+      "twoFactorDescription": "Zadejte kód z vaší aplikace pro ověřování.",
+      "qrTitle": "Přihlaste se pomocí aplikace",
+      "demo": {
+        "title": "Vyzkoušejte Nexterm",
+        "subtitle": "Vyzkoušejte si živou instanci se simulovanými servery – není třeba se registrovat.",
+        "start": "Spustit ukázku",
+        "orSignIn": "nebo se přihlaste ke svému účtu",
+        "failed": "Nepodařilo se spustit ukázkovou relaci"
+      }
+    },
+    "demo": {
+      "timeLeft": "Ukázka · {{time}} vlevo",
+      "end": "Ukončit ukázku",
+      "endConfirmText": "Chcete ukončit demo relaci? Vše, co jste vytvořili, bude smazáno.",
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min",
+      "hours_one": "{{count}} hodina",
+      "hours_other": "{{count}} hodiny",
+      "hoursMinutes": "{{hours}}h {{minutes}}m"
     },
     "deviceLink": {
       "title": "Odkaz Zařízení",
@@ -157,8 +179,6 @@
     "quickAction": {
       "placeholder": "Hledat servery, snippety nebo navigovat...",
       "noResults": "Žádné výsledky",
-      "navigation": "Navigace",
-      "settings": "Nastavení",
       "navigate": "Navigovat",
       "select": "Vybrat",
       "close": "Zavřít",
@@ -186,11 +206,11 @@
       "connection": {
         "title": "Připojení se nezdařilo",
         "close": "Zavřít kartu",
-        "reconnect": "Reconnect",
-        "reconnectNow": "Reconnect",
-        "reconnecting": "Reconnecting…",
-        "reconnectingIn": "Reconnecting in {{seconds}}s",
-        "reconnectAttempt": "attempt {{count}} of {{max}}",
+        "reconnect": "Znovu se připojit",
+        "reconnectNow": "Znovu se připojit",
+        "reconnecting": "Obnovení připojení…",
+        "reconnectingIn": "Obnovení spojení v {{seconds}}s",
+        "reconnectAttempt": "pokus {{count}} o {{max}}",
         "hostUnreachable": "Vzdálený hostitel je nedostupný",
         "refused": "Připojení odmítnuto vzdáleným hostitelem",
         "timeout": "Připojení vypršelo",
@@ -200,8 +220,12 @@
         "closedUnexpectedly": "Připojení se neočekávaně uzavřelo",
         "error": "Došlo k chybě připojení",
         "scriptClosedUnexpectedly": "Připojení skriptu se neočekávaně uzavřelo",
-        "scriptError": "Došlo k chybě připojení skriptu"
-      }
+        "scriptError": "Došlo k chybě připojení skriptu",
+        "rdpSessionConflict": "Server přerušil relaci, protože bylo navázáno další připojení.",
+        "rdpSessionTimeout": "RDP relace byla přerušena, protože uplynula její časová lhůta.",
+        "rdpSessionClosed": "Relace RDP byla ukončena vzdáleným serverem nebo správcem."
+      },
+      "accountLinkRequired": "Účet s tímto uživatelským jménem již existuje. Požádejte správce, aby povolil jeho propojení s vaším přihlášením."
     },
     "messages": {
       "invitationAccepted": "Pozvánka přijata",
@@ -211,6 +235,11 @@
       "organizationDeleteError": "Nepodařilo se smazat organizaci",
       "leftOrganization": "Opustili jste organizaci",
       "leaveOrganizationError": "Nepodařilo se opustit organizaci"
+    },
+    "unsavedChanges": {
+      "title": "Neuložené změny",
+      "text": "Buď je vymažte, nebo pokračujte v úpravách a až budete hotovi, uložte je.",
+      "keepEditing": "Pokračujte v úpravách"
     }
   },
   "audit": {
@@ -437,25 +466,35 @@
     "page": {
       "title": "Monitoring serverů",
       "subtitle": "Statistiky serverů a monitoring stavu v reálném čase",
-      "searchPlaceholder": "Hledat servery..."
+      "searchPlaceholder": "Hledat servery...",
+      "filters": {
+        "all": "Vše ({{count}})",
+        "online": "Online ({{count}})",
+        "issues": "Čísla ({{count}})"
+      }
     },
     "errors": {
-      "loadFailed": "Nepodařilo se načíst data monitoringu"
+      "loadFailed": "Nepodařilo se načíst data monitoringu",
+      "loadFailedDescription": "Data z monitorování se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+      "retry": "Zkusit znovu"
     },
     "grid": {
-      "loading": "Načítání dat monitoringu...",
       "noServers": {
         "title": "Žádné servery nenalezeny",
         "subtitle": "Žádné SSH servery nejsou k dispozici pro monitoring.\nPřidejte některé servery pro zahájení monitorování."
       },
+      "noResults": {
+        "title": "Nebyly nalezeny žádné odpovídající servery",
+        "subtitle": "Žádný sledovaný server neodpovídá vašemu vyhledávání."
+      },
       "metrics": {
-        "cpuUsage": "Vytížení CPU",
-        "memoryUsage": "Využití paměti",
         "loadAverage": "Průměrná zátěž",
         "processes": "Procesy",
         "uptime": "Doba běhu",
         "nodes": "Uzly",
-        "vms": "VM/Kontejnery"
+        "vms": "VM/Kontejnery",
+        "cpu": "Procesor",
+        "memory": "Paměť"
       },
       "status": {
         "serverOffline": "Server offline",
@@ -465,7 +504,16 @@
         "errorMessage": "Nelze navázat spojení se serverem.",
         "unknownMessage": "Stav serveru nelze určit.",
         "lastSeen": "Naposledy viděn: {{time}}",
-        "noRecentActivity": "Žádná nedávná aktivita"
+        "noRecentActivity": "Žádná nedávná aktivita",
+        "waitingForData": "Čekání na data",
+        "pendingMessage": "Údaje z monitorování se zobrazí až po skončení příštího monitorovacího cyklu.",
+        "labels": {
+          "online": "Online",
+          "offline": "Offline",
+          "error": "Chyba",
+          "pending": "Čeká na vyřízení",
+          "unknown": "Neznámé"
+        }
       },
       "uptime": {
         "unknown": "Neznámo",
@@ -484,7 +532,6 @@
       },
       "tabs": {
         "overview": "Přehled",
-        "charts": "Grafy",
         "storage": "Úložiště",
         "network": "Síť",
         "processes": "Procesy",
@@ -502,14 +549,20 @@
           "unknown": "Neznámo",
           "noData": "Žádné informace o systému nejsou k dispozici"
         },
+        "memory": {
+          "title": "Memory",
+          "summary": "{{used}} of {{total}} ({{percent}}%)",
+          "used": "Used",
+          "cache": "Buffers / Cache",
+          "free": "Free"
+        },
         "performance": {
           "title": "Výkonnostní metriky",
-          "cpuUsage": "Vytížení CPU",
-          "memoryUsage": "Využití paměti",
           "loadAverage": "Průměrná zátěž",
           "processes": "Aktivní procesy",
           "total": "Celkem: {{value}}",
-          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}"
+          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}",
+          "memory": "Paměť"
         },
         "uptime": {
           "format": {
@@ -527,33 +580,67 @@
       },
       "storage": {
         "title": "Využití disku",
-        "used": "Použito: {{value}}",
-        "available": "Dostupné: {{value}}",
-        "total": "Celkem: {{value}}",
-        "type": "Typ: {{value}}",
         "noData": "Žádná data o využití disku nejsou k dispozici",
-        "noPartitions": "Žádné připojené oddíly"
+        "noPartitions": "Žádné připojené oddíly",
+        "usedOf": "{{used}} z {{total}} použito",
+        "free": "{{value}} zdarma",
+        "filesystems": "Souborové systémy",
+        "disks": "Disky",
+        "on": "{{volume}} na {{partition}}",
+        "swap": "Vyměnit",
+        "unmounted": "Není připojen",
+        "unallocated": "Nepřiřazeno",
+        "inodes": "Inody",
+        "inodesDetail": "{{used}} z {{total}}",
+        "health": {
+          "passed": "Zdravý",
+          "warning": "Upozornění",
+          "failed": "Selhání",
+          "denied": "SMART vyžaduje oprávnění root",
+          "temperature": "Teplota",
+          "powerOn": "Doba zapnutí",
+          "wear": "Oblečení",
+          "reallocated": "Přerozdělené sektory",
+          "pending": "Odvětví, u nichž se ještě nerozhodlo",
+          "mediaErrors": "Chyby v médiích",
+          "years": "{{value}} roky",
+          "days": "{{value}} dny",
+          "hours": "{{value}} hodiny",
+          "failedTitle": "Předpověď selhání disku",
+          "failedMessage": "{{disks}} neprošlo vlastním hodnocením SMART. Zálohujte data a vyměňte disk."
+        }
       },
       "network": {
-        "title": "Síťová rozhraní",
-        "rxBytes": "Přijato bajtů",
-        "txBytes": "Odesláno bajtů",
-        "mac": "MAC adresa",
         "speed": "Rychlost",
-        "noData": "Žádná data o síťových rozhraních nejsou k dispozici"
+        "noData": "Žádná data o síťových rozhraních nejsou k dispozici",
+        "download": "Stáhnout",
+        "upload": "Nahrát",
+        "interface": "Rozhraní",
+        "address": "Adresa",
+        "gateway": "Brána",
+        "interfaces": "Rozhraní",
+        "virtual": "Virtuální rozhraní",
+        "defaultRoute": "Výchozí trasa",
+        "up": "Nahoru",
+        "down": "Dolů",
+        "errors": "{{count}} chyby",
+        "dropped": "{{count}} vynecháno",
+        "copy": "Kopírovat {{address}}",
+        "total": "{{value}} celkem"
       },
       "processes": {
-        "title": "Běžící procesy",
         "searchPlaceholder": "Hledat procesy...",
         "showing": "Zobrazeno {{count}} z {{total}} procesů",
         "noData": "Žádná data o procesech nejsou k dispozici. Data procesů se zobrazí po dalším cyklu monitoringu.",
-        "noResults": "Žádné procesy neodpovídají kritériím vyhledávání."
+        "noResults": "Žádné procesy neodpovídají kritériím vyhledávání.",
+        "columns": {
+          "command": "Příkaz",
+          "cpu": "Procesor",
+          "mem": "Paměť"
+        }
       },
       "pve": {
         "clusterInfo": "Informace o clusteru",
-        "resources": "Využití prostředků",
-        "virtualMachines": "Virtuální stroje",
-        "totalNodes": "Celkem uzlů",
         "onlineNodes": "Online uzlů",
         "totalCPU": "Celkem CPU",
         "totalMemory": "Celkem paměti",
@@ -593,10 +680,15 @@
       "monitoring": "Monitorování",
       "backup": "Úložiště",
       "engines": "Motory",
-      "permissions": "Role a oprávnění"
+      "permissions": "Role a oprávnění",
+      "trustedCertificates": "Důvěryhodné certifikáty"
     },
     "account": {
       "title": "Účet",
+      "demo": {
+        "title": "Bezpečnost",
+        "description": "Heslo, dvoufaktorové ověření, přístupové klíče, klíče API a profilové obrázky nelze měnit, pokud procházíte web jako host."
+      },
       "avatar": {
         "label": "Obrázek",
         "upload": "Změnit profilový obrázek",
@@ -689,6 +781,7 @@
       "sessionSyncAcrossDevicesDesc": "Relace budou dostupné a synchronizované mezi zařízeními",
       "sessionSyncSameBrowserDesc": "Relace budou synchronizovány pro aktuální uživatelskou relaci",
       "sessionSyncSameTabDesc": "Relace budou synchronizovány uvnitř vaší karty prohlížeče",
+      "showAgentSessionsDesc": "Zobrazit relace otevřené asistentem AI nebo agenty MCP jako karty pouze pro prohlížení",
       "twoFactorDialog": {
         "title": "Povolit 2FA",
         "description": "Naskenujte kód svou autentifikační aplikací nebo zadejte <span class=\"totp-code\">{{secret}}</span> ručně.",
@@ -741,14 +834,25 @@
         "neverUsed": "Nikdy nepoužívané",
         "expires": "Platnost končí {{date}}",
         "delete": "Odstranit"
-      }
+      },
+      "remoteDesktop": "Vzdálená plocha",
+      "remoteDesktopDescription": "Výchozí měřítko zobrazení pro relace vzdálené plochy. Připojení mohou toto nastavení přepsat a měřítko zvolené během relace se na daném zařízení uloží.",
+      "remoteDesktopScale": "Měřítko zobrazení",
+      "remoteDesktopScaleAuto": "Automaticky (podle zařízení)",
+      "remoteDesktopSyncEnabled": "Nastavení vzdálené plochy se nyní budou synchronizovat napříč zařízeními",
+      "remoteDesktopSyncDisabled": "Nastavení vzdálené plochy se nyní ukládají pouze na tomto zařízení"
     },
     "passwordChange": {
       "title": "Změnit heslo",
       "description": "Silné heslo obsahuje speciální znaky, čísla a písmena jak velká, tak malá.",
       "newPassword": "Nové heslo",
       "confirmPassword": "Potvrdit nové heslo",
-      "changePasswordButton": "Změnit heslo"
+      "changePasswordButton": "Změnit heslo",
+      "currentPassword": "Aktuální heslo",
+      "descriptionOwn": "Zadejte své aktuální heslo a vyberte si nové. Budete odhlášeni ze všech ostatních zařízení.",
+      "descriptionOther": "Zvolte pro tohoto uživatele nové heslo. Bude odhlášen ze všech zařízení.",
+      "successOwn": "Vaše heslo bylo změněno. Ostatní zařízení byla odhlášena.",
+      "successOther": "Heslo bylo změněno a uživatel byl všude odhlášen."
     },
     "organizations": {
       "title": "Vaše organizace",
@@ -787,8 +891,8 @@
         "folderManagementDescription": "Záznamy o vytváření, úpravách a mazání složek",
         "scriptExecutionLabel": "Spuštění skriptu",
         "scriptExecutionDescription": "Protokolování provádění skriptů a automatizačních úloh",
-        "aiOperationsLabel": "Operace v oblasti umělé inteligence",
-        "aiOperationsDescription": "Zaznamenávat příkazy a změny souborů provedené asistentem AI",
+        "agentOperationsLabel": "Provoz agentů umělé inteligence",
+        "agentOperationsDescription": "Zaznamenávat příkazy, vstupy, snímky obrazovky a změny souborů provedené asistentem AI a agenty připojenými přes server MCP",
         "actions": {
           "save": "Uložit nastavení"
         },
@@ -854,7 +958,10 @@
         "deleteUser": "Smazat uživatele",
         "loginAsUser": "Přihlásit se jako uživatel",
         "deleteConfirm": "Toto trvale smaže uživatele a všechna přidružená data.",
-        "managePermissions": "Správa oprávnění"
+        "managePermissions": "Správa oprávnění",
+        "allowExternalLink": "Povolit propojení SSO/LDAP",
+        "cancelExternalLink": "Zrušit propojení SSO/LDAP",
+        "unlinkExternal": "Zrušit propojení přihlášení přes SSO/LDAP"
       }
     },
     "userDialog": {
@@ -917,11 +1024,11 @@
         },
         "copy": {
           "title": "Kopírovat",
-          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+          "description": "Zkopírujte zvýrazněný text z terminálu do schránky. Vyžaduje režim „Myš“ nebo „Klávesnice“ v nastavení terminálu."
         },
         "paste": {
-          "title": "Paste",
-          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
+          "title": "Vložit",
+          "description": "Vložit text ze schránky do terminálu. Vyžaduje režim „Smart Ctrl+C“, „Myš“ nebo „Klávesnice“ v nastavení terminálu."
         },
         "fullscreen": {
           "title": "Celá obrazovka",
@@ -936,7 +1043,7 @@
         "pressKeys": "Stiskněte klávesy...",
         "save": "Uložit",
         "cancel": "Zrušit",
-        "disabled": "Disabled",
+        "disabled": "Znevýhodnění",
         "reset": "Obnovit"
       },
       "messages": {
@@ -972,19 +1079,19 @@
       "input": {
         "title": "Vstup",
         "description": "Nastavte chování klávesových zkratek v terminálu.",
-        "copyPasteBehavior": "Copy/Paste Behavior",
-        "copyPasteBehaviorNone": "None",
-        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
-        "copyPasteBehaviorSmart": "Smart Ctrl+C",
-        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
-        "copyPasteBehaviorKeyboard": "Keyboard",
-        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
-        "copyPasteBehaviorMouse": "Mouse",
-        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
-        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
-        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
+        "copyPasteBehavior": "Chování při kopírování a vkládání",
+        "copyPasteBehaviorNone": "Žádné",
+        "copyPasteBehaviorNoneHint": "Pouze funkce „Kopírovat“ a „Vložit“ z kontextového menu.",
+        "copyPasteBehaviorSmart": "Chytré Ctrl+C",
+        "copyPasteBehaviorSmartHint": "Při zvýraznění textu provést inteligentní kopírování, v opačném případě odeslat do terminálu surový příkaz Ctrl+C.",
+        "copyPasteBehaviorKeyboard": "Klávesnice",
+        "copyPasteBehaviorKeyboardHint": "K provádění kopírování a vkládání využívá vámi definovaná rozložení kláves",
+        "copyPasteBehaviorMouse": "Myš",
+        "copyPasteBehaviorMouseHint": "Zvýrazněte text pro kopírování, klikněte pravým tlačítkem myši pro vložení. Kontextové menu otevřete kombinací kláves Ctrl + kliknutí pravým tlačítkem myši.",
+        "copyPasteBehaviorMouseKeyboard": "Myš/klávesnice",
+        "copyPasteBehaviorMouseKeyboardHint": "Aktivuje režimy myši i klávesnice.",
         "passwordPromptDetection": "Detekce zadávání hesla",
-        "autoReconnect": "Auto-reconnect",
+        "autoReconnect": "Automatické opětovné připojení",
         "enabled": "Zapnuto",
         "disabled": "Znevýhodnění",
         "syncEnabled": "Nastavení vstupů se nyní synchronizují s vaším účtem",
@@ -1006,13 +1113,24 @@
       "syncLoginRequired": "Přihlaste se k synchronizaci nastavení správce souborů",
       "syncEnabled": "Nastavení správce souborů se nyní synchronizuje s vaším účtem.",
       "syncDisabled": "Nastavení správce souborů se již nesynchronizuje",
+      "view": {
+        "title": "Zobrazit",
+        "description": "Jak se soubory a složky zobrazují při otevření správce souborů."
+      },
+      "behavior": {
+        "title": "Chování",
+        "description": "Co se stane, když soubory otevíráte, mazáte a přesouváte."
+      },
       "defaultView": {
         "title": "Výchozí režim zobrazení",
         "description": "Při otevření správce souborů zvolte výchozí rozložení.",
         "list": "Zobrazení seznamu",
         "listDescription": "Zobrazení souborů v podrobném seznamu se sloupci velikosti a data",
         "grid": "Zobrazení mřížky",
-        "gridDescription": "Zobrazení souborů jako ikony v mřížkovém uspořádání s miniaturami"
+        "gridDescription": "Zobrazení souborů jako ikony v mřížkovém uspořádání s miniaturami",
+        "compact": "Zjednodušené zobrazení",
+        "compactDescription": "Zobrazit pouze názvy v hustě uspořádaných sloupcích, aby se na obrazovku vešlo co nejvíce souborů",
+        "label": "Výchozí zobrazení"
       },
       "thumbnails": {
         "title": "Miniatury obrázků",
@@ -1020,7 +1138,10 @@
         "enabled": "Zobrazit náhledy",
         "enabledDescription": "Zobrazení náhledů obrázků v zobrazení mřížky pro rychlou vizuální identifikaci",
         "disabled": "Skrýt miniatury",
-        "disabledDescription": "Zobrazení pouze ikon souborů pro úsporu šířky pásma a zlepšení výkonu"
+        "disabledDescription": "Zobrazení pouze ikon souborů pro úsporu šířky pásma a zlepšení výkonu",
+        "label": "Miniatury obrázků",
+        "show": "Zobrazit",
+        "hide": "Skrýt"
       },
       "hiddenFiles": {
         "title": "Skryté soubory",
@@ -1028,7 +1149,10 @@
         "show": "Zobrazit skryté soubory",
         "showDescription": "Zobrazení všech souborů včetně souborů .dotfiles a systémových adresářů",
         "hide": "Skrýt skryté soubory",
-        "hideDescription": "Zobrazení pouze běžných souborů a složek"
+        "hideDescription": "Zobrazení pouze běžných souborů a složek",
+        "label": "Skryté soubory",
+        "showShort": "Zobrazit",
+        "hideShort": "Skrýt"
       },
       "deleteConfirmation": {
         "title": "Odstranit potvrzení",
@@ -1036,14 +1160,43 @@
         "enabled": "Potvrzení odstranění",
         "enabledDescription": "Zobrazení potvrzovacího dialogu před odstraněním položek",
         "disabled": "Okamžitě odstranit",
-        "disabledDescription": "Odstranění souborů bez žádosti o potvrzení"
+        "disabledDescription": "Odstranění souborů bez žádosti o potvrzení",
+        "label": "Před smazáním",
+        "ask": "Požádejte o potvrzení",
+        "immediately": "Okamžitě smazat"
       },
       "dragDropAction": {
         "title": "Akce Drag & Drop",
         "description": "Výchozí akce při přetahování souborů do nového umístění.",
         "move": "Přesun",
         "copy": "Kopírovat",
-        "ask": "Zeptejte se"
+        "ask": "Zeptejte se",
+        "label": "Při přetahování souborů"
+      },
+      "singleClickOpen": {
+        "title": "Otevřít jedním kliknutím",
+        "description": "Soubory a složky lze otevírat jediným kliknutím, aniž byste je museli nejprve vybírat. Je-li tato funkce vypnutá, soubory a složky se otevírají dvojitým kliknutím.",
+        "single": "Jedním kliknutím",
+        "double": "Dvojité kliknutí",
+        "label": "Otevřené položky s"
+      },
+      "sharedDrive": {
+        "title": "Sdílený disk",
+        "description": "Co mohou vzdálené pracovní plochy vidět z tohoto počítače prostřednictvím sdíleného disku. Změny se projeví až u nových připojení.",
+        "mode": {
+          "title": "Sdílet",
+          "folder": "Jedna složka",
+          "disk": "Celý disk",
+          "off": "Nic",
+          "diskWarning": "Vzdálené pracovní plochy mohou číst, měnit a mazat všechny soubory v tomto počítači."
+        },
+        "folder": {
+          "title": "Sdílená složka",
+          "default": "Nexterm – sdíleno ve vaší domovské složce",
+          "choose": "Vyberte složku",
+          "reset": "Použít výchozí nastavení"
+        },
+        "folderError": "Sdílenou složku se nepodařilo připravit"
       }
     },
     "authentication": {
@@ -1077,6 +1230,8 @@
           "clientSecretPlaceholderEdit": "Ponechte prázdné pro zachování stávajícího",
           "redirectUri": "URI přesměrování",
           "redirectUriPlaceholder": "https://vase-domena.cz/api/oidc/callback",
+          "endSessionEndpoint": "Koncový bod ukončení relace (volitelné)",
+          "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
           "scope": "Rozsah",
           "scopePlaceholder": "openid profile email",
           "usernameAttribute": "Atribut uživatelského jména",
@@ -1096,6 +1251,21 @@
         },
         "messages": {
           "saveFailed": "Nepodařilo se uložit poskytovatele"
+        },
+        "groupSync": {
+          "title": "Synchronizace skupiny",
+          "hint": "Automaticky přidávejte uživatele do organizací a řídte přístup na základě skupinových nároků od vašeho poskytovatele identit.",
+          "groupsAttribute": "Tvrzení skupin",
+          "groupsAttributePlaceholder": "skupiny",
+          "requiredGroup": "Povinná skupina",
+          "requiredGroupPlaceholder": "nexterm-uživatelé",
+          "requiredGroupHint": "Je-li tato možnost nastavena, mohou se přihlásit pouze uživatelé, jejichž název skupiny obsahuje tuto hodnotu.",
+          "mappings": "Mapování organizací",
+          "mappingsHint": "Přiřaďte hodnotu skupinového nároku k organizaci. Členství se synchronizuje při každém přihlášení.",
+          "mappingValuePlaceholder": "Hodnota skupiny",
+          "roleMember": "Člen",
+          "roleOwner": "Majitel",
+          "addMapping": "Přidat přiřazení"
         }
       },
       "ldapDialog": {
@@ -1142,11 +1312,22 @@
           "testSuccess": "Test připojení proběhl úspěšně",
           "testFailed": "Test připojení se nezdařil"
         }
+      },
+      "sessions": {
+        "title": "Relace",
+        "description": "Kdy se musí zařízení, u nichž je přihlášení aktivní – včetně mobilních a desktopových aplikací – přihlásit znovu.",
+        "idle": "Odhlásit se po určité době nečinnosti",
+        "lifetime": "Maximální délka relace",
+        "days_one": "{{count}} den",
+        "days_other": "{{count}} dny",
+        "never": "Nikdy",
+        "loadError": "Nepodařilo se načíst nastavení relace",
+        "saveError": "Nepodařilo se uložit nastavení relace"
       }
     },
     "ai": {
       "title": "Konfigurace AI asistenta",
-      "description": "Nakonfigurujte asistenta s umělou inteligencí, který dokáže spouštět příkazy a spravovat soubory přímo v rámci vašich serverových relací.",
+      "description": "Nakonfigurujte poskytovatele umělé inteligence, kterého asistent využívá a který může ovládat vaše servery prostřednictvím vlastních relací.",
       "loading": "Načítání nastavení AI...",
       "enable": {
         "title": "Povolit AI asistenta",
@@ -1159,10 +1340,6 @@
       "model": {
         "title": "Model",
         "description": "Vyberte model umělé inteligence, který má asistent používat"
-      },
-      "requireConfirmation": {
-        "title": "Před každým úkonem potvrďte",
-        "description": "Vyžadovat, aby uživatelé schvalovali každý příkaz a každou změnu souboru, kterou chce asistent provést"
       },
       "apiKey": {
         "title": "API klíč",
@@ -1265,10 +1442,12 @@
     },
     "identities": {
       "title": "SSH klíče a přihlašovací údaje",
-      "description": "Spravujte své SSH klíče a přihlašovací údaje pro připojení k serverům",
+      "description": "Identity můžete přiřadit k libovolnému serveru. Identity specifické pro daný server se nacházejí v nastavení tohoto serveru.",
       "createIdentity": "Vytvořit identitu",
       "personal": "Osobní",
       "noUsername": "Bez uživatelského jména",
+      "notInUse": "Nepoužívá se",
+      "notInUseHint": "Není propojeno s žádným serverem ani složkou",
       "sshKey": "SSH klíč",
       "password": "Heslo",
       "editIdentity": "Upravit identitu",
@@ -1336,6 +1515,7 @@
         "success": "Synchronizováno",
         "error": "Chyba",
         "pending": "Čeká",
+        "syncing": "Synchronizace",
         "disabled": "Zakázáno"
       },
       "dialog": {
@@ -1523,6 +1703,28 @@
       "deleteConfirm": "Tím se role „{{name}}“ trvale smaže a odebere se všem členům.",
       "inheritsAllow": "Dědí: Povoleno",
       "inheritsDeny": "Dědí: Zamítnuto"
+    },
+    "search": "Nastavení vyhledávání",
+    "trustedCertificates": {
+      "title": "Důvěryhodné certifikáty",
+      "description": "Certifikáty a hostitelské klíče, které jste při připojení přijali. Pokud jeden z nich odstraníte, budete při příštím připojení znovu vyzváni k potvrzení.",
+      "personal": "Osobní",
+      "system": "Systém",
+      "kinds": {
+        "ssh": "Hostitelský klíč SSH",
+        "tls": "Certifikát TLS"
+      },
+      "empty": "Zatím nic důvěryhodného",
+      "emptyDescription": "Certifikáty a hostitelské klíče se zde zobrazí, jakmile je pro dané připojení přijmete.",
+      "remove": "Odebrat",
+      "removeConfirm": "Přestat důvěřovat {{endpoint}}? Při příštím připojení se na to zeptá znovu.",
+      "removeSuccess": "Důvěryhodný certifikát byl odebrán",
+      "removeError": "Nepodařilo se odstranit důvěryhodný certifikát",
+      "ignore": {
+        "title": "Ignorovat varování týkající se certifikátů",
+        "description": "Připojujte se ke svým osobním serverům bez ověřování jejich certifikátu nebo hostitelského klíče. Připojení pak mohou být zachycena, aniž byste si toho všimli. Servery organizace jsou vždy ověřovány.",
+        "error": "Uložení nastavení se nezdařilo"
+      }
     }
   },
   "tunnel": {
@@ -1581,6 +1783,7 @@
       "createFolder": "Vytvořit složku",
       "deleteFolder": "Smazat složku",
       "renameFolder": "Přejmenovat složku",
+      "folderSettings": "Nastavení složky",
       "new": "Nový",
       "sshServer": "SSH server",
       "telnetServer": "Telnet server",
@@ -1601,7 +1804,7 @@
       "connect": "Připojit",
       "quickConnect": "Rychlé připojení",
       "openSFTP": "Otevřít SFTP",
-      "openBrowser": "Open Browser",
+      "openBrowser": "Otevřít prohlížeč",
       "forwardPort": "Přesměrovat port",
       "runScript": "Spustit skript",
       "openNotes": "Otevřené poznámky",
@@ -1638,17 +1841,20 @@
         "duplicate": "Duplikát",
         "openNotes": "Otevřené poznámky",
         "hibernateSession": "Hibernace",
-        "reconnect": "Reconnect",
+        "reconnect": "Znovu se připojit",
         "closeSession": "Odpojení",
-        "splitRight": "Split Right",
-        "splitDown": "Split Down",
-        "sendShortcut": "Send Shortcut…",
+        "splitRight": "Rozdělení vpravo",
+        "splitDown": "Rozdělit dolů",
+        "sendShortcut": "Odeslat odkaz…",
         "zoom": "Zoom ({{zoom}}%)",
-        "zoomReset": "Reset Zoom"
+        "zoomReset": "Obnovit přiblížení",
+        "displayScale": "Měřítko zobrazení ({{scale}}%)",
+        "displayScaleAuto": "Automatické ({{scale}}%)",
+        "displayScaleReset": "Použít výchozí nastavení"
       },
-      "enableSplitView": "Enable Split View",
-      "disableSplitView": "Disable Split View",
-      "sessionMenu": "Session Menu"
+      "enableSplitView": "Zapnout rozdělené zobrazení",
+      "disableSplitView": "Vypnout rozdělené zobrazení",
+      "sessionMenu": "Nabídka relace"
     },
     "wol": {
       "successDescription": "Magic packet odeslán na {{name}}",
@@ -1658,20 +1864,15 @@
       "fillRequiredFields": "Prosím vyplňte všechna povinná pole",
       "serverCreated": "Server úspěšně vytvořen",
       "serverUpdated": "Server úspěšně aktualizován",
+      "folderUpdated": "Složka byla úspěšně aktualizována",
       "createFailed": "Nepodařilo se vytvořit server",
       "updateFailed": "Nepodařilo se aktualizovat server",
-      "createIdentityFailed": "Nepodařilo se vytvořit identitu",
-      "updateIdentityFailed": "Nepodařilo se aktualizovat identitu"
+      "identitiesRemovedOnMove": "Některé identity byly odstraněny, protože v cílovém prostředí nejsou k dispozici."
     },
     "dialog": {
       "addServer": "Přidat server",
       "addProtocolServer": "Přidat {{protocol}} server",
       "editServer": "Upravit server",
-      "tabs": {
-        "details": "Podrobnosti",
-        "identities": "Identity",
-        "settings": "Nastavení"
-      },
       "actions": {
         "save": "Uložit",
         "create": "Vytvořit"
@@ -1717,7 +1918,6 @@
           "description": "Umožnit vzdálené probuzení tohoto serveru pomocí jeho MAC adresy"
         },
         "rdpSecurity": {
-          "title": "Bezpečnost",
           "description": "Metoda ověřování používaná pro připojení ke vzdálenému počítači se systémem Windows. V prostředích, kde je protokol NTLM deaktivován (např. ve skupině „Chránění uživatelé“), použijte protokol NLA.",
           "method": "Způsob zabezpečení"
         },
@@ -1727,9 +1927,12 @@
         },
         "display": {
           "title": "Nastavení displeje",
-          "description": "Nakonfigurujte barevnou hloubku a chování změny velikosti pro vzdálený displej",
+          "description": "Nastavte barevnou hloubku, chování při změně velikosti a škálování vzdáleného displeje",
           "colorDepth": "Barevná hloubka",
-          "resizeMethod": "Metoda změny velikosti"
+          "resizeMethod": "Metoda změny velikosti",
+          "displayScale": "Měřítko zobrazení",
+          "displayScaleAuto": "Automaticky (podle tohoto zařízení)",
+          "displayScaleAccount": "Výchozí nastavení účtu"
         },
         "performance": {
           "title": "Nastavení výkonu",
@@ -1757,14 +1960,9 @@
           "backspace": "Backspace",
           "delete": "Odstranit",
           "functionKeys": "Funkční klávesy"
-        },
-        "noSettings": "Pro tento typ záznamu nejsou k dispozici žádná další nastavení."
+        }
       },
       "identities": {
-        "organizationIdentities": "Identity organizace",
-        "personalIdentities": "Osobní identity",
-        "orgDescription": "Sdíleno se všemi členy organizace. Všichni mohou používat tyto identity.",
-        "personalDescription": "Viditelné pouze pro vás. Ostatní členové organizace je neuvidí.",
         "identityName": "Název identity",
         "username": "Uživatelské jméno",
         "authentication": "Ověření",
@@ -1775,16 +1973,29 @@
         "both": "Klíč+Heslo",
         "sshPrivateKey": "SSH privátní klíč",
         "passphrase": "Heslo klíče (volitelné)",
-        "new": "Nový",
+        "add": "Přidat identitu",
+        "linkGlobal": "Propojit globální identitu · {{count}}",
+        "empty": "Zatím nejsou známy žádné totožnosti.",
         "removeIdentity": "Odebrat identitu",
         "unlinkIdentity": "Odpojit identitu",
         "moveToOrg": "Přesunout do organizace",
-        "selectOrganization": "Vybrat organizaci",
-        "availableToLink": "K dispozici pro propojení",
         "noUsername": "Bez uživatelského jména",
-        "noOrgIdentities": "Žádné identity organizace. Vytvořte jednu pro sdílení se všemi členy.",
-        "noPersonalIdentities": "Žádné osobní identity. Vytvořte jednu pro své soukromé použití."
-      }
+        "globalToggle": "Použití na jiných serverech",
+        "globalInUse": "Tuto identitu používají servery {{count}} . Nejprve ji odpojte od ostatních.",
+        "shareToggle": "Sdílet s organizací",
+        "inheritedHint": "Převezme se z nastavení složky.",
+        "onlyMe": "Jen já",
+        "onlyMeHint": "Tuto identitu můžete vidět a používat pouze vy."
+      },
+      "sections": {
+        "general": "Obecné informace",
+        "connection": "Připojení",
+        "identities": "Identity",
+        "options": "Možnosti",
+        "credentials": "Kvalifikace"
+      },
+      "useInherited": "Použít zděděnou hodnotu",
+      "reset": "Obnovit"
     },
     "proxmoxDialog": {
       "title": {
@@ -1792,9 +2003,6 @@
         "edit": "Upravit Proxmox VE"
       },
       "fields": {
-        "name": "Název",
-        "serverIp": "IP serveru",
-        "port": "Přístav",
         "username": "Uživatelské jméno",
         "password": "Heslo",
         "nodeName": "Název uzlu (volitelné)",
@@ -1803,8 +2011,6 @@
       "monitoringDescription": "Sbírat metriky CPU, paměti a úložiště v rámci celého clusteru",
       "placeholders": {
         "name": "Název",
-        "serverIp": "IP serveru",
-        "port": "Přístav",
         "username": "Uživatelské jméno (např. root@pam)",
         "password": "Heslo",
         "specificNode": "Konkrétní název uzlu"
@@ -1818,7 +2024,8 @@
         "updated": "Integrace Proxmox úspěšně aktualizována",
         "createFailed": "Nepodařilo se vytvořit integraci Proxmox",
         "updateFailed": "Nepodařilo se aktualizovat integraci Proxmox"
-      }
+      },
+      "credentialsDescription": "Uživatel Proxmoxu s přístupem k API, např. root@pam nebo vyhrazený uživatel API."
     },
     "connectionReasonDialog": {
       "title": "Požadován důvod připojení",
@@ -1972,10 +2179,17 @@
         "uploadFolder": "Složka pro nahrávání",
         "search": "Vyhledat soubory",
         "closeSearch": "Zavřít vyhledávání",
-        "refresh": "Obnovit"
+        "refresh": "Obnovit",
+        "back": "Zpět",
+        "forward": "Vpřed",
+        "up": "Nadřazený adresář",
+        "home": "Domovský adresář",
+        "switchToCompact": "Přepnout na kompaktní zobrazení"
       },
       "item": {
-        "link": "odkaz"
+        "link": "odkaz",
+        "expand": "Rozbalit složku",
+        "collapse": "Sbalit složku"
       },
       "search": {
         "placeholder": "Filtrovat soubory v této složce...",
@@ -1991,23 +2205,56 @@
         "dropFilesHint": "Pro nahrání souborů sem napište"
       },
       "toast": {
-        "downloaded": "Staženo {{name}}",
-        "downloadingItems": "Stahování položek {{count}} ...",
-        "uploaded": "Nahráno {{name}}",
-        "uploadedItems": "Nahrané soubory {{count}}",
         "uploadFailed": "Nahrávání se nezdařilo: {{message}}",
-        "uploadFailedItems": "{{count}} Nahrání souborů se nezdařilo: {{message}}",
         "connectionLost": "Ztráta připojení SFTP. Znovu se připojte.",
         "error": "Došlo k chybě"
+      },
+      "transfers": {
+        "title": "Přestupy",
+        "activeCount": "{{count}} aktivní",
+        "allDone": "Hotovo",
+        "clearFinished": "Dokončeno",
+        "queued": "Ve frontě",
+        "cancelling": "Zrušení...",
+        "completed": "Dokončeno",
+        "savedTo": "Uloženo do {{path}}",
+        "cancelled": "Zrušeno",
+        "failed": "Selhalo: {{message}}",
+        "dismiss": "Zavřít"
+      },
+      "status": {
+        "folders_one": "{{count}} složka",
+        "folders_other": "{{count}} složky",
+        "files_one": "{{count}} soubor",
+        "files_other": "{{count}} soubory",
+        "hidden_one": "{{count}} skryté",
+        "hidden_other": "{{count}} skryté",
+        "selected": "{{count}} vybrané",
+        "showHidden": "Zobrazit skryté soubory",
+        "hideHidden": "Skrýt skryté soubory"
+      },
+      "conflict": {
+        "title_one": "Položka již existuje",
+        "title_other": "{{count}} položky již existují",
+        "upload_one": "Soubor s tímto názvem již v cílovém umístění existuje. Co chcete udělat?",
+        "upload_other": "Tyto soubory již v cílovém umístění existují. Co s nimi chcete udělat?",
+        "move_one": "Položka s tímto názvem již v cílovém umístění existuje. Přesunutím dojde k její nahrazení.",
+        "move_other": "Tyto položky již v cílovém umístění existují. Přesunutím dojde k jejich nahrazení.",
+        "copy_one": "Položka s tímto názvem již v cílovém umístění existuje. Kopírováním dojde k její nahrazení.",
+        "copy_other": "Tyto položky již v cílovém umístění existují. Jejich zkopírováním dojde k jejich nahrazení.",
+        "more": "+ {{count}} další",
+        "skip": "Přeskočit",
+        "rename": "Nechte si obojí",
+        "overwrite": "Přepsat"
       }
     },
     "browser": {
-      "back": "Back",
-      "forward": "Forward",
-      "reload": "Reload",
-      "stop": "Stop",
-      "address": "Address",
-      "addressPlaceholder": "Enter an address"
+      "back": "Zpět",
+      "forward": "Vpřed",
+      "reload": "Obnovit",
+      "stop": "Zastavit",
+      "address": "Adresa",
+      "addressPlaceholder": "Zadejte adresu"
     },
     "remoteDesktop": {
       "dropOverlay": "Přetáhněte soubory, které chcete nahrát na vzdálený server",
@@ -2019,13 +2266,34 @@
         "downloaded": "Stáhl jsem si soubor „{{name}}“ ze vzdáleného serveru"
       }
     },
+    "automatedSession": {
+      "viewOnlyAi": "V této relaci je aktivní asistent s umělou inteligencí. Můžete sledovat, ale nemůžete psát.",
+      "viewOnlyMcp": "V této relaci pracuje externí uživatel (MCP). Můžete se dívat, ale nemůžete psát."
+    },
     "aiAssistant": {
       "title": "AI asistent",
       "open": "AI asistent",
-      "empty": "Požádejte asistenta, aby tento server zkontroloval nebo vyměnil. Může přes toto připojení spouštět příkazy a přímo číst či upravovat soubory.",
+      "empty": "Požádejte asistenta, aby zkontroloval nebo změnil vaše servery. Otevírá vlastní relace k serverům, které přidáte níže, spouští příkazy, upravuje soubory a dokáže dokonce ovládat vzdálené plochy.",
+      "addServer": "Přidat server",
+      "removeServer": "Odstranit server",
+      "searchServers": "Vyhledat servery...",
+      "noMatches": "Nebyly nalezeny žádné odpovídající servery",
+      "current": "aktuální",
+      "openSessions": "{{count}} veřejné zasedání (zasedání)",
+      "approval": {
+        "ask": "Nejprve se zeptejte, pak teprve jednejte",
+        "askDescription": "Příkazy, zadání a změny souborů čekají na vaše schválení",
+        "allow": "Povolit vše",
+        "allowDescription": "Spouští volání nástrojů bez dotazování",
+        "readonly": "Pouze pro čtení",
+        "readonlyDescription": "Provádí pouze kontrolu serverů; jakékoli změny na nich jsou zamítnuty"
+      },
       "placeholder": "Napište asistentovi...",
       "connecting": "Připojuji se...",
       "send": "Odeslat",
+      "copyMessage": "Kopírovat zprávu",
+      "copied": "Zkopírováno",
+      "editMessage": "Upravit zprávu",
       "stop": "Zastavit",
       "connectionError": "Došlo ke ztrátě spojení s asistentem.",
       "reconnecting": "Připojení bylo přerušeno. Probíhá opětovné připojení...",
@@ -2038,19 +2306,65 @@
       "continuePrompt": "Asistent se po dlouhém úseku schodů na chvíli zastavil. Mám pokračovat?",
       "continue": "Pokračovat",
       "compacted": "Předchozí zprávy byly zkráceny, aby se uvolnilo místo pro kontext.",
+      "retryPrompt": "Poslední krok se nezdařil. Chcete pokračovat tam, kde se proces zastavil?",
+      "retry": "Zkusit znovu",
+      "questionOther": "Nebo zadejte jinou odpověď...",
+      "questionAnswer": "Zadejte svou odpověď...",
+      "questionSend": "Odpověď",
+      "questionPickOne": "Vyberte jednu možnost nebo zadejte odpověď",
+      "questionPickMany": "Zaškrtněte všechny příslušné položky",
+      "exitCode": "ukončit {{code}}",
+      "truncated": "[zkráceno]",
+      "toolSummary": {
+        "recursive": "{{path}} (rekurzivní)",
+        "doubleClick": "{{target}} ×2"
+      },
       "tools": {
-        "runCommand": "Spustit příkaz",
-        "readFile": "Načíst soubor",
-        "writeFile": "Zapsat soubor",
-        "editFile": "Upravit soubor",
-        "listDirectory": "Seznam adresářů",
-        "statPath": "Zkontrolovat cestu",
-        "makeDirectory": "Vytvořit adresář",
-        "deleteFile": "Odstranit soubor",
-        "removeDirectory": "Odstranit adresář",
-        "movePath": "Přesunout",
-        "changePermissions": "Změnit oprávnění",
-        "findDirectories": "Najít adresáře"
+        "list_entries": "Seznam serverů",
+        "get_entry": "Zkontrolovat server",
+        "list_folders": "Seznam složek",
+        "list_organizations": "Seznam organizací",
+        "list_identities": "Seznam identit",
+        "list_snippets": "Ukázky kódu",
+        "list_scripts": "Seznam skriptů",
+        "list_tags": "Seznam štítků",
+        "list_users": "Zobrazit seznam uživatelů",
+        "get_permissions": "Zkontrolujte oprávnění",
+        "get_monitoring": "Sledování čtení",
+        "list_sessions": "Seznam relací",
+        "open_session": "Veřejné zasedání",
+        "get_session": "Zkontrolovat relaci",
+        "close_session": "Ukončit relaci",
+        "close_all_sessions": "Zavřít všechny relace",
+        "terminal_run": "Spustit příkaz",
+        "terminal_send": "Odeslat zadání",
+        "terminal_read": "Číst terminál",
+        "terminal_resize": "Změnit velikost terminálu",
+        "run_command": "Spustit příkaz",
+        "exec_command": "Spustit příkaz",
+        "file_list": "Seznam adresářů",
+        "file_stat": "Zkontrolovat cestu",
+        "file_read": "Načíst soubor",
+        "file_write": "Zapsat soubor",
+        "file_edit": "Upravit soubor",
+        "file_mkdir": "Vytvořit adresář",
+        "file_delete": "Odstranit",
+        "file_move": "Přesunout",
+        "file_chmod": "Změnit oprávnění",
+        "file_search_dirs": "Najít adresáře",
+        "desktop_screenshot": "Snímek obrazovky",
+        "desktop_info": "Zkontrolovat plochu",
+        "desktop_click": "Klikněte",
+        "desktop_mouse_move": "Pohybujte myší",
+        "desktop_drag": "Přetáhnout",
+        "desktop_scroll": "Posunout",
+        "desktop_type": "Zadejte text",
+        "desktop_key": "Stiskněte klávesy",
+        "desktop_resize": "Změnit velikost plochy",
+        "desktop_clipboard_set": "Nastavit schránku",
+        "desktop_clipboard_get": "Načíst obsah schránky",
+        "batch": "Spustit několik akcí",
+        "ask_user": "Otázka"
       }
     },
     "commandSuggestion": {
@@ -2073,7 +2387,7 @@
       "holdModifier": "Podržte {{key}}",
       "zoomIn": "Přiblížit",
       "zoomOut": "Zmenšit zobrazení",
-      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
+      "zoomReset": "Obnovit přiblížení (posunem tažením středním tlačítkem myši)"
     },
     "monitors": {
       "title": "Monitor {{number}}",
@@ -2106,6 +2420,36 @@
     "liveSessions": {
       "activeOn": "Živé přenosy: {{users}}",
       "unknownUser": "Neznámý uživatel"
+    },
+    "folderSettings": {
+      "name": "Název složky",
+      "nameRequired": "Název složky je povinný",
+      "loadFailed": "Nelze načíst nastavení složky",
+      "protocol": "Výchozí nastavení pro",
+      "protocolHint": "Servery v této složce používají hodnoty, které nastavíte níže, pokud si nenastaví vlastní. Každý protokol má svá vlastní výchozí nastavení.",
+      "unset": "Odebrat ze složky"
+    },
+    "trust": {
+      "certificate": "certifikát",
+      "hostKey": "klíč hostitele",
+      "newTitle": "Je tento odkaz důvěryhodný? {{subject}}?",
+      "newMessage": "Toto je první připojení k adrese {{endpoint}}. Než budete pokračovat, zkontrolujte otisk.",
+      "changedTitle": "Stránka {{subject}} se změnila",
+      "changedMessage": "{{endpoint}} zobrazuje jinou stránku {{subject}} než dříve. Pokračujte pouze v případě, že s tím počítáte.",
+      "fingerprint": "Otisk prstu",
+      "previous": "Dosud důvěryhodný",
+      "presented": "Nyní představeno",
+      "subject": "Vydáno pro",
+      "issuer": "Vydáno",
+      "selfSigned": "Vlastnoručně podepsané",
+      "validUntil": "Platné do",
+      "blocked": "Tuto změnu mohou schválit pouze správci certifikátů na adrese {{organization}}.",
+      "accept": "Důvěřujte a navazujte kontakty",
+      "cancel": "Zrušit",
+      "acceptChanged": "Věřte tomu novému",
+      "disconnect": "Odpojit",
+      "failed": "Vaše rozhodnutí se nepodařilo uložit",
+      "acceptOnly": "Certifikát důvěryhodnosti"
     }
   },
   "support": {
@@ -2120,6 +2464,10 @@
       "title": "Připojte se k Discordu",
       "description": "Chatujte s komunitou a získejte pomoc."
     },
+    "docs": {
+      "title": "Zobrazit dokumentaci",
+      "description": "Přečtěte si dokumentaci a naučte se, jak používat Nexterm."
+    },
     "github": {
       "title": "Zobrazit na GitHubu",
       "description": "Procházejte zdrojový kód a přispívejte."
@@ -2133,7 +2481,11 @@
     "connectDevice": "Připojení zařízení",
     "recentConnections": "Nedávná připojení",
     "getStarted": "Začněte",
-    "getStartedHint": "Přidáním serveru z postranního panelu můžete začít spravovat svou infrastrukturu."
+    "getStartedHint": "Přidáním serveru z postranního panelu můžete začít spravovat svou infrastrukturu.",
+    "hibernated": "V hibernaci",
+    "demo": {
+      "explore": "Začněte objevovat"
+    }
   },
   "downloadApps": {
     "title": "Aplikace ke stažení",
@@ -2144,6 +2496,10 @@
       "linux": "Linux",
       "android": "Android",
       "ios": "iOS"
-    }
+    },
+    "recommended": "Doporučeno",
+    "versionUnavailable": "Nedařilo se zjistit verzi serveru, proto nejsou k dispozici přímé odkazy ke stažení. Stále si však můžete prohlížet jednotlivé verze na GitHubu.",
+    "sourceHint": "Soubory ke stažení jsou k dispozici v sekci „Releases“ na GitHubu.",
+    "allReleases": "Všechny novinky"
   }
 }

@@ -1,6 +1,7 @@
 const Account = require("../models/Account");
 const Session = require("../models/Session");
-const speakeasy = require("speakeasy");
+const { hashSessionToken } = require("../models/Session");
+const { verifyTotpCode } = require("../utils/totp");
 const { compare } = require("bcrypt");
 const OIDCProvider = require("../models/OIDCProvider");
 const { authenticateUser: ldapAuth, getEnabledProvider: getLdapProvider } = require("./ldap");
@@ -20,7 +21,7 @@ module.exports.login = async (configuration, user) => {
     }
 
     if (ldapProvider) {
-        const ldapResult = await ldapAuth(configuration.username, configuration.password, user);
+        const ldapResult = await ldapAuth(configuration.username, configuration.password, user, configuration.code);
         if (ldapResult) return ldapResult;
         return { code: 201, message: "Username or password incorrect" };
     }
@@ -40,16 +41,8 @@ module.exports.login = async (configuration, user) => {
         return { code: 202, message: "TOTP is required for this account" };
 
     // Check if TOTP is correct
-    if (account.totpEnabled) {
-        const tokenCorrect = speakeasy.totp.verify({
-            secret: account.totpSecret || "",
-            encoding: "base32",
-            token: configuration.code,
-        });
-
-        if (!tokenCorrect)
-            return { code: 203, message: "Your provided code is invalid or has expired." };
-    }
+    if (account.totpEnabled && !verifyTotpCode(account, configuration.code))
+        return { code: 203, message: "Your provided code is invalid or has expired." };
 
     // Create Session
     const session = await Session.create({
@@ -65,8 +58,8 @@ module.exports.login = async (configuration, user) => {
 
 module.exports.logout = async token => logoutWithDependencies(token, {
     logLogout: accountId => logger.system(`User logged out`, { accountId }),
-    findSession: value => Session.findOne({ where: { token: value } }),
-    destroySession: value => Session.destroy({ where: { token: value } }),
+    findSession: value => Session.findOne({ where: { tokenHash: hashSessionToken(value) } }),
+    destroySession: value => Session.destroy({ where: { tokenHash: hashSessionToken(value) } }),
     removeSessionTerminals: sessionId => sessionManager.removeAllByAuthSessionId(sessionId),
     disconnectSessionViewers: sessionId => sessionManager.disconnectAuthSessionViewers(sessionId),
     forgetSessionActivity: sessionId => forgetSession(sessionId),

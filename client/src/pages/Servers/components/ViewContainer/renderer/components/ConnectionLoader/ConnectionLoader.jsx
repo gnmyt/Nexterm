@@ -1,9 +1,11 @@
-import { memo, useRef, useEffect, useCallback } from "react";
+import { memo, useRef, useEffect, useCallback, useState } from "react";
 import Icon from "@mdi/react";
 import { mdiLaptop, mdiServer } from "@mdi/js";
+import { beginProgress, endProgress } from "./progress.js";
 import "./styles.sass";
 
-export const ConnectionLoader = memo(({ onReady, label = null, indeterminate = false }) => {
+export const ConnectionLoader = memo(({ onReady, label = null, indeterminate = false, sessionId }) => {
+    const [startOffset] = useState(() => beginProgress(sessionId));
     const containerRef = useRef(null);
     const progressBarRef = useRef(null);
     const isHiddenRef = useRef(false);
@@ -11,6 +13,7 @@ export const ConnectionLoader = memo(({ onReady, label = null, indeterminate = f
     const hide = useCallback(() => {
         if (isHiddenRef.current) return;
         isHiddenRef.current = true;
+        endProgress(sessionId);
         
         if (progressBarRef.current) {
             progressBarRef.current.classList.add("connection-loader__progress-bar--complete");
@@ -28,7 +31,7 @@ export const ConnectionLoader = memo(({ onReady, label = null, indeterminate = f
                 }, 200);
             }, 150);
         }
-    }, []);
+    }, [sessionId]);
 
     const show = useCallback(() => {
         if (!isHiddenRef.current) return;
@@ -55,7 +58,8 @@ export const ConnectionLoader = memo(({ onReady, label = null, indeterminate = f
     return (
         <div ref={containerRef} className="connection-loader">
             <div ref={progressBarRef}
-                 className={`connection-loader__progress-bar${indeterminate ? " connection-loader__progress-bar--indeterminate" : ""}`} />
+                 className={`connection-loader__progress-bar${indeterminate ? " connection-loader__progress-bar--indeterminate" : ""}`}
+                 style={!indeterminate && startOffset ? { animationDelay: `-${startOffset}ms` } : undefined} />
             <div className="connection-loader__content">
                 <div className="connection-loader__device">
                     <Icon path={mdiLaptop} className="connection-loader__device-icon" />

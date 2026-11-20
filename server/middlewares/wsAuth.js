@@ -1,4 +1,5 @@
 const Session = require("../models/Session");
+const { findActiveSession } = require("../utils/loginSession");
 const Account = require("../models/Account");
 const Entry = require("../models/Entry");
 const Integration = require("../models/Integration");
@@ -6,7 +7,6 @@ const SessionManager = require("../lib/SessionManager");
 const { validateEntryAccess } = require("../controllers/entry");
 const { getOrganizationAuditSettingsInternal } = require("../controllers/audit");
 const { resolveIdentity } = require("../utils/identityResolver");
-const { findActiveSession } = require("../utils/sessionActivity");
 const { safeCloseWs } = require("../utils/wsClose");
 const { applyEffectiveEntryConfig } = require("../utils/folderInheritance");
 const { isGuestExpired } = require("../utils/demoMode");

@@ -10,6 +10,7 @@ import { useScrollSpy } from "@/common/hooks/useScrollSpy.js";
 import { SettingsSectionsContext } from "./SettingsHeading.jsx";
 import "./styles.sass";
 import { isDemoGuest } from "@/common/utils/demo.js";
+import { useServerVersion } from "@/common/hooks/useServerVersion.js";
 
 const byDocumentOrder = (a, b) => (a.element.compareDocumentPosition(b.element) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1);
 
@@ -41,6 +42,7 @@ export const SettingsDialog = ({ open, onClose, initialTab = "account" }) => {
     const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
     const [query, setQuery] = useState("");
     const [body, setBody] = useState(null);
+    const version = useServerVersion(open);
 
     const userPages = useMemo(() => getSettingsUserPages(t), [t]);
     const adminPages = useMemo(
@@ -160,6 +162,7 @@ export const SettingsDialog = ({ open, onClose, initialTab = "account" }) => {
                                         <Icon path={mdiLogout} className="nav-icon" />
                                         <span className="nav-label">{isDemoGuest(user) ? t("common.demo.end") : t("common.sidebar.logout")}</span>
                                     </button>
+                                    {version && <span className="nav-version">v{version}</span>}
                                 </div>
                             )}
                         </nav>

@@ -174,7 +174,7 @@ async fn handle_connection(tcp_stream: tokio::net::TcpStream, config: &TunnelCon
         loop {
             match tcp_read.read(&mut buf).await {
                 Ok(0) | Err(_) => break,
-                Ok(n) => if ws_write.send(Message::Binary(buf[..n].to_vec())).await.is_err() { break; }
+                Ok(n) => if ws_write.send(Message::Binary(buf[..n].to_vec().into())).await.is_err() { break; }
             }
         }
         let _ = ws_write.close().await;

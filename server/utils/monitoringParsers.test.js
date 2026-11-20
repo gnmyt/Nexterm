@@ -60,6 +60,12 @@ test("parses meminfo with MemAvailable", () => {
     const result = parseMeminfo(MEMINFO_FULL);
     assert.equal(result.total, 16524931072);
     assert.equal(result.usage, 10);
+    assert.deepEqual(result.breakdown, {
+        total: 16524931072,
+        used: 1656258560,
+        cache: 1163653120,
+        free: 13705019392,
+    });
 });
 
 test("falls back to MemFree+Buffers+Cached+SReclaimable without MemAvailable", () => {
@@ -69,9 +75,9 @@ test("falls back to MemFree+Buffers+Cached+SReclaimable without MemAvailable", (
 });
 
 test("returns nulls for empty or broken meminfo", () => {
-    assert.deepEqual(parseMeminfo(""), { usage: null, total: null });
-    assert.deepEqual(parseMeminfo("MemFree: 123 kB\n"), { usage: null, total: null });
-    assert.deepEqual(parseMeminfo(null), { usage: null, total: null });
+    assert.deepEqual(parseMeminfo(""), { usage: null, total: null, breakdown: null });
+    assert.deepEqual(parseMeminfo("MemFree: 123 kB\n"), { usage: null, total: null, breakdown: null });
+    assert.deepEqual(parseMeminfo(null), { usage: null, total: null, breakdown: null });
 });
 
 test("parses english free output", () => {

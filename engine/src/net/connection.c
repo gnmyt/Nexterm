@@ -6,6 +6,7 @@
 #include "websocket.h"
 #include "log.h"
 #include "session.h"
+#include "trust.h"
 
 extern nexterm_session_manager_t g_session_manager;
 
@@ -15,6 +16,7 @@ extern nexterm_session_manager_t g_session_manager;
 #include <guacamole/socket.h>
 #include <guacamole/user.h>
 
+#include <ctype.h>
 #include <errno.h>
 #include <poll.h>
 #include <pthread.h>
@@ -40,10 +42,54 @@ typedef struct {
     char session_id[MAX_SESSION_ID_LEN];
 } guac_user_thread_args_t;
 
+#define GUAC_UNTRUSTED_CERT_MARKER "untrusted-certificate\t"
+
+static nexterm_control_plane_t* g_guac_cp = NULL;
+
+static void report_untrusted_certificate(guac_client* client, char* fields) {
+    char* parts[6] = { "", "", "", "", "", "" };
+    for (int i = 0; i < 6 && fields; i++) {
+        parts[i] = fields;
+        fields = strchr(fields, '\t');
+        if (fields) *fields++ = '\0';
+    }
+
+    char session_id[MAX_SESSION_ID_LEN] = "";
+    nexterm_sm_lock(&g_session_manager);
+    for (int i = 0; i < MAX_SESSIONS; i++) {
+        if (g_session_manager.sessions[i].guac_client == client) {
+            snprintf(session_id, sizeof(session_id), "%s", g_session_manager.sessions[i].session_id);
+            break;
+        }
+    }
+    nexterm_sm_unlock(&g_session_manager);
+    if (session_id[0] == '\0' || !g_guac_cp) return;
+
+    nexterm_peer_t peer;
+    memset(&peer, 0, sizeof(peer));
+    snprintf(peer.kind, sizeof(peer.kind), "%s", NEXTERM_TRUST_KIND_TLS);
+    snprintf(peer.host, sizeof(peer.host), "%s", parts[0]);
+    peer.port = (uint16_t)atoi(parts[1]);
+    snprintf(peer.fingerprint, sizeof(peer.fingerprint), "%s", parts[2]);
+    for (char* c = peer.fingerprint; *c; c++) *c = (char)toupper((unsigned char)*c);
+    snprintf(peer.subject, sizeof(peer.subject), "%s", parts[3]);
+    snprintf(peer.issuer, sizeof(peer.issuer), "%s", parts[4]);
+    peer.raw = parts[5][0] != '\0' ? parts[5] : NULL;
+
+    LOG_WARN("Untrusted tls peer %s:%u (%s)", peer.host, peer.port, peer.fingerprint);
+    nexterm_cp_send_connection_error(g_guac_cp, session_id,
+                                     "Certificate not trusted", &peer);
+}
+
 static void nexterm_guac_log_handler(guac_client* client,
         guac_client_log_level level, const char* format, va_list args) {
-    char message[2048];
+    char message[8192];
     vsnprintf(message, sizeof(message), format, args);
+
+    if (strncmp(message, GUAC_UNTRUSTED_CERT_MARKER, strlen(GUAC_UNTRUSTED_CERT_MARKER)) == 0) {
+        report_untrusted_certificate(client, message + strlen(GUAC_UNTRUSTED_CERT_MARKER));
+        return;
+    }
 
     switch (level) {
         case GUAC_LOG_ERROR:   LOG_ERROR("[guac:%s] %s", client->connection_id, message); break;
@@ -191,6 +237,7 @@ static guac_client* guac_setup_client(nexterm_session_t* session,
         return NULL;
     }
 
+    g_guac_cp = cp;
     client->log_handler = nexterm_guac_log_handler;
 
     if (guac_client_load_plugin(client, protocol_name)) {

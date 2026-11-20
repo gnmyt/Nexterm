@@ -1,7 +1,7 @@
 const Account = require("../models/Account");
 const Session = require("../models/Session");
+const { findActiveSession } = require("../utils/loginSession");
 const { isApiKeyToken, validateApiKey } = require("../controllers/apiKey");
-const { findActiveSession } = require("../utils/sessionActivity");
 const { isGuestExpired, isDemoGuest, isBlockedForGuest } = require("../utils/demoMode");
 
 const rejectDemoGuest = (req, res, user) => {
@@ -54,7 +54,10 @@ module.exports.authenticate = async (req, res, next) => {
 };
 
 module.exports.authenticateQuery = async (req, res, next) => {
-    const session = await findActiveSession(req.query.token);
+    const token = req.query.token;
+    if (!token) return res.status(401).json({ message: "Token required" });
+
+    const session = await findActiveSession(token);
     if (!session) return res.status(401).json({ message: "Invalid token" });
 
     const user = await Account.findByPk(session.accountId);
@@ -67,7 +70,10 @@ module.exports.authenticateQuery = async (req, res, next) => {
 };
 
 module.exports.authenticateDownload = async (req, res, next) => {
-    const session = await findActiveSession(req.query.token);
+    const token = req.query.token;
+    if (!token) return res.status(401).json({ message: "Token required" });
+    
+    const session = await findActiveSession(token);
     if (!session) return res.status(401).json({ message: "Invalid token" });
 
     const user = await Account.findByPk(session.accountId);

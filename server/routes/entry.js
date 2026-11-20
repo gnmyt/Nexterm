@@ -1,184 +1,120 @@
 const { Router } = require("express");
 const { createEntry, deleteEntry, editEntry, getEntry, listEntries, duplicateEntry, importSSHConfig, repositionEntry, getRecentConnections, wakeEntry } = require("../controllers/entry");
-const { createServerValidation, updateServerValidation, repositionServerValidation } = require("../validations/server");
-const { validateSchema } = require("../utils/schema");
+const { createServerValidation, updateServerValidation, repositionServerValidation, importSSHConfigValidation } = require("../validations/server");
+const Joi = require("joi");
+const { route } = require("../utils/route");
+const { objectList, message, created } = require("../validations/common");
 
 const app = Router();
 
-/**
- * GET /entry/recent
- * @summary Get Recent Connections
- * @description Retrieves a list of recently connected entries for the authenticated user, useful for quick reconnection.
- * @tags Entry
- * @produces application/json
- * @security BearerAuth
- * @param {number} limit.query - Maximum number of recent connections to return (default: 5)
- * @return {array} 200 - List of recent connections with entry details
- */
-app.get("/recent", async (req, res) => {
-    const limit = parseInt(req.query.limit) || 5;
-    res.json(await getRecentConnections(req.user.id, limit));
+
+app.get("/recent", route({
+    summary: "List recent connections",
+    description: "Returns the entries the account connected to most recently.",
+    query: Joi.object({ limit: Joi.number().integer().default(5).description("Maximum number of entries to return") }),
+    returns: objectList,
+}), async (req, res) => {
+    res.json(await getRecentConnections(req.user.id, req.query.limit));
 });
 
-/**
- * GET /entry/list
- * @summary List User Entries
- * @description Retrieves a list of all entries accessible by the authenticated user, including SSH, RDP, VNC connections, and PVE resources.
- * @tags Entry
- * @produces application/json
- * @security BearerAuth
- * @return {array} 200 - List of user entries
- */
-app.get("/list", async (req, res) => {
+app.get("/list", route({
+    summary: "List entries",
+    description: "Returns every entry the account can access as a tree: organizations and folders contain their entries in `entries`, entries without a folder are at the top level.",
+    returns: objectList,
+}), async (req, res) => {
     res.json(await listEntries(req.user.id));
 });
 
-/**
- * GET /entry/{entryId}
- * @summary Get Entry Details
- * @description Retrieves detailed information about a specific entry by its ID, including connection details and configuration.
- * @tags Entry
- * @produces application/json
- * @security BearerAuth
- * @param {string} entryId.path.required - The unique identifier of the entry
- * @return {object} 200 - Entry details
- * @return {object} 404 - Entry not found
- */
-app.get("/:entryId", async (req, res) => {
+app.get("/:entryId", route({
+    summary: "Get entry",
+    description: "Returns a single entry. `config` is the effective configuration including values inherited from its folders, `localConfig` holds only what is set on the entry itself.",
+}), async (req, res) => {
     const entry = await getEntry(req.user.id, req.params.entryId);
     if (entry?.code) return res.json(entry);
 
     res.json(entry);
 });
 
-/**
- * PUT /entry
- * @summary Create New Entry
- * @description Creates a new entry configuration with specified protocol (SSH, RDP, or VNC), connection details, and settings.
- * @tags Entry
- * @produces application/json
- * @security BearerAuth
- * @param {CreateServer} request.body.required - Entry configuration including name, protocol, connection details, and folder assignment
- * @return {object} 200 - Entry successfully created with new entry ID
- * @return {object} 400 - Invalid entry configuration
- */
-app.put("/", async (req, res) => {
-    if (validateSchema(res, createServerValidation, req.body)) return;
-
+app.put("/", route({
+    summary: "Create entry",
+    description: "Creates a server entry. `identities` accepts ids of existing identities as well as new identities as objects, so a host and its credentials can be created in one request. New identities are limited to this entry unless `global` is set.",
+    body: createServerValidation,
+    returns: created,
+}), async (req, res) => {
     const entry = await createEntry(req.user.id, req.body);
     if (entry?.code) return res.json(entry);
 
     res.json({ message: "Entry got successfully created", id: entry.id });
 });
 
-/**
- * DELETE /entry/{entryId}
- * @summary Delete Entry
- * @description Permanently removes an entry configuration from the user's account. This action cannot be undone.
- * @tags Entry
- * @produces application/json
- * @security BearerAuth
- * @param {string} entryId.path.required - The unique identifier of the entry to delete
- * @return {object} 200 - Entry successfully deleted
- * @return {object} 404 - Entry not found
- */
-app.delete("/:entryId", async (req, res) => {
+app.delete("/:entryId", route({
+    summary: "Delete entry",
+    description: "Permanently removes an entry.",
+    returns: message,
+}), async (req, res) => {
     const entry = await deleteEntry(req.user.id, req.params.entryId);
     if (entry?.code) return res.json(entry);
 
     res.json({ message: "Entry got successfully deleted" });
 });
 
-/**
- * PATCH /entry/{entryId}
- * @summary Update Entry Configuration
- * @description Updates an existing entry's configuration including name, connection details, folder assignment, or other settings.
- * @tags Entry
- * @produces application/json
- * @security BearerAuth
- * @param {string} entryId.path.required - The unique identifier of the entry to update
- * @param {UpdateServer} request.body.required - Updated entry configuration fields
- * @return {object} 200 - Entry successfully updated
- * @return {object} 404 - Entry not found
- */
-app.patch("/:entryId", async (req, res) => {
-    if (validateSchema(res, updateServerValidation, req.body)) return;
-
+app.patch("/:entryId", route({
+    summary: "Update entry",
+    description: "Changes an entry. Only the fields you send are changed. `identities` replaces the list of identities of the entry.",
+    body: updateServerValidation,
+    returns: message,
+}), async (req, res) => {
     const entry = await editEntry(req.user.id, req.params.entryId, req.body);
     if (entry?.code) return res.json(entry);
 
     res.json({ message: "Entry got successfully edited" });
 });
 
-/**
- * POST /entry/{entryId}/duplicate
- * @summary Duplicate Entry
- * @description Creates a copy of an existing entry configuration with all settings preserved. The new entry will have a similar name but be treated as a separate entity.
- * @tags Entry
- * @produces application/json
- * @security BearerAuth
- * @param {string} entryId.path.required - The unique identifier of the entry to duplicate
- * @return {object} 200 - Entry successfully duplicated
- * @return {object} 404 - Entry not found
- */
-app.post("/:entryId/duplicate", async (req, res) => {
+app.post("/:entryId/duplicate", route({
+    summary: "Duplicate entry",
+    description: "Creates a copy of an entry with all of its settings.",
+    returns: message,
+}), async (req, res) => {
     const entry = await duplicateEntry(req.user.id, req.params.entryId);
     if (entry?.code) return res.json(entry);
 
     res.json({ message: "Entry got successfully duplicated" });
 });
 
-/**
- * POST /entry/import/ssh-config
- * @summary Import SSH Config
- * @description Imports pre-processed entry configurations with specific identities already assigned.
- * @tags Entry
- * @produces application/json
- * @security BearerAuth
- * @param {object} request.body.required - Entry configurations with identities
- * @return {object} 200 - Entries successfully imported with statistics
- */
-app.post("/import/ssh-config", async (req, res) => {
+app.post("/import/ssh-config", route({
+    summary: "Import SSH config",
+    description: "Imports hosts that the client parsed from an SSH config file. This is what the import dialog of the web interface uses.",
+    body: importSSHConfigValidation,
+    returns: message.keys({
+        imported: Joi.number().integer().required(),
+        skipped: Joi.number().integer().required(),
+        errors: Joi.number().integer().required(),
+        details: objectList.required(),
+    }),
+}), async (req, res) => {
     const result = await importSSHConfig(req.user.id, req.body);
     if (result?.code) return res.json(result);
 
     res.json(result);
 });
 
-/**
- * PATCH /entry/{entryId}/reposition
- * @summary Reposition Entry
- * @description Repositions an entry relative to another entry or at the end of a folder/root. Uses server-side position calculation to ensure consistent ordering.
- * @tags Entry
- * @produces application/json
- * @security BearerAuth
- * @param {string} entryId.path.required - The unique identifier of the entry to reposition
- * @param {RepositionServer} request.body.required - Reposition parameters
- * @return {object} 200 - Entry successfully repositioned
- * @return {object} 404 - Entry or target not found
- */
-app.patch("/:entryId/reposition", async (req, res) => {
-    if (validateSchema(res, repositionServerValidation, req.body)) return;
-
+app.patch("/:entryId/reposition", route({
+    summary: "Reposition entry",
+    description: "Moves an entry before or after another entry, or to the end of a folder when no `targetId` is given.",
+    body: repositionServerValidation,
+    returns: message.keys({ success: Joi.boolean(), removedIdentityCount: Joi.number().integer() }),
+}), async (req, res) => {
     const result = await repositionEntry(req.user.id, req.params.entryId, req.body);
     if (result?.code) return res.json(result);
 
     res.json({ message: "Entry successfully repositioned", ...result });
 });
 
-/**
- * POST /entry/{entryId}/wake
- * @summary Wake Entry Server
- * @description Sends a Wake-On-LAN magic packet to wake up a server. Requires the server to have a MAC address configured.
- * @tags Entry
- * @produces application/json
- * @security BearerAuth
- * @param {string} entryId.path.required - The unique identifier of the entry to wake
- * @return {object} 200 - Wake-On-LAN packet sent successfully
- * @return {object} 400 - No MAC address configured or entry type not supported
- * @return {object} 404 - Entry not found
- */
-app.post("/:entryId/wake", async (req, res) => {
+app.post("/:entryId/wake", route({
+    summary: "Wake entry",
+    description: "Sends a Wake-on-LAN packet to the server. The entry needs a MAC address.",
+    returns: message,
+}), async (req, res) => {
     const result = await wakeEntry(req.user.id, req.params.entryId);
     if (result?.code) return res.json(result);
 

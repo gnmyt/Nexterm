@@ -46,6 +46,8 @@ const resumeAudioContext = () => {
     }
 };
 
+const TRUST_REQUIRED_REASON = "Certificate verification required";
+
 const GuacamoleRenderer = ({
                                session,
                                disconnectFromServer,
@@ -124,6 +126,7 @@ const GuacamoleRenderer = ({
     const reportError = (rawMessage, statusCode = null) => {
         if (errorShownRef.current) return;
         errorShownRef.current = true;
+        if (rawMessage === TRUST_REQUIRED_REASON) return;
         const protocol = session.server?.config?.protocol || session.server?.protocol || session.server?.type;
         const failure = classifyConnectionError({ rawMessage, statusCode, protocol, t });
         markSessionErrored?.(session.id, failure.message, { autoReconnect: failure.autoReconnect });
@@ -950,7 +953,7 @@ const GuacamoleRenderer = ({
                 </div>
             </div>
             {isAutomated && <div className="automated-session-frame" aria-hidden="true" />}
-            <ConnectionLoader onReady={(loader) => {
+            <ConnectionLoader sessionId={session.id} onReady={(loader) => {
                 connectionLoaderRef.current = loader;
             }} />
             {connectionError && (

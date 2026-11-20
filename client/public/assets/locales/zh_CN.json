@@ -48,9 +48,7 @@
     },
     "confirmDialog": {
       "title": "确定吗？",
-      "defaultText": "此操作无法撤销。",
-      "unsavedChangesTitle": "未保存的更改",
-      "unsavedChangesText": "您有未保存的更改。您确定要关闭吗？"
+      "defaultText": "此操作无法撤销。"
     },
     "loginDialog": {
       "title": "登录",
@@ -63,7 +61,31 @@
       "backToLogin": "返回登录",
       "authenticating": "正在验证…",
       "noAccount": "还没有账号吗？",
-      "haveAccount": "已有账户吗？"
+      "haveAccount": "已有账户吗？",
+      "welcome": "欢迎回来",
+      "subtitle": "请登录以继续访问 Nexterm。",
+      "registrationSubtitle": "创建您的账户，开始使用吧。",
+      "firstTimeSubtitle": "为该实例创建第一个管理员账户。",
+      "twoFactorTitle": "双因素认证",
+      "twoFactorDescription": "请输入身份验证应用生成的验证码。",
+      "qrTitle": "使用应用程序登录",
+      "demo": {
+        "title": "试试 Nexterm",
+        "subtitle": "通过模拟服务器探索实时实例，无需注册账号。",
+        "start": "开始演示",
+        "orSignIn": "或登录您的账户",
+        "failed": "无法启动演示会话"
+      }
+    },
+    "demo": {
+      "timeLeft": "演示 · {{time}} 左侧",
+      "end": "结束演示",
+      "endConfirmText": "结束试用会话？您创建的所有内容都将被删除。",
+      "minutes_one": "{{count}} min简体中文（大陆）",
+      "minutes_other": "{{count}} min简体中文（大陆）",
+      "hours_one": "{{count}} 小时",
+      "hours_other": "{{count}} 小时",
+      "hoursMinutes": "{{hours}}h {{minutes}}m"
     },
     "deviceLink": {
       "title": "链接设备",
@@ -157,8 +179,6 @@
     "quickAction": {
       "placeholder": "搜索服务器、片段或导航...",
       "noResults": "未找到结果",
-      "navigation": "导航",
-      "settings": "设置",
       "navigate": "导航",
       "select": "选择",
       "close": "关闭",
@@ -186,11 +206,11 @@
       "connection": {
         "title": "连接失败",
         "close": "关闭选项卡",
-        "reconnect": "Reconnect",
-        "reconnectNow": "Reconnect",
-        "reconnecting": "Reconnecting…",
-        "reconnectingIn": "Reconnecting in {{seconds}}s",
-        "reconnectAttempt": "attempt {{count}} of {{max}}",
+        "reconnect": "重新连接",
+        "reconnectNow": "重新连接",
+        "reconnecting": "重新连接…",
+        "reconnectingIn": "{{seconds}}秒后重新连接",
+        "reconnectAttempt": "尝试 {{count}} 的 {{max}}",
         "hostUnreachable": "远程主机无法连接",
         "refused": "远程主机拒绝连接",
         "timeout": "连接超时",
@@ -200,8 +220,12 @@
         "closedUnexpectedly": "连接意外关闭",
         "error": "出现连接错误",
         "scriptClosedUnexpectedly": "脚本连接意外关闭",
-        "scriptError": "脚本连接发生错误"
-      }
+        "scriptError": "脚本连接发生错误",
+        "rdpSessionConflict": "由于建立了另一条连接，该会话被服务器断开。",
+        "rdpSessionTimeout": "RDP 会话已断开，因为其会话超时。",
+        "rdpSessionClosed": "该 RDP 会话已被远程服务器或管理员终止。"
+      },
+      "accountLinkRequired": "已存在该用户名的账户。请联系管理员，允许将其与您的登录账户关联。"
     },
     "messages": {
       "invitationAccepted": "邀请已接受",
@@ -211,6 +235,11 @@
       "organizationDeleteError": "删除组织失败",
       "leftOrganization": "您已离开该组织",
       "leaveOrganizationError": "离开组织失败"
+    },
+    "unsavedChanges": {
+      "title": "未保存的更改",
+      "text": "将它们删除，或者继续编辑，完成后保存。",
+      "keepEditing": "继续编辑"
     }
   },
   "audit": {
@@ -437,25 +466,35 @@
     "page": {
       "title": "服务器监控",
       "subtitle": "服务器统计数据和健康状态实时监控",
-      "searchPlaceholder": "搜索服务器..."
+      "searchPlaceholder": "搜索服务器...",
+      "filters": {
+        "all": "全部 ({{count}})",
+        "online": "在线（{{count}}）",
+        "issues": "问题 ({{count}})"
+      }
     },
     "errors": {
-      "loadFailed": "加载监控数据失败"
+      "loadFailed": "加载监控数据失败",
+      "loadFailedDescription": "无法检索到监控数据。请检查网络连接，然后重试。",
+      "retry": "重试"
     },
     "grid": {
-      "loading": "加载监控数据...",
       "noServers": {
         "title": "未找到服务器",
         "subtitle": "无可用的SSH服务器进行监控。\n添加服务器以开始监控。"
       },
+      "noResults": {
+        "title": "没有匹配的服务器",
+        "subtitle": "没有受监控的服务器符合您的搜索条件。"
+      },
       "metrics": {
-        "cpuUsage": "CPU 使用率",
-        "memoryUsage": "内存使用率",
         "loadAverage": "平均负载",
         "processes": "进程",
         "uptime": "运行时间",
         "nodes": "节点",
-        "vms": "虚拟机/容器"
+        "vms": "虚拟机/容器",
+        "cpu": "CPU",
+        "memory": "记忆"
       },
       "status": {
         "serverOffline": "服务器离线",
@@ -465,7 +504,16 @@
         "errorMessage": "无法建立服务器连接。",
         "unknownMessage": "无法确定服务器状态。",
         "lastSeen": "最后在线：{{time}}",
-        "noRecentActivity": "无近期活动"
+        "noRecentActivity": "无近期活动",
+        "waitingForData": "正在等待数据",
+        "pendingMessage": "监测数据将在下一个监测周期结束后显示。",
+        "labels": {
+          "online": "在线",
+          "offline": "离线",
+          "error": "错误",
+          "pending": "待定",
+          "unknown": "未知"
+        }
       },
       "uptime": {
         "unknown": "未知",
@@ -484,7 +532,6 @@
       },
       "tabs": {
         "overview": "概览",
-        "charts": "图表",
         "storage": "存储",
         "network": "网络",
         "processes": "进程",
@@ -502,14 +549,20 @@
           "unknown": "未知",
           "noData": "无可用系统信息"
         },
+        "memory": {
+          "title": "Memory",
+          "summary": "{{used}} of {{total}} ({{percent}}%)",
+          "used": "Used",
+          "cache": "Buffers / Cache",
+          "free": "Free"
+        },
         "performance": {
           "title": "性能指标",
-          "cpuUsage": "CPU 使用率",
-          "memoryUsage": "内存使用率",
           "loadAverage": "平均负载",
           "processes": "活动进程",
           "total": "总数: {{value}}",
-          "loadDetail": "5分钟: {{fiveMin}}, 15分钟: {{fifteenMin}}"
+          "loadDetail": "5分钟: {{fiveMin}}, 15分钟: {{fifteenMin}}",
+          "memory": "记忆"
         },
         "uptime": {
           "format": {
@@ -527,33 +580,67 @@
       },
       "storage": {
         "title": "磁盘使用情况",
-        "used": "已用: {{value}}",
-        "available": "可用： {{value}}",
-        "total": "总计: {{value}}",
-        "type": "类型： {{value}}",
         "noData": "无磁盘使用数据",
-        "noPartitions": "未挂载分区"
+        "noPartitions": "未挂载分区",
+        "usedOf": "{{used}} {{total}} 已使用",
+        "free": "{{value}} 免费",
+        "filesystems": "文件系统",
+        "disks": "磁盘",
+        "on": "{{volume}} 在……上 {{partition}}",
+        "swap": "交换",
+        "unmounted": "未安装",
+        "unallocated": "未分配",
+        "inodes": "inode",
+        "inodesDetail": "{{used}} 的 {{total}}",
+        "health": {
+          "passed": "健康的",
+          "warning": "警告",
+          "failed": "失败",
+          "denied": "SMART 需要 root 权限",
+          "temperature": "温度",
+          "powerOn": "通电时间",
+          "wear": "磨损",
+          "reallocated": "已重新分配的扇区",
+          "pending": "待定行业",
+          "mediaErrors": "媒体错误",
+          "years": "{{value}} 年",
+          "days": "{{value}} 天",
+          "hours": "{{value}} 小时",
+          "failedTitle": "预测硬盘故障",
+          "failedMessage": "{{disks}} SMART 自检未通过。请备份数据并更换硬盘。"
+        }
       },
       "network": {
-        "title": "网络接口",
-        "rxBytes": "接收字节数",
-        "txBytes": "发送字节数",
-        "mac": "MAC地址",
         "speed": "速度",
-        "noData": "无网络接口数据"
+        "noData": "无网络接口数据",
+        "download": "下载",
+        "upload": "上传",
+        "interface": "界面",
+        "address": "地址",
+        "gateway": "网关",
+        "interfaces": "接口",
+        "virtual": "虚拟接口",
+        "defaultRoute": "默认路由",
+        "up": "向上",
+        "down": "向下",
+        "errors": "{{count}} 错误",
+        "dropped": "{{count}} 掉落",
+        "copy": "复制 {{address}}",
+        "total": "{{value}} 总计"
       },
       "processes": {
-        "title": "运行中进程",
         "searchPlaceholder": "搜索进程...",
         "showing": "显示 {{count}} of {{total}} 进程",
         "noData": "没有可用的进程数据。进程数据将在下一个监测周期之后出现。",
-        "noResults": "没有符合搜索条件的进程。"
+        "noResults": "没有符合搜索条件的进程。",
+        "columns": {
+          "command": "命令",
+          "cpu": "CPU",
+          "mem": "记忆"
+        }
       },
       "pve": {
         "clusterInfo": "集群信息",
-        "resources": "资源占用",
-        "virtualMachines": "虚拟机",
-        "totalNodes": "节点数",
         "onlineNodes": "在线节点",
         "totalCPU": "总CPU",
         "totalMemory": "总内存",
@@ -593,10 +680,15 @@
       "monitoring": "监控",
       "backup": "存储",
       "engines": "发动机",
-      "permissions": "角色与权限"
+      "permissions": "角色与权限",
+      "trustedCertificates": "受信任的证书"
     },
     "account": {
       "title": "账户",
+      "demo": {
+        "title": "安全",
+        "description": "以访客身份浏览时，无法修改密码、双因素认证、通行密钥、API密钥和头像。"
+      },
       "avatar": {
         "label": "图片",
         "upload": "更改个人头像",
@@ -689,6 +781,7 @@
       "sessionSyncAcrossDevicesDesc": "会话在所有设备间同步，可随时随地访问",
       "sessionSyncSameBrowserDesc": "会话仅在当前浏览器的所有标签页间同步",
       "sessionSyncSameTabDesc": "会话仅保存在当前标签页，关闭后不保留",
+      "showAgentSessionsDesc": "将 AI 助手或 MCP 代理打开的会话显示为只读标签页",
       "twoFactorDialog": {
         "title": "启用 2FA",
         "description": "使用身份验证应用扫描二维码，或手动输入密钥 <span class=\"totp-code\">{{secret}}</span>。",
@@ -741,14 +834,25 @@
         "neverUsed": "从未使用过",
         "expires": "有效期至 {{date}}",
         "delete": "删除"
-      }
+      },
+      "remoteDesktop": "远程桌面",
+      "remoteDesktopDescription": "远程桌面会话的默认显示比例。连接时可以覆盖此设置，且会话期间选择的比例将在该设备上被记住。",
+      "remoteDesktopScale": "显示比例",
+      "remoteDesktopScaleAuto": "自动（匹配设备）",
+      "remoteDesktopSyncEnabled": "远程桌面设置现可在不同设备间同步",
+      "remoteDesktopSyncDisabled": "远程桌面设置现在仅保存在此设备上"
     },
     "passwordChange": {
       "title": "修改密码",
       "description": "强密码应包含特殊字符、数字及大小写字母。",
       "newPassword": "新密码",
       "confirmPassword": "确认新密码",
-      "changePasswordButton": "修改密码"
+      "changePasswordButton": "修改密码",
+      "currentPassword": "当前密码",
+      "descriptionOwn": "请输入您当前的密码并设置新密码。您在所有其他设备上的登录状态都将被注销。",
+      "descriptionOther": "请为该用户设置新密码。该用户将在所有设备上被注销。",
+      "successOwn": "您的密码已更改。其他设备已注销。",
+      "successOther": "密码已被更改，该用户在所有设备上均已被注销。"
     },
     "organizations": {
       "title": "您的组织",
@@ -787,8 +891,8 @@
         "folderManagementDescription": "记录文件夹的创建、修改和删除",
         "scriptExecutionLabel": "脚本执行",
         "scriptExecutionDescription": "记录脚本和自动化任务的执行情况",
-        "aiOperationsLabel": "AI 运维",
-        "aiOperationsDescription": "记录 AI 助手执行的命令和文件更改",
+        "agentOperationsLabel": "AI 代理运营",
+        "agentOperationsDescription": "记录由 AI 助手以及通过 MCP 服务器连接的代理执行的命令、输入、屏幕截图和文件更改",
         "actions": {
           "save": "保存设置"
         },
@@ -854,7 +958,10 @@
         "deleteUser": "删除用户",
         "loginAsUser": "以该用户身份登录",
         "deleteConfirm": "此操作将永久删除用户及其所有关联数据。",
-        "managePermissions": "管理权限"
+        "managePermissions": "管理权限",
+        "allowExternalLink": "允许 SSO/LDAP 关联",
+        "cancelExternalLink": "取消 SSO/LDAP 关联",
+        "unlinkExternal": "取消关联 SSO/LDAP 登录"
       }
     },
     "userDialog": {
@@ -917,11 +1024,11 @@
         },
         "copy": {
           "title": "复制",
-          "description": "Copy highlighted terminal text to keyboard. Requires Mouse or Keyboard mode in Terminal settings."
+          "description": "将终端中选中的文本复制到剪贴板。此功能需要在“终端”设置中启用“鼠标”或“键盘”模式。"
         },
         "paste": {
-          "title": "Paste",
-          "description": "Paste clipboard text into terminal. Requires Smart Ctrl+C, Mouse, or Keyboard mode in Terminal settings."
+          "title": "粘贴",
+          "description": "将剪贴板中的文本粘贴到终端中。需要在“终端”设置中启用“智能 Ctrl+C”、“鼠标”或“键盘”模式。"
         },
         "fullscreen": {
           "title": "全屏",
@@ -936,7 +1043,7 @@
         "pressKeys": "按下按键...",
         "save": "保存",
         "cancel": "取消",
-        "disabled": "Disabled",
+        "disabled": "已禁用",
         "reset": "重置"
       },
       "messages": {
@@ -972,19 +1079,19 @@
       "input": {
         "title": "输入",
         "description": "控制键盘快捷键在终端中的行为。",
-        "copyPasteBehavior": "Copy/Paste Behavior",
-        "copyPasteBehaviorNone": "None",
-        "copyPasteBehaviorNoneHint": "Context-menu Copy and Paste only.",
-        "copyPasteBehaviorSmart": "Smart Ctrl+C",
-        "copyPasteBehaviorSmartHint": "Intelligently copy when text is highlighted, otherwise send raw Ctrl+C to terminal.",
-        "copyPasteBehaviorKeyboard": "Keyboard",
-        "copyPasteBehaviorKeyboardHint": "Uses your defined keymaps to perform copy/paste",
-        "copyPasteBehaviorMouse": "Mouse",
-        "copyPasteBehaviorMouseHint": "Highlight to copy, right-click to paste. Use Ctrl+Right-click to access context menu.",
-        "copyPasteBehaviorMouseKeyboard": "Mouse/Keyboard",
-        "copyPasteBehaviorMouseKeyboardHint": "Enables both Mouse and Keyboard modes.",
+        "copyPasteBehavior": "复制/粘贴行为",
+        "copyPasteBehaviorNone": "无",
+        "copyPasteBehaviorNoneHint": "仅限右键菜单中的“复制”和“粘贴”操作。",
+        "copyPasteBehaviorSmart": "智能 Ctrl+C",
+        "copyPasteBehaviorSmartHint": "当文本被选中时智能复制，否则将原始的 Ctrl+C 发送至终端。",
+        "copyPasteBehaviorKeyboard": "键盘",
+        "copyPasteBehaviorKeyboardHint": "使用您定义的键位映射来执行复制/粘贴操作",
+        "copyPasteBehaviorMouse": "鼠标",
+        "copyPasteBehaviorMouseHint": "高亮选中即可复制，右键单击即可粘贴。按 Ctrl+右键单击可打开上下文菜单。",
+        "copyPasteBehaviorMouseKeyboard": "鼠标/键盘",
+        "copyPasteBehaviorMouseKeyboardHint": "同时启用鼠标和键盘模式。",
         "passwordPromptDetection": "密码输入检测",
-        "autoReconnect": "Auto-reconnect",
+        "autoReconnect": "自动重新连接",
         "enabled": "已启用",
         "disabled": "已禁用",
         "syncEnabled": "输入设置现已同步到您的账户",
@@ -1006,13 +1113,24 @@
       "syncLoginRequired": "请登录同步文件管理器设置",
       "syncEnabled": "文件管理器设置现在将同步到您的账户",
       "syncDisabled": "文件管理器设置不再同步",
+      "view": {
+        "title": "查看",
+        "description": "打开文件管理器时，文件和文件夹的显示方式。"
+      },
+      "behavior": {
+        "title": "行为",
+        "description": "打开、删除和移动文件时会发生什么。"
+      },
       "defaultView": {
         "title": "默认查看模式",
         "description": "打开文件管理器时选择默认布局。",
         "list": "列表查看",
         "listDescription": "在详细列表中显示文件，包括文件大小和日期列",
         "grid": "网格视图",
-        "gridDescription": "在带缩略图的网格布局中以图标形式显示文件"
+        "gridDescription": "在带缩略图的网格布局中以图标形式显示文件",
+        "compact": "紧凑视图",
+        "compactDescription": "仅显示密集列中的名称，以便在屏幕上显示更多文件",
+        "label": "默认视图"
       },
       "thumbnails": {
         "title": "图像缩略图",
@@ -1020,7 +1138,10 @@
         "enabled": "显示缩略图",
         "enabledDescription": "在网格视图中显示图像预览，以便快速进行视觉识别",
         "disabled": "隐藏缩略图",
-        "disabledDescription": "只显示文件图标，以节省带宽并提高性能"
+        "disabledDescription": "只显示文件图标，以节省带宽并提高性能",
+        "label": "图片缩略图",
+        "show": "显示",
+        "hide": "隐藏"
       },
       "hiddenFiles": {
         "title": "隐藏文件",
@@ -1028,7 +1149,10 @@
         "show": "显示隐藏文件",
         "showDescription": "显示所有文件，包括 .dotfiles 和系统目录",
         "hide": "隐藏隐藏文件",
-        "hideDescription": "只显示常规文件和文件夹"
+        "hideDescription": "只显示常规文件和文件夹",
+        "label": "隐藏文件",
+        "showShort": "显示",
+        "hideShort": "隐藏"
       },
       "deleteConfirmation": {
         "title": "删除确认",
@@ -1036,14 +1160,43 @@
         "enabled": "确认删除",
         "enabledDescription": "删除项目前显示确认对话框",
         "disabled": "立即删除",
-        "disabledDescription": "无需确认即可删除文件"
+        "disabledDescription": "无需确认即可删除文件",
+        "label": "删除前",
+        "ask": "请求确认",
+        "immediately": "立即删除"
       },
       "dragDropAction": {
         "title": "拖放操作",
         "description": "拖动文件到新位置时的默认操作。",
         "move": "移动",
         "copy": "复制",
-        "ask": "询问"
+        "ask": "询问",
+        "label": "拖放文件时"
+      },
+      "singleClickOpen": {
+        "title": "单击即可打开",
+        "description": "只需单击一下即可打开文件和文件夹，无需先选中它们。当此功能关闭时，双击会打开文件。",
+        "single": "单击",
+        "double": "双击",
+        "label": "使用以下内容打开项目："
+      },
+      "sharedDrive": {
+        "title": "共享驱动器",
+        "description": "远程桌面用户可以通过共享驱动器查看该计算机的哪些内容。更改仅适用于新建立的连接。",
+        "mode": {
+          "title": "分享",
+          "folder": "一个文件夹",
+          "disk": "整个磁盘",
+          "off": "没有",
+          "diskWarning": "远程桌面可以读取、修改和删除这台计算机上的所有文件。"
+        },
+        "folder": {
+          "title": "共享文件夹",
+          "default": "Nexterm 已共享到您的主文件夹中",
+          "choose": "选择文件夹",
+          "reset": "使用默认设置"
+        },
+        "folderError": "无法准备共享文件夹"
       }
     },
     "authentication": {
@@ -1077,6 +1230,8 @@
           "clientSecretPlaceholderEdit": "留空表示保留现有密钥",
           "redirectUri": "重定向 URI",
           "redirectUriPlaceholder": "https://your-domain.com/api/oidc/callback  ",
+          "endSessionEndpoint": "会话结束端点（可选）",
+          "endSessionEndpointPlaceholder": "https://auth.company.com/application/o/end-session/",
           "scope": "范围",
           "scopePlaceholder": "openid profile",
           "usernameAttribute": "用户名属性",
@@ -1096,6 +1251,21 @@
         },
         "messages": {
           "saveFailed": "保存提供程序失败"
+        },
+        "groupSync": {
+          "title": "群组同步",
+          "hint": "根据身份提供商提供的组声明，自动将用户添加到组织中，并控制其访问权限。",
+          "groupsAttribute": "团体主张",
+          "groupsAttributePlaceholder": "组",
+          "requiredGroup": "必选组",
+          "requiredGroupPlaceholder": "nexterm-users",
+          "requiredGroupHint": "如果设置了此选项，则只有“组声明”中包含此值的用户才允许登录。",
+          "mappings": "组织映射",
+          "mappingsHint": "将组声明值映射到一个组织。每次登录时，成员身份都会保持同步。",
+          "mappingValuePlaceholder": "组值",
+          "roleMember": "会员",
+          "roleOwner": "所有者",
+          "addMapping": "添加映射"
         }
       },
       "ldapDialog": {
@@ -1142,11 +1312,22 @@
           "testSuccess": "连接测试成功",
           "testFailed": "连接测试失败"
         }
+      },
+      "sessions": {
+        "title": "会话",
+        "description": "当已登录的设备（包括移动端和桌面端应用）需要重新登录时。",
+        "idle": "闲置一段时间后自动注销",
+        "lifetime": "最大会话时长",
+        "days_one": "{{count}} 天",
+        "days_other": "{{count}} 天",
+        "never": "绝不",
+        "loadError": "无法加载会话设置",
+        "saveError": "无法保存会话设置"
       }
     },
     "ai": {
       "title": "AI 助手配置",
-      "description": "配置该 AI 助手，使其能够直接通过您的服务器会话执行命令并管理文件。",
+      "description": "配置助手所使用的 AI 提供商，该提供商可通过其自身的会话来操作您的服务器。",
       "loading": "加载 AI 设置中...",
       "enable": {
         "title": "启用 AI 助手",
@@ -1159,10 +1340,6 @@
       "model": {
         "title": "AI 模型",
         "description": "选择助手应使用的 AI 模型"
-      },
-      "requireConfirmation": {
-        "title": "每次操作前请确认",
-        "description": "要求用户批准助手想要执行的每一条命令和文件更改"
       },
       "apiKey": {
         "title": "API 密钥",
@@ -1265,10 +1442,12 @@
     },
     "identities": {
       "title": "SSH 密钥与凭据",
-      "description": "管理服务器连接的 SSH 密钥和登录凭据",
+      "description": "您可以将这些身份关联到任何服务器。特定于某台服务器的身份则位于该服务器的设置中。",
       "createIdentity": "创建身份标识",
       "personal": "个人",
       "noUsername": "无用户名",
+      "notInUse": "未使用",
+      "notInUseHint": "未与任何服务器或文件夹关联",
       "sshKey": "SSH 密钥",
       "password": "密码",
       "editIdentity": "编辑身份标识",
@@ -1336,6 +1515,7 @@
         "success": "已同步",
         "error": "错误",
         "pending": "等待中",
+        "syncing": "同步",
         "disabled": "已禁用"
       },
       "dialog": {
@@ -1523,6 +1703,28 @@
       "deleteConfirm": "这将永久删除角色“{{name}}”，并将其从所有成员中移除。",
       "inheritsAllow": "继承：允许",
       "inheritsDeny": "继承：被拒绝"
+    },
+    "search": "搜索设置",
+    "trustedCertificates": {
+      "title": "受信任的证书",
+      "description": "连接时您已接受的证书和主机密钥。删除其中一个，下次连接时系统会再次提示您。",
+      "personal": "个人",
+      "system": "系统",
+      "kinds": {
+        "ssh": "SSH 主机密钥",
+        "tls": "TLS证书"
+      },
+      "empty": "尚未信任任何内容",
+      "emptyDescription": "一旦您为某次连接接受了证书和主机密钥，它们就会显示在此处。",
+      "remove": "删除",
+      "removeConfirm": "不再信任 {{endpoint}}吗？下次连接时会再次询问。",
+      "removeSuccess": "已删除受信任的证书",
+      "removeError": "无法删除受信任的证书",
+      "ignore": {
+        "title": "忽略证书警告",
+        "description": "在不验证其证书或主机密钥的情况下连接到您的个人服务器。这样一来，连接可能会被截获而您却浑然不觉。而组织服务器则始终会经过验证。",
+        "error": "无法保存设置"
+      }
     }
   },
   "tunnel": {
@@ -1581,6 +1783,7 @@
       "createFolder": "创建文件夹",
       "deleteFolder": "删除文件夹",
       "renameFolder": "重命名文件夹",
+      "folderSettings": "文件夹设置",
       "new": "新建",
       "sshServer": "SSH 服务器",
       "telnetServer": "Telnet 服务器",
@@ -1601,7 +1804,7 @@
       "connect": "连接",
       "quickConnect": "快速连接",
       "openSFTP": "打开 SFTP",
-      "openBrowser": "Open Browser",
+      "openBrowser": "打开浏览器",
       "forwardPort": "转发端口",
       "runScript": "运行脚本",
       "openNotes": "公开说明",
@@ -1638,17 +1841,20 @@
         "duplicate": "复制",
         "openNotes": "公开说明",
         "hibernateSession": "休眠",
-        "reconnect": "Reconnect",
+        "reconnect": "重新连接",
         "closeSession": "断开连接",
-        "splitRight": "Split Right",
-        "splitDown": "Split Down",
-        "sendShortcut": "Send Shortcut…",
-        "zoom": "Zoom ({{zoom}}%)",
-        "zoomReset": "Reset Zoom"
+        "splitRight": "向右分叉",
+        "splitDown": "向下拆分",
+        "sendShortcut": "发送快捷方式…",
+        "zoom": "缩放 ({{zoom}}%)",
+        "zoomReset": "重置缩放",
+        "displayScale": "显示比例（{{scale}}%）",
+        "displayScaleAuto": "自动（{{scale}}%）",
+        "displayScaleReset": "使用默认设置"
       },
-      "enableSplitView": "Enable Split View",
-      "disableSplitView": "Disable Split View",
-      "sessionMenu": "Session Menu"
+      "enableSplitView": "启用分屏视图",
+      "disableSplitView": "禁用分屏视图",
+      "sessionMenu": "会话菜单"
     },
     "wol": {
       "successDescription": "魔法数据包发送至 {{name}}",
@@ -1658,20 +1864,15 @@
       "fillRequiredFields": "请填写所有必填字段",
       "serverCreated": "服务器创建成功",
       "serverUpdated": "服务器更新成功",
+      "folderUpdated": "文件夹已成功更新",
       "createFailed": "创建服务器失败",
       "updateFailed": "更新服务器失败",
-      "createIdentityFailed": "创建身份标识失败",
-      "updateIdentityFailed": "更新身份标识失败"
+      "identitiesRemovedOnMove": "某些标识符已被移除，因为目标位置中不存在这些标识符。"
     },
     "dialog": {
       "addServer": "添加服务器",
       "addProtocolServer": "添加 {{protocol}} 服务器",
       "editServer": "编辑服务器",
-      "tabs": {
-        "details": "详细信息",
-        "identities": "身份标识",
-        "settings": "设置"
-      },
       "actions": {
         "save": "保存",
         "create": "创建"
@@ -1717,7 +1918,6 @@
           "description": "允许使用其 MAC 地址远程唤醒该服务器"
         },
         "rdpSecurity": {
-          "title": "安全",
           "description": "用于连接远程 Windows 计算机的身份验证方法。在禁用了 NTLM 的环境中（例如“受保护的用户”组），请使用 NLA。",
           "method": "安全方法"
         },
@@ -1727,9 +1927,12 @@
         },
         "display": {
           "title": "显示设置",
-          "description": "配置远程显示的颜色深度和缩放行为",
+          "description": "配置远程显示器的色深、调整大小的行为以及缩放比例",
           "colorDepth": "色彩深度",
-          "resizeMethod": "调整尺寸方法"
+          "resizeMethod": "调整尺寸方法",
+          "displayScale": "显示比例",
+          "displayScaleAuto": "自动（匹配此设备）简体中文（大陆）",
+          "displayScaleAccount": "账户违约"
         },
         "performance": {
           "title": "性能设置",
@@ -1757,14 +1960,9 @@
           "backspace": "退格",
           "delete": "删除",
           "functionKeys": "功能键"
-        },
-        "noSettings": "此条目类型无可用附加设置。"
+        }
       },
       "identities": {
-        "organizationIdentities": "组织身份标识",
-        "personalIdentities": "个人身份标识",
-        "orgDescription": "与所有组织成员共享。所有人都可使用这些身份标识。",
-        "personalDescription": "仅对您可见。其他组织成员无法看到这些。",
         "identityName": "身份标识名称",
         "username": "用户名",
         "authentication": "认证方式",
@@ -1775,16 +1973,29 @@
         "both": "键+密钥",
         "sshPrivateKey": "SSH 私钥",
         "passphrase": "密码短语（可选）",
-        "new": "新建",
+        "add": "添加身份",
+        "linkGlobal": "Link 全球身份 · {{count}}",
+        "empty": "目前尚无身份信息。",
         "removeIdentity": "移除身份标识",
         "unlinkIdentity": "解除身份标识关联",
         "moveToOrg": "移至组织",
-        "selectOrganization": "选择组织",
-        "availableToLink": "可关联项",
         "noUsername": "无用户名",
-        "noOrgIdentities": "无组织身份标识。创建一个以与所有成员共享。",
-        "noPersonalIdentities": "无个人身份标识。创建一个供私人使用。"
-      }
+        "globalToggle": "在其他服务器上使用",
+        "globalInUse": "该身份信息由 {{count}} 服务器使用。请先将其与其他身份信息解绑。",
+        "shareToggle": "与组织分享",
+        "inheritedHint": "从文件夹设置中继承而来。",
+        "onlyMe": "只有我",
+        "onlyMeHint": "只有您才能查看和使用此身份。"
+      },
+      "sections": {
+        "general": "概述",
+        "connection": "连接",
+        "identities": "身份",
+        "options": "选项",
+        "credentials": "资质证明"
+      },
+      "useInherited": "使用继承的值",
+      "reset": "重置"
     },
     "proxmoxDialog": {
       "title": {
@@ -1792,9 +2003,6 @@
         "edit": "编辑 Proxmox VE"
       },
       "fields": {
-        "name": "名称",
-        "serverIp": "服务器 IP",
-        "port": "端口",
         "username": "用户名",
         "password": "密码",
         "nodeName": "节点名称（可选）",
@@ -1803,8 +2011,6 @@
       "monitoringDescription": "收集整个集群的 CPU、内存和存储指标",
       "placeholders": {
         "name": "名称",
-        "serverIp": "服务器 IP",
-        "port": "端口",
         "username": "用户名（例如：root@pam）",
         "password": "密码",
         "specificNode": "特定节点名称"
@@ -1818,7 +2024,8 @@
         "updated": "Proxmox 集成更新成功",
         "createFailed": "创建 Proxmox 集成失败",
         "updateFailed": "更新 Proxmox 集成失败"
-      }
+      },
+      "credentialsDescription": "具有 API 访问权限的 Proxmox 用户，例如 root@pam 或专用的 API 用户。"
     },
     "connectionReasonDialog": {
       "title": "需要连接原因",
@@ -1972,10 +2179,17 @@
         "uploadFolder": "上传文件夹",
         "search": "搜索文件",
         "closeSearch": "关闭搜索",
-        "refresh": "刷新"
+        "refresh": "刷新",
+        "back": "返回",
+        "forward": "前言",
+        "up": "父目录",
+        "home": "主目录",
+        "switchToCompact": "切换到紧凑视图"
       },
       "item": {
-        "link": "链接"
+        "link": "链接",
+        "expand": "展开文件夹",
+        "collapse": "折叠文件夹"
       },
       "search": {
         "placeholder": "筛选此文件夹中的文件...",
@@ -1991,23 +2205,56 @@
         "dropFilesHint": "将文件放在此处上传"
       },
       "toast": {
-        "downloaded": "下载 {{name}}",
-        "downloadingItems": "下载 {{count}} 项目...",
-        "uploaded": "上传 {{name}}",
-        "uploadedItems": "已上传 {{count}} 个文件",
         "uploadFailed": "上传失败： {{message}}",
-        "uploadFailedItems": "{{count}} 文件上传失败： {{message}}",
         "connectionLost": "SFTP 连接丢失。请重新连接。",
         "error": "发生错误"
+      },
+      "transfers": {
+        "title": "转会",
+        "activeCount": "{{count}} 活动中的",
+        "allDone": "都搞定了",
+        "clearFinished": "已完成",
+        "queued": "已加入队列",
+        "cancelling": "正在取消...",
+        "completed": "已完成",
+        "savedTo": "已保存至 {{path}}",
+        "cancelled": "已取消",
+        "failed": "失败： {{message}}",
+        "dismiss": "关闭"
+      },
+      "status": {
+        "folders_one": "{{count}} 文件夹",
+        "folders_other": "{{count}} 文件夹",
+        "files_one": "{{count}} 文件",
+        "files_other": "{{count}} 文件",
+        "hidden_one": "{{count}} 隐藏",
+        "hidden_other": "{{count}} 隐藏",
+        "selected": "{{count}} 已选中",
+        "showHidden": "显示隐藏文件",
+        "hideHidden": "隐藏隐藏文件"
+      },
+      "conflict": {
+        "title_one": "该项目已存在",
+        "title_other": "{{count}} 这些项目已存在",
+        "upload_one": "目标位置已存在同名的文件。您想怎么做？",
+        "upload_other": "这些文件在目标位置已经存在。您想对它们执行什么操作？",
+        "move_one": "目标位置中已存在同名项目。移动操作将替换该项目。",
+        "move_other": "目标位置中已存在这些项目。移动操作将替换它们。",
+        "copy_one": "目标位置中已存在同名项目。复制操作将替换该项目。",
+        "copy_other": "目标位置中已存在这些项目。复制操作将覆盖它们。",
+        "more": "+ {{count}} 更多",
+        "skip": "跳过",
+        "rename": "两个都保留",
+        "overwrite": "覆盖"
       }
     },
     "browser": {
-      "back": "Back",
-      "forward": "Forward",
-      "reload": "Reload",
-      "stop": "Stop",
-      "address": "Address",
-      "addressPlaceholder": "Enter an address"
+      "back": "返回",
+      "forward": "前言",
+      "reload": "重新加载",
+      "stop": "停止",
+      "address": "地址",
+      "addressPlaceholder": "输入地址"
     },
     "remoteDesktop": {
       "dropOverlay": "将文件拖放到此处以上传至远程服务器",
@@ -2019,13 +2266,34 @@
         "downloaded": "从远程服务器下载了“{{name}}”"
       }
     },
+    "automatedSession": {
+      "viewOnlyAi": "本次会话中，AI 助手正在运行。您可以观看，但无法输入文字。",
+      "viewOnlyMcp": "当前会话中有一个外部代理（MCP）正在运行。您可以观看，但无法输入。"
+    },
     "aiAssistant": {
       "title": "AI 助手",
       "open": "AI助手",
-      "empty": "请让助理检查或更换这台服务器。它可以通过该连接直接执行命令，以及读取或编辑文件。",
+      "empty": "请助理检查或更换您的服务器。它会与您在下文添加的服务器建立独立的连接，执行命令、编辑文件，甚至可以操作远程桌面。",
+      "addServer": "添加服务器",
+      "removeServer": "删除服务器",
+      "searchServers": "搜索服务器……",
+      "noMatches": "没有匹配的服务器",
+      "current": "当前",
+      "openSessions": "{{count}} 公开会议",
+      "approval": {
+        "ask": "行动前先询问",
+        "askDescription": "命令、输入和文件更改正在等待您的批准",
+        "allow": "允许所有",
+        "allowDescription": "在不询问用户的情况下运行工具调用",
+        "readonly": "只读",
+        "readonlyDescription": "仅检查服务器；任何对服务器进行修改的操作均被拒绝"
+      },
       "placeholder": "给助理发消息……",
       "connecting": "正在连接...",
       "send": "发送",
+      "copyMessage": "复制消息",
+      "copied": "已复制",
+      "editMessage": "编辑消息",
       "stop": "停止",
       "connectionError": "与助手的连接已中断。",
       "reconnecting": "连接已断开。正在重新连接...",
@@ -2038,19 +2306,65 @@
       "continuePrompt": "助理在连续跑了一段台阶后停了下来。继续吗？",
       "continue": "继续",
       "compacted": "为节省篇幅，已对之前的消息进行了总结。",
+      "retryPrompt": "上一步操作失败。是否从中断处重试？",
+      "retry": "重试",
+      "questionOther": "或者输入另一个答案……",
+      "questionAnswer": "请输入答案……",
+      "questionSend": "答案",
+      "questionPickOne": "请选择一个选项或输入答案",
+      "questionPickMany": "请勾选所有适用项",
+      "exitCode": "退出 {{code}}",
+      "truncated": "[内容被截断]",
+      "toolSummary": {
+        "recursive": "{{path}} (递归)",
+        "doubleClick": "{{target}} ×2"
+      },
       "tools": {
-        "runCommand": "运行命令",
-        "readFile": "读取文件",
-        "writeFile": "写入文件",
-        "editFile": "编辑文件",
-        "listDirectory": "列出目录",
-        "statPath": "检查路径",
-        "makeDirectory": "创建目录",
-        "deleteFile": "删除文件",
-        "removeDirectory": "删除目录",
-        "movePath": "移动",
-        "changePermissions": "更改权限",
-        "findDirectories": "查找目录"
+        "list_entries": "邮件列表服务器",
+        "get_entry": "检查服务器",
+        "list_folders": "列出文件夹",
+        "list_organizations": "列出组织",
+        "list_identities": "列表恒等式",
+        "list_snippets": "列表片段",
+        "list_scripts": "列出脚本",
+        "list_tags": "列出标签",
+        "list_users": "列出用户",
+        "get_permissions": "检查权限",
+        "get_monitoring": "读取监控",
+        "list_sessions": "列出会话",
+        "open_session": "公开会议",
+        "get_session": "检查会话",
+        "close_session": "关闭会话",
+        "close_all_sessions": "关闭所有会话",
+        "terminal_run": "运行命令",
+        "terminal_send": "发送输入",
+        "terminal_read": "读取终端",
+        "terminal_resize": "调整终端大小",
+        "run_command": "运行命令",
+        "exec_command": "运行命令",
+        "file_list": "列出目录",
+        "file_stat": "检查路径",
+        "file_read": "读取文件",
+        "file_write": "写入文件",
+        "file_edit": "编辑文件",
+        "file_mkdir": "创建目录",
+        "file_delete": "删除",
+        "file_move": "移动",
+        "file_chmod": "更改权限",
+        "file_search_dirs": "查找目录",
+        "desktop_screenshot": "屏幕截图",
+        "desktop_info": "检查桌面",
+        "desktop_click": "点击",
+        "desktop_mouse_move": "移动鼠标",
+        "desktop_drag": "拖动",
+        "desktop_scroll": "滚动",
+        "desktop_type": "输入文本",
+        "desktop_key": "按键",
+        "desktop_resize": "调整桌面大小",
+        "desktop_clipboard_set": "设置剪贴板",
+        "desktop_clipboard_get": "读取剪贴板",
+        "batch": "执行多项操作",
+        "ask_user": "问题"
       }
     },
     "commandSuggestion": {
@@ -2073,7 +2387,7 @@
       "holdModifier": "保持 {{key}}",
       "zoomIn": "放大",
       "zoomOut": "缩小",
-      "zoomReset": "Reset zoom (drag with the middle mouse button to pan)"
+      "zoomReset": "重置缩放比例（按住鼠标中键拖动可平移）"
     },
     "monitors": {
       "title": "显示器 {{number}}",
@@ -2106,6 +2420,36 @@
     "liveSessions": {
       "activeOn": "直播环节： {{users}}",
       "unknownUser": "未知用户"
+    },
+    "folderSettings": {
+      "name": "文件夹名称",
+      "nameRequired": "必须填写文件夹名称",
+      "loadFailed": "无法加载文件夹设置",
+      "protocol": "默认值：",
+      "protocolHint": "除非服务器自行设置了相关值，否则该文件夹中的服务器将采用您在下文中设置的值。每种协议都有其自身的默认值。",
+      "unset": "从文件夹中移除"
+    },
+    "trust": {
+      "certificate": "证书",
+      "hostKey": "主机密钥",
+      "newTitle": "这个网址 {{subject}} 可靠吗？",
+      "newMessage": "这是与 {{endpoint}}的首次连接。请在继续之前核对指纹。",
+      "changedTitle": "{{subject}} 已发生变更",
+      "changedMessage": "{{endpoint}} 呈现的 {{subject}} 与之前不同。只有当您已预料到这种情况时，才请继续。",
+      "fingerprint": "指纹",
+      "previous": "至今仍值得信赖",
+      "presented": "现在呈现",
+      "subject": "发放给",
+      "issuer": "发布机构：",
+      "selfSigned": "自签名",
+      "validUntil": "有效期至",
+      "blocked": "只有 {{organization}} 的证书管理员才能接受此更改。",
+      "accept": "信任与连接",
+      "cancel": "取消",
+      "acceptChanged": "相信这款新产品",
+      "disconnect": "断开连接",
+      "failed": "无法保存您的决定",
+      "acceptOnly": "信任证书"
     }
   },
   "support": {
@@ -2120,6 +2464,10 @@
       "title": "加入讨论区",
       "description": "与社区聊天并获得帮助。"
     },
+    "docs": {
+      "title": "查看文档",
+      "description": "请阅读文档，了解如何使用 Nexterm。"
+    },
     "github": {
       "title": "在 GitHub 上查看",
       "description": "浏览源代码并作出贡献。"
@@ -2133,7 +2481,11 @@
     "connectDevice": "连接设备",
     "recentConnections": "近期联系",
     "getStarted": "开始",
-    "getStartedHint": "从侧边栏添加服务器，开始管理基础设施。"
+    "getStartedHint": "从侧边栏添加服务器，开始管理基础设施。",
+    "hibernated": "休眠",
+    "demo": {
+      "explore": "开始探索"
+    }
   },
   "downloadApps": {
     "title": "下载应用程序",
@@ -2144,6 +2496,10 @@
       "linux": "利纳克斯",
       "android": "安卓",
       "ios": "iOS"
-    }
+    },
+    "recommended": "推荐",
+    "versionUnavailable": "无法确定服务器版本，因此无法直接下载。您仍然可以在 GitHub 上浏览各版本。",
+    "sourceHint": "下载文件来自 GitHub 发布页面。",
+    "allReleases": "所有发布"
   }
 }

@@ -32,7 +32,9 @@
 #include <rfb/rfbproto.h>
 
 #include <pthread.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 char* guac_vnc_get_password(rfbClient* client) {
     guac_client* gc = rfbClientGetClientData(client, GUAC_VNC_CLIENT_KEY);
@@ -64,6 +66,47 @@ char* guac_vnc_get_password(rfbClient* client) {
 }
 
 #ifdef ENABLE_VNC_GENERIC_CREDENTIALS
+#define GUAC_VNC_X509_SKIP_VERIFY 0x80
+
+static char* guac_vnc_write_trusted_certificates(guac_vnc_client* vnc_client) {
+
+    const char* certificates = vnc_client->settings->trusted_certificates;
+    if (certificates == NULL || *certificates == '\0')
+        return NULL;
+
+    if (vnc_client->trusted_certificates_path != NULL)
+        return vnc_client->trusted_certificates_path;
+
+    char path[] = "/tmp/guac-vnc-trusted-XXXXXX";
+    int fd = mkstemp(path);
+    if (fd < 0)
+        return NULL;
+
+    size_t length = strlen(certificates);
+    ssize_t written = write(fd, certificates, length);
+    close(fd);
+
+    if (written != (ssize_t) length) {
+        unlink(path);
+        return NULL;
+    }
+
+    vnc_client->trusted_certificates_path = strdup(path);
+    return vnc_client->trusted_certificates_path;
+
+}
+
+void guac_vnc_remove_trusted_certificates(guac_vnc_client* vnc_client) {
+
+    if (vnc_client->trusted_certificates_path == NULL)
+        return;
+
+    unlink(vnc_client->trusted_certificates_path);
+    free(vnc_client->trusted_certificates_path);
+    vnc_client->trusted_certificates_path = NULL;
+
+}
+
 rfbCredential* guac_vnc_get_credentials(rfbClient* client, int credentialType) {
     
     guac_client* gc = rfbClientGetClientData(client, GUAC_VNC_CLIENT_KEY);
@@ -108,6 +151,21 @@ rfbCredential* guac_vnc_get_credentials(rfbClient* client, int credentialType) {
         creds->userCredential.password = guac_strdup(settings->password);
         return creds;
         
+    }
+
+    if (credentialType == rfbCredentialTypeX509) {
+
+        rfbCredential* creds = calloc(1, sizeof(rfbCredential));
+        if (creds == NULL)
+            return NULL;
+
+        char* path = guac_vnc_write_trusted_certificates(vnc_client);
+        creds->x509Credential.x509CACertFile = path != NULL ? strdup(path) : NULL;
+        creds->x509Credential.x509CrlVerifyMode = settings->ignore_certificate
+            ? GUAC_VNC_X509_SKIP_VERIFY : rfbX509CrlVerifyNone;
+
+        return creds;
+
     }
 
     guac_client_abort(gc, GUAC_PROTOCOL_STATUS_SERVER_ERROR,

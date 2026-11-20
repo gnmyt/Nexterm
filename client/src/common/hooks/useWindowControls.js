@@ -3,6 +3,11 @@ import { useState, useEffect, useRef } from "react";
 let zCounter = 1000;
 const nextZ = () => ++zCounter;
 
+const getTopInset = () => {
+    if (document.body.classList.contains("session-fullscreen")) return 0;
+    return parseFloat(getComputedStyle(document.body).getPropertyValue("--title-bar-height")) || 0;
+};
+
 export const useWindowControls = (initialSize = { width: 800, height: 600 }, initialPosition = null) => {
     const windowRef = useRef(null);
     const headerRef = useRef(null);
@@ -20,14 +25,35 @@ export const useWindowControls = (initialSize = { width: 800, height: 600 }, ini
         if (!initialPosition) {
             const centerWindow = () => {
                 const windowWidth = window.innerWidth;
-                const windowHeight = window.innerHeight;
+                const topInset = getTopInset();
+                const windowHeight = window.innerHeight - topInset;
                 setPosition({
                     x: Math.max(0, (windowWidth - size.width) / 2),
-                    y: Math.max(0, (windowHeight - size.height) / 2),
+                    y: topInset + Math.max(0, (windowHeight - size.height) / 2),
                 });
             };
             centerWindow();
         }
+    }, []);
+
+    useEffect(() => {
+        const clamp = () => {
+            setPosition((pos) => {
+                const topInset = getTopInset();
+                const maxY = Math.max(topInset, window.innerHeight - (windowRef.current?.offsetHeight || 0));
+                const maxX = Math.max(0, window.innerWidth - (windowRef.current?.offsetWidth || 0));
+                const x = Math.max(0, Math.min(pos.x, maxX));
+                const y = Math.max(topInset, Math.min(pos.y, maxY));
+                return x === pos.x && y === pos.y ? pos : { x, y };
+            });
+        };
+        const observer = new MutationObserver(clamp);
+        observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+        window.addEventListener("resize", clamp);
+        return () => {
+            observer.disconnect();
+            window.removeEventListener("resize", clamp);
+        };
     }, []);
 
     const handleMouseDown = (e) => {
@@ -64,7 +90,7 @@ export const useWindowControls = (initialSize = { width: 800, height: 600 }, ini
         const handleMouseMove = (e) => {
             if (isDragging && !isMaximized) {
                 const newX = Math.max(0, Math.min(e.clientX - dragOffset.x, window.innerWidth - size.width));
-                const newY = Math.max(0, Math.min(e.clientY - dragOffset.y, window.innerHeight - size.height));
+                const newY = Math.max(getTopInset(), Math.min(e.clientY - dragOffset.y, window.innerHeight - size.height));
                 setPosition({ x: newX, y: newY });
             } else if (isResizing && !isMaximized) {
                 const deltaX = e.clientX - resizeStart.x;
@@ -93,7 +119,7 @@ export const useWindowControls = (initialSize = { width: 800, height: 600 }, ini
 
     const getWindowStyle = () => {
         return isMaximized
-            ? { top: "var(--title-bar-height, 0px)", left: 0, width: "100vw", height: "var(--content-height, 100vh)", zIndex }
+            ? { zIndex }
             : {
                 top: `${position.y}px`,
                 left: `${position.x}px`,

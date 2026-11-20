@@ -31,7 +31,7 @@ export const DialogCancelButton = ({ text, type = "secondary", ...props }) => {
     return <Button type={type} buttonType="button" text={text ?? t("common.actions.cancel")} {...props} onClick={requestClose} />;
 };
 
-export const DialogProvider = ({ disableClosing, open, children, onClose, isDirty, className }) => {
+export const DialogProvider = ({ disableClosing, open, children, onClose, isDirty, className, portalTarget }) => {
     const areaRef = useRef();
     const ref = useRef();
     const guardRef = useRef();
@@ -146,7 +146,7 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
 
     return (
         <DialogContext.Provider value={tryClose}>
-            {createPortal(dialogContent, document.body)}
+            {createPortal(dialogContent, portalTarget || document.body)}
         </DialogContext.Provider>
     );
 };

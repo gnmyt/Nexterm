@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useContext } from "react";
+import { useRef, useState, useEffect, useContext, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
 import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiMenu, mdiFullscreen, mdiFullscreenExit, mdiNoteEditOutline } from "@mdi/js";
@@ -14,7 +14,16 @@ import SessionMenu from "../SessionMenu";
 import RemoteSessionStrip from "../RemoteSessionStrip";
 import KeyboardShortcutsMenu from "../KeyboardShortcutsMenu";
 import SnippetsMenu from "../../renderer/components/SnippetsMenu";
+import TabPreview from "./components/TabPreview";
 import "./styles.sass";
+
+const PREVIEW_OPEN_DELAY = 250;
+const PREVIEW_CLOSE_DELAY = 80;
+
+const getTabTitle = (session, pageInfo, t) => {
+    const suffix = session.type === "sftp" ? " (SFTP)" : session.type === "notes" ? ` (${t("servers.notesPanel.title")})` : "";
+    return `${pageInfo?.title || session.server?.name}${suffix}`;
+};
 
 const DraggableTab = ({
     session,
@@ -27,6 +36,8 @@ const DraggableTab = ({
     moveTab,
     progress = 0,
     pageInfo = null,
+    onPreviewShow,
+    onPreviewHide,
 }) => {
     const { getParticipants } = useLiveSessions();
     const { user } = useContext(UserContext);
@@ -75,6 +86,10 @@ const DraggableTab = ({
         <div ref={(node) => drag(drop(node))} onClick={() => setActiveSessionId(session.id)}
             onContextMenu={handleContextMenu}
             onAuxClick={handleAuxClick}
+            onPointerEnter={(e) => e.pointerType === "mouse" && onPreviewShow(session.id, e.currentTarget)}
+            onPointerLeave={() => onPreviewHide(PREVIEW_CLOSE_DELAY)}
+            onPointerDown={() => onPreviewHide()}
+            onDragStart={() => onPreviewHide()}
             className={`server-tab ${session.id === activeSessionId ? "server-tab-active" : ""} ${isAutomated ? "server-tab-automated" : ""} ${isDragging ? "dragging" : ""} ${isOver ? "drop-target" : ""}`}
             style={{ opacity: isDragging ? 0.5 : 1 }}>
             <div className={`progress-circle ${!showProgress ? "no-progress" : ""}`}>
@@ -110,7 +125,7 @@ const DraggableTab = ({
                     ? <img src={pageInfo.icon} className="progress-icon page-favicon" alt="" />
                     : <Icon path={isNotes ? mdiNoteEditOutline : getIconPath(server.icon)} className="progress-icon" />}
             </div>
-            <h2>{pageInfo?.title || server?.name} {session.type === "sftp" ? " (SFTP)" : ""}{isNotes ? ` (${t("servers.notesPanel.title")})` : ""}</h2>
+            <h2>{getTabTitle(session, pageInfo, t)}</h2>
             <AvatarStack className="tab-participants" users={otherParticipants} max={2}
                          getKey={participant => participant.viewerId} />
             <div className="tab-actions">
@@ -145,6 +160,7 @@ export const ServerTabs = ({
     fullscreenEnabled,
     onFullscreenToggle,
     reveal = false,
+    getSessionElement,
 }) => {
 
     const tabsRef = useRef(null);
@@ -159,12 +175,47 @@ export const ServerTabs = ({
     const [menuSessionId, setMenuSessionId] = useState(null);
     const [showSnippets, setShowSnippets] = useState(false);
     const [showShortcuts, setShowShortcuts] = useState(false);
+    const [previewTarget, setPreviewTarget] = useState(null);
+    const previewTimerRef = useRef(null);
+    const previewOpenRef = useRef(false);
 
     const activeSession = activeSessions.find(session => session.id === activeSessionId);
     const menuSession = activeSessions.find(session => session.id === menuSessionId) || null;
     const pinned = menu.isOpen || showSnippets || showShortcuts || (activeControls?.heldModifiers.size ?? 0) > 0;
 
+    const hidePreview = useCallback((delay = 0) => {
+        clearTimeout(previewTimerRef.current);
+        const close = () => {
+            previewOpenRef.current = false;
+            setPreviewTarget(null);
+        };
+        delay ? previewTimerRef.current = setTimeout(close, delay) : close();
+    }, []);
+
+    const showPreview = useCallback((sessionId, element) => {
+        clearTimeout(previewTimerRef.current);
+        const open = () => {
+            const bounds = element.getBoundingClientRect();
+            previewOpenRef.current = true;
+            setPreviewTarget({ sessionId, anchor: { center: bounds.left + bounds.width / 2, bottom: bounds.bottom } });
+        };
+        previewOpenRef.current ? open() : previewTimerRef.current = setTimeout(open, PREVIEW_OPEN_DELAY);
+    }, []);
+
+    useEffect(() => () => clearTimeout(previewTimerRef.current), []);
+
+    const previewSession = previewTarget && !menu.isOpen
+        ? activeSessions.find(session => session.id === previewTarget.sessionId) : null;
+    const previewPageInfo = previewSession ? sessionPageInfo[previewSession.id] || null : null;
+    const preview = useMemo(() => previewSession?.server ? {
+        session: previewSession,
+        pageInfo: previewPageInfo,
+        title: getTabTitle(previewSession, previewPageInfo, t),
+        anchor: previewTarget.anchor,
+    } : null, [previewSession, previewPageInfo, previewTarget, t]);
+
     const openMenu = (event, sessionId, position) => {
+        hidePreview();
         setMenuSessionId(sessionId);
         menu.open(event, position);
     };
@@ -339,13 +390,18 @@ export const ServerTabs = ({
                             </button>
                         </div>
                     )}
-                    <div className="tabs" ref={tabsRef} onScroll={checkScrollPosition} data-tauri-drag-region>
+                    <div className="tabs" ref={tabsRef} data-tauri-drag-region
+                         onScroll={() => {
+                             checkScrollPosition();
+                             hidePreview();
+                         }}>
                         {orderedSessions.map((session, index) => (
                             <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
                                 activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                 closeSession={closeSession} onOpenMenu={openMenu}
                                 progress={sessionProgress[session.id] || 0}
-                                pageInfo={sessionPageInfo[session.id] || null} />
+                                pageInfo={sessionPageInfo[session.id] || null}
+                                onPreviewShow={showPreview} onPreviewHide={hidePreview} />
                         ))}
                     </div>
                     {showRightArrow && (
@@ -358,6 +414,8 @@ export const ServerTabs = ({
                 </div>
                 {activeControls && <RemoteSessionStrip controls={activeControls} />}
             </div>
+
+            <TabPreview preview={preview} getSessionElement={getSessionElement} />
 
             <SessionMenu menu={menu} session={menuSession} controls={activeControls}
                          isActive={menuSession?.id === activeSessionId}

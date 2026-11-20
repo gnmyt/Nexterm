@@ -894,8 +894,11 @@ static void* sftp_session_thread(void* arg) {
         goto cleanup;
     }
 
+    nexterm_trust_t trust;
+    nexterm_trust_from_session(session, &trust);
+
     if (nexterm_ssh_setup_with_jumphosts(session->host, session->port,
-            jump_hosts, jump_count, &ssh_sock, &ssh, &jump_chain) != 0) {
+            jump_hosts, jump_count, &trust, &ssh_sock, &ssh, &jump_chain) != 0) {
         nexterm_cp_send_session_result(cp, session->session_id, false,
                                        "Failed to connect to SSH host", NULL);
         goto cleanup;

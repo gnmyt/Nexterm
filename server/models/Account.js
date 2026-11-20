@@ -1,6 +1,5 @@
 const Sequelize = require("sequelize");
 const db = require("../utils/database");
-const speakeasy = require("speakeasy");
 
 module.exports = db.define("accounts", {
     firstName: {
@@ -23,11 +22,17 @@ module.exports = db.define("accounts", {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
     },
-    totpSecret: {
-        type: Sequelize.STRING,
-        defaultValue: () => {
-            return speakeasy.generateSecret({ name: "Nexterm" }).base32;
-        },
+    totpSecretEncrypted: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+    },
+    totpSecretIV: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+    },
+    totpSecretAuthTag: {
+        type: Sequelize.TEXT,
+        allowNull: true,
     },
     sessionSync: {
         type: Sequelize.STRING,
@@ -46,6 +51,18 @@ module.exports = db.define("accounts", {
         allowNull: true,
         references: { model: "themes", key: "id" },
         onDelete: "SET NULL",
+    },
+    externalProvider: {
+        type: Sequelize.STRING,
+        allowNull: true,
+    },
+    externalId: {
+        type: Sequelize.STRING,
+        allowNull: true,
+    },
+    allowExternalLink: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
     },
     demoExpiresAt: {
         type: Sequelize.DATE,

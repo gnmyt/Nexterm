@@ -76,6 +76,8 @@
 #include <winpr/wtypes.h>
 
 #include <stdlib.h>
+#include <string.h>
+#include <strings.h>
 #include <time.h>
 
 #define GUAC_RDP_EVENT_DRAIN_LIMIT 64
@@ -345,6 +347,38 @@ static BOOL rdp_freerdp_authenticate(freerdp* instance, char** username,
 
 }
 
+#define GUAC_RDP_UNTRUSTED_CERT_MARKER "untrusted-certificate"
+
+static int guac_rdp_fingerprint_is_trusted(const char* trusted,
+        const char* fingerprint) {
+
+    if (trusted == NULL || fingerprint == NULL || *fingerprint == '\0')
+        return 0;
+
+    size_t length = strlen(fingerprint);
+    const char* current = trusted;
+
+    while (*current != '\0') {
+
+        const char* end = strchr(current, ',');
+        size_t entry_length = end != NULL ? (size_t) (end - current) : strlen(current);
+
+        if (entry_length >= length
+                && strncasecmp(current + entry_length - length, fingerprint, length) == 0
+                && (entry_length == length || current[entry_length - length - 1] == ':'))
+            return 1;
+
+        if (end == NULL)
+            break;
+
+        current = end + 1;
+
+    }
+
+    return 0;
+
+}
+
 #ifdef HAVE_FREERDP_VERIFYCERTIFICATEEX
 /**
  * Callback invoked by FreeRDP when the SSL/TLS certificate of the RDP server
@@ -435,10 +469,45 @@ static DWORD rdp_freerdp_verify_certificate(freerdp* instance,
         return 2; /* Accept only for this session */
     }
 
+#ifdef HAVE_FREERDP_VERIFYCERTIFICATEEX
+    const char* peer_host = hostname;
+    unsigned int peer_port = port;
+#else
+    const char* peer_host = rdp_client->settings->hostname;
+    unsigned int peer_port = (unsigned int) rdp_client->settings->port;
+#endif
+
+    if (guac_rdp_fingerprint_is_trusted(
+                rdp_client->settings->certificate_fingerprints, fingerprint)) {
+        guac_client_log(client, GUAC_LOG_INFO, "Certificate matches a "
+                "trusted fingerprint");
+        return 2;
+    }
+
+    guac_client_log(client, GUAC_LOG_WARNING,
+            GUAC_RDP_UNTRUSTED_CERT_MARKER "\t%s\t%u\t%s\t%s\t%s",
+            peer_host != NULL ? peer_host : "", peer_port,
+            fingerprint != NULL ? fingerprint : "",
+            common_name != NULL ? common_name : "",
+            issuer != NULL ? issuer : "");
+
     guac_client_log(client, GUAC_LOG_INFO, "Certificate validation failed");
     return 0; /* Reject certificate */
 
 }
+
+#ifdef HAVE_FREERDP_VERIFYCERTIFICATEEX
+static DWORD rdp_freerdp_verify_changed_certificate(freerdp* instance,
+        const char* hostname, UINT16 port, const char* common_name,
+        const char* subject, const char* issuer, const char* fingerprint,
+        const char* old_subject, const char* old_issuer,
+        const char* old_fingerprint, DWORD flags) {
+
+    return rdp_freerdp_verify_certificate(instance, hostname, port,
+            common_name, subject, issuer, fingerprint, flags);
+
+}
+#endif
 
 /**
  * Waits for messages from the RDP server for the given number of milliseconds.
@@ -578,6 +647,7 @@ static int guac_rdp_handle_connection(guac_client* client) {
 
 #ifdef HAVE_FREERDP_VERIFYCERTIFICATEEX
     rdp_inst->VerifyCertificateEx = rdp_freerdp_verify_certificate;
+    rdp_inst->VerifyChangedCertificateEx = rdp_freerdp_verify_changed_certificate;
 #else
     rdp_inst->VerifyCertificate = rdp_freerdp_verify_certificate;
 #endif

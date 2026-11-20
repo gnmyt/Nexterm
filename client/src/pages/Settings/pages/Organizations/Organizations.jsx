@@ -161,7 +161,7 @@ export const Organizations = () => {
             <div className="org-header">
                 <SettingsHeading>{t("settings.organizations.title")}</SettingsHeading>
                 {hasPermission(Permission.ORGANIZATIONS_CREATE) && (
-                    <Button text={t("settings.organizations.createOrganization")} icon={mdiPlus} onClick={() => setCreateDialogOpen(true)} />
+                    <Button text={t("settings.organizations.createOrganization")} icon={mdiPlus} onClick={handleCreateOrg} />
                 )}
             </div>
 

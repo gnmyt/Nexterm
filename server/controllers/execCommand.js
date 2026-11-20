@@ -1,7 +1,8 @@
 const Entry = require("../models/Entry");
 const { resolveIdentity } = require("../utils/identityResolver");
 const { getIdentityCredentials } = require("./identity");
-const { buildSSHParams, resolveJumpHosts } = require("../lib/ConnectionService");
+const { buildSSHParams, resolveJumpHosts, resolveTrust } = require("../lib/ConnectionService");
+const hostTrust = require("../utils/hostTrust");
 const { validateEntryAccess } = require("./entry");
 const { checkEntryAccessPolicy } = require("../utils/accessPolicy");
 const Integration = require("../models/Integration");
@@ -81,7 +82,16 @@ const execCommand = async (accountId, entryId, identityId, command, { connection
     });
 
     const jumpHosts = await resolveJumpHosts(entry, accountId);
-    const execResult = await controlPlane.execCommand(host, port, params, command, jumpHosts);
+    const trust = await resolveTrust(entry, hostTrust.KIND.SSH, host, port, jumpHosts);
+    const execResult = await controlPlane.execCommand(host, port, { ...params, ...trust.params }, command, jumpHosts);
+
+    if (execResult.untrustedPeer) {
+        return {
+            success: false, stdout: "", stderr: "", exitCode: 1,
+            errorMessage: hostTrust.unattendedMessage(execResult.untrustedPeer),
+            untrustedPeer: hostTrust.describePeer(execResult.untrustedPeer),
+        };
+    }
 
     return {
         success: execResult.success,

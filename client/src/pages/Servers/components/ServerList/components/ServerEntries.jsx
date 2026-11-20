@@ -15,6 +15,7 @@ const ServerEntries = ({ entries, nestedLevel, setRenameStateId, connectToServer
                             entries={entry.entries}
                             nestedLevel={nestedLevel}
                             connectToServer={connectToServer}
+                            renameState={entry.renameState}
                             setRenameStateId={setRenameStateId}
                             hibernatedSessions={hibernatedSessions}
                         />

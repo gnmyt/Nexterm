@@ -17,6 +17,7 @@ app.post("/", async (req, res) => {
         apiKey: req.apiKey || null,
         ipAddress: req.ip || req.socket?.remoteAddress || null,
         userAgent: req.headers["user-agent"] || null,
+        baseUrl: `${req.protocol}://${req.get("host")}`,
     });
     const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
 

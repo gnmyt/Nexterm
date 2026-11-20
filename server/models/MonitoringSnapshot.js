@@ -30,6 +30,10 @@ module.exports = db.define("monitoring_snapshot", {
         type: Sequelize.BIGINT,
         allowNull: true,
     },
+    memory: {
+        type: Sequelize.JSON,
+        allowNull: true,
+    },
     disk: {
         type: Sequelize.JSON,
         allowNull: true,
@@ -53,7 +57,7 @@ module.exports = db.define("monitoring_snapshot", {
         afterFind: (records) => {
             const parseJsonFields = (record) => {
                 if (!record) return;
-                ["disk", "network", "processList", "osInfo"].forEach(field => {
+                ["memory", "disk", "network", "processList", "osInfo"].forEach(field => {
                     if (record[field] && typeof record[field] === "string") {
                         try { record[field] = JSON.parse(record[field]); }
                         catch (e) { logger.error("Failed to parse snapshot field", { field, error: e.message }); }

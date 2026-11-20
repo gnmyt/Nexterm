@@ -21,3 +21,7 @@ module.exports.oauthExchangeValidation = Joi.object({
     code: Joi.string().required(),
     provider: Joi.string().valid(...providerIds())
 });
+
+module.exports.oauthProviderValidation = Joi.object({
+    provider: Joi.string().valid(...providerIds()).description("Defaults to the configured provider"),
+});

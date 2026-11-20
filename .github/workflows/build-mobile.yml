@@ -30,10 +30,10 @@ jobs:
 
     steps:
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: "temurin"
           java-version: "17"
@@ -78,9 +78,7 @@ jobs:
              mobile/build/app/outputs/flutter-apk/nexterm-${{ inputs.version }}-${{ matrix.abi }}.apk
 
       - name: Upload APK to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/upload-release-asset
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: mobile/build/app/outputs/flutter-apk/nexterm-${{ inputs.version }}-${{ matrix.abi }}.apk
@@ -93,10 +91,10 @@ jobs:
 
     steps:
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: "temurin"
           java-version: "17"
@@ -141,9 +139,7 @@ jobs:
              mobile/build/app/outputs/flutter-apk/nexterm-${{ inputs.version }}-universal.apk
 
       - name: Upload Universal APK to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/upload-release-asset
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: mobile/build/app/outputs/flutter-apk/nexterm-${{ inputs.version }}-universal.apk
@@ -156,7 +152,7 @@ jobs:
 
     steps:
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -200,9 +196,7 @@ jobs:
           rm -rf "$WORK_DIR"
 
       - name: Upload unsigned IPA to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/upload-release-asset
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: mobile/build/ios/ipa/nexterm-${{ inputs.version }}.ipa

@@ -57,6 +57,8 @@
  */
 typedef struct guac_vnc_client {
 
+    char* trusted_certificates_path;
+
     /**
      * The VNC client thread.
      */

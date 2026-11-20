@@ -1,7 +1,7 @@
 import "./styles.sass";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
-import { getRequest, deleteRequest, postRequest } from "@/common/utils/RequestUtil.js";
+import { getRequest, deleteRequest, postRequest, patchRequest } from "@/common/utils/RequestUtil.js";
 import Button from "@/common/components/Button";
 import PaginatedTable from "@/common/components/PaginatedTable";
 import Icon from "@mdi/react";
@@ -19,6 +19,8 @@ import {
     mdiAccountGroupOutline,
     mdiEarth,
     mdiShieldOffOutline,
+    mdiLinkVariant,
+    mdiLinkVariantOff,
 } from "@mdi/js";
 import CreateUserDialog from "./components/CreateUserDialog";
 import UserPermissionsDialog from "@/pages/Settings/pages/Permissions/components/UserPermissionsDialog";
@@ -108,6 +110,12 @@ export const Users = () => {
         deleteRequest(`users/${userId}`).then(() => {
             loadUsers();
         });
+    };
+
+    const contextUser = users.find((current) => current.id === contextUserId);
+
+    const setExternalLink = (userId, allow) => {
+        patchRequest(`users/${userId}/external-link`, { allow }).then(loadUsers);
     };
 
     const loginAsUser = (userId) => {
@@ -247,6 +255,20 @@ export const Users = () => {
                     label={t("settings.users.contextMenu.changePassword")}
                     onClick={() => setPasswordChangeDialogOpen(true)}
                 />
+
+                {contextUser && (contextUser.externalProvider || contextUser.allowExternalLink ? (
+                    <ContextMenuItem
+                        icon={mdiLinkVariantOff}
+                        label={t(contextUser.externalProvider ? "settings.users.contextMenu.unlinkExternal" : "settings.users.contextMenu.cancelExternalLink")}
+                        onClick={() => setExternalLink(contextUserId, false)}
+                    />
+                ) : (
+                    <ContextMenuItem
+                        icon={mdiLinkVariant}
+                        label={t("settings.users.contextMenu.allowExternalLink")}
+                        onClick={() => setExternalLink(contextUserId, true)}
+                    />
+                ))}
 
                 {canManagePermissions && (
                     <>

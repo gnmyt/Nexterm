@@ -51,26 +51,32 @@ const toInt = (value) => Number.parseInt(value, 10) || 0;
 
 const parseMeminfo = (output) => {
     try {
-        if (!output) return { usage: null, total: null };
+        if (!output) return { usage: null, total: null, breakdown: null };
         const getKb = (key) => {
             const m = output.match(new RegExp("^\\s*" + key + ":\\s+(\\d+)\\s*kB", "m"));
             return m ? Number.parseInt(m[1], 10) : null;
         };
         const totalKb = getKb("MemTotal");
-        if (totalKb == null || !(totalKb > 0)) return { usage: null, total: null };
+        if (totalKb == null || !(totalKb > 0)) return { usage: null, total: null, breakdown: null };
         const total = totalKb * 1024;
+        const freeKb = getKb("MemFree") || 0;
         let availableKb = getKb("MemAvailable");
         if (availableKb == null) {
-            const free = getKb("MemFree") || 0;
             const buffers = getKb("Buffers") || 0;
             const cached = getKb("Cached") || 0;
             const reclaimable = getKb("SReclaimable") || 0;
-            const sum = free + buffers + cached + reclaimable;
+            const sum = freeKb + buffers + cached + reclaimable;
             availableKb = sum > 0 ? sum : null;
         }
-        if (availableKb == null) return { usage: null, total };
-        return { usage: Math.round(((total - availableKb * 1024) / total) * 100), total };
-    } catch { return { usage: null, total: null }; }
+        if (availableKb == null) return { usage: null, total, breakdown: null };
+        const available = availableKb * 1024;
+        const free = freeKb * 1024;
+        return {
+            usage: Math.round(((total - available) / total) * 100),
+            total,
+            breakdown: { total, used: total - available, cache: Math.max(0, available - free), free: Math.min(free, available) },
+        };
+    } catch { return { usage: null, total: null, breakdown: null }; }
 };
 
 const parseMemoryUsage = (output) => {

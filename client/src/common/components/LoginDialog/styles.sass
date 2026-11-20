@@ -2,12 +2,24 @@
 @use "@/common/styles/breakpoints"
 @use "@/common/styles/fonts"
 
+#login-root .dialog-area
+  z-index: 10001
+
 .dialog.login-card
   width: min(92vw, 25rem)
   padding: 2rem
 
   @media (max-width: breakpoints.$mobile)
     padding: 1.5rem 1.25rem
+
+  &:not(.dialog-hidden)
+    animation-name: loginCardIn
+
+@keyframes loginCardIn
+  0%
+    transform: scale(0.96) translateY(8px)
+  100%
+    transform: scale(1) translateY(0)
 
 .login
   display: flex

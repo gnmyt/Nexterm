@@ -8,3 +8,40 @@ updates:
     directory: '/client'
     schedule:
       interval: 'daily'
+    groups:
+      react:
+        patterns: ['react', 'react-dom', '@types/react', '@types/react-dom']
+  - package-ecosystem: 'npm'
+    directory: '/connector'
+    schedule:
+      interval: 'weekly'
+  - package-ecosystem: 'npm'
+    directory: '/landing'
+    schedule:
+      interval: 'weekly'
+    groups:
+      react:
+        patterns: ['react', 'react-dom', '@types/react', '@types/react-dom']
+  - package-ecosystem: 'cargo'
+    directories:
+      - '/cli'
+      - '/connector/src-tauri'
+    schedule:
+      interval: 'weekly'
+  - package-ecosystem: 'gradle'
+    directory: '/mobile'
+    schedule:
+      interval: 'weekly'
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+  - package-ecosystem: 'docker'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    ignore:
+      - dependency-name: 'node'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'alpine'
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']

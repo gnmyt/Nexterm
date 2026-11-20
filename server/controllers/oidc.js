@@ -1,14 +1,12 @@
 const client = require("openid-client");
 const OIDCProvider = require("../models/OIDCProvider");
 const LDAPProvider = require("../models/LDAPProvider");
-const Account = require("../models/Account");
 const Session = require("../models/Session");
 const Organization = require("../models/Organization");
-const { genSalt, hash } = require("bcrypt");
-const crypto = require("crypto");
 const { Op } = require("sequelize");
 const logger = require("../utils/logger");
 const { decrypt } = require("../utils/encryption");
+const { LINK_CONFLICT, findExternalAccount, applyExternalAccount } = require("../utils/externalAccount");
 const { createOIDCSessionContext } = require("../utils/oidcSession");
 const { buildOIDCLogoutUrl, normalizeProviderData } = require("../utils/oidcLogout");
 const {
@@ -36,21 +34,6 @@ const fetchOIDCClaims = async (configuration, tokens) => {
         logger.warn("Failed to fetch userinfo, falling back to ID token claims", { error: error.message });
         return idTokenClaims;
     }
-};
-
-const upsertOIDCAccount = async (username, firstName, lastName) => {
-    let account = await Account.findOne({ where: { username } });
-
-    if (!account) {
-        const randomPassword = crypto.randomBytes(16).toString("hex");
-        const salt = await genSalt(10);
-        const hashedPassword = await hash(randomPassword, salt);
-
-        return Account.create({ username, password: hashedPassword, firstName, lastName });
-    }
-
-    await Account.update({ firstName, lastName }, { where: { id: account.id } });
-    return account;
 };
 
 module.exports.listOrganizationsForMapping = async () => {
@@ -228,7 +211,22 @@ module.exports.handleOIDCCallback = async (query, userInfo) => {
             return { code: 403, message: "Your account is not authorized to access this application" };
         }
 
-        const account = await upsertOIDCAccount(String(username), String(firstName), String(lastName));
+        if (!claims.sub) return { code: 400, message: "The identity provider did not return a subject" };
+
+        const identity = {
+            provider: `oidc:${provider.issuer}`,
+            externalId: String(claims.sub),
+            username: String(username),
+            firstName: String(firstName),
+            lastName: String(lastName),
+        };
+
+        const plan = await findExternalAccount(identity);
+        if (plan.action === "conflict") {
+            logger.warn("OIDC login refused: username belongs to an unlinked account", { username: identity.username, provider: provider.id });
+            return LINK_CONFLICT;
+        }
+        const account = await applyExternalAccount(plan, identity);
 
         if (provider.groupsAttribute) {
             await syncOrganizationMemberships(account.id, groups, provider);

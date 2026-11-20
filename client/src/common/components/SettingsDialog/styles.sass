@@ -146,6 +146,27 @@
 
     &--footer
       margin-top: auto
+      flex-direction: row
+      align-items: center
+      gap: 0.5rem
+
+      .nav-item
+        flex: 1
+        min-width: 0
+        width: auto
+
+      .nav-version
+        flex-shrink: 0
+        padding-right: 0.5rem
+        font-size: 0.72rem
+        font-weight: 500
+        font-variant-numeric: tabular-nums
+        color: colors.$subtext
+        opacity: 0.8
+        user-select: text
+
+        @media (max-width: breakpoints.$mobile)
+          display: none
 
     @media (max-width: breakpoints.$mobile)
       flex-direction: row

@@ -3,6 +3,15 @@ const logger = require("../utils/logger");
 const db = require("../utils/database");
 
 module.exports = db.define("integrations", {
+    accountId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+            model: "accounts",
+            key: "id",
+        },
+        onDelete: "CASCADE",
+    },
     organizationId: {
         type: Sequelize.INTEGER,
         allowNull: true,

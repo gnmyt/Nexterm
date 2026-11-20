@@ -39,10 +39,10 @@ jobs:
 
     steps:
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "26"
 
@@ -91,9 +91,7 @@ jobs:
           echo "artifact_file=$ARTIFACT" >> $GITHUB_OUTPUT
 
       - name: Upload to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/upload-release-asset
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: ${{ steps.find_artifact.outputs.artifact_file }}
@@ -118,10 +116,10 @@ jobs:
 
     steps:
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "26"
 
@@ -154,12 +152,22 @@ jobs:
           npm install -g yarn
           yarn install
 
+      - name: Write notarization key
+        env:
+          APPLE_API_PRIVATE_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
+        run: echo "$APPLE_API_PRIVATE_KEY" | base64 --decode > "$RUNNER_TEMP/notarization-key.p8"
+
       - name: Build Connector
         working-directory: connector
         run: yarn tauri build --target ${{ matrix.target }}
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+          APPLE_API_KEY_PATH: ${{ runner.temp }}/notarization-key.p8
 
       - name: Find artifact
         id: find_artifact
@@ -168,9 +176,7 @@ jobs:
           echo "artifact_file=$ARTIFACT" >> $GITHUB_OUTPUT
 
       - name: Upload to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/upload-release-asset
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: ${{ steps.find_artifact.outputs.artifact_file }}
@@ -178,28 +184,31 @@ jobs:
           asset_content_type: application/octet-stream
 
   build-linux:
-    name: "Linux (${{ matrix.format }})"
-    runs-on: ubuntu-22.04
+    name: "Linux (${{ matrix.arch }} ${{ matrix.format }})"
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        arch: [x64, arm64]
+        format: [deb, rpm, AppImage]
         include:
+          - arch: x64
+            os: ubuntu-22.04
+          - arch: arm64
+            os: ubuntu-22.04-arm
           - format: deb
             artifact_path: connector/src-tauri/target/release/bundle/deb/*.deb
-            artifact_name: nexterm-connector-linux-x64.deb
           - format: rpm
             artifact_path: connector/src-tauri/target/release/bundle/rpm/*.rpm
-            artifact_name: nexterm-connector-linux-x64.rpm
           - format: AppImage
             artifact_path: connector/src-tauri/target/release/bundle/appimage/*.AppImage
-            artifact_name: nexterm-connector-linux-x64.AppImage
 
     steps:
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "26"
 
@@ -249,11 +258,9 @@ jobs:
           echo "artifact_file=$ARTIFACT" >> $GITHUB_OUTPUT
 
       - name: Upload to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/upload-release-asset
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: ${{ steps.find_artifact.outputs.artifact_file }}
-          asset_name: ${{ matrix.artifact_name }}
+          asset_name: nexterm-connector-linux-${{ matrix.arch }}.${{ matrix.format }}
           asset_content_type: application/octet-stream

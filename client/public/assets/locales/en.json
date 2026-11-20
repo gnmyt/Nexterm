@@ -230,7 +230,8 @@
         "rdpSessionClosed": "The RDP session was ended by the remote server or an administrator.",
         "disabled": "Server is disabled",
         "spiceUnavailable": "SPICE support is not available on the connected engine (missing libguac-client-spice). Rebuild the engine with SPICE support."
-      }
+      },
+      "accountLinkRequired": "An account with this username already exists. Ask an administrator to allow linking it to your sign-in."
     },
     "messages": {
       "invitationAccepted": "Invitation accepted",
@@ -558,6 +559,13 @@
           "unknown": "Unknown",
           "noData": "No system information available"
         },
+        "memory": {
+          "title": "Memory",
+          "summary": "{{used}} of {{total}} ({{percent}}%)",
+          "used": "Used",
+          "cache": "Buffers / Cache",
+          "free": "Free"
+        },
         "performance": {
           "title": "Performance Metrics",
           "loadAverage": "Load Average",
@@ -682,7 +690,8 @@
       "monitoring": "Monitoring",
       "backup": "Storage",
       "engines": "Engines",
-      "permissions": "Roles & Permissions"
+      "permissions": "Roles & Permissions",
+      "trustedCertificates": "Trusted Certificates"
     },
     "account": {
       "title": "Account",
@@ -848,7 +857,12 @@
       "description": "A strong password contains special characters, numbers, and letters in both uppercase and lowercase.",
       "newPassword": "New password",
       "confirmPassword": "Confirm new password",
-      "changePasswordButton": "Change password"
+      "changePasswordButton": "Change password",
+      "currentPassword": "Current password",
+      "descriptionOwn": "Enter your current password and choose a new one. You will be signed out on all other devices.",
+      "descriptionOther": "Choose a new password for this user. They will be signed out on all devices.",
+      "successOwn": "Your password was changed. Other devices were signed out.",
+      "successOther": "The password was changed and the user was signed out everywhere."
     },
     "organizations": {
       "title": "Your Organizations",
@@ -856,6 +870,7 @@
       "noOrganizations": "You don't have any organizations yet.",
       "noOrganizationsDescription": "Create one to start collaborating with your team.",
       "invite": "Invite",
+      "edit": "Edit",
       "delete": "Delete",
       "leave": "Leave",
       "members": "Members",
@@ -903,6 +918,7 @@
       "leaveConfirmation": "Are you sure you want to leave this organization?",
       "dialog": {
         "title": "Create Organization",
+        "editTitle": "Edit Organization",
         "fields": {
           "name": "Name",
           "namePlaceholder": "Organization name",
@@ -918,10 +934,9 @@
           "nameRequired": "Organization name is required",
           "createSuccess": "Organization created successfully",
           "createFailed": "Failed to create organization",
-          "updateSuccess": "Organization renamed successfully",
-          "updateFailed": "Failed to rename organization"
-        },
-        "editTitle": "Rename Organization"
+          "updateSuccess": "Organization updated successfully",
+          "updateFailed": "Failed to update organization"
+        }
       },
       "sessionSettings": {
         "sessionSettingsTab": "Live Sessions",
@@ -960,7 +975,10 @@
         "loginAsUser": "Login as user",
         "deleteConfirm": "This will permanently delete the user and all associated data.",
         "managePermissions": "Manage permissions",
-        "networkRestrictions": "Network restrictions"
+        "networkRestrictions": "Network restrictions",
+        "allowExternalLink": "Allow SSO/LDAP linking",
+        "cancelExternalLink": "Cancel SSO/LDAP linking",
+        "unlinkExternal": "Unlink SSO/LDAP sign-in"
       },
       "accessRestrictedHint": "This user has IP or engine restrictions"
     },
@@ -1117,6 +1135,14 @@
       "syncLoginRequired": "Please log in to sync file manager settings",
       "syncEnabled": "File manager settings will now sync to your account",
       "syncDisabled": "File manager settings will no longer sync",
+      "view": {
+        "title": "View",
+        "description": "How files and folders are shown when you open the file manager."
+      },
+      "behavior": {
+        "title": "Behavior",
+        "description": "What happens when you open, delete and move files."
+      },
       "defaultView": {
         "title": "Default View Mode",
         "description": "Choose the default layout when opening the file manager.",
@@ -1125,7 +1151,8 @@
         "grid": "Grid View",
         "gridDescription": "Show files as icons in a grid layout with thumbnails",
         "compact": "Compact View",
-        "compactDescription": "Show only names in dense columns to fit many files on screen"
+        "compactDescription": "Show only names in dense columns to fit many files on screen",
+        "label": "Default view"
       },
       "thumbnails": {
         "title": "Image Thumbnails",
@@ -1133,7 +1160,10 @@
         "enabled": "Show Thumbnails",
         "enabledDescription": "Display image previews in grid view for quick visual identification",
         "disabled": "Hide Thumbnails",
-        "disabledDescription": "Show only file icons to save bandwidth and improve performance"
+        "disabledDescription": "Show only file icons to save bandwidth and improve performance",
+        "label": "Image thumbnails",
+        "show": "Show",
+        "hide": "Hide"
       },
       "hiddenFiles": {
         "title": "Hidden Files",
@@ -1141,7 +1171,10 @@
         "show": "Show Hidden Files",
         "showDescription": "Display all files including .dotfiles and system directories",
         "hide": "Hide Hidden Files",
-        "hideDescription": "Only show regular files and folders"
+        "hideDescription": "Only show regular files and folders",
+        "label": "Hidden files",
+        "showShort": "Show",
+        "hideShort": "Hide"
       },
       "deleteConfirmation": {
         "title": "Delete Confirmation",
@@ -1149,18 +1182,43 @@
         "enabled": "Confirm Deletions",
         "enabledDescription": "Show a confirmation dialog before deleting items",
         "disabled": "Delete Immediately",
-        "disabledDescription": "Delete files without asking for confirmation"
+        "disabledDescription": "Delete files without asking for confirmation",
+        "label": "Before deleting",
+        "ask": "Ask for confirmation",
+        "immediately": "Delete immediately"
       },
       "dragDropAction": {
         "title": "Drag & Drop Action",
         "description": "Default action when dragging files to a new location.",
         "move": "Move",
         "copy": "Copy",
-        "ask": "Ask"
+        "ask": "Ask",
+        "label": "When dropping files"
       },
       "singleClickOpen": {
         "title": "Open with single click",
-        "description": "Open files and folders with a single click instead of selecting them. Double-click opens when this is off."
+        "description": "Open files and folders with a single click instead of selecting them. Double-click opens when this is off.",
+        "single": "Single click",
+        "double": "Double click",
+        "label": "Open items with"
+      },
+      "sharedDrive": {
+        "title": "Shared Drive",
+        "description": "What remote desktops can see of this computer through their shared drive. Changes apply to new connections.",
+        "mode": {
+          "title": "Share",
+          "folder": "One folder",
+          "disk": "Entire disk",
+          "off": "Nothing",
+          "diskWarning": "Remote desktops can read, change and delete every file on this computer."
+        },
+        "folder": {
+          "title": "Shared folder",
+          "default": "Nexterm Shared in your home folder",
+          "choose": "Choose folder",
+          "reset": "Use default"
+        },
+        "folderError": "The shared folder could not be prepared"
       }
     },
     "authentication": {
@@ -1276,6 +1334,17 @@
           "testSuccess": "Connection test successful",
           "testFailed": "Connection test failed"
         }
+      },
+      "sessions": {
+        "title": "Sessions",
+        "description": "When signed-in devices, including the mobile and desktop apps, have to sign in again.",
+        "idle": "Sign out after inactivity",
+        "lifetime": "Maximum session length",
+        "days_one": "{{count}} day",
+        "days_other": "{{count}} days",
+        "never": "Never",
+        "loadError": "Failed to load the session settings",
+        "saveError": "Failed to save the session settings"
       }
     },
     "ai": {
@@ -1675,7 +1744,28 @@
         "inheritedNote": "Additional restrictions from roles apply."
       }
     },
-    "search": "Search settings"
+    "search": "Search settings",
+    "trustedCertificates": {
+      "title": "Trusted Certificates",
+      "description": "Certificates and host keys you accepted when connecting. Remove one to be asked again the next time.",
+      "personal": "Personal",
+      "system": "System",
+      "kinds": {
+        "ssh": "SSH host key",
+        "tls": "TLS certificate"
+      },
+      "empty": "Nothing trusted yet",
+      "emptyDescription": "Certificates and host keys appear here once you accept them for a connection.",
+      "remove": "Remove",
+      "removeConfirm": "Stop trusting {{endpoint}}? The next connection asks again.",
+      "removeSuccess": "Trusted certificate removed",
+      "removeError": "Failed to remove the trusted certificate",
+      "ignore": {
+        "title": "Ignore certificate warnings",
+        "description": "Connect to your personal servers without checking their certificate or host key. Connections can then be intercepted without you noticing. Organization servers are always checked.",
+        "error": "Failed to save the setting"
+      }
+    }
   },
   "tunnel": {
     "title": "Port Forward",
@@ -1733,6 +1823,7 @@
       "createFolder": "Create Folder",
       "deleteFolder": "Delete Folder",
       "renameFolder": "Rename Folder",
+      "renameOrganization": "Rename Organization",
       "folderSettings": "Folder Settings",
       "new": "New",
       "sshServer": "SSH Server",
@@ -2438,15 +2529,41 @@
       "identitiesRemoved": "Some identities were removed because they are unavailable in the destination.",
       "enableTitle": "Enable inheritance?",
       "enableDescription": "Choose what existing objects should do when these folder settings are saved."
+    },
+    "trust": {
+      "certificate": "certificate",
+      "hostKey": "host key",
+      "newTitle": "Trust this {{subject}}?",
+      "newMessage": "This is the first connection to {{endpoint}}. Check the fingerprint before you continue.",
+      "changedTitle": "The {{subject}} has changed",
+      "changedMessage": "{{endpoint}} presents a different {{subject}} than before. Only continue if you expect this.",
+      "fingerprint": "Fingerprint",
+      "previous": "Trusted until now",
+      "presented": "Presented now",
+      "subject": "Issued to",
+      "issuer": "Issued by",
+      "selfSigned": "Self-signed",
+      "validUntil": "Valid until",
+      "blocked": "Only certificate managers of {{organization}} can accept this change.",
+      "accept": "Trust and connect",
+      "cancel": "Cancel",
+      "acceptChanged": "Trust the new one",
+      "disconnect": "Disconnect",
+      "failed": "Your decision could not be saved",
+      "acceptOnly": "Trust certificate"
     }
   },
   "support": {
     "title": "Get Support",
     "subtitle": "Need help or want to contribute?",
     "footer": "Thank you for using Nexterm!",
+    "bug": {
+      "title": "Report a Bug",
+      "description": "Opens a bug report with your version filled in."
+    },
     "issues": {
-      "title": "Report an Issue",
-      "description": "Found a bug or have a feature request?"
+      "title": "Browse Issues",
+      "description": "Search existing reports or request a feature."
     },
     "discord": {
       "title": "Join Discord",

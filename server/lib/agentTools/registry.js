@@ -2,6 +2,7 @@ const registerDiscoveryTools = require("./tools/discovery");
 const registerSessionTools = require("./tools/sessions");
 const registerTerminalTools = require("./tools/terminal");
 const registerFileTools = require("./tools/files");
+const registerTransferTools = require("./tools/transfer");
 const registerDesktopTools = require("./tools/desktop");
 const registerBatchTool = require("./tools/batch");
 const registerInteractionTools = require("./tools/interaction");
@@ -47,6 +48,7 @@ const registerAllTools = (define, ctx) => {
     registerSessionTools(tracked, ctx);
     registerTerminalTools(tracked, ctx);
     registerFileTools(tracked, ctx);
+    registerTransferTools(tracked, ctx);
     registerDesktopTools(tracked, ctx);
     registerInteractionTools(tracked, ctx);
     registerBatchTool(tracked, ctx, catalogue);

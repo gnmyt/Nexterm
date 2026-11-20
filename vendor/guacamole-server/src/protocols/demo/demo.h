@@ -23,6 +23,12 @@ typedef struct guac_demo_input_state {
     int modifiers;
 
     char last_key[64];
+
+    int press_count;
+
+    int press_x;
+
+    int press_y;
 } guac_demo_input_state;
 
 typedef struct guac_demo_stats {
@@ -56,6 +62,20 @@ typedef struct guac_demo_stats {
 
 #define GUAC_DEMO_LOGO_VELOCITY_X 220.0
 #define GUAC_DEMO_LOGO_VELOCITY_Y 165.0
+
+#define GUAC_DEMO_LOGO_GRAVITY 2600.0
+
+#define GUAC_DEMO_LOGO_RESTITUTION 0.45
+
+#define GUAC_DEMO_LOGO_FLOOR_FRICTION 0.8
+
+#define GUAC_DEMO_LOGO_REST_VELOCITY 90.0
+
+#define GUAC_DEMO_LOGO_MAX_THROW_VELOCITY 4000.0
+
+#define GUAC_DEMO_LOGO_REST_DURATION 1.5
+
+#define GUAC_DEMO_LOGO_MAX_FALL_DURATION 8.0
 
 typedef struct guac_demo_client {
     pthread_t render_loop_thread;

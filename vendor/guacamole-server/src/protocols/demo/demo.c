@@ -18,7 +18,25 @@
 #define GUAC_DEMO_BACKGROUND_GREEN (0x1D / 255.0)
 #define GUAC_DEMO_BACKGROUND_BLUE  (0x2C / 255.0)
 
+typedef enum guac_demo_logo_mode {
+    GUAC_DEMO_LOGO_BOUNCING,
+    GUAC_DEMO_LOGO_HELD,
+    GUAC_DEMO_LOGO_FALLING
+} guac_demo_logo_mode;
+
 typedef struct guac_demo_logo_state {
+    guac_demo_logo_mode mode;
+
+    double grab_offset_x;
+
+    double grab_offset_y;
+
+    double direction_x;
+
+    double rest_time;
+
+    double fall_time;
+
     double x;
 
     double y;
@@ -53,16 +71,6 @@ void guac_demo_clamp_size(int* width, int* height) {
 
     *height = guac_demo_clamp_dimension(*height, GUAC_DEMO_DEFAULT_HEIGHT,
             GUAC_DEMO_MIN_HEIGHT, GUAC_DEMO_MAX_HEIGHT);
-}
-
-static void guac_demo_logo_bounds(guac_rect* rect,
-        const guac_demo_logo_state* logo) {
-    int x = (int) floor(logo->x);
-    int y = (int) floor(logo->y);
-
-    guac_rect_init(rect, x, y,
-            (int) ceil(logo->x + logo->width) - x,
-            (int) ceil(logo->y + logo->height) - y);
 }
 
 static void guac_demo_logo_rescale(guac_demo_logo_state* logo, int width,
@@ -107,6 +115,100 @@ static void guac_demo_logo_advance(guac_demo_logo_state* logo, int width,
     }
 }
 
+static int guac_demo_logo_contains(const guac_demo_logo_state* logo, int x,
+        int y) {
+    return x >= logo->x && x < logo->x + logo->width
+        && y >= logo->y && y < logo->y + logo->height;
+}
+
+static double guac_demo_clamp(double value, double min, double max) {
+    if (value > max) value = max;
+    if (value < min) value = min;
+    return value;
+}
+
+static void guac_demo_logo_grab(guac_demo_logo_state* logo, int x, int y) {
+    if (logo->velocity_x != 0)
+        logo->direction_x = logo->velocity_x < 0 ? -1 : 1;
+
+    logo->mode = GUAC_DEMO_LOGO_HELD;
+    logo->grab_offset_x = x - logo->x;
+    logo->grab_offset_y = y - logo->y;
+    logo->velocity_x = 0;
+    logo->velocity_y = 0;
+}
+
+static void guac_demo_logo_hold(guac_demo_logo_state* logo, int width,
+        int height, int mouse_x, int mouse_y, double elapsed) {
+    double x = guac_demo_clamp(mouse_x - logo->grab_offset_x, 0,
+            width - logo->width);
+    double y = guac_demo_clamp(mouse_y - logo->grab_offset_y, 0,
+            height - logo->height);
+
+    logo->velocity_x = guac_demo_clamp(
+            (logo->velocity_x + (x - logo->x) / elapsed) / 2,
+            -GUAC_DEMO_LOGO_MAX_THROW_VELOCITY,
+            GUAC_DEMO_LOGO_MAX_THROW_VELOCITY);
+    logo->velocity_y = guac_demo_clamp(
+            (logo->velocity_y + (y - logo->y) / elapsed) / 2,
+            -GUAC_DEMO_LOGO_MAX_THROW_VELOCITY,
+            GUAC_DEMO_LOGO_MAX_THROW_VELOCITY);
+
+    logo->x = x;
+    logo->y = y;
+}
+
+static void guac_demo_logo_release(guac_demo_logo_state* logo) {
+    logo->mode = GUAC_DEMO_LOGO_FALLING;
+    logo->rest_time = 0;
+    logo->fall_time = 0;
+}
+
+static void guac_demo_logo_fall(guac_demo_logo_state* logo, int width,
+        int height, double elapsed) {
+    double max_x = width - logo->width;
+    double max_y = height - logo->height;
+
+    logo->velocity_y += GUAC_DEMO_LOGO_GRAVITY * elapsed;
+    logo->x += logo->velocity_x * elapsed;
+    logo->y += logo->velocity_y * elapsed;
+    logo->fall_time += elapsed;
+
+    if (logo->x <= 0) {
+        logo->x = 0;
+        logo->velocity_x = fabs(logo->velocity_x) * GUAC_DEMO_LOGO_RESTITUTION;
+    }
+    else if (logo->x >= max_x) {
+        logo->x = max_x;
+        logo->velocity_x = -fabs(logo->velocity_x) * GUAC_DEMO_LOGO_RESTITUTION;
+    }
+
+    if (logo->y <= 0) {
+        logo->y = 0;
+        logo->velocity_y = fabs(logo->velocity_y) * GUAC_DEMO_LOGO_RESTITUTION;
+    }
+    else if (logo->y >= max_y) {
+        logo->y = max_y;
+        logo->velocity_y = -fabs(logo->velocity_y) * GUAC_DEMO_LOGO_RESTITUTION;
+        logo->velocity_x *= GUAC_DEMO_LOGO_FLOOR_FRICTION;
+
+        if (fabs(logo->velocity_y) < GUAC_DEMO_LOGO_REST_VELOCITY) {
+            logo->velocity_y = 0;
+            logo->rest_time += elapsed;
+        }
+    }
+
+    if (fabs(logo->velocity_x) > 1)
+        logo->direction_x = logo->velocity_x < 0 ? -1 : 1;
+
+    if (logo->rest_time >= GUAC_DEMO_LOGO_REST_DURATION
+            || logo->fall_time >= GUAC_DEMO_LOGO_MAX_FALL_DURATION) {
+        logo->mode = GUAC_DEMO_LOGO_BOUNCING;
+        logo->velocity_x = logo->direction_x * GUAC_DEMO_LOGO_VELOCITY_X;
+        logo->velocity_y = -GUAC_DEMO_LOGO_VELOCITY_Y;
+    }
+}
+
 static void guac_demo_draw_background(guac_display_layer* layer) {
     guac_display_layer_cairo_context* context =
         guac_display_layer_open_cairo(layer);
@@ -122,56 +224,38 @@ static void guac_demo_draw_background(guac_display_layer* layer) {
     guac_display_layer_close_cairo(layer, context);
 }
 
-static int guac_demo_draw_frame(guac_display_layer* layer,
-        const guac_demo_logo_state* logo, cairo_surface_t* logo_surface,
-        const guac_rect* previous, const guac_demo_stats* stats,
-        int draw_hud) {
-    guac_rect current;
-    guac_demo_logo_bounds(&current, logo);
-
-    guac_rect changed = *previous;
-    guac_rect_extend(&changed, &current);
-
-    guac_rect hud;
-    guac_rect_init(&hud, 0, 0, GUAC_DEMO_HUD_WIDTH, GUAC_DEMO_HUD_HEIGHT);
-
-    if (guac_rect_intersects(&changed, &hud)) {
-        guac_rect_extend(&changed, &hud);
-        draw_hud = 1;
-    }
-    else if (draw_hud)
-        guac_rect_extend(&changed, &hud);
+static void guac_demo_draw_logo(guac_display_layer* layer,
+        const guac_demo_logo_state* logo, cairo_surface_t* logo_surface) {
+    guac_display_layer_resize(layer, (int) ceil(logo->width),
+            (int) ceil(logo->height));
 
     guac_display_layer_cairo_context* context =
         guac_display_layer_open_cairo(layer);
 
-    guac_rect_constrain(&changed, &context->bounds);
-
-    cairo_save(context->cairo);
-
-    cairo_rectangle(context->cairo, changed.left, changed.top,
-            guac_rect_width(&changed), guac_rect_height(&changed));
-    cairo_clip(context->cairo);
-
     cairo_set_operator(context->cairo, CAIRO_OPERATOR_SOURCE);
-    cairo_set_source_rgb(context->cairo, GUAC_DEMO_BACKGROUND_RED,
-            GUAC_DEMO_BACKGROUND_GREEN, GUAC_DEMO_BACKGROUND_BLUE);
+    cairo_set_source_rgba(context->cairo, 0, 0, 0, 0);
     cairo_paint(context->cairo);
 
     cairo_set_operator(context->cairo, CAIRO_OPERATOR_OVER);
-    guac_demo_logo_draw(context->cairo, logo_surface, logo->x, logo->y,
-            logo->scale);
+    guac_demo_logo_draw(context->cairo, logo_surface, 0, 0, logo->scale);
 
-    if (draw_hud)
-        guac_demo_hud_draw(context->cairo, stats);
-
-    cairo_restore(context->cairo);
-
-    guac_rect_extend(&context->dirty, &changed);
+    guac_rect_extend(&context->dirty, &context->bounds);
     context->hint_from = NULL;
 
     guac_display_layer_close_cairo(layer, context);
-    return draw_hud;
+}
+
+static void guac_demo_draw_hud(guac_display_layer* layer,
+        const guac_demo_stats* stats) {
+    guac_display_layer_cairo_context* context =
+        guac_display_layer_open_cairo(layer);
+
+    guac_demo_hud_draw(context->cairo, stats);
+
+    guac_rect_extend(&context->dirty, &context->bounds);
+    context->hint_from = NULL;
+
+    guac_display_layer_close_cairo(layer, context);
 }
 
 void* guac_demo_render_loop_thread(void* data) {
@@ -188,6 +272,19 @@ void* guac_demo_render_loop_thread(void* data) {
 
     guac_display_layer_resize(default_layer, width, height);
     guac_display_layer_set_lossless(default_layer, 1);
+
+    guac_display_layer* logo_layer =
+        guac_display_alloc_layer(demo_client->display, 0);
+    guac_display_layer_set_lossless(logo_layer, 1);
+    guac_display_layer_stack(logo_layer, 1);
+
+    guac_display_layer* hud_layer =
+        guac_display_alloc_layer(demo_client->display, 1);
+    guac_display_layer_set_lossless(hud_layer, 1);
+    guac_display_layer_resize(hud_layer, GUAC_DEMO_HUD_WIDTH,
+            GUAC_DEMO_HUD_HEIGHT);
+    guac_display_layer_stack(hud_layer, 2);
+
     guac_display_set_cursor(demo_client->display, GUAC_DISPLAY_CURSOR_POINTER);
 
     cairo_surface_t* logo_surface = guac_demo_logo_alloc();
@@ -196,6 +293,7 @@ void* guac_demo_render_loop_thread(void* data) {
                 "Nexterm logo could not be decoded and will not be drawn.");
 
     guac_demo_logo_state logo = {
+        .direction_x = 1,
         .velocity_x = GUAC_DEMO_LOGO_VELOCITY_X,
         .velocity_y = GUAC_DEMO_LOGO_VELOCITY_Y
     };
@@ -211,6 +309,10 @@ void* guac_demo_render_loop_thread(void* data) {
     };
 
     guac_demo_draw_background(default_layer);
+    guac_demo_draw_logo(logo_layer, &logo, logo_surface);
+    guac_display_layer_move(logo_layer, (int) floor(logo.x),
+            (int) floor(logo.y));
+    guac_demo_draw_hud(hud_layer, &stats);
     guac_display_end_frame(demo_client->display);
 
     demo_client->render_thread =
@@ -228,13 +330,9 @@ void* guac_demo_render_loop_thread(void* data) {
     guac_timestamp last_sample = guac_timestamp_current();
     guac_timestamp last_hud = 0;
 
+    int handled_presses = 0;
+
     while (client->state == GUAC_CLIENT_RUNNING) {
-        guac_rect previous;
-        guac_demo_logo_bounds(&previous, &logo);
-
-        guac_demo_logo_advance(&logo, width, height,
-                GUAC_DEMO_FRAME_DURATION / 1000000.0);
-
         frames++;
 
         guac_timestamp now = guac_timestamp_current();
@@ -269,7 +367,7 @@ void* guac_demo_render_loop_thread(void* data) {
             stats.height = height;
 
             guac_demo_draw_background(default_layer);
-            guac_demo_logo_bounds(&previous, &logo);
+            guac_demo_draw_logo(logo_layer, &logo, logo_surface);
             previous_signature[0] = '\0';
             last_hud = 0;
 
@@ -278,13 +376,37 @@ void* guac_demo_render_loop_thread(void* data) {
 
         }
 
+        double elapsed = GUAC_DEMO_FRAME_DURATION / 1000000.0;
+        int left_pressed = stats.input.mouse_mask & GUAC_CLIENT_MOUSE_LEFT;
+
+        if (stats.input.press_count != handled_presses) {
+            handled_presses = stats.input.press_count;
+
+            if (left_pressed && guac_demo_logo_contains(&logo,
+                        stats.input.press_x, stats.input.press_y))
+                guac_demo_logo_grab(&logo, stats.input.press_x,
+                        stats.input.press_y);
+        }
+
+        if (logo.mode == GUAC_DEMO_LOGO_HELD && !left_pressed)
+            guac_demo_logo_release(&logo);
+
+        if (logo.mode == GUAC_DEMO_LOGO_HELD)
+            guac_demo_logo_hold(&logo, width, height, stats.input.mouse_x,
+                    stats.input.mouse_y, elapsed);
+        else if (logo.mode == GUAC_DEMO_LOGO_FALLING)
+            guac_demo_logo_fall(&logo, width, height, elapsed);
+        else
+            guac_demo_logo_advance(&logo, width, height, elapsed);
+
         guac_demo_hud_signature(&stats, signature, sizeof(signature));
 
-        int hud_stale = strcmp(signature, previous_signature) != 0
-                && now - last_hud >= GUAC_DEMO_HUD_MIN_INTERVAL;
+        guac_display_layer_move(logo_layer, (int) floor(logo.x),
+                (int) floor(logo.y));
 
-        if (guac_demo_draw_frame(default_layer, &logo, logo_surface, &previous,
-                    &stats, hud_stale)) {
+        if (strcmp(signature, previous_signature) != 0
+                && now - last_hud >= GUAC_DEMO_HUD_MIN_INTERVAL) {
+            guac_demo_draw_hud(hud_layer, &stats);
             snprintf(previous_signature, sizeof(previous_signature), "%s",
                     signature);
             last_hud = now;

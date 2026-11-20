@@ -53,6 +53,11 @@ const AUDIT_ACTIONS = {
     IDENTITY_DELETE: "identity.delete",
     IDENTITY_CREDENTIALS_ACCESS: "identity.credentials_access",
 
+    TRUST_ACCEPT: "trust.accept",
+    TRUST_ACCEPT_CHANGED: "trust.accept_changed",
+    TRUST_REJECT: "trust.reject",
+    TRUST_REMOVE: "trust.remove",
+
     SCRIPT_EXECUTE: "script.execute",
 
     HOOK_EXECUTE: "entry.hook_execute",
@@ -67,6 +72,9 @@ const AUDIT_ACTIONS = {
     AGENT_FILE_RENAME: "agent.file_rename",
     AGENT_FILE_CHMOD: "agent.file_chmod",
     AGENT_FOLDER_CREATE: "agent.folder_create",
+    AGENT_TRANSFER_CREATE: "agent.transfer_create",
+    AGENT_FILE_UPLOAD: "agent.file_upload",
+    AGENT_FILE_DOWNLOAD: "agent.file_download",
 };
 
 const RESOURCE_TYPES = {
@@ -109,6 +117,11 @@ const ACTION_LABELS = {
     "identity.delete": "Identity deleted",
     "identity.credentials_access": "Identity credentials accessed",
 
+    "trust.accept": "Certificate trusted",
+    "trust.accept_changed": "Changed certificate trusted",
+    "trust.reject": "Certificate rejected",
+    "trust.remove": "Trusted certificate removed",
+
     "script.execute": "Script executed",
 
     "entry.hook_execute": "Connection hook executed",
@@ -130,6 +143,9 @@ const ACTION_LABELS = {
     "agent.file_rename": "Agent moved / renamed a path",
     "agent.file_chmod": "Agent changed permissions",
     "agent.folder_create": "Agent created a folder",
+    "agent.transfer_create": "Agent created a file transfer link",
+    "agent.file_upload": "Agent uploaded a file",
+    "agent.file_download": "Agent downloaded a file",
 };
 
 const ACTION_CATEGORIES = [
@@ -138,6 +154,7 @@ const ACTION_CATEGORIES = [
     { key: "folder", label: "Folders (SFTP)", description: "Folder operations performed over SFTP" },
     { key: "folder_mgmt", label: "Folder Management", description: "Folder records management" },
     { key: "identity", label: "Identities", description: "Identity records and credential access" },
+    { key: "trust", label: "Trusted Certificates", description: "Certificates and host keys that were trusted, rejected or removed" },
     { key: "script", label: "Scripts", description: "Script execution" },
     { key: "ai", label: "AI Assistant", description: "Actions performed by the AI assistant on a server" },
     { key: "agent", label: "AI Agents", description: "Actions performed by the AI assistant and external agents connected through the MCP server" },

@@ -1,83 +1,69 @@
 const { Router } = require("express");
+const Joi = require("joi");
+const { route } = require("../utils/route");
+const { objectList, created } = require("../validations/common");
 const { folderCreationValidation, folderEditValidation } = require("../validations/folder");
 const { createFolder, deleteFolder, listFolders, getFolderById, editFolder } = require("../controllers/folder");
-const { validateSchema } = require("../utils/schema");
 
 const app = Router();
 
-/**
- * GET /folder/list
- * @summary List User Folders
- * @description Retrieves a list of all folders created by the authenticated user for organizing servers and resources.
- * @tags Folder
- * @produces application/json
- * @security BearerAuth
- * @return {array} 200 - List of user folders
- */
-app.get("/list", async (req, res) => {
+
+app.get("/list", route({
+    summary: "List user folders",
+    description: "Retrieves a list of all folders created by the authenticated user for organizing servers and resources.",
+    returns: objectList,
+}), async (req, res) => {
     res.json(await listFolders(req.user.id));
 });
 
-app.get("/:folderId", async (req, res) => {
+app.get("/:folderId", route({
+    summary: "Get folder",
+    description: "Returns a folder with its identity profiles and the settings it inherits from its parent folders.",
+    query: Joi.object({ protocol: Joi.string().allow("").description("Only resolve the inherited settings for this protocol") }),
+    returns: Joi.object({
+        id: Joi.number().integer().required(),
+        name: Joi.string().required(),
+        accountId: Joi.number().integer().allow(null),
+        organizationId: Joi.number().integer().allow(null),
+        parentId: Joi.number().integer().allow(null),
+        position: Joi.number().integer(),
+        config: Joi.object().unknown(true),
+        identities: Joi.array().items(Joi.number().integer()),
+    }).unknown(true),
+}), async (req, res) => {
     const folder = await getFolderById(req.user.id, req.params.folderId, req.query.protocol || null);
     if (folder?.code) return res.json(folder);
 
     res.json(folder);
 });
 
-/**
- * PUT /folder
- * @summary Create New Folder
- * @description Creates a new folder for organizing servers and other resources. Folders help users categorize and manage their connections.
- * @tags Folder
- * @produces application/json
- * @security BearerAuth
- * @param {FolderCreation} request.body.required - Folder configuration including name and optional properties
- * @return {object} 200 - Folder successfully created with new folder ID
- * @return {object} 400 - Invalid folder configuration
- */
-app.put("/", async (req, res) => {
-    if (validateSchema(res, folderCreationValidation, req.body)) return;
-
+app.put("/", route({
+    summary: "Create new folder",
+    description: "Creates a new folder for organizing servers and other resources. Folders help users categorize and manage their connections.",
+    body: folderCreationValidation,
+    returns: created,
+}), async (req, res) => {
     const folder = await createFolder(req.user.id, req.body);
     if (folder?.code) return res.json(folder);
 
     res.json({ message: "Folder has been successfully created", id: folder.id });
 });
 
-/**
- * PATCH /folder/{folderId}
- * @summary Update Folder
- * @description Updates an existing folder's configuration such as name or other properties.
- * @tags Folder
- * @produces application/json
- * @security BearerAuth
- * @param {string} folderId.path.required - The unique identifier of the folder to update
- * @param {FolderEdit} request.body.required - Updated folder configuration fields
- * @return {object} 200 - Folder successfully updated
- * @return {object} 404 - Folder not found
- */
-app.patch("/:folderId", async (req, res) => {
-    if (validateSchema(res, folderEditValidation, req.body)) return;
-
+app.patch("/:folderId", route({
+    summary: "Update folder",
+    description: "Updates an existing folder's configuration such as name or other properties.",
+    body: folderEditValidation,
+}), async (req, res) => {
     const response = await editFolder(req.user.id, req.params.folderId, req.body);
     if (response) return res.json(response);
 
     res.json({ message: "Folder has been successfully edited" });
 });
 
-/**
- * DELETE /folder/{folderId}
- * @summary Delete Folder
- * @description Permanently removes a folder from the user's account. Any servers within the folder may be moved to a default location.
- * @tags Folder
- * @produces application/json
- * @security BearerAuth
- * @param {string} folderId.path.required - The unique identifier of the folder to delete
- * @return {object} 200 - Folder successfully deleted
- * @return {object} 404 - Folder not found
- */
-app.delete("/:folderId", async (req, res) => {
+app.delete("/:folderId", route({
+    summary: "Delete folder",
+    description: "Permanently removes a folder from the user's account. Any servers within the folder may be moved to a default location.",
+}), async (req, res) => {
     const response = await deleteFolder(req.user.id, req.params.folderId);
     if (response) return res.json(response);
 

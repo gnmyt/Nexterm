@@ -9,18 +9,18 @@ license = "MIT"
 [dependencies]
 clap = { version = "4", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
-tokio-tungstenite = { version = "0.24", features = ["native-tls"] }
-reqwest = { version = "0.12", features = ["json", "native-tls"] }
+tokio-tungstenite = { version = "0.30", features = ["native-tls"] }
+reqwest = { version = "0.13", features = ["json", "native-tls"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-dialoguer = { version = "0.11", features = ["fuzzy-select"] }
-console = "0.15"
-crossterm = "0.28"
-dirs = "6"
+dialoguer = { version = "0.12", features = ["fuzzy-select"] }
+console = "0.16"
+crossterm = "0.29"
+dirs = "7"
 open = "5"
 anyhow = "1"
 futures-util = "0.3"
-indicatif = "0.17"
+indicatif = "0.18"
 nucleo-matcher = "0.3"
 
 [profile.release]

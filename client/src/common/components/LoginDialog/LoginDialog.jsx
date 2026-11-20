@@ -141,6 +141,7 @@ export const LoginDialog = ({ open }) => {
             if (resultObj.code === 201) sendToast("Error", t("common.errors.invalidCredentials"));
             if (resultObj.code === 202) setTotpRequired(true);
             if (resultObj.code === 203) sendToast("Error", t("common.errors.invalidTwoFactor"));
+            if (resultObj.code === 204) sendToast("Error", t("common.errors.accountLinkRequired"));
             if (resultObj.code === 403) sendToast("Error", t("common.errors.internalAuthDisabled"));
             if (resultObj.token) {
                 updateSessionToken(resultObj.token);
@@ -270,7 +271,7 @@ export const LoginDialog = ({ open }) => {
         : t("common.loginDialog.subtitle");
 
     return (
-        <DialogProvider disableClosing open={open} className="login-card">
+        <DialogProvider disableClosing open={open} className="login-card" portalTarget={document.getElementById("login-root")}>
             <div className="login">
                 <header className="login__header dialog-heading">
                     <div className="login__brand">

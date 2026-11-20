@@ -15,6 +15,11 @@ module.exports.passwordChangeValidation = Joi.object({
     password: Joi.string().min(3).max(150).required(),
 });
 
+module.exports.ownPasswordChangeValidation = Joi.object({
+    currentPassword: Joi.string().max(150).required(),
+    password: Joi.string().min(3).max(150).required(),
+});
+
 module.exports.updateNameValidation = Joi.object({
     firstName: Joi.string().min(1).max(50),
     lastName: Joi.string().min(1).max(50),

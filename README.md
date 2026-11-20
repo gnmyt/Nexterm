@@ -114,6 +114,8 @@ The server listens on port 6989 by default. You can modify this behavior using e
 - `TRUST_PROXY`: Number of reverse proxies in front of Nexterm, so logs and audits show the real client IP instead of the
   proxy's (default: disabled). Use `1` for a single Nginx/Traefik, or pass trusted addresses (`10.10.10.10,192.168.0.0/16`).
   Only enable this if your proxy sets `X-Forwarded-For`, otherwise clients can spoof their IP.
+- `SOURCES_ALLOWED_HOSTS`: Comma-separated hostnames, IPs or CIDR ranges of internal hosts that custom sources may be
+  loaded from (example: `git.example.lan,10.0.0.5`, default: none)
 
 ## 🛡️ Security
 

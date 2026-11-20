@@ -502,7 +502,7 @@ module.exports.listFolders = async (accountId) => {
             }
         });
 
-        organizations.forEach(org => {
+        for (const org of organizations) {
             const requireConnectionReason = org.auditSettings?.requireConnectionReason || false;
 
             result.push({
@@ -510,9 +510,10 @@ module.exports.listFolders = async (accountId) => {
                 name: org.name,
                 type: "organization",
                 requireConnectionReason,
+                canManage: await hasOrganizationPermission(accountId, org.id, Permission.ORG_MANAGE),
                 entries: orgFoldersByOrg[org.id] || [],
             });
-        });
+        }
     }
 
     return result;

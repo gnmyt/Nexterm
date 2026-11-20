@@ -52,5 +52,9 @@ int guac_demo_user_leave_handler(guac_user* user) {
     if (demo_client->display != NULL)
         guac_display_notify_user_left(demo_client->display, user);
 
+    pthread_mutex_lock(&demo_client->state_lock);
+    demo_client->input.mouse_mask = 0;
+    pthread_mutex_unlock(&demo_client->state_lock);
+
     return 0;
 }

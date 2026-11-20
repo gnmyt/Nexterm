@@ -6,7 +6,7 @@ module.exports.createOrganizationSchema = Joi.object({
 });
 
 module.exports.updateOrganizationSchema = Joi.object({
-    name: Joi.string().min(1).max(100),
+    name: Joi.string().trim().min(1).max(100),
     description: Joi.string().max(500).allow("", null),
 });
 

@@ -15,7 +15,7 @@ pub async fn run_session(ws_url: &str) -> Result<()> {
     let (ws, _) = connect_async(ws_url).await.context("WebSocket connect failed")?;
     let (mut tx, mut rx) = ws.split();
     let (cols, rows) = terminal::size().unwrap_or((80, 24));
-    tx.send(Message::Text(format!("\x01{cols},{rows}"))).await?;
+    tx.send(Message::Text(format!("\x01{cols},{rows}").into())).await?;
     terminal::enable_raw_mode()?;
     let result = session_loop(&mut tx, &mut rx).await;
     terminal::disable_raw_mode()?;
@@ -35,7 +35,7 @@ async fn session_loop(tx: &mut WsWrite, rx: &mut WsRead) -> Result<()> {
                 if let Ok((c, r)) = terminal::size() {
                     if c != last_cols || r != last_rows {
                         last_cols = c; last_rows = r;
-                        tx.send(Message::Text(format!("\x01{c},{r}"))).await?;
+                        tx.send(Message::Text(format!("\x01{c},{r}").into())).await?;
                     }
                 }
             }
@@ -57,7 +57,7 @@ async fn session_loop(tx: &mut WsWrite, rx: &mut WsRead) -> Result<()> {
                     match event::read()? {
                         Event::Key(ke) if totp_mode => match ke.code {
                             KeyCode::Enter => {
-                                tx.send(Message::Text(format!("\x03{}", totp_buf))).await?;
+                                tx.send(Message::Text(format!("\x03{}", totp_buf).into())).await?;
                                 totp_mode = false; totp_buf.clear();
                                 write!(stdout, "\r\n")?; stdout.flush()?;
                             }
@@ -69,9 +69,9 @@ async fn session_loop(tx: &mut WsWrite, rx: &mut WsRead) -> Result<()> {
                         },
                         Event::Key(ke) => {
                             let data = key_to_seq(&ke);
-                            if !data.is_empty() { tx.send(Message::Text(data)).await?; }
+                            if !data.is_empty() { tx.send(Message::Text(data.into())).await?; }
                         }
-                        Event::Resize(c, r) => { tx.send(Message::Text(format!("\x01{c},{r}"))).await?; }
+                        Event::Resize(c, r) => { tx.send(Message::Text(format!("\x01{c},{r}").into())).await?; }
                         _ => {}
                     }
                 }
