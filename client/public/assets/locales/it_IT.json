@@ -550,11 +550,11 @@
           "noData": "Non sono disponibili informazioni sul sistema"
         },
         "memory": {
-          "title": "Memory",
-          "summary": "{{used}} of {{total}} ({{percent}}%)",
-          "used": "Used",
-          "cache": "Buffers / Cache",
-          "free": "Free"
+          "title": "Memoria",
+          "summary": "{{used}} di {{total}} ({{percent}}%)",
+          "used": "Di seconda mano",
+          "cache": "Buffer / Cache",
+          "free": "Gratis"
         },
         "performance": {
           "title": "Metriche di prestazione",
@@ -851,6 +851,7 @@
       "noOrganizations": "Non hai ancora nessuna organizzazione.",
       "noOrganizationsDescription": "Creane uno per iniziare a collaborare con il tuo team.",
       "invite": "Invita",
+      "edit": "Edit",
       "delete": "Elimina",
       "leave": "Lascia",
       "members": "Membri",
@@ -898,6 +899,7 @@
       "leaveConfirmation": "Sei sicuro di voler lasciare questa organizzazione?",
       "dialog": {
         "title": "Crea un'organizzazione",
+        "editTitle": "Edit Organization",
         "fields": {
           "name": "Nome",
           "namePlaceholder": "Nome dell'organizzazione",
@@ -906,12 +908,15 @@
         },
         "actions": {
           "cancel": "Annullamento",
-          "create": "Crea"
+          "create": "Crea",
+          "save": "Save"
         },
         "messages": {
           "nameRequired": "Il nome dell'organizzazione è obbligatorio",
           "createSuccess": "Organizzazione creata con successo",
-          "createFailed": "Impossibile creare un'organizzazione"
+          "createFailed": "Impossibile creare un'organizzazione",
+          "updateSuccess": "Organization updated successfully",
+          "updateFailed": "Failed to update organization"
         }
       },
       "sessionSettings": {
@@ -1774,6 +1779,7 @@
       "createFolder": "Crea cartella",
       "deleteFolder": "Elimina cartella",
       "renameFolder": "Rinomina cartella",
+      "renameOrganization": "Rename Organization",
       "folderSettings": "Impostazioni cartella",
       "new": "Nuovo",
       "sshServer": "Server SSH",
@@ -2447,9 +2453,13 @@
     "title": "Ottieni supporto",
     "subtitle": "Hai bisogno di aiuto o vuoi contribuire?",
     "footer": "Grazie per aver utilizzato Nexterm!",
+    "bug": {
+      "title": "Segnala un bug",
+      "description": "Apre una segnalazione di bug con la tua versione già inserita."
+    },
     "issues": {
-      "title": "Segnala un problema",
-      "description": "Hai trovato un bug o hai una richiesta di funzionalità?"
+      "title": "Sfoglia i numeri",
+      "description": "Cerca tra i report già disponibili o richiedi una funzionalità."
     },
     "discord": {
       "title": "Iscriviti a Discord",

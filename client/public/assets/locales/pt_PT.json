@@ -550,11 +550,11 @@
           "noData": "Não há informações do sistema disponíveis"
         },
         "memory": {
-          "title": "Memory",
-          "summary": "{{used}} of {{total}} ({{percent}}%)",
-          "used": "Used",
+          "title": "Memória",
+          "summary": "{{used}} de {{total}} ({{percent}}%)",
+          "used": "Usado",
           "cache": "Buffers / Cache",
-          "free": "Free"
+          "free": "Grátis"
         },
         "performance": {
           "title": "Métricas de desempenho",
@@ -851,6 +851,7 @@
       "noOrganizations": "Ainda não tens nenhuma organização.",
       "noOrganizationsDescription": "Cria uma para começares a colaborar com a tua equipa.",
       "invite": "Convidar",
+      "edit": "Edit",
       "delete": "Apagar",
       "leave": "Saída",
       "members": "Membros",
@@ -898,6 +899,7 @@
       "leaveConfirmation": "Tens a certeza de que queres sair desta organização?",
       "dialog": {
         "title": "Criar organização",
+        "editTitle": "Edit Organization",
         "fields": {
           "name": "Nome",
           "namePlaceholder": "Nome da organização",
@@ -906,12 +908,15 @@
         },
         "actions": {
           "cancel": "Cancelar",
-          "create": "Criar"
+          "create": "Criar",
+          "save": "Save"
         },
         "messages": {
           "nameRequired": "É obrigatório indicar o nome da organização",
           "createSuccess": "A organização foi criada com sucesso",
-          "createFailed": "Não foi possível criar a organização"
+          "createFailed": "Não foi possível criar a organização",
+          "updateSuccess": "Organization updated successfully",
+          "updateFailed": "Failed to update organization"
         }
       },
       "sessionSettings": {
@@ -1774,6 +1779,7 @@
       "createFolder": "Criar pasta",
       "deleteFolder": "Apagar pasta",
       "renameFolder": "Renomear pasta",
+      "renameOrganization": "Rename Organization",
       "folderSettings": "Definições da pasta",
       "new": "Novo",
       "sshServer": "Servidor SSH",
@@ -2447,9 +2453,13 @@
     "title": "Obter apoio",
     "subtitle": "Precisas de ajuda ou queres contribuir?",
     "footer": "Obrigado por usares o Nexterm!",
+    "bug": {
+      "title": "Comunicar um erro",
+      "description": "Abre um relatório de erro com a tua versão já preenchida."
+    },
     "issues": {
-      "title": "Comunicar um problema",
-      "description": "Encontraste um erro ou tens alguma sugestão de funcionalidade?"
+      "title": "Explorar edições",
+      "description": "Pesquisa os relatórios já existentes ou pede uma funcionalidade."
     },
     "discord": {
       "title": "Junta-te ao Discord",

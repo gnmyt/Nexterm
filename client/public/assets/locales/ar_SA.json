@@ -550,11 +550,11 @@
           "noData": "لا توجد معلومات نظام متاحة"
         },
         "memory": {
-          "title": "Memory",
-          "summary": "{{used}} of {{total}} ({{percent}}%)",
-          "used": "Used",
-          "cache": "Buffers / Cache",
-          "free": "Free"
+          "title": "الذاكرة",
+          "summary": "{{used}} من موقع {{total}} ({{percent}}٪)",
+          "used": "مستعمل",
+          "cache": "الذاكرة المؤقتة / ذاكرة التخزين المؤقت",
+          "free": "مجاني"
         },
         "performance": {
           "title": "مقاييس الأداء",
@@ -851,6 +851,7 @@
       "noOrganizations": "ليس لديك أي مؤسسات بعد.",
       "noOrganizationsDescription": "أنشئ واحدة لبدء التعاون مع فريقك.",
       "invite": "دعوة",
+      "edit": "Edit",
       "delete": "حذف",
       "leave": "مغادرة",
       "members": "الأعضاء",
@@ -898,6 +899,7 @@
       "leaveConfirmation": "هل أنت متأكد من رغبتك في مغادرة هذه المؤسسة؟",
       "dialog": {
         "title": "إنشاء مؤسسة",
+        "editTitle": "Edit Organization",
         "fields": {
           "name": "الاسم",
           "namePlaceholder": "اسم المؤسسة",
@@ -906,12 +908,15 @@
         },
         "actions": {
           "cancel": "إلغاء",
-          "create": "إنشاء"
+          "create": "إنشاء",
+          "save": "Save"
         },
         "messages": {
           "nameRequired": "اسم المؤسسة مطلوب",
           "createSuccess": "تم إنشاء المؤسسة بنجاح",
-          "createFailed": "فشل في إنشاء المؤسسة"
+          "createFailed": "فشل في إنشاء المؤسسة",
+          "updateSuccess": "Organization updated successfully",
+          "updateFailed": "Failed to update organization"
         }
       },
       "sessionSettings": {
@@ -1774,6 +1779,7 @@
       "createFolder": "إنشاء مجلد",
       "deleteFolder": "حذف المجلد",
       "renameFolder": "إعادة تسمية المجلد",
+      "renameOrganization": "Rename Organization",
       "folderSettings": "إعدادات المجلد",
       "new": "جديد",
       "sshServer": "خادم SSH",
@@ -2447,9 +2453,13 @@
     "title": "احصل على الدعم",
     "subtitle": "هل تحتاج إلى مساعدة أو ترغب في المساهمة؟",
     "footer": "شكراً لاستخدامك \"نيكستيرم\"!",
+    "bug": {
+      "title": "الإبلاغ عن خطأ",
+      "description": "يفتح تقريرًا عن الخلل مع إدخال رقم إصدارك تلقائيًّا."
+    },
     "issues": {
-      "title": "الإبلاغ عن مشكلة",
-      "description": "هل عثرت على خطأ أو لديك طلب ميزة؟"
+      "title": "تصفح الأعداد",
+      "description": "ابحث في التقارير الموجودة أو اطلب إضافة ميزة."
     },
     "discord": {
       "title": "انضم إلى ديسكورد",

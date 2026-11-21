@@ -550,11 +550,11 @@
           "noData": "Žádné informace o systému nejsou k dispozici"
         },
         "memory": {
-          "title": "Memory",
-          "summary": "{{used}} of {{total}} ({{percent}}%)",
-          "used": "Used",
-          "cache": "Buffers / Cache",
-          "free": "Free"
+          "title": "Paměť",
+          "summary": "{{used}} z {{total}} ({{percent}}%)",
+          "used": "Použité",
+          "cache": "Vyrovnávací paměti / Cache",
+          "free": "Zdarma"
         },
         "performance": {
           "title": "Výkonnostní metriky",
@@ -851,6 +851,7 @@
       "noOrganizations": "Zatím nemáte žádné organizace.",
       "noOrganizationsDescription": "Vytvořte jednu pro zahájení spolupráce s vaším týmem.",
       "invite": "Pozvat",
+      "edit": "Edit",
       "delete": "Smazat",
       "leave": "Opustit",
       "members": "Členové",
@@ -898,6 +899,7 @@
       "leaveConfirmation": "Opravdu chcete opustit tuto organizaci?",
       "dialog": {
         "title": "Vytvořit organizaci",
+        "editTitle": "Edit Organization",
         "fields": {
           "name": "Název",
           "namePlaceholder": "Název organizace",
@@ -906,12 +908,15 @@
         },
         "actions": {
           "cancel": "Zrušit",
-          "create": "Vytvořit"
+          "create": "Vytvořit",
+          "save": "Save"
         },
         "messages": {
           "nameRequired": "Název organizace je povinný",
           "createSuccess": "Organizace úspěšně vytvořena",
-          "createFailed": "Nepodařilo se vytvořit organizaci"
+          "createFailed": "Nepodařilo se vytvořit organizaci",
+          "updateSuccess": "Organization updated successfully",
+          "updateFailed": "Failed to update organization"
         }
       },
       "sessionSettings": {
@@ -1774,6 +1779,7 @@
       "createFolder": "Vytvořit složku",
       "deleteFolder": "Smazat složku",
       "renameFolder": "Přejmenovat složku",
+      "renameOrganization": "Rename Organization",
       "folderSettings": "Nastavení složky",
       "new": "Nový",
       "sshServer": "SSH server",
@@ -2447,9 +2453,13 @@
     "title": "Získat podporu",
     "subtitle": "Potřebujete pomoc nebo chcete přispět?",
     "footer": "Děkujeme, že používáte Nexterm!",
+    "bug": {
+      "title": "Nahlásit chybu",
+      "description": "Otevře hlášení o chybě s předvyplněnou informací o vaší verzi."
+    },
     "issues": {
-      "title": "Nahlášení problému",
-      "description": "Našli jste chybu nebo máte požadavek na funkci?"
+      "title": "Procházet čísla",
+      "description": "Prohledejte stávající zprávy nebo požádejte o přidání nové funkce."
     },
     "discord": {
       "title": "Připojte se k Discordu",
