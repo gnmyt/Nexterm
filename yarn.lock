@@ -2,13 +2,13 @@
 # yarn lockfile v1
 
 
-"@ai-sdk/anthropic@^4.0.105":
-  version "4.0.105"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/anthropic/-/anthropic-4.0.105.tgz#809ce6510e297806289122aee1aab8e6015f2711"
-  integrity sha512-i6kmv6y+FGTBxOPtLRrb5I+92WcFFGubhd33CD0JeaSyFOnLJ8my4a9olkAgyR9fACHMzxFBmoEHd0uO4i72bA==
+"@ai-sdk/anthropic@^4.0.106":
+  version "4.0.106"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/anthropic/-/anthropic-4.0.106.tgz#ae7895e688a2819ece21925daedf9c16d2f980ad"
+  integrity sha512-CKqIoPG91+uqmZxxxQEaS2anQlDxA+4UPeYB0TgcHAit1HZgx0m2y9JJ7QwJVYmgBuZHO1OXowMovV0kwvrTcQ==
   dependencies:
-    "@ai-sdk/provider" "4.0.38"
-    "@ai-sdk/provider-utils" "5.0.81"
+    "@ai-sdk/provider" "4.0.39"
+    "@ai-sdk/provider-utils" "5.0.82"
 
 "@ai-sdk/gateway@4.0.150":
   version "4.0.150"
@@ -35,16 +35,6 @@
     "@ai-sdk/provider" "4.0.39"
     "@ai-sdk/provider-utils" "5.0.82"
 
-"@ai-sdk/provider-utils@5.0.81":
-  version "5.0.81"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.81.tgz#13b4e366e7f6a0ef90a0fd7b9d34fcba7aa94113"
-  integrity sha512-pfvvdQ3d1WxdBuug/mnGEP6E48cPokwD8dMBnsFeeAUp0/rb/H2aj0f3mwOiY62gu/Cu5GO44e+SE5nDHyBWMA==
-  dependencies:
-    "@ai-sdk/provider" "4.0.38"
-    "@standard-schema/spec" "^1.1.0"
-    "@workflow/serde" "4.1.0"
-    eventsource-parser "^3.0.8"
-
 "@ai-sdk/provider-utils@5.0.82":
   version "5.0.82"
   resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.82.tgz#2f99a03bc3a4d4ab30fcf8182229aeaf26be10a6"
@@ -54,13 +44,6 @@
     "@standard-schema/spec" "^1.1.0"
     "@workflow/serde" "4.1.0"
     eventsource-parser "^3.0.8"
-
-"@ai-sdk/provider@4.0.38":
-  version "4.0.38"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-4.0.38.tgz#0974ad3105069f1cbfbf5896e28abe73849d3191"
-  integrity sha512-GElz70UUCuDFFyD6m6aQJFgRY0HEABQzB5otzgkrisYaF5mnss7o0upAmbBTSD6KWiM9h7lZm1ls2c7xzHR8CA==
-  dependencies:
-    json-schema "^0.4.0"
 
 "@ai-sdk/provider@4.0.39":
   version "4.0.39"
