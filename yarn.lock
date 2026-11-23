@@ -27,13 +27,13 @@
     "@ai-sdk/provider" "4.0.38"
     "@ai-sdk/provider-utils" "5.0.81"
 
-"@ai-sdk/openai@^4.0.118":
-  version "4.0.118"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/openai/-/openai-4.0.118.tgz#0dd7d2b894b2ae4b9c56578a99cb3e8466f81680"
-  integrity sha512-pBsFeB+IudrX96P0ic9AO/1NPnfB6IyoS2B2pnhBJ/Ovt4bsvAmBOPeUxwEfYbQyfetJdVFep9sfYX42uVX3SQ==
+"@ai-sdk/openai@^4.0.121":
+  version "4.0.121"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/openai/-/openai-4.0.121.tgz#6907796c1b9373eb328bf253d4e34d91e5797a48"
+  integrity sha512-7rDVkDk/nTHlryx/gOglSDL0Zh1Hq7rMtEcVgRCDsKKf/F/CcIJ3RnCmudYeyeLyuDE5fEcZQAdaNWYgOuwvSQ==
   dependencies:
-    "@ai-sdk/provider" "4.0.38"
-    "@ai-sdk/provider-utils" "5.0.81"
+    "@ai-sdk/provider" "4.0.39"
+    "@ai-sdk/provider-utils" "5.0.82"
 
 "@ai-sdk/provider-utils@5.0.81":
   version "5.0.81"
@@ -45,10 +45,27 @@
     "@workflow/serde" "4.1.0"
     eventsource-parser "^3.0.8"
 
+"@ai-sdk/provider-utils@5.0.82":
+  version "5.0.82"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-5.0.82.tgz#2f99a03bc3a4d4ab30fcf8182229aeaf26be10a6"
+  integrity sha512-9s3Le9LsTR0exy14H8SERw4uMgFhiP0yJVoLefzfQCnnptj71noYh1AoVEsjfJjmMH1y16+1OqBVTDpTpU6M3Q==
+  dependencies:
+    "@ai-sdk/provider" "4.0.39"
+    "@standard-schema/spec" "^1.1.0"
+    "@workflow/serde" "4.1.0"
+    eventsource-parser "^3.0.8"
+
 "@ai-sdk/provider@4.0.38":
   version "4.0.38"
   resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-4.0.38.tgz#0974ad3105069f1cbfbf5896e28abe73849d3191"
   integrity sha512-GElz70UUCuDFFyD6m6aQJFgRY0HEABQzB5otzgkrisYaF5mnss7o0upAmbBTSD6KWiM9h7lZm1ls2c7xzHR8CA==
+  dependencies:
+    json-schema "^0.4.0"
+
+"@ai-sdk/provider@4.0.39":
+  version "4.0.39"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-4.0.39.tgz#d356a6f65c991d21234d53a0e2c583acab18b17e"
+  integrity sha512-jRvAhvW23+TeMGVCME2WGejP/TjzyDg7TplUep3t8HcEYnC2/8zqhCy9RRrjjVs1ljcygABZ8pQ21MbCRdF01w==
   dependencies:
     json-schema "^0.4.0"
 
