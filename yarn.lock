@@ -3078,10 +3078,10 @@ lazystream@^1.0.0:
   dependencies:
     readable-stream "^2.0.5"
 
-ldapts@^9.2.0:
-  version "9.2.0"
-  resolved "https://registry.yarnpkg.com/ldapts/-/ldapts-9.2.0.tgz#80ce01d102b51f49def3829d152222cd6d1081f9"
-  integrity sha512-5mDg3OT5fDP9DUXga9dCLW8cMW24OTOKT4pv/Qj+f2zCV3qxb+gkZLCzMAqzVTOANoycidKkYpPvkclUQU2aXw==
+ldapts@^9.3.1:
+  version "9.3.1"
+  resolved "https://registry.yarnpkg.com/ldapts/-/ldapts-9.3.1.tgz#5e90030a74c2f09f50635ef728b63fd728deba97"
+  integrity sha512-MiClSiwcoAuI2I/63N+fotWZvnATkbpRsKzUzhSjqhY9bk6UmMevhZBRjO1GtpX/PbeRpOKs4W9P8Do6284Bqw==
   dependencies:
     strict-event-emitter-types "2.0.0"
 
