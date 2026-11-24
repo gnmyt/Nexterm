@@ -19,7 +19,7 @@
     "@modelcontextprotocol/sdk": "^1.32.1",
     "@napi-rs/canvas": "^1.1.1",
     "@simplewebauthn/server": "^14.1.0",
-    "ai": "^7.0.177",
+    "ai": "^7.0.179",
     "archiver": "^8.0.0",
     "bcrypt": "^6.0.0",
     "commander": "^15.1.0",
