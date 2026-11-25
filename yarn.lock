@@ -2024,7 +2024,7 @@ commander@^15.1.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-15.1.0.tgz#397e6a353fda8e9d4e1eb9e3c0c28644cfd69406"
   integrity sha512-cgnQ88TRrWcC7pVq46RzJVRMktu3W2RcbnoidnfBsl1bmDCBwJS/udcIZpKoCrbAYYaCqsz1yZCVIgbIaU3ddQ==
 
-commander@^2.8.1:
+commander@^2.20.3, commander@^2.8.1:
   version "2.20.3"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
   integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
@@ -2123,6 +2123,11 @@ crypt@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/crypt/-/crypt-0.0.2.tgz#88d7ff7ec0dfb86f713dc87bbb42d044d3e6c41b"
   integrity sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow==
+
+cssfilter@0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/cssfilter/-/cssfilter-0.0.10.tgz#c6d2672632a2e5c83e013e6864a42ce8defd20ae"
+  integrity sha512-FAaLDaplstoRsDR8XGYH51znUN0UY7nMc6Z9/fvE8EXGwvJE9hu7W2vHwx1+bd6gCYnln9nLbzxFTrcO9YQDZw==
 
 csstype@^3.2.3:
   version "3.2.3"
@@ -4624,10 +4629,10 @@ vite@^5.4.14:
   optionalDependencies:
     fsevents "~2.3.3"
 
-vitepress-openapi@^0.2.15:
-  version "0.2.15"
-  resolved "https://registry.yarnpkg.com/vitepress-openapi/-/vitepress-openapi-0.2.15.tgz#eb4f0e6f27320be93095a6eeb84902a2c9bcd675"
-  integrity sha512-YmlkwyfvNhJC30Yg2us6+OeSTmuPojQvk3GMxpVF+Zq3TwIoQGFLkcUcHvuOizS4xu5/QVwuheQKUUlU6C7hrA==
+vitepress-openapi@^0.2.16:
+  version "0.2.16"
+  resolved "https://registry.yarnpkg.com/vitepress-openapi/-/vitepress-openapi-0.2.16.tgz#84fa1ae53b3f7d11d0a5333394ff04e1b01d35f7"
+  integrity sha512-Glp062ywCp+3gBdTwf9j6rG1YOzxhWu34tiIkB9fIELRkTxEIBAe1jNT9Watz+GqWin8gCwgV61M5tVkJTCSUw==
   dependencies:
     "@lucide/vue" "^1.39.0"
     "@vueuse/core" "^14.4.0"
@@ -4635,6 +4640,7 @@ vitepress-openapi@^0.2.15:
     clsx "^2.1.1"
     markdown-it-link-attributes "^4.0.1"
     reka-ui "^2.10.4"
+    xss "^1.0.17"
 
 vitepress@^1.6.4:
   version "1.6.4"
@@ -4790,6 +4796,14 @@ xml-naming@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/xml-naming/-/xml-naming-0.3.0.tgz#46c1e18bfe2858479982dd2accf34d16e749eda2"
   integrity sha512-ghig2TBE/H11aOVgmahA3MhimvkBr6JIYknH/Dhdk10nXwdbIqBJsbfMxpvFPG8bAw77gN29aQWvKpmVoPlvPQ==
+
+xss@^1.0.17:
+  version "1.0.17"
+  resolved "https://registry.yarnpkg.com/xss/-/xss-1.0.17.tgz#c761ef703d9b26603d7b19898a778cbd9361059f"
+  integrity sha512-+SEr5IDSgTBnhT6bnnf0mVRHT91+HU517zkahLNhkWLz8retCgeR1YDT4OknLiExA5+chn2Wy7z3KyjvnD8A2w==
+  dependencies:
+    commander "^2.20.3"
+    cssfilter "0.0.10"
 
 xtend@^4.0.0:
   version "4.0.2"
