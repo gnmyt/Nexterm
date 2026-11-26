@@ -25,7 +25,7 @@
     "asciinema-player": "^3.18.1",
     "chart.js": "^4.6.1",
     "fuse.js": "^7.5.0",
-    "i18next": "^27.2.3",
+    "i18next": "^27.2.4",
     "i18next-browser-languagedetector": "^8.3.1",
     "i18next-http-backend": "^4.1.0",
     "marked": "^18.2.1",
