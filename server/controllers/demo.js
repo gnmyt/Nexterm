@@ -13,6 +13,7 @@ const Script = require("../models/Script");
 const Theme = require("../models/Theme");
 const Keymap = require("../models/Keymap");
 const Tag = require("../models/Tag");
+const AuditLog = require("../models/AuditLog");
 const { deleteAccount } = require("./account");
 const { getSeededDemo } = require("../utils/demoSeeder");
 const { isDemoMode, DEMO_SETTINGS } = require("../utils/demoMode");
@@ -20,7 +21,7 @@ const logger = require("../utils/logger");
 
 const CLEANUP_INTERVAL_MS = 60 * 1000;
 
-const GUEST_OWNED_MODELS = [Snippet, Script, Keymap, Tag];
+const GUEST_OWNED_MODELS = [Snippet, Script, Keymap, Tag, AuditLog];
 
 const removeGuest = async (accountId) => {
     await deleteAccount(accountId);
@@ -57,6 +58,8 @@ module.exports.createGuestSession = async ({ ip, userAgent }) => {
         const account = await Account.create({
             username, password, firstName: "Demo", lastName: "Guest", demoExpiresAt: expiresAt,
         }, { transaction });
+
+        await AuditLog.destroy({ where: { accountId: account.id }, transaction });
 
         await GroupMember.create({ groupId: guestGroupId, accountId: account.id }, { transaction });
 
