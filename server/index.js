@@ -70,9 +70,11 @@ app.ws("/api/ws/tunnel", require("./routes/tunnel"));
 app.ws("/api/ws/state", require("./routes/state"));
 
 if (process.env.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "../dist")));
+    const client = require("./middlewares/staticFiles")(path.join(__dirname, "../dist"));
+    app.use(client);
+    app.use(express.static(path.join(__dirname, "../dist"), { index: false }));
 
-    app.get("*name", (req, res) =>
+    app.get("*name", client.index, (req, res) =>
         res.sendFile(path.join(__dirname, "../dist", "index.html"))
     );
 } else {
