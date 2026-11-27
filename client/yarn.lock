@@ -1921,10 +1921,10 @@ marked@14.0.0:
   resolved "https://registry.yarnpkg.com/marked/-/marked-14.0.0.tgz#79a1477358a59e0660276f8fec76de2c33f35d83"
   integrity sha512-uIj4+faQ+MgHgwUW1l2PsPglZLOLOT1uErt06dAPtx2kjteLAkbsd/0FiYg/MGS+i7ZKLb7w2WClxHkzOOuryQ==
 
-marked@^18.2.1:
-  version "18.2.1"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-18.2.1.tgz#636e42a4418333a26356285033dec8b344487f48"
-  integrity sha512-ii4bxCTCqqwpT86XZWgJNs+ZnAIZksmLGYMViWA7PDIXYIeNo1x6cDdX3JOip9NM/cI6p8z57FxliACboTruMA==
+marked@^18.3.0:
+  version "18.3.0"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-18.3.0.tgz#6d5806657a56567edc9e25beb436b9053b1738ea"
+  integrity sha512-ed8zmPXlBb3UfGXN5iHMQyMhFpdqLgoV5umUXx/Q1R+FW3q8VpqpyoKUwlENL9appo2UMvNLURDVaT3AMOryGA==
 
 math-intrinsics@^1.1.0:
   version "1.1.0"
