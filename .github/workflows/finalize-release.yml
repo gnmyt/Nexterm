@@ -50,6 +50,7 @@ jobs:
       - name: Generate and upload SHA256SUMS
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
           TAG: "v${{ inputs.version }}"
         run: |
           mkdir -p "$RUNNER_TEMP/assets"
