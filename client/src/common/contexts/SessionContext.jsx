@@ -26,6 +26,12 @@ export const SessionProvider = ({ children }) => {
         if (activeSessions.some(s => s.id === sessionId)) setActiveSessionId(sessionId);
     }), [activeSessions]);
 
+    useEffect(() => {
+        const active = activeSessions.find(s => s.id === activeSessionId);
+        const name = active?.server?.name;
+        document.title = name ? `${name} - Nexterm` : "Nexterm";
+    }, [activeSessions, activeSessionId]);
+
     return (
         <SessionContext.Provider value={{ activeSessions, setActiveSessions, activeSessionId, setActiveSessionId, poppedOutSessions, popOutSession }}>
             {children}
