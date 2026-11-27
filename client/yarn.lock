@@ -750,10 +750,10 @@ arraybuffer.prototype.slice@^1.0.4:
     get-intrinsic "^1.2.6"
     is-array-buffer "^3.0.4"
 
-asciinema-player@^3.18.1:
-  version "3.18.1"
-  resolved "https://registry.yarnpkg.com/asciinema-player/-/asciinema-player-3.18.1.tgz#ca490ecc3cc267a8dfd6119901bc00c230d17011"
-  integrity sha512-H3blHwZYerDkjUVNABB0zjIzZhZu+JT0/FXT7Skc+4cpa2i7bDab49uOztsIguej4Ppfw6JS0V8J5/6VNqIIkQ==
+asciinema-player@^3.19.0:
+  version "3.19.0"
+  resolved "https://registry.yarnpkg.com/asciinema-player/-/asciinema-player-3.19.0.tgz#8bf1e312fd3fb68dc793f6a268ac684cc29d052b"
+  integrity sha512-iS+5f8PPlCOPiMcoXBGXep0wwTc0xfjx0kL8xvgTRjev4oomfMR4tOXL44mB0PdVZbN5mTDOjY7wEvjX5P0rUg==
   dependencies:
     solid-js "^1.9.18"
 
