@@ -22,7 +22,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = providers.gradleProperty("versionCode").orNull?.toInt() ?: 16
-        versionName = providers.gradleProperty("versionName").orNull ?: "1.2.2"
+        versionName = providers.gradleProperty("versionName").orNull ?: "1.2.3"
         ndk { abiFilters += providers.gradleProperty("abi").orNull?.let(::listOf) ?: listOf("arm64-v8a", "x86_64") }
     }
     signingConfigs {

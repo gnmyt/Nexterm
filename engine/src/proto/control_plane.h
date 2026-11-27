@@ -6,7 +6,7 @@
 #include <pthread.h>
 #include <openssl/ssl.h>
 
-#define NEXTERM_ENGINE_VERSION "1.2.2-BETA"
+#define NEXTERM_ENGINE_VERSION "1.2.3-BETA"
 
 struct nexterm_peer;
 
