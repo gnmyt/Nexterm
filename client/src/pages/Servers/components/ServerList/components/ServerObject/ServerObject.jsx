@@ -1,6 +1,6 @@
 import Icon from "@mdi/react";
 import { mdiSleep } from "@mdi/js";
-import { getIconPath } from "@/common/utils/iconUtils.js";
+import EntryIcon from "@/common/components/EntryIcon.jsx";
 import "./styles.sass";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { useLiveSessions } from "@/common/contexts/LiveSessionContext.jsx";
@@ -105,7 +105,7 @@ export const ServerObject = ({ id, name, position, folderId, organizationId, nes
                     ? (status === 'offline' || status === 'stopped' ? "pve-icon pve-icon-offline" : "pve-icon")
                     : (status === 'offline' ? "system-icon system-icon-offline" : "system-icon")
             }>
-                <Icon path={getIconPath(icon)} />
+                <EntryIcon name={icon} />
             </div>
             <div className="server-text">
                 <p className="server-name truncate-text">{name}</p>

@@ -1,5 +1,5 @@
 import { createPortal } from "react-dom";
-import { useContext, useState, useEffect, useCallback, useMemo } from "react";
+import { useContext, useState, useEffect, useCallback, useMemo, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
 import { mdiClose, mdiLogout, mdiMagnify } from "@mdi/js";
@@ -178,7 +178,7 @@ export const SettingsDialog = ({ open, onClose, initialTab = "account" }) => {
                         </header>
                         <div className="settings-dialog-body" ref={setBody}>
                             <SettingsSectionsContext.Provider value={sectionRegistry}>
-                                <div className="settings-dialog-page" key={currentPage.key}>{currentPage.content}</div>
+                                <div className="settings-dialog-page" key={currentPage.key}><Suspense fallback={null}>{currentPage.content}</Suspense></div>
                             </SettingsSectionsContext.Provider>
                         </div>
                     </section>

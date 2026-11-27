@@ -9,7 +9,7 @@ import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import { SnippetContext } from "@/common/contexts/SnippetContext.jsx";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { getSidebarNavigation, getAllSettingsPages } from "@/common/utils/navigationConfig.jsx";
-import { getIconPath } from "@/common/utils/iconUtils.js";
+import EntryIcon from "@/common/components/EntryIcon.jsx";
 import EmptyState from "@/common/components/EmptyState";
 import "./styles.sass";
 
@@ -32,7 +32,7 @@ export const QuickAction = ({ isOpen, onClose }) => {
         entry.type === "folder" || entry.type === "organization" ? flattenServers(entry.entries, [...path, entry.name])
         : entry.type === "server" || entry.type?.startsWith("pve-") ? [{
             id: `server-${entry.id}`, type: "server", name: entry.name, path: path.join(" / "),
-            icon: getIconPath(entry.icon), data: entry, protocol: entry.protocol || entry.type,
+            data: entry, protocol: entry.protocol || entry.type,
         }] : []
     );
 
@@ -136,7 +136,7 @@ export const QuickAction = ({ isOpen, onClose }) => {
                                          className={`quick-action-item${selected ? " selected" : ""}`}
                                          onClick={() => handleSelectItem(item)} onMouseEnter={() => handleMouseEnter(index)}
                                          onMouseMove={handleMouseMove}>
-                                        <span className="item-icon"><Icon path={item.icon} /></span>
+                                        <span className="item-icon">{item.type === "server" ? <EntryIcon name={item.data.icon} /> : <Icon path={item.icon} />}</span>
                                         <span className="item-content">
                                             <span className="item-name">{item.name}</span>
                                             {meta.length > 0 && (

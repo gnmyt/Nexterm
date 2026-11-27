@@ -12,10 +12,9 @@ import { mdiCompassOutline, mdiHistory, mdiPower, mdiPlay, mdiServerNetwork, mdi
 import { getRequest } from "@/common/utils/RequestUtil";
 import { useTranslation } from "react-i18next";
 import { ContextMenu, ContextMenuItem, useContextMenu } from "@/common/components/ContextMenu";
-import { getIconPath } from "@/common/utils/iconUtils.js";
+import EntryIcon from "@/common/components/EntryIcon.jsx";
 import Button from "@/common/components/Button";
-import DownloadAppsDialog from "@/common/components/DownloadAppsDialog";
-import { DeviceLinkDialog } from "@/common/components/DeviceLinkDialog/DeviceLinkDialog.jsx";
+import { lazyDialog } from "@/common/utils/lazyDialog.jsx";
 import { getAvatarLabel } from "@/common/utils/avatar.js";
 import { useDrop } from "react-dnd";
 import { isDemoGuest } from "@/common/utils/demo.js";
@@ -38,9 +37,12 @@ const flattenServers = (entries, parent = null, result = []) => {
     return result;
 };
 
+const DownloadAppsDialog = lazyDialog(() => import("@/common/components/DownloadAppsDialog"));
+const DeviceLinkDialog = lazyDialog(() => import("@/common/components/DeviceLinkDialog"));
+
 const ConnectionItem = ({ icon, name, meta, className = "", ...props }) => (
     <div className={`recent-item${className}`} {...props}>
-        <div className="item-icon"><Icon path={getIconPath(icon)} /></div>
+        <div className="item-icon"><EntryIcon name={icon} /></div>
         <div className="item-info">
             <span className="item-name">{name}</span>
             <span className="item-meta">{meta}</span>

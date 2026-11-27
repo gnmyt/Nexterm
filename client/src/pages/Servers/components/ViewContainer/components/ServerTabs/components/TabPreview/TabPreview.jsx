@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Icon from "@mdi/react";
 import { mdiNoteEditOutline } from "@mdi/js";
-import { getIconPath } from "@/common/utils/iconUtils.js";
+import EntryIcon from "@/common/components/EntryIcon.jsx";
 import "./styles.sass";
 
 const CARD_WIDTH = 320;
@@ -96,8 +96,9 @@ export const TabPreview = ({ preview, getSessionElement }) => {
                 <div className="tab-preview-header">
                     {pageInfo?.icon
                         ? <img src={pageInfo.icon} className="tab-preview-icon" alt="" />
-                        : <Icon path={session.type === "notes" ? mdiNoteEditOutline : getIconPath(session.server?.icon)}
-                                className="tab-preview-icon" />}
+                        : session.type === "notes"
+                            ? <Icon path={mdiNoteEditOutline} className="tab-preview-icon" />
+                            : <EntryIcon name={session.server?.icon} className="tab-preview-icon" />}
                     <div className="tab-preview-titles">
                         <span className="tab-preview-title">{title}</span>
                         {subtitle && <span className="tab-preview-subtitle">{subtitle}</span>}

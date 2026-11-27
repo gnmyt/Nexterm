@@ -6,11 +6,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useContext, useState, useRef, useEffect } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
-import SupportDialog from "@/common/components/SupportDialog";
 import Tooltip from "@/common/components/Tooltip";
 import LetterAvatar from "@/common/components/LetterAvatar";
 import { useTranslation } from "react-i18next";
-import { SettingsDialog } from "@/common/components/SettingsDialog/SettingsDialog.jsx";
+import { lazyDialog } from "@/common/utils/lazyDialog.jsx";
 import { getSidebarNavigation } from "@/common/utils/navigationConfig.jsx";
 import { GITHUB_URL } from "@/App.jsx";
 import { openExternalUrl } from "@/common/utils/TauriUtil.js";
@@ -18,6 +17,9 @@ import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { getServers, getActiveServerId, getServerDisplayName, switchServer, removeServer } from "@/common/utils/ConnectorServers.js";
 import { getAvatarLabel } from "@/common/utils/avatar.js";
 import { formatDemoTime, isDemoGuest, useDemoCountdown } from "@/common/utils/demo.js";
+
+const SettingsDialog = lazyDialog(() => import("@/common/components/SettingsDialog/SettingsDialog.jsx"));
+const SupportDialog = lazyDialog(() => import("@/common/components/SupportDialog"));
 
 export const Sidebar = ({ onToggleCollapse }) => {
     const { t } = useTranslation();

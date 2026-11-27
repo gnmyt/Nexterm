@@ -16,19 +16,26 @@ import { SnippetProvider } from "@/common/contexts/SnippetContext.jsx";
 import { ScriptProvider } from "@/common/contexts/ScriptContext.jsx";
 import { TagProvider } from "@/common/contexts/TagContext.jsx";
 import { QuickActionProvider } from "@/common/contexts/QuickActionContext.jsx";
-import { Suspense, lazy, useState, useEffect, useContext, useRef } from "react";
+import { Suspense, useState, useEffect, useContext, useRef } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import Loading from "@/common/components/Loading";
 import { ErrorBoundary } from "@/common/components/ErrorBoundary";
 import TitleBar from "@/common/components/TitleBar";
 import ConnectionErrorBanner from "@/common/components/ConnectionErrorBanner";
-import { waitForTauri } from "@/common/utils/TauriUtil.js";
+import { isTauriSettled, waitForTauri } from "@/common/utils/TauriUtil.js";
 import MobileNav from "@/common/components/MobileNav";
 import ThemeLoader from "@/common/components/ThemeLoader";
 import AIAssistant from "@/common/components/AIAssistant";
+import Sidebar from "@/common/components/Sidebar";
+import TranslationsReady from "@/common/components/TranslationsReady.jsx";
 import { patchRequest } from "@/common/utils/RequestUtil.js";
 
-const Sidebar = lazy(() => import("@/common/components/Sidebar"));
+export const AppLoading = () => (
+    <div className="app-wrapper">
+        <TitleBar />
+        <Loading />
+    </div>
+);
 
 const PreferencesWrapper = ({ children }) => {
     const { user, login } = useContext(UserContext);
@@ -41,7 +48,7 @@ const PreferencesWrapper = ({ children }) => {
 
 const AppContent = () => {
     const { user } = useContext(UserContext);
-    const [tauriReady, setTauriReady] = useState(false);
+    const [tauriReady, setTauriReady] = useState(isTauriSettled);
     const [isLeftPaneCollapsed, setIsLeftPaneCollapsed] = useState(false);
     const [isLeftPaneHovering, setIsLeftPaneHovering] = useState(false);
     const leftPaneRef = useRef(null);
@@ -81,14 +88,7 @@ const AppContent = () => {
             document.removeEventListener("mousedown", handleMouseMove, true);
         };
     }, [isLeftPaneCollapsed, isLeftPaneHovering]);
-    if (!tauriReady) {
-        return (
-            <div className="app-wrapper">
-                <TitleBar />
-                <Loading />
-            </div>
-        );
-    }
+    if (!tauriReady) return <AppLoading />;
 
     const isLeftPaneVisible = !isLeftPaneCollapsed || isLeftPaneHovering;
 
@@ -106,31 +106,31 @@ const AppContent = () => {
                                             <TagProvider>
                                             <SessionProvider>
                                                 <QuickActionProvider>
-                                                    <div className="app-wrapper" onMouseLeave={() => setIsLeftPaneHovering(false)}>
-                                                        <TitleBar showTabs />
-                                                        <ConnectionErrorBanner />
-                                                        <div className="content-wrapper">
-                                                            <div
-                                                                className={`left-pane${isLeftPaneCollapsed ? " collapsed" : ""}${isLeftPaneVisible ? " open" : ""}`}
-                                                                ref={leftPaneRef}
-                                                            >
-                                                                <Suspense fallback={<Loading />}>
-                                                                    <Sidebar onToggleCollapse={toggleLeftPane} />
-                                                                </Suspense>
+                                                    <TranslationsReady fallback={<AppLoading />}>
+                                                        <div className="app-wrapper" onMouseLeave={() => setIsLeftPaneHovering(false)}>
+                                                            <TitleBar showTabs />
+                                                            <ConnectionErrorBanner />
+                                                            <div className="content-wrapper">
                                                                 <div
-                                                                    className="left-pane-slot"
-                                                                    id="left-pane-slot"
-                                                                />
+                                                                    className={`left-pane${isLeftPaneCollapsed ? " collapsed" : ""}${isLeftPaneVisible ? " open" : ""}`}
+                                                                    ref={leftPaneRef}
+                                                                >
+                                                                    <Sidebar onToggleCollapse={toggleLeftPane} />
+                                                                    <div
+                                                                        className="left-pane-slot"
+                                                                        id="left-pane-slot"
+                                                                    />
+                                                                </div>
+                                                                <div className="main-content">
+                                                                    <Suspense fallback={<Loading />}>
+                                                                        <Outlet />
+                                                                    </Suspense>
+                                                                </div>
                                                             </div>
-                                                            <div className="main-content">
-                                                                <Suspense fallback={<Loading />}>
-                                                                    <Outlet />
-                                                                </Suspense>
-                                                            </div>
+                                                            <MobileNav />
+                                                            <AIAssistant />
                                                         </div>
-                                                        <MobileNav />
-                                                        <AIAssistant />
-                                                    </div>
+                                                    </TranslationsReady>
                                                 </QuickActionProvider>
                                             </SessionProvider>
                                             </TagProvider>

@@ -5,15 +5,12 @@ import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { downloadRequest, uploadFile } from "@/common/utils/RequestUtil.js";
 import { ActionConfirmDialog } from "@/common/components/ActionConfirmDialog/ActionConfirmDialog.jsx";
-import Editor, { loader } from "@monaco-editor/react";
+import Editor from "@/common/monaco";
 import Icon from "@mdi/react";
 import { mdiContentSave } from "@mdi/js";
 import { getFileIcon } from "@/common/utils/fileIcons.js";
 import FloatingWindow, { FloatingWindowAction } from "@/common/components/FloatingWindow";
 import "./styles.sass";
-import * as monaco from "monaco-editor";
-
-loader.config({ monaco });
 
 const normalizeFilename = (filename) => filename?.toLowerCase() || "";
 

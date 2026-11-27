@@ -1,22 +1,24 @@
 import { mdiServerOutline, mdiCodeBraces, mdiChartBoxOutline, mdiShieldCheckOutline, mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiCreationOutline, mdiKeyVariant, mdiConsole, mdiKeyboardOutline, mdiCloudDownloadOutline, mdiChartLine, mdiHarddisk, mdiFolderOutline, mdiEngine, mdiPalette, mdiShieldKeyOutline, mdiCertificateOutline } from "@mdi/js";
-import Account from "@/pages/Settings/pages/Account";
-import Appearance from "@/pages/Settings/pages/Appearance";
-import Terminal from "@/pages/Settings/pages/Terminal";
-import FileManager from "@/pages/Settings/pages/FileManager";
-import Keymaps from "@/pages/Settings/pages/Keymaps";
-import Identities from "@/pages/Settings/pages/Identities";
-import TrustedCertificates from "@/pages/Settings/pages/TrustedCertificates";
-import Sessions from "@/pages/Settings/pages/Sessions";
-import Organizations from "@/pages/Settings/pages/Organizations";
-import Users from "@/pages/Settings/pages/Users";
-import Authentication from "@/pages/Settings/pages/Authentication";
-import Sources from "@/pages/Settings/pages/Sources";
-import Monitoring from "@/pages/Settings/pages/Monitoring";
-import Backup from "@/pages/Settings/pages/Backup";
-import AI from "@/pages/Settings/pages/AI";
-import Engines from "@/pages/Settings/pages/Engines";
-import Permissions from "@/pages/Settings/pages/Permissions";
+import { lazy } from "react";
 import { Permission } from "@/common/utils/permissions.js";
+
+const Account = lazy(() => import("@/pages/Settings/pages/Account"));
+const Appearance = lazy(() => import("@/pages/Settings/pages/Appearance"));
+const Terminal = lazy(() => import("@/pages/Settings/pages/Terminal"));
+const FileManager = lazy(() => import("@/pages/Settings/pages/FileManager"));
+const Keymaps = lazy(() => import("@/pages/Settings/pages/Keymaps"));
+const Identities = lazy(() => import("@/pages/Settings/pages/Identities"));
+const TrustedCertificates = lazy(() => import("@/pages/Settings/pages/TrustedCertificates"));
+const Sessions = lazy(() => import("@/pages/Settings/pages/Sessions"));
+const Organizations = lazy(() => import("@/pages/Settings/pages/Organizations"));
+const Users = lazy(() => import("@/pages/Settings/pages/Users"));
+const Authentication = lazy(() => import("@/pages/Settings/pages/Authentication"));
+const Sources = lazy(() => import("@/pages/Settings/pages/Sources"));
+const Monitoring = lazy(() => import("@/pages/Settings/pages/Monitoring"));
+const Backup = lazy(() => import("@/pages/Settings/pages/Backup"));
+const AI = lazy(() => import("@/pages/Settings/pages/AI"));
+const Engines = lazy(() => import("@/pages/Settings/pages/Engines"));
+const Permissions = lazy(() => import("@/pages/Settings/pages/Permissions"));
 
 export const getSidebarNavigation = t => [
     { title: t('common.sidebar.servers'), key: "servers", path: "/servers", icon: mdiServerOutline, toggleEvent: "toggleServerList" },

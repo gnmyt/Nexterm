@@ -5,18 +5,16 @@ import "@fontsource/plus-jakarta-sans/700.css";
 import "@fontsource/plus-jakarta-sans/800.css";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import "@/common/styles/main.sass";
-import { useEffect, useState, lazy } from "react";
-import Root from "@/common/layouts/Root.jsx";
+import { lazy } from "react";
+import Root, { AppLoading } from "@/common/layouts/Root.jsx";
 import PopoutRoot from "@/common/layouts/PopoutRoot.jsx";
 import ShareRoot from "@/common/layouts/ShareRoot.jsx";
 import TunnelRoot from "@/common/layouts/TunnelRoot.jsx";
 import LinkRoot from "@/common/layouts/LinkRoot.jsx";
-import i18n from "./i18n.js";
-import Loading from "@/common/components/Loading";
+import TranslationsReady from "@/common/components/TranslationsReady.jsx";
 import { RouteErrorPage } from "@/common/components/ErrorBoundary";
-import TitleBar from "@/common/components/TitleBar";
+import Servers from "@/pages/Servers";
 
-const Servers = lazy(() => import("@/pages/Servers"));
 const Snippets = lazy(() => import("@/pages/Snippets"));
 const Monitoring = lazy(() => import("@/pages/Monitoring"));
 const Audit = lazy(() => import("@/pages/Audit"));
@@ -29,20 +27,9 @@ export const GITHUB_URL = "https://github.com/gnmyt/Nexterm";
 export const DISCORD_URL = "https://dc.gnm.dev/";
 export const DOCS_URL = "https://docs.nexterm.dev/";
 
+const whenTranslated = (layout) => <TranslationsReady fallback={<AppLoading />}>{layout}</TranslationsReady>;
+
 const App = () => {
-    const [translationsLoaded, setTranslationsLoaded] = useState(false);
-
-    useEffect(() => {
-        if (i18n.isInitialized) {
-            setTranslationsLoaded(true);
-            return;
-        }
-        
-        i18n.on("initialized", () => {
-            setTranslationsLoaded(true);
-        });
-    }, []);
-
     const router = createBrowserRouter([
         {
             path: "/",
@@ -60,7 +47,7 @@ const App = () => {
         },
         {
             path: "/link",
-            element: <LinkRoot />,
+            element: whenTranslated(<LinkRoot />),
             errorElement: <RouteErrorPage />,
             children: [
                 { path: "/link", element: <Link /> }
@@ -68,7 +55,7 @@ const App = () => {
         },
         {
             path: "/popout",
-            element: <PopoutRoot />,
+            element: whenTranslated(<PopoutRoot />),
             errorElement: <RouteErrorPage />,
             children: [
                 { path: "/popout/:sessionId", element: <Popout /> },
@@ -77,7 +64,7 @@ const App = () => {
         },
         {
             path: "/share",
-            element: <ShareRoot />,
+            element: whenTranslated(<ShareRoot />),
             errorElement: <RouteErrorPage />,
             children: [
                 { path: "/share/:shareId", element: <Share /> }
@@ -85,22 +72,13 @@ const App = () => {
         },
         {
             path: "/tunnel",
-            element: <TunnelRoot />,
+            element: whenTranslated(<TunnelRoot />),
             errorElement: <RouteErrorPage />,
             children: [
                 { path: "/tunnel/:entryId", element: <Tunnel /> }
             ],
         },
     ]);
-
-    if (!translationsLoaded) {
-        return (
-            <div className="app-wrapper">
-                <TitleBar />
-                <Loading />
-            </div>
-        );
-    }
 
     return <RouterProvider router={router}/>;
 };

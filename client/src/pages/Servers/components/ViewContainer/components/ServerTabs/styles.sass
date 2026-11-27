@@ -18,6 +18,10 @@
   overflow: visible
   position: relative
 
+  .view-container > &:not(.revealed)
+    box-sizing: border-box
+    min-height: var(--tab-bar-height)
+
   &.revealed
     position: absolute
     top: 0

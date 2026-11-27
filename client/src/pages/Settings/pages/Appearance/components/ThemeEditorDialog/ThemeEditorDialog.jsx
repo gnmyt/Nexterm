@@ -6,11 +6,8 @@ import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { DialogProvider } from "@/common/components/Dialog";
 import Button from "@/common/components/Button";
 import IconInput from "@/common/components/IconInput";
-import Editor, { loader } from "@monaco-editor/react";
-import * as monaco from "monaco-editor";
+import Editor from "@/common/monaco";
 import { mdiFormTextbox, mdiTextBoxOutline } from "@mdi/js";
-
-loader.config({ monaco });
 
 const getDefaultCSS = () =>
 `:root {

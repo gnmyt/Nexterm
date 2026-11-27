@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
-import LoginDialog from "@/common/components/LoginDialog";
-import ConnectorSetup from "@/common/components/ConnectorSetup";
+import { lazyDialog } from "@/common/utils/lazyDialog.jsx";
+import TranslationsReady from "@/common/components/TranslationsReady.jsx";
 import { getRequest, postRequest } from "@/common/utils/RequestUtil.js";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
@@ -10,6 +10,9 @@ import {
     getServers, getActiveServerId,
     removeServer, updateServerToken, switchServer as switchServerUtil
 } from "@/common/utils/ConnectorServers.js";
+
+const LoginDialog = lazyDialog(() => import("@/common/components/LoginDialog"));
+const ConnectorSetup = lazyDialog(() => import("@/common/components/ConnectorSetup"));
 
 export const UserContext = createContext({});
 
@@ -132,11 +135,13 @@ export const UserProvider = ({ children }) => {
 
     return (
         <UserContext.Provider value={{ updateSessionToken, user, sessionToken, firstTimeSetup, login, logout, overrideToken, hasPermission, isConnectorMode, addingServer, setAddingServer }}>
-            {isConnectorMode ? (
-                <ConnectorSetup open={!sessionToken || addingServer} isAddMode={addingServer} onCancelAdd={() => setAddingServer(false)} />
-            ) : (
-                <LoginDialog open={!sessionToken} />
-            )}
+            <TranslationsReady>
+                {isConnectorMode ? (
+                    <ConnectorSetup open={!sessionToken || addingServer} isAddMode={addingServer} onCancelAdd={() => setAddingServer(false)} />
+                ) : (
+                    <LoginDialog open={!sessionToken} />
+                )}
+            </TranslationsReady>
             {children}
         </UserContext.Provider>
     );

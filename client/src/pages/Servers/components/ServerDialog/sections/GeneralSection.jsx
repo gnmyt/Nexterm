@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { mdiFormTextbox, mdiInformationOutline } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import Input from "@/common/components/IconInput";
 import SelectBox from "@/common/components/SelectBox";
-import IconChooser from "../components/IconChooser";
 import { getRequest } from "@/common/utils/RequestUtil.js";
 import { SectionBlock } from "@/common/components/SectionedDialog";
 import Field from "@/common/components/Field";
+
+const IconChooser = lazy(() => import("../components/IconChooser"));
 
 export const EngineField = ({ config, setConfig }) => {
     const { t } = useTranslation();
@@ -44,7 +45,7 @@ const GeneralSection = ({ name, setName, icon, setIcon, config, setConfig, showI
                 </Field>
                 {showIcon && (
                     <Field label={t("servers.dialog.fields.icon")}>
-                        <IconChooser selected={icon} setSelected={setIcon} />
+                        <Suspense fallback={null}><IconChooser selected={icon} setSelected={setIcon} /></Suspense>
                     </Field>
                 )}
             </div>
