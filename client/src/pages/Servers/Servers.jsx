@@ -1,15 +1,10 @@
 import "./styles.sass";
 import ServerList from "@/pages/Servers/components/ServerList";
-import { useContext, useEffect, useState, useCallback, useRef } from "react";
+import { useContext, useEffect, useState, useCallback, useRef, lazy, Suspense } from "react";
 import { createPortal } from "react-dom";
 import WelcomePanel from "@/pages/Servers/components/WelcomePanel";
-import ServerDialog from "@/pages/Servers/components/ServerDialog";
 import ViewContainer from "@/pages/Servers/components/ViewContainer";
-import SSHConfigImportDialog from "@/pages/Servers/components/SSHConfigImportDialog";
-import ConnectionReasonDialog from "@/pages/Servers/components/ConnectionReasonDialog";
-import DirectConnectDialog from "@/pages/Servers/components/DirectConnectDialog";
-import FileEditorWindow from "@/common/components/FileEditorWindow";
-import FilePreviewWindow from "@/common/components/FilePreviewWindow";
+import { lazyDialog } from "@/common/utils/lazyDialog.jsx";
 import { useSessionLayout } from "@/pages/Servers/components/ViewContainer/hooks/useSessionLayout.js";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
 import { useLiveSessions } from "@/common/contexts/LiveSessionContext.jsx";
@@ -22,6 +17,13 @@ import { isTauri } from "@/common/utils/TauriUtil.js";
 import { getTabId, getBrowserId, requiresIdentity, canConnectWithoutPrompt } from "@/common/utils/ConnectionUtil.js";
 import { postRequest, deleteRequest } from "@/common/utils/RequestUtil";
 import { getExpectedDisplaySize, resolveScale, resolveScaleSetting, scaleToDpi } from "@/common/utils/displayScale.js";
+
+const ServerDialog = lazyDialog(() => import("@/pages/Servers/components/ServerDialog"));
+const SSHConfigImportDialog = lazyDialog(() => import("@/pages/Servers/components/SSHConfigImportDialog"));
+const ConnectionReasonDialog = lazyDialog(() => import("@/pages/Servers/components/ConnectionReasonDialog"), (props) => props.isOpen);
+const DirectConnectDialog = lazyDialog(() => import("@/pages/Servers/components/DirectConnectDialog"));
+const FileEditorWindow = lazy(() => import("@/common/components/FileEditorWindow"));
+const FilePreviewWindow = lazy(() => import("@/common/components/FilePreviewWindow"));
 
 const makeReconnectKey = () => {
     const values = new Uint32Array(4);
@@ -715,7 +717,7 @@ export const Servers = () => {
                                openTerminalFromFileManager={openTerminalFromFileManager}
                                sessionLayout={sessionLayout}
                                connectFromDrop={connectFromDrop} />}
-            {openFileEditors.map((editor, index) => (
+            <Suspense fallback={null}>{openFileEditors.map((editor, index) => (
                 editor.type === "preview" ? (
                     <FilePreviewWindow
                         key={editor.id}
@@ -731,7 +733,7 @@ export const Servers = () => {
                         onClose={() => setOpenFileEditors(prev => prev.filter(e => e.id !== editor.id))}
                     />
                 )
-            ))}
+            ))}</Suspense>
         </div>
     );
 };

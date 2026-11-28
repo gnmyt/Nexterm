@@ -1,32 +1,70 @@
-import * as mdiIcons from "@mdi/js";
+import { useSyncExternalStore } from "react";
+import {
+    mdiAccessPoint, mdiApi, mdiApple, mdiAtlassian, mdiAws, mdiCentos, mdiCloud,
+    mdiCodeBraces, mdiConsole, mdiCube, mdiDatabase, mdiDebian,
+    mdiDesktopClassic, mdiDocker, mdiFedora, mdiFlaskOutline, mdiFolderNetwork, mdiFreebsd,
+    mdiGentoo, mdiGit, mdiGithub, mdiGitlab, mdiGoogle, mdiGoogleCloud, mdiKubernetes, mdiLaptop, mdiLinux,
+    mdiMicrosoft, mdiMicrosoftAzure, mdiMicrosoftWindows, mdiMonitor, mdiNas, mdiRaspberryPi, mdiRedhat,
+    mdiRouter, mdiServer, mdiServerNetwork, mdiServerOutline, mdiShieldAccount, mdiUbuntu, mdiWebhook,
+} from "@mdi/js";
+import { loadIcon } from "virtual:mdi-icon-set";
 
-export const getIconPath = (iconName) =>
-    (iconName && mdiIcons[iconName]) || mdiIcons.mdiServerOutline;
-
-/** Maps known SSO issuer domains to MDI icon paths */
-export const providerIconMap = {
-    "login.microsoftonline.com": mdiIcons.mdiMicrosoft,      // Microsoft Entra/Microsoft
-    "accounts.google.com": mdiIcons.mdiGoogle,               // Google Workspace
-    "appleid.apple.com": mdiIcons.mdiApple,                  // Apple
-    "github.com": mdiIcons.mdiGithub,                        // GitHub
-    "gitlab.com": mdiIcons.mdiGitlab,                        // GitLab
-    "atlassian.com": mdiIcons.mdiAtlassian,                  // Atlassian (Jira/Confluence)
-    // Add more as needed...
+export const POPULAR_ICONS = {
+    mdiServerOutline, mdiMicrosoftWindows, mdiLinux, mdiDebian, mdiUbuntu,
+    mdiFedora, mdiApple, mdiDocker, mdiKubernetes, mdiDatabase,
+    mdiCloud, mdiRaspberryPi, mdiConsole, mdiMonitor, mdiCube,
+    mdiFreebsd, mdiServer, mdiDesktopClassic, mdiLaptop, mdiNas,
+    mdiRouter, mdiAccessPoint, mdiWebhook, mdiApi, mdiCodeBraces,
+    mdiGit, mdiGithub, mdiGitlab, mdiAws, mdiMicrosoftAzure,
+    mdiGoogleCloud, mdiRedhat,
+    mdiCentos, mdiGentoo,
 };
 
-/**
- * Returns the icon (MDI path) for an authentication provider based on issuer URI or a known domain.
- * @param {object} provider - Provider object which should have 'issuer' field.
- */
+const known = new Map(Object.entries({ ...POPULAR_ICONS, mdiFolderNetwork, mdiFlaskOutline, mdiServerNetwork }));
+const requested = new Set();
+const listeners = new Set();
+
+const subscribe = (listener) => {
+    listeners.add(listener);
+    return () => listeners.delete(listener);
+};
+
+const request = (iconName) => {
+    if (requested.has(iconName)) return;
+    requested.add(iconName);
+    loadIcon(iconName).then((path) => {
+        if (!path) return;
+        known.set(iconName, path);
+        listeners.forEach((listener) => listener());
+    }, () => requested.delete(iconName));
+};
+
+const getIconPath = (iconName) => {
+    if (!iconName) return mdiServerOutline;
+    const path = known.get(iconName);
+    if (!path && /^mdi[A-Z]/.test(iconName)) request(iconName);
+    return path || mdiServerOutline;
+};
+
+export const useIconPath = (iconName) => useSyncExternalStore(subscribe, () => getIconPath(iconName));
+
+export const providerIconMap = {
+    "login.microsoftonline.com": mdiMicrosoft,
+    "accounts.google.com": mdiGoogle,
+    "appleid.apple.com": mdiApple,
+    "github.com": mdiGithub,
+    "gitlab.com": mdiGitlab,
+    "atlassian.com": mdiAtlassian,
+};
+
 export function getProviderIcon(provider) {
-    if (!provider?.issuer) return mdiIcons.mdiShieldAccount;
+    if (!provider?.issuer) return mdiShieldAccount;
     try {
-        // Extract domain from issuer (e.g. https://login.microsoftonline.com/xxx)
         const url = new URL(provider.issuer);
         const domain = url.hostname.toLowerCase();
-        return providerIconMap[domain] || mdiIcons.mdiShieldAccount;
+        return providerIconMap[domain] || mdiShieldAccount;
     } catch (e) {
         console.debug("Failed to parse issuer for icon:", provider?.issuer, e);
-        return mdiIcons.mdiShieldAccount;
+        return mdiShieldAccount;
     }
 }

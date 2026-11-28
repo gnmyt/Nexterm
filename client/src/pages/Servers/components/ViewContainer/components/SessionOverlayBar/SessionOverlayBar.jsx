@@ -2,7 +2,7 @@ import { useState } from "react";
 import Icon from "@mdi/react";
 import { mdiFullscreen, mdiFullscreenExit, mdiMenu } from "@mdi/js";
 import { useTranslation } from "react-i18next";
-import { getIconPath } from "@/common/utils/iconUtils.js";
+import EntryIcon from "@/common/components/EntryIcon.jsx";
 import { ContextMenu, useContextMenu } from "@/common/components/ContextMenu";
 import { RemoteDesktopMenuItems } from "../SessionMenu";
 import RemoteSessionStrip from "../RemoteSessionStrip";
@@ -26,7 +26,7 @@ export const SessionOverlayBar = ({ session, controls, fullscreenEnabled, onFull
             <div className="session-overlay-zone" />
             <div className={`session-overlay-bar${pinned ? " pinned" : ""}`}>
                 <div className="session-overlay-bar__title">
-                    <Icon path={getIconPath(session.server?.icon)} />
+                    <EntryIcon name={session.server?.icon} />
                     <span>{session.server?.name}</span>
                 </div>
                 {controls && <RemoteSessionStrip controls={controls} />}

@@ -8,8 +8,13 @@
   --safe-area-top: env(safe-area-inset-top, 0px)
   --ui-scale: 1
   font-size: calc(16px * var(--ui-scale))
+  --tab-bar-height: 3.175rem
+
+  @media (max-width: breakpoints.$tablet)
+    --tab-bar-height: 3.875rem
 
   @media (max-width: breakpoints.$mobile)
+    --tab-bar-height: 3.125rem
     --mobile-nav-height: calc(3.5rem + env(safe-area-inset-bottom, 0px))
     --content-height: calc(100vh - var(--safe-area-top))
 

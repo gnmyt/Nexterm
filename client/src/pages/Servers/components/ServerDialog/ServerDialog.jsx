@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { getSections, validateRequiredFields, getFieldConfig } from "./utils/fieldConfig.js";
 import { withConfigDefaults } from "./utils/configDefaults.js";
 import { useUnsavedChanges } from "@/common/hooks/useUnsavedChanges.js";
-import * as mdiIcons from "@mdi/js";
+import { mdiConsole, mdiDesktopClassic, mdiFlaskOutline, mdiFolderNetwork, mdiMonitor, mdiServerNetwork } from "@mdi/js";
 import GeneralSection from "./sections/GeneralSection.jsx";
 import ConnectionSection from "./sections/ConnectionSection.jsx";
 import IdentitiesSection, { buildServerIdentities } from "./sections/IdentitiesSection.jsx";
@@ -21,7 +21,7 @@ import "./styles.sass";
 
 const PROTOCOL_DEFAULT_PORTS = { ssh: "22", telnet: "23", rdp: "3389", vnc: "5900", sftp: "22", ftp: "21", ftps: "21" };
 const PROTOCOL_DEFAULT_ICONS = { ssh: "mdiConsole", telnet: "mdiConsole", rdp: "mdiMicrosoftWindows", vnc: "mdiMonitor", sftp: "mdiFolderNetwork", ftp: "mdiFolderNetwork", ftps: "mdiFolderNetwork", demo: "mdiFlaskOutline" };
-const PROTOCOL_HEADER_ICONS = { ssh: "mdiConsole", telnet: "mdiConsole", rdp: "mdiMonitor", vnc: "mdiDesktopClassic", sftp: "mdiFolderNetwork", ftp: "mdiFolderNetwork", ftps: "mdiFolderNetwork", demo: "mdiFlaskOutline" };
+const PROTOCOL_HEADER_ICONS = { ssh: mdiConsole, telnet: mdiConsole, rdp: mdiMonitor, vnc: mdiDesktopClassic, sftp: mdiFolderNetwork, ftp: mdiFolderNetwork, ftps: mdiFolderNetwork, demo: mdiFlaskOutline };
 const INTEGRATION_PROTOCOL = "pve";
 const PASSWORD_MASK = "********";
 
@@ -301,7 +301,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
         return () => document.removeEventListener("keydown", submitOnEnter);
     }, [open, handleSubmit]);
 
-    const headerIcon = isIntegration || entryType?.startsWith("pve") ? "mdiServerNetwork" : (PROTOCOL_HEADER_ICONS[config.protocol] || "mdiServerNetwork");
+    const headerIcon = isIntegration || entryType?.startsWith("pve") ? mdiServerNetwork : (PROTOCOL_HEADER_ICONS[config.protocol] || mdiServerNetwork);
     const title = isIntegration
         ? (editServerId ? (name || t("servers.proxmoxDialog.title.edit")) : t("servers.proxmoxDialog.title.import"))
         : editServerId
@@ -315,7 +315,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
         <>
         {certificateReviewDialog}
         <SectionedDialog ref={dialogRef} open={open} onClose={onClose} isDirty={isDirty} inheritance={inheritance}
-                         icon={mdiIcons[headerIcon] || mdiIcons.mdiServerNetwork} title={title} subtitle={subtitle} sections={sections}
+                         icon={headerIcon} title={title} subtitle={subtitle} sections={sections}
                          onSubmit={handleSubmit}
                          submitLabel={isIntegration
                              ? t(editServerId ? "servers.proxmoxDialog.actions.edit" : "servers.proxmoxDialog.actions.import")

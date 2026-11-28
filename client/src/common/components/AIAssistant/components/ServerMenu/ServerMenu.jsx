@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
 import { mdiMagnify } from "@mdi/js";
 import { ContextMenu, ContextMenuItem } from "@/common/components/ContextMenu";
-import { getIconPath } from "@/common/utils/iconUtils.js";
+import EntryIcon from "@/common/components/EntryIcon.jsx";
 import { protocolLabel } from "../../utils.js";
 import "./styles.sass";
 
@@ -45,7 +45,7 @@ export const ServerMenu = ({ menu, allServers, allowedIds, onToggle }) => {
                 {matches.length === 0 && <p className="ai-server-menu-empty">{t("servers.aiAssistant.noMatches")}</p>}
                 {matches.map((server) => (
                     <ContextMenuItem key={server.id} keepOpen checked={allowedIds.includes(server.id)}
-                                     icon={<Icon path={getIconPath(server.icon)} />}
+                                     icon={<EntryIcon name={server.icon} />}
                                      onClick={() => onToggle(server.id)} label={server.name}
                                      description={[protocolLabel(server.protocol), server.path].filter(Boolean).join(" · ")} />
                 ))}

@@ -1,37 +1,17 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { createPortal } from "react-dom";
-import * as mdi from "@mdi/js";
+import mdi from "virtual:mdi-icon-set/mdi-all";
 import Icon from "@mdi/react";
 import { mdiMagnify, mdiClose, mdiChevronDown } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import Tooltip from "@/common/components/Tooltip";
+import { POPULAR_ICONS } from "@/common/utils/iconUtils.js";
 import "./styles.sass";
 
-const getAllIcons = () => {
-    const icons = [];
-    for (const [name, path] of Object.entries(mdi)) {
-        if (name.startsWith("mdi") && typeof path === "string" && path.startsWith("M")) {
-            const displayName = name.replace(/^mdi/, "").replace(/([A-Z])/g, " $1").trim().toLowerCase();
-            icons.push({ name, displayName, path });
-        }
-    }
-    return icons;
-};
+const toIcon = ([name, path]) => ({ name, displayName: name.replace(/^mdi/, "").replace(/([A-Z])/g, " $1").trim().toLowerCase(), path });
 
-const ALL_ICONS = getAllIcons();
-
-const POPULAR_ICON_NAMES = [
-    "mdiServerOutline", "mdiMicrosoftWindows", "mdiLinux", "mdiDebian", "mdiUbuntu",
-    "mdiFedora", "mdiApple", "mdiDocker", "mdiKubernetes", "mdiDatabase",
-    "mdiCloud", "mdiRaspberryPi", "mdiConsole", "mdiMonitor", "mdiCube",
-    "mdiFreebsd", "mdiServer", "mdiDesktopClassic", "mdiLaptop", "mdiNas",
-    "mdiRouter", "mdiAccessPoint", "mdiWebhook", "mdiApi", "mdiCodeBraces",
-    "mdiGit", "mdiGithub", "mdiGitlab", "mdiAws", "mdiMicrosoftAzure",
-    "mdiGoogleCloud", "mdiDigitalocean", "mdiCloudflare", "mdiNginx", "mdiRedhat",
-    "mdiArchLinux", "mdiCentos", "mdiAlpineLinux", "mdiSuse", "mdiGentoo"
-];
-
-const POPULAR_ICONS = POPULAR_ICON_NAMES.map(name => ALL_ICONS.find(icon => icon.name === name)).filter(Boolean);
+const ALL_ICONS = Object.entries(mdi).map(toIcon);
+const POPULAR = Object.entries(POPULAR_ICONS).map(toIcon);
 
 export const IconChooser = ({ selected, setSelected }) => {
     const { t } = useTranslation();
@@ -49,7 +29,7 @@ export const IconChooser = ({ selected, setSelected }) => {
     }, [selected]);
 
     const filteredIcons = useMemo(() => {
-        if (!searchTerm) return POPULAR_ICONS;
+        if (!searchTerm) return POPULAR;
         const term = searchTerm.toLowerCase();
         return ALL_ICONS.filter(icon => icon.displayName.includes(term)).slice(0, 100);
     }, [searchTerm]);

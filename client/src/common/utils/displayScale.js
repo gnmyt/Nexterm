@@ -106,12 +106,26 @@ const VIEW_INSET_KEY = "nexterm.viewInset";
 
 const getRect = (selector) => document.querySelector(selector)?.getBoundingClientRect();
 
+const tabBarHeight = () => {
+    const shown = document.querySelector(".view-container > .server-tabs:not(.revealed)");
+    if (shown) return shown.getBoundingClientRect().height;
+
+    const root = getComputedStyle(document.documentElement);
+    return parseFloat(root.getPropertyValue("--tab-bar-height")) * parseFloat(root.fontSize);
+};
+
+const defaultViewInset = () => {
+    if (document.getElementById("titlebar-tabs-slot")) return { width: 0, height: 0 };
+    return { width: 0, height: tabBarHeight() };
+};
+
 const getViewInset = () => {
     try {
         const inset = JSON.parse(localStorage.getItem(VIEW_INSET_KEY));
-        return { width: Number(inset?.width) || 0, height: Number(inset?.height) || 0 };
+        if (!inset) return defaultViewInset();
+        return { width: Number(inset.width) || 0, height: Number(inset.height) || 0 };
     } catch {
-        return { width: 0, height: 0 };
+        return defaultViewInset();
     }
 };
 

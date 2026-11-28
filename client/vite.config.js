@@ -2,6 +2,10 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import * as path from "path";
 import * as fs from "fs";
+import { precompress } from "./vite-plugins/precompress.js";
+import { mdiIconSet } from "./vite-plugins/mdiIconSet.js";
+import { startChunk } from "./vite-plugins/startChunk.js";
+import { inlinePublicStyles } from "./vite-plugins/inlinePublicStyles.js";
 
 const guacamolePlugin = () => {
     const modulesDir = path.resolve(__dirname, '../vendor/guacamole-client/guacamole-common-js/src/main/webapp/modules');
@@ -23,8 +27,22 @@ const guacamolePlugin = () => {
     };
 }
 
+const start = startChunk();
+
 export default defineConfig({
-    plugins: [guacamolePlugin(), react()],
+    plugins: [guacamolePlugin(), react(), mdiIconSet(), start, inlinePublicStyles(), precompress()],
+    build: {
+        rolldownOptions: {
+            output: {
+                codeSplitting: {
+                    groups: [
+                        { name: "start", test: start.isStartModule, priority: 2 },
+                        { name: "icons", test: /mdi-icon-set\/icon\//, minShareCount: 2, priority: 1 },
+                    ],
+                },
+            },
+        },
+    },
     legacy: {
         inconsistentCjsInterop: true,
     },

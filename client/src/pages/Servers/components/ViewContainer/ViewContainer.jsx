@@ -1,19 +1,20 @@
 import "./styles.sass";
 import ServerTabs from "./components/ServerTabs";
 import SessionDropZone from "./components/SessionDropZone";
-import { useState, useRef, useCallback, useEffect, useMemo } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo, lazy, Suspense } from "react";
 import { createPortal } from "react-dom";
 import { useDragLayer } from "react-dnd";
 import { collectLeaves, computeGeometry, findNodeById } from "./utils/layoutTree.js";
 import GuacamoleRenderer from "@/pages/Servers/components/ViewContainer/renderer/GuacamoleRenderer.jsx";
-import BrowserRenderer from "@/pages/Servers/components/ViewContainer/renderer/BrowserRenderer.jsx";
-import XtermRenderer from "@/pages/Servers/components/ViewContainer/renderer/XtermRenderer.jsx";
-import FileRenderer from "@/pages/Servers/components/ViewContainer/renderer/FileRenderer";
-import ScriptRenderer from "@/pages/Servers/components/ViewContainer/renderer/ScriptRenderer";
-import NotesRenderer from "@/pages/Servers/components/ViewContainer/renderer/NotesRenderer";
 import TrustPrompt from "@/pages/Servers/components/ViewContainer/renderer/components/TrustPrompt";
 import { useTauriWindow } from "@/common/hooks/useTauriWindow.js";
 import { useBodyClass } from "@/common/hooks/useBodyClass.js";
+
+const BrowserRenderer = lazy(() => import("@/pages/Servers/components/ViewContainer/renderer/BrowserRenderer.jsx"));
+const XtermRenderer = lazy(() => import("@/pages/Servers/components/ViewContainer/renderer/XtermRenderer.jsx"));
+const FileRenderer = lazy(() => import("@/pages/Servers/components/ViewContainer/renderer/FileRenderer"));
+const ScriptRenderer = lazy(() => import("@/pages/Servers/components/ViewContainer/renderer/ScriptRenderer"));
+const NotesRenderer = lazy(() => import("@/pages/Servers/components/ViewContainer/renderer/NotesRenderer"));
 
 const SASH_SIZE = 4;
 const MIN_PANE_SIZE = 96;
@@ -450,7 +451,7 @@ export const ViewContainer = ({
                  className={`session-renderer ${isVisible ? "visible" : "hidden"}${isActive ? " active" : ""}`}
                  onClick={() => !isActive && focusSession(session.id)}
                  style={getSessionStyle(session)}>
-                {renderRenderer(session)}
+                <Suspense fallback={null}>{renderRenderer(session)}</Suspense>
             </div>
         );
     });

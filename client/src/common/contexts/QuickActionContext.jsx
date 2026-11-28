@@ -1,6 +1,8 @@
 import { createContext, useState, useEffect, useCallback } from "react";
-import QuickAction from "@/common/components/QuickAction";
+import { lazyDialog } from "@/common/utils/lazyDialog.jsx";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
+
+const QuickAction = lazyDialog(() => import("@/common/components/QuickAction"), (props) => props.isOpen);
 
 export const QuickActionContext = createContext({});
 

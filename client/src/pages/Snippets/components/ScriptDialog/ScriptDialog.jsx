@@ -8,15 +8,12 @@ import IconInput from "@/common/components/IconInput";
 import SelectBox from "@/common/components/SelectBox";
 import { mdiFormTextbox, mdiFileDocument, mdiCheck, mdiClose, mdiCodeTags, mdiLightbulb, mdiScript } from "@mdi/js";
 import Icon from "@mdi/react";
-import Editor, { loader } from "@monaco-editor/react";
+import Editor from "@/common/monaco";
 import { registerNextermLanguage } from "@/common/monaco/nexterm-lang.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import { useScripts } from "@/common/contexts/ScriptContext.jsx";
 import { OS_OPTIONS, parseOsFilter } from "@/common/utils/osUtils.js";
-import * as monaco from "monaco-editor";
-
-loader.config({ monaco });
 
 export const ScriptDialog = ({ open, onClose, editScriptId, selectedOrganization }) => {
     const [name, setName] = useState("");

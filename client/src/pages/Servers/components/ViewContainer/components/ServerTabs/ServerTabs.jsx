@@ -9,7 +9,7 @@ import { useLiveSessions } from "@/common/contexts/LiveSessionContext.jsx";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 import AvatarStack from "@/common/components/AvatarStack";
-import { getIconPath } from "@/common/utils/iconUtils.js";
+import EntryIcon from "@/common/components/EntryIcon.jsx";
 import SessionMenu from "../SessionMenu";
 import RemoteSessionStrip from "../RemoteSessionStrip";
 import KeyboardShortcutsMenu from "../KeyboardShortcutsMenu";
@@ -121,7 +121,9 @@ const DraggableTab = ({
                 )}
                 {pageInfo?.icon
                     ? <img src={pageInfo.icon} className="progress-icon page-favicon" alt="" />
-                    : <Icon path={isNotes ? mdiNoteEditOutline : getIconPath(server.icon)} className="progress-icon" />}
+                    : isNotes
+                        ? <Icon path={mdiNoteEditOutline} className="progress-icon" />
+                        : <EntryIcon name={server.icon} className="progress-icon" />}
             </div>
             <h2>{getTabTitle(session, pageInfo, t)}</h2>
             <AvatarStack className="tab-participants" users={otherParticipants} max={2}

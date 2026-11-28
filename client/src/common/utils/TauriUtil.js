@@ -3,6 +3,8 @@ let _tauriPromise = null;
 
 const checkTauri = () => typeof window !== "undefined" && !!(window.__TAURI_INTERNALS__ || window.__TAURI__);
 
+const canBeTauri = () => window.location.protocol === "tauri:" || window.location.hostname === "tauri.localhost" || import.meta.env.DEV;
+
 export const waitForTauri = () => {
     if (_tauriPromise) return _tauriPromise;
 
@@ -11,6 +13,10 @@ export const waitForTauri = () => {
             _isTauri = true;
             document.body.classList.add("tauri-mode");
             return resolve(true);
+        }
+        if (!canBeTauri()) {
+            _isTauri = false;
+            return resolve(false);
         }
 
         let attempts = 0;
@@ -32,6 +38,8 @@ export const waitForTauri = () => {
 };
 
 export const isTauri = () => _isTauri ?? checkTauri();
+
+export const isTauriSettled = () => _isTauri !== null;
 
 export const getTitleBarHeight = () => {
     const value = getComputedStyle(document.body).getPropertyValue("--title-bar-height");
